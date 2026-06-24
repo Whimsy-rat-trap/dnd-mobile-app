@@ -7,27 +7,29 @@ const Login: React.FC = () => {
             {/* Hero */}
             <div className="login-hero">
                 <div className="hero-logo">
-                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <svg width="80" height="80" viewBox="0 0 48 48" fill="none">
                         <path d="M24 42C33.9411 42 42 33.9411 42 24C42 14.0589 33.9411 6 24 6C14.0589 6 6 14.0589 6 24C6 33.9411 14.0589 42 24 42Z" stroke="white" strokeWidth="3" />
                     </svg>
                 </div>
-                <h1 className="hero-title">Adventure Awaits</h1>
-                <p className="hero-subtitle">Sign in to manage your characters & campaigns</p>
+                <h1 className="hero-title">Arcane Realms</h1>
+                <p className="hero-subtitle">Enter your realm and begin your adventure</p>
             </div>
 
             {/* Content */}
             <div className="login-content">
                 <form className="login-form" onSubmit={(e) => e.preventDefault()}>
                     <div className="form-group">
-                        <input type="email" placeholder="Email address" className="form-input" />
+                        <label className="form-label">EMAIL ADDRESS</label>
+                        <input type="email" placeholder="Enter your email" className="form-input" />
                     </div>
                     <div className="form-group">
-                        <input type="password" placeholder="Password" className="form-input" />
+                        <label className="form-label">PASSWORD</label>
+                        <input type="password" placeholder="Enter your password" className="form-input" />
                     </div>
                     <div className="form-actions">
                         <a href="#" className="forgot-link">Forgot password?</a>
                     </div>
-                    <button type="submit" className="signin-btn">Sign In</button>
+                    <button type="submit" className="signin-btn">Enter the realm</button>
                 </form>
 
                 <div className="divider">

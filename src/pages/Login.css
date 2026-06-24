@@ -23,6 +23,12 @@
     margin-bottom: 16px;
 }
 .hero-logo svg {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.1);
+    background: var(--gradient-green);
+    padding: 16px;
     stroke: white;
 }
 
@@ -61,7 +67,16 @@
 }
 
 .form-group {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #9ca3af;
+    letter-spacing: 0.5px;
 }
 
 .form-input {
@@ -78,7 +93,7 @@
     color: #6b7280;
 }
 .form-input:focus {
-    border-color: var(--gradient-green);
+    border-color: #34d399;
 }
 
 .form-actions {
@@ -96,16 +111,18 @@
 }
 
 .signin-btn {
-    width: 100%;
-    padding: 12px;
+    width: 353px;
+    height: 52px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     background: var(--gradient-green);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.1);
     color: #fff;
     font-weight: 600;
     font-size: 16px;
     cursor: pointer;
     transition: opacity 0.2s;
+    margin-top: 4px;
 }
 .signin-btn:hover {
     opacity: 0.9;
