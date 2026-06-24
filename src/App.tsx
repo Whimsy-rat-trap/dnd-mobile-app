@@ -1,26 +1,36 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import CharacterContainer from './pages/CharacterContainer';
+import SpellbookContainer from './pages/SpellbookContainer';
+import CampaignContainer from './pages/CampaignContainer';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <BrowserRouter>
+        <div className="app-container">
+          {/* Нав меню */}
+          <nav className="bottom-nav">
+            <Link to="/">Login</Link>
+            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/characters">Characters</Link>
+            <Link to="/spellbook">Spellbook</Link>
+            <Link to="/campaigns">Campaigns</Link>
+          </nav>
+
+          <div className="page-content">
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/characters" element={<CharacterContainer />} />
+              <Route path="/spellbook" element={<SpellbookContainer />} />
+              <Route path="/campaigns" element={<CampaignContainer />} />
+            </Routes>
+          </div>
+        </div>
+      </BrowserRouter>
   );
-}
+};
 
 export default App;
