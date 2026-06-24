@@ -1,12 +1,12 @@
 import React from 'react';
 
-const CampaignContainer: React.FC = () => {
+const Dashboard: React.FC = () => {
     return (
-        <div className="page campaign-page">
-            <h1>Campaign Container</h1>
-            <p>Кампании (заглушка)</p>
+        <div className="page" style={{ color: '#fff', padding: '40px' }}>
+            <h1>CampaignContainer</h1>
+            <p>Страница в разработке</p>
         </div>
     );
 };
 
-export default CampaignContainer;
+export default Dashboard;

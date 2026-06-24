@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CharacterContainer from './pages/CharacterContainer';
@@ -10,15 +11,7 @@ const App: React.FC = () => {
   return (
       <BrowserRouter>
         <div className="app-container">
-          {/* Нав меню */}
-          <nav className="bottom-nav">
-            <Link to="/">Login</Link>
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/characters">Characters</Link>
-            <Link to="/spellbook">Spellbook</Link>
-            <Link to="/campaigns">Campaigns</Link>
-          </nav>
-
+          <Header />
           <div className="page-content">
             <Routes>
               <Route path="/" element={<Login />} />

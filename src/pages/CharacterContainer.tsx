@@ -1,12 +1,12 @@
 import React from 'react';
 
-const CharacterContainer: React.FC = () => {
+const Dashboard: React.FC = () => {
     return (
-        <div className="page character-page">
-            <h1>Character Container</h1>
-            <p>Список/детали персонажей (заглушка)</p>
+        <div className="page" style={{ color: '#fff', padding: '40px' }}>
+            <h1>CharacterContainer</h1>
+            <p>Страница в разработке</p>
         </div>
     );
 };
 
-export default CharacterContainer;
+export default Dashboard;

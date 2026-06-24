@@ -1,12 +1,12 @@
 import React from 'react';
 
-const SpellbookContainer: React.FC = () => {
+const Dashboard: React.FC = () => {
     return (
-        <div className="page spellbook-page">
-            <h1>Spellbook Container</h1>
-            <p>Книга заклинаний (заглушка)</p>
+        <div className="page" style={{ color: '#fff', padding: '40px' }}>
+            <h1>SpellbookContainer</h1>
+            <p>Страница в разработке</p>
         </div>
     );
 };
 
-export default SpellbookContainer;
+export default Dashboard;
