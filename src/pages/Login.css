@@ -64,7 +64,7 @@
 .login-form {
     display: flex;
     flex-direction: column;
-    margin-bottom: 24px; /* отступ до divider'а */
+    margin-bottom: 24px;
 }
 
 .form-group {
@@ -73,7 +73,6 @@
     gap: 4px;
 }
 
-/* отступ между группами полей */
 .form-group:not(:last-of-type) {
     margin-bottom: 16px;
 }
@@ -89,7 +88,7 @@
 /* Инпуты */
 .form-input {
     width: 100%;
-    height: 48px;
+    height: 52px;
     padding: 0 16px;
     border: 1px solid #374151;
     border-radius: 10px;
@@ -110,8 +109,8 @@
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 16px; /* отступ от группы пароля */
-    margin-bottom: 16px; /* отступ до кнопки */
+    margin-top: 16px;
+    margin-bottom: 16px;
 }
 
 .forgot-link {
@@ -128,7 +127,7 @@
 
 /* Кнопка входа */
 .signin-btn {
-    width: 353px;
+    width: 100%;
     height: 52px;
     border: none;
     border-radius: 12px;
@@ -139,7 +138,6 @@
     font-size: 16px;
     cursor: pointer;
     transition: opacity 0.2s;
-    align-self: center;
     box-sizing: border-box;
 }
 .signin-btn:hover {
@@ -174,7 +172,7 @@
     flex-direction: column;
     gap: 12px;
     align-items: center;
-    margin-bottom: 24px; /* отступ до секции регистрации */
+    margin-bottom: 24px;
 }
 
 .social-btn {
@@ -206,7 +204,7 @@
     text-align: center;
     color: #9ca3af;
     font-size: 14px;
-    margin-top: auto; /* прижимает секцию к низу */
+    margin-top: auto;
 }
 
 .signup-link {

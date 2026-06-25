@@ -40,7 +40,7 @@ body {
 .page-content {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  /*padding: 20px; <- this idiot took me an hour to find and fix why did i put this here??????*/
   scrollbar-width: none;
 }
 
