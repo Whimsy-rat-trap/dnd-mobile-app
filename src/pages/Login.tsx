@@ -45,7 +45,7 @@ const Login: React.FC = () => {
 
                 <div className="signup-section">
                     <span>New to Arcane Realms? </span>
-                    <a href="#" className="signup-link">Create Account</a>
+                    <a href="#" className="signup-link">Create an Account</a>
                 </div>
             </div>
         </div>
