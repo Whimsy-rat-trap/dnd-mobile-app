@@ -34,13 +34,13 @@ const Login: React.FC = () => {
 
                 <div className="divider">
                     <hr className="divider-line" />
-                    <span className="divider-text">or</span>
+                    <span className="divider-text">OR</span>
                     <hr className="divider-line" />
                 </div>
 
                 <div className="social-login">
-                    <button className="social-btn google">Google</button>
-                    <button className="social-btn apple">Apple</button>
+                    <button className="social-btn">Continue with Google</button>
+                    <button className="social-btn">Continue with Apple</button>
                 </div>
 
                 <div className="signup-section">
