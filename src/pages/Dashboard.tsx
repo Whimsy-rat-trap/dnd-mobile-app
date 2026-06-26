@@ -124,8 +124,15 @@ const Dashboard: React.FC = () => {
 
                 {/* Dice Roller */}
                 <div className="dice-roller">
-                    <h3>Dice Roller</h3>
-
+                    <div className="dice-title">Dice Roller</div>
+                    <div className="dice-grid">
+                        <button className="dice-btn">D4</button>
+                        <button className="dice-btn">D6</button>
+                        <button className="dice-btn">D8</button>
+                        <button className="dice-btn">D10</button>
+                        <button className="dice-btn">D12</button>
+                        <button className="dice-btn">D20</button>
+                    </div>
                 </div>
             </div>
         </div>
