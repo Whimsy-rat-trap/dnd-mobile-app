@@ -196,9 +196,43 @@
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
     background: #1f2937;
     display: flex;
+    flex-shrink: 0;
+}
+
+.action-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+}
+
+.action-icon {
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(315deg, #34d399 0%, #059669 100%);
+    display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    font-size: 14px;
     flex-shrink: 0;
+}
+
+.action-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.action-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    color: #fff;
+}
+
+.action-subtitle {
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 12px;
+    color: #9ca3af;
 }
