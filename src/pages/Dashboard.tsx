@@ -65,8 +65,17 @@ const Dashboard: React.FC = () => {
 
                 {/* Quick Actions – с боковыми отступами */}
                 <div className="quick-actions">
-                    <h3>Quick Actions</h3>
-
+                    <div className="quick-actions-title">Quick Actions</div>
+                    <div className="action-grid">
+                        <div className="action-row">
+                            <div className="action-item">Item 1</div>
+                            <div className="action-item">Item 2</div>
+                        </div>
+                        <div className="action-row">
+                            <div className="action-item">Item 3</div>
+                            <div className="action-item">Item 4</div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Dice Roller */}

@@ -160,3 +160,45 @@
     font-size: 12px;
     color: #fff;
 }
+
+/* Quick Actions */
+.quick-actions {
+    padding: 20px 0;
+    background: transparent;
+}
+
+.quick-actions-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+    margin-left: 20px;
+    margin-bottom: 12px;
+}
+
+.action-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-row {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px;
+}
+
+.action-item {
+    border-radius: 12px;
+    padding: 16px;
+    width: 170px;
+    height: 120px;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+    background: #1f2937;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    flex-shrink: 0;
+}
