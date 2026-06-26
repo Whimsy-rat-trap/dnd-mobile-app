@@ -1,15 +1,15 @@
-.dashboard-page {
-    align-items: stretch;
-    justify-content: flex-start;
-    text-align: left;
-    height: 100%;
+/* Общий контейнер для хедера */
+.dashboard-header {
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
+    background: #0f0f0f;
+    padding: 0 20px;
 }
 
 .header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 20px 0 20px;
+    padding-top: 20px;
 }
 
 .header-title {
@@ -34,9 +34,15 @@
     font-weight: 400;
     font-size: 14px;
     color: #9ca3af;
-    padding: 0 20px;
+    padding-bottom: 16px;
     margin-top: 12px;
-    margin-bottom: 16px;
+}
+
+.dashboard-page {
+    align-items: stretch;
+    justify-content: flex-start;
+    text-align: left;
+    height: 100%;
 }
 
 .content-wrapper {
@@ -45,8 +51,6 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
 }
 
 /* Character Card */
@@ -59,7 +63,7 @@
     background: linear-gradient(315deg, #1f2937 0%, #111827 100%);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    box-sizing: border-box;
 }
 
 .character-header {
@@ -69,6 +73,20 @@
 
 .avatar {
     margin-right: 16px;
+    border-radius: 12px;
+    width: 64px;
+    height: 64px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+    background: linear-gradient(315deg, #34d399 0%, #059669 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.avatar svg {
+    width: 36px;
+    height: 36px;
 }
 
 .character-info {
@@ -100,10 +118,45 @@
     color: #9ca3af;
 }
 
+/* Stats Row */
 .stats-row {
     display: flex;
-    justify-content: space-around;
-    color: #d1d5db;
-    font-size: 14px;
-    font-weight: 400;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.stat-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.stat-label {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.stat-progress {
+    border-radius: 4px;
+    width: 100%;
+    height: 8px;
+    background: #333;
+}
+
+.hp-progress {
+    background: linear-gradient(0deg, #dc2626 0%, #ef4444 100%);
+}
+
+.exp-progress {
+    background: linear-gradient(0deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+.stat-value {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 12px;
+    color: #fff;
 }
