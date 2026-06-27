@@ -176,8 +176,66 @@
     background: rgba(255, 255, 255, 0.25);
 }
 
-/* Abilities и Skills */
-.section-abilities,
+/* Abilities Section */
+.section-abilities {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.abilities-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.abilities-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 112px);
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+}
+
+.ability-card {
+    border-radius: 10px;
+    padding: 12px;
+    width: 112px;
+    height: 94px;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+    background: #1f2937;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.ability-name {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 11px;
+    color: #34d399;
+}
+
+.ability-score {
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 24px;
+    color: #fff;
+}
+
+.ability-modifier {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+/* Skills Section */
 .section-skills {
 
 }

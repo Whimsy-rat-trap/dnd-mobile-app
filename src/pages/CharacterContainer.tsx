@@ -9,6 +9,15 @@ const CharacterContainer: React.FC = () => {
         navigate(-1);
     };
 
+    const abilitiesData = [ /* Works for now */
+        { name: 'STR', score: 10, modifier: '+0' },
+        { name: 'CON', score: 13, modifier: '+1' },
+        { name: 'WIS', score: 15, modifier: '+2' },
+        { name: 'DEX', score: 14, modifier: '+2' },
+        { name: 'INT', score: 18, modifier: '+4' },
+        { name: 'CHA', score: 12, modifier: '+1' },
+    ];
+
     return (
         <div className="character-page">
             <header className="character-header">
@@ -83,7 +92,16 @@ const CharacterContainer: React.FC = () => {
                 </div>
 
                 <div className="section-abilities">
-
+                    <div className="abilities-title">Abilities</div>
+                    <div className="abilities-grid">
+                        {abilitiesData.map((ability) => (
+                            <div className="ability-card" key={ability.name}>
+                                <span className="ability-name">{ability.name}</span>
+                                <span className="ability-score">{ability.score}</span>
+                                <span className="ability-modifier">{ability.modifier}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="section-skills">
