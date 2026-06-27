@@ -1,7 +1,7 @@
+/* Хэдер */
 .character-header {
     display: flex;
     align-items: center;
-    padding: 24px 20px;
 }
 
 .back-button {
@@ -13,7 +13,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    margin-right: 16px;
+    margin: 24px 16px 24px 20px;
     transition: background 0.2s;
 }
 
@@ -22,6 +22,8 @@
 }
 
 .header-info {
+    width: 161px;
+    margin: 20px 0;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -41,7 +43,36 @@
     color: #9ca3af;
 }
 
-/* Секции контента */
+/* Контент */
 .character-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+/* Info Section */
+.section-info {
+    width: 353px;
+    height: 141px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #1f2937;
+}
+
+/* HP Section */
+.section-hp {
+    width: 353px;
+    height: 183px;
+    padding: 20px;
+    border-radius: 12px;
+    background: linear-gradient(315deg, #dc2626 0%, #991b1b 100%);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Abilities и Skills */
+.section-abilities,
+.section-skills {
 
 }

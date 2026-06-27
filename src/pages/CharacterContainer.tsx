@@ -6,12 +6,11 @@ const CharacterContainer: React.FC = () => {
     const navigate = useNavigate();
 
     const handleBack = () => {
-        navigate(-1); // или '/dashboard'
+        navigate(-1);
     };
 
     return (
         <div className="character-page">
-            {/* Хэдер */}
             <header className="character-header">
                 <div className="back-button" onClick={handleBack}>
                     <svg
@@ -33,12 +32,19 @@ const CharacterContainer: React.FC = () => {
                 </div>
             </header>
 
-            {/* Контент */}
             <div className="character-content">
-                <div className="section-info">Infor Section</div>
-                <div className="section-hp">Hp Section</div>
-                <div className="section-abilities">Abilities Section</div>
-                <div className="section-skills">Skills Section</div>
+                <div className="section-info">
+
+                </div>
+                <div className="section-hp">
+
+                </div>
+                <div className="section-abilities">
+
+                </div>
+                <div className="section-skills">
+
+                </div>
             </div>
         </div>
     );
