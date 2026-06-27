@@ -107,6 +107,73 @@
     border-radius: 12px;
     background: linear-gradient(315deg, #dc2626 0%, #991b1b 100%);
     box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.hp-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.hp-display {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.hp-current {
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 48px;
+    text-align: center;
+    color: #fff;
+}
+
+.hp-separator {
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 32px;
+    text-align: center;
+    color: #fca5a5;
+}
+
+.hp-max {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 32px;
+    text-align: center;
+    color: #fca5a5;
+}
+
+.hp-controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.hp-button {
+    border-radius: 8px;
+    width: 152px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    text-align: center;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.hp-button:hover {
+    background: rgba(255, 255, 255, 0.25);
 }
 
 /* Abilities и Skills */

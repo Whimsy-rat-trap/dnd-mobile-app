@@ -68,7 +68,18 @@ const CharacterContainer: React.FC = () => {
                 </div>
 
                 <div className="section-hp">
+                    <div className="hp-title">Hit Points</div>
 
+                    <div className="hp-display">
+                        <span className="hp-current">45</span>
+                        <span className="hp-separator">/</span>
+                        <span className="hp-max">60</span>
+                    </div>
+
+                    <div className="hp-controls">
+                        <button className="hp-button">Take Damage</button>
+                        <button className="hp-button">Heal</button>
+                    </div>
                 </div>
 
                 <div className="section-abilities">
