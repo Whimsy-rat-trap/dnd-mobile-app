@@ -9,13 +9,34 @@ const CharacterContainer: React.FC = () => {
         navigate(-1);
     };
 
-    const abilitiesData = [ /* Works for now */
+    const abilitiesData = [
         { name: 'STR', score: 10, modifier: '+0' },
         { name: 'CON', score: 13, modifier: '+1' },
         { name: 'WIS', score: 15, modifier: '+2' },
         { name: 'DEX', score: 14, modifier: '+2' },
         { name: 'INT', score: 18, modifier: '+4' },
         { name: 'CHA', score: 12, modifier: '+1' },
+    ];
+
+    const skillsData = [
+        { name: 'Acrobatics', attribute: 'DEX', bonus: '+5' },
+        { name: 'Animal Handling', attribute: 'WIS', bonus: '+2' },
+        { name: 'Arcana', attribute: 'INT', bonus: '+8' },
+        { name: 'Athletics', attribute: 'STR', bonus: '+0' },
+        { name: 'Deception', attribute: 'CHA', bonus: '+1' },
+        { name: 'History', attribute: 'INT', bonus: '+8' },
+        { name: 'Insight', attribute: 'WIS', bonus: '+2' },
+        { name: 'Intimidation', attribute: 'CHA', bonus: '+1' },
+        { name: 'Investigation', attribute: 'INT', bonus: '+8' },
+        { name: 'Medicine', attribute: 'WIS', bonus: '+2' },
+        { name: 'Nature', attribute: 'INT', bonus: '+4' },
+        { name: 'Perception', attribute: 'WIS', bonus: '+6' },
+        { name: 'Performance', attribute: 'CHA', bonus: '+1' },
+        { name: 'Persuasion', attribute: 'CHA', bonus: '+5' },
+        { name: 'Religion', attribute: 'INT', bonus: '+4' },
+        { name: 'Sleight of Hand', attribute: 'DEX', bonus: '+2' },
+        { name: 'Stealth', attribute: 'DEX', bonus: '+2' },
+        { name: 'Survival', attribute: 'WIS', bonus: '+2' },
     ];
 
     return (
@@ -105,7 +126,31 @@ const CharacterContainer: React.FC = () => {
                 </div>
 
                 <div className="section-skills">
-
+                    <div className="skills-title">Skills & Proficiencies</div>
+                    <div className="skills-grid">
+                        {skillsData.map((skill) => (
+                            <div className="skill-card" key={skill.name}>
+                                <div className="skill-left">
+                                    <div className="skill-check">
+                                        <svg
+                                            width="14"
+                                            height="14"
+                                            viewBox="0 0 14 14"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M12.7143 4.40178L5.7143 11.4018C5.65334 11.463 5.58089 11.5115 5.50112 11.5446C5.42135 11.5777 5.33583 11.5948 5.24946 11.5948C5.16309 11.5948 5.07757 11.5777 4.9978 11.5446C4.91803 11.5115 4.84558 11.463 4.78462 11.4018L1.72212 8.33928C1.66107 8.27823 1.61265 8.20576 1.57961 8.12601C1.54658 8.04625 1.52957 7.96076 1.52957 7.87443C1.52957 7.78811 1.54658 7.70262 1.57961 7.62286C1.61265 7.5431 1.66107 7.47063 1.72212 7.40959C1.78316 7.34855 1.85563 7.30012 1.93539 7.26709C2.01515 7.23405 2.10063 7.21705 2.18696 7.21705C2.27329 7.21705 2.35877 7.23405 2.43853 7.26709C2.51829 7.30012 2.59076 7.34855 2.6518 7.40959L5.25001 10.0078L11.7857 3.47318C11.909 3.3499 12.0762 3.28064 12.2506 3.28064C12.4249 3.28064 12.5921 3.3499 12.7154 3.47318C12.8387 3.59647 12.9079 3.76368 12.9079 3.93803C12.9079 4.11238 12.8387 4.27959 12.7154 4.40287L12.7143 4.40178Z"
+                                                fill="white"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <span className="skill-name">{skill.name} ({skill.attribute})</span>
+                                </div>
+                                <span className="skill-bonus">{skill.bonus}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
