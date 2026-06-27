@@ -34,14 +34,47 @@ const CharacterContainer: React.FC = () => {
 
             <div className="character-content">
                 <div className="section-info">
+                    <div className="info-title">Characters Details</div>
 
+                    <div className="info-grid">
+                        <div className="info-item">
+                            <span className="info-label">Level</span>
+                            <span className="info-value">7</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Class</span>
+                            <span className="info-value">Wizard</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Race</span>
+                            <span className="info-value">Elf</span>
+                        </div>
+                    </div>
+
+                    <div className="info-grid">
+                        <div className="info-item">
+                            <span className="info-label">Background</span>
+                            <span className="info-value">Sage</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">AC</span>
+                            <span className="info-value">14</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Speed</span>
+                            <span className="info-value">30ft</span>
+                        </div>
+                    </div>
                 </div>
+
                 <div className="section-hp">
 
                 </div>
+
                 <div className="section-abilities">
 
                 </div>
+
                 <div className="section-skills">
 
                 </div>
