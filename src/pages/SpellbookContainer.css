@@ -104,3 +104,49 @@
     color: #3b82f6;
     margin-top: 2px;
 }
+
+/* Spell Tabs */
+.spell-tabs {
+    padding: 16px 20px;
+    height: 72px;
+    background: #0f0f0f;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0;
+    width: 377px;
+    box-sizing: border-box;
+}
+
+.tab-btn {
+    border-radius: 8px;
+    width: 78px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 13px;
+    text-align: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+/* Неактивная кнопка */
+.tab-btn:not(.active) {
+    background: #1f2937;
+    color: #9ca3af;
+}
+
+.tab-btn:not(.active):hover {
+    background: #374151;
+    color: #e5e7eb;
+}
+
+/* Активная кнопка */
+.tab-btn.active {
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+    background: linear-gradient(315deg, #3b82f6 0%, #1e40af 100%);
+    color: #fff;
+}

@@ -1,11 +1,22 @@
 // src/pages/SpellbookContainer.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import './SpellbookContainer.css';
 
+type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
+
 const SpellbookContainer: React.FC = () => {
+    const [activeTab, setActiveTab] = useState<TabKey>('cantrips');
+
     const handleBack = () => {
         console.log('Back button clicked');
     };
+
+    const tabs: { id: TabKey; label: string }[] = [
+        { id: 'cantrips', label: 'Cantrips' },
+        { id: 'level1', label: 'Level 1' },
+        { id: 'level2', label: 'Level 2' },
+        { id: 'level3', label: 'Level 3' },
+    ];
 
     return (
         <div className="spellbook-page">
@@ -36,6 +47,19 @@ const SpellbookContainer: React.FC = () => {
                     <div className="stat-label">Known</div>
                     <div className="stat-value">18</div>
                 </div>
+            </div>
+
+            {/* Spell Tabs */}
+            <div className="spell-tabs spell-section">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+                        onClick={() => setActiveTab(tab.id)}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
             </div>
         </div>
     );
