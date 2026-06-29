@@ -1,8 +1,15 @@
-// src/pages/SpellbookContainer.tsx
 import React, { useState } from 'react';
 import './SpellbookContainer.css';
 
 type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
+
+// Тип для заклинания
+interface Spell {
+    id: string;
+    name: string;
+    level: number;
+    school?: string;
+}
 
 const SpellbookContainer: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabKey>('cantrips');
@@ -17,6 +24,33 @@ const SpellbookContainer: React.FC = () => {
         { id: 'level2', label: 'Level 2' },
         { id: 'level3', label: 'Level 3' },
     ];
+
+    const spellsData: Record<TabKey, Spell[]> = {
+        cantrips: [
+            { id: '1', name: 'Acid Splash', level: 0 },
+            { id: '2', name: 'Blade Ward', level: 0 },
+            { id: '3', name: 'Dancing Lights', level: 0 },
+            { id: '4', name: 'Fire Bolt', level: 0 },
+        ],
+        level1: [
+            { id: '5', name: 'Chromatic Orb', level: 1 },
+            { id: '6', name: 'Magic Missile', level: 1 },
+            { id: '7', name: 'Shield', level: 1 },
+        ],
+        level2: [
+            { id: '8', name: 'Invisibility', level: 2 },
+            { id: '9', name: 'Misty Step', level: 2 },
+            { id: '10', name: 'Scorching Ray', level: 2 },
+        ],
+        level3: [
+            { id: '11', name: 'Counterspell', level: 3 },
+            { id: '12', name: 'Fireball', level: 3 },
+            { id: '13', name: 'Haste', level: 3 },
+        ],
+    };
+
+    const currentSpells = spellsData[activeTab];
+    const title = `${activeTab === 'cantrips' ? 'Cantrips' : `Level ${activeTab.replace('level', '')}`} (${currentSpells.length})`;
 
     return (
         <div className="spellbook-page">
@@ -60,6 +94,23 @@ const SpellbookContainer: React.FC = () => {
                         {tab.label}
                     </button>
                 ))}
+            </div>
+
+            {/* Spell Content */}
+            <div className="spell-content spell-section">
+                <div className="spell-list-title">{title}</div>
+                <div className="spell-cards">
+                    {currentSpells.map((spell) => (
+                        <div key={spell.id} className="spell-card">
+                            <div className="spell-card-header">
+
+                            </div>
+                            <div className="spell-card-details">
+
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
