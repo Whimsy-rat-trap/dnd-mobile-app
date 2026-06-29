@@ -8,6 +8,10 @@ interface Spell {
     name: string;
     level: number;
     school: string;
+    castingTime: string;
+    range: string;
+    components: string;
+    description: string;
 }
 
 const SpellbookContainer: React.FC = () => {
@@ -26,25 +30,142 @@ const SpellbookContainer: React.FC = () => {
 
     const spellsData: Record<TabKey, Spell[]> = {
         cantrips: [
-            { id: '1', name: 'Acid Splash', level: 0, school: 'Conjuration' },
-            { id: '2', name: 'Blade Ward', level: 0, school: 'Abjuration' },
-            { id: '3', name: 'Dancing Lights', level: 0, school: 'Evocation' },
-            { id: '4', name: 'Fire Bolt', level: 0, school: 'Evocation' },
+            {
+                id: '1',
+                name: 'Acid Splash',
+                level: 0,
+                school: 'Conjuration',
+                castingTime: '1 action',
+                range: '60 ft',
+                components: 'V, S',
+                description: 'You hurl a bubble of acid. Choose one creature within range, or two creatures within 5 feet of each other.',
+            },
+            {
+                id: '2',
+                name: 'Blade Ward',
+                level: 0,
+                school: 'Abjuration',
+                castingTime: '1 action',
+                range: 'Self',
+                components: 'V, S',
+                description: 'You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage dealt by weapon attacks.',
+            },
+            {
+                id: '3',
+                name: 'Dancing Lights',
+                level: 0,
+                school: 'Evocation',
+                castingTime: '1 action',
+                range: '120 ft',
+                components: 'V, S, M (a bit of phosphorus or wychwood)',
+                description: 'You create up to four torch-sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air.',
+            },
+            {
+                id: '4',
+                name: 'Fire Bolt',
+                level: 0,
+                school: 'Evocation',
+                castingTime: '1 action',
+                range: '120 ft',
+                components: 'V, S',
+                description: 'You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, it takes 1d10 fire damage.',
+            },
         ],
         level1: [
-            { id: '5', name: 'Chromatic Orb', level: 1, school: 'Evocation' },
-            { id: '6', name: 'Magic Missile', level: 1, school: 'Evocation' },
-            { id: '7', name: 'Shield', level: 1, school: 'Abjuration' },
+            {
+                id: '5',
+                name: 'Chromatic Orb',
+                level: 1,
+                school: 'Evocation',
+                castingTime: '1 action',
+                range: '90 ft',
+                components: 'V, S, M (a diamond worth at least 50 gp)',
+                description: 'You hurl a 4-inch-diameter sphere of energy at a creature within range. Choose acid, cold, fire, lightning, poison, or thunder for the type of orb you create.',
+            },
+            {
+                id: '6',
+                name: 'Magic Missile',
+                level: 1,
+                school: 'Evocation',
+                castingTime: '1 action',
+                range: '120 ft',
+                components: 'V, S',
+                description: 'You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4+1 force damage.',
+            },
+            {
+                id: '7',
+                name: 'Shield',
+                level: 1,
+                school: 'Abjuration',
+                castingTime: '1 reaction, which you take when you are hit by an attack or targeted by the magic missile spell',
+                range: 'Self',
+                components: 'V, S',
+                description: 'An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile.',
+            },
         ],
         level2: [
-            { id: '8', name: 'Invisibility', level: 2, school: 'Illusion' },
-            { id: '9', name: 'Misty Step', level: 2, school: 'Conjuration' },
-            { id: '10', name: 'Scorching Ray', level: 2, school: 'Evocation' },
+            {
+                id: '8',
+                name: 'Invisibility',
+                level: 2,
+                school: 'Illusion',
+                castingTime: '1 action',
+                range: 'Touch',
+                components: 'V, S, M (an eyelash in gum arabic)',
+                description: 'A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target\'s person.',
+            },
+            {
+                id: '9',
+                name: 'Misty Step',
+                level: 2,
+                school: 'Conjuration',
+                castingTime: '1 bonus action',
+                range: 'Self',
+                components: 'V',
+                description: 'Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.',
+            },
+            {
+                id: '10',
+                name: 'Scorching Ray',
+                level: 2,
+                school: 'Evocation',
+                castingTime: '1 action',
+                range: '120 ft',
+                components: 'V, S',
+                description: 'You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 fire damage.',
+            },
         ],
         level3: [
-            { id: '11', name: 'Counterspell', level: 3, school: 'Abjuration' },
-            { id: '12', name: 'Fireball', level: 3, school: 'Evocation' },
-            { id: '13', name: 'Haste', level: 3, school: 'Transmutation' },
+            {
+                id: '11',
+                name: 'Counterspell',
+                level: 3,
+                school: 'Abjuration',
+                castingTime: '1 reaction, which you take when you see a creature within 60 feet of you casting a spell',
+                range: '60 ft',
+                components: 'S',
+                description: 'You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect.',
+            },
+            {
+                id: '12',
+                name: 'Fireball',
+                level: 3,
+                school: 'Evocation',
+                castingTime: '1 action',
+                range: '150 ft',
+                components: 'V, S, M (a tiny ball of bat guano and sulfur)',
+                description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere must make a Dexterity saving throw.',
+            },
+            {
+                id: '13',
+                name: 'Haste',
+                level: 3,
+                school: 'Transmutation',
+                castingTime: '1 action',
+                range: '30 ft',
+                components: 'V, S, M (a shaving of licorice root)',
+                description: 'Choose a willing creature that you can see within range. Until the spell ends, the target\'s speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns.',
+            },
         ],
     };
 
@@ -105,7 +226,7 @@ const SpellbookContainer: React.FC = () => {
                             <div className="spell-card-header">
                                 <div className="spell-card-left">
                                     <div className="spell-card-icon">
-                                        {/* Здесь будет иконка */}
+                                        {/* Иконка */}
                                     </div>
                                     <div className="spell-card-info">
                                         <div className="spell-card-name">{spell.name}</div>
@@ -121,10 +242,21 @@ const SpellbookContainer: React.FC = () => {
                             {/* Details */}
                             <div className="spell-card-details">
                                 <div className="spell-card-row">
-
+                                    <div className="spell-detail-item">
+                                        <span className="spell-detail-label">Casting</span>
+                                        <span className="spell-detail-value">{spell.castingTime}</span>
+                                    </div>
+                                    <div className="spell-detail-item">
+                                        <span className="spell-detail-label">Range</span>
+                                        <span className="spell-detail-value">{spell.range}</span>
+                                    </div>
+                                    <div className="spell-detail-item">
+                                        <span className="spell-detail-label">Components</span>
+                                        <span className="spell-detail-value">{spell.components}</span>
+                                    </div>
                                 </div>
                                 <div className="spell-card-description">
-
+                                    {spell.description}
                                 </div>
                             </div>
                         </div>
