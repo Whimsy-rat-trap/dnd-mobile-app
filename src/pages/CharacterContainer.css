@@ -61,6 +61,25 @@
     text-align: left;
 }
 
+/* Кнопка настроек в шапке */
+.character-settings-btn {
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    background: #1f1f1f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.character-settings-btn:hover {
+    background: #2a2a2a;
+}
+
 /* Прокручиваемый контент */
 .character-content {
     flex: 1;
