@@ -1,8 +1,10 @@
 .character-page {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    overflow: hidden;
+    align-items: center;
+    padding: 0 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Character Header */
@@ -264,7 +266,8 @@
     align-items: flex-start;
     gap: 12px;
     flex-shrink: 0;
-    padding-bottom: 8px;
+    margin-bottom: 0;
+    padding-bottom: 20px;
 }
 
 .skills-title {
