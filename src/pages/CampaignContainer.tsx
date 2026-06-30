@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './CampaignContainer.css';
 
-// temp
-const campaigns = [
+// Временные данные для карточек (начальные статусы)
+const initialCampaigns = [
     {
         id: 1,
         name: 'The Lost Mine',
@@ -10,7 +10,7 @@ const campaigns = [
         players: 4,
         sessions: 3,
         lastPlayed: 2,
-        status: 'active'
+        status: 'active' as 'active' | 'paused',
     },
     {
         id: 2,
@@ -19,7 +19,7 @@ const campaigns = [
         players: 5,
         sessions: 7,
         lastPlayed: 5,
-        status: 'paused'
+        status: 'paused' as 'active' | 'paused',
     },
     {
         id: 3,
@@ -28,12 +28,17 @@ const campaigns = [
         players: 3,
         sessions: 2,
         lastPlayed: 12,
-        status: 'active'
+        status: 'active' as 'active' | 'paused',
     },
 ];
 
 const CampaignContainer: React.FC = () => {
-    // Функция для форматирования даты
+    // Состояние для кампаний
+    const [campaigns, setCampaigns] = useState(initialCampaigns);
+    // Состояние для поискового запроса
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Форматирование даты
     const formatLastPlayed = (days: number) => {
         if (days < 7) {
             return `Played ${days} day${days > 1 ? 's' : ''} ago`;
@@ -41,6 +46,33 @@ const CampaignContainer: React.FC = () => {
             const weeks = Math.floor(days / 7);
             return `Played ${weeks} week${weeks > 1 ? 's' : ''} ago`;
         }
+    };
+
+    // Переключение статуса кампании
+    const toggleStatus = (id: number) => {
+        setCampaigns((prev) =>
+            prev.map((campaign) =>
+                campaign.id === id
+                    ? { ...campaign, status: campaign.status === 'active' ? 'paused' : 'active' }
+                    : campaign
+            )
+        );
+    };
+
+    // Обработчики кликов
+    const handleViewAll = () => {
+        console.log('View All clicked');
+        // Здесь будет логика
+    };
+
+    const handleCreateCampaign = () => {
+        console.log('Create campaign clicked');
+        // Здесь будет логика создания кампании
+    };
+
+    const handleCreateIconClick = () => {
+        console.log('Create icon clicked');
+        // Здесь будет логика
     };
 
     return (
@@ -62,6 +94,7 @@ const CampaignContainer: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Search Bar */}
                 <div className="search-bar">
                     <svg width="20" height="20" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="search-icon">
                         <path
@@ -69,7 +102,13 @@ const CampaignContainer: React.FC = () => {
                             fill="#6B7280"
                         />
                     </svg>
-                    <span className="search-placeholder">Search Campaigns...</span>
+                    <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search Campaigns..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                 </div>
             </header>
 
@@ -77,7 +116,7 @@ const CampaignContainer: React.FC = () => {
             <div className="campaign-content">
                 {/* Create Campaign Card */}
                 <div className="create-campaign-card">
-                    <div className="create-icon-wrapper">
+                    <div className="create-icon-wrapper" onClick={handleCreateIconClick} style={{ cursor: 'pointer' }}>
                         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M28.5 16C28.5 16.3978 28.342 16.7794 28.0607 17.0607C27.7794 17.342 27.3978 17.5 27 17.5H17.5V27C17.5 27.3978 17.342 27.7794 17.0607 28.0607C16.7794 28.342 16.3978 28.5 16 28.5C15.6022 28.5 15.2206 28.342 14.9393 28.0607C14.658 27.7794 14.5 27.3978 14.5 27V17.5H5C4.60218 17.5 4.22064 17.342 3.93934 17.0607C3.65804 16.7794 3.5 16.3978 3.5 16C3.5 15.6022 3.65804 15.2206 3.93934 14.9393C4.22064 14.658 4.60218 14.5 5 14.5H14.5V5C14.5 4.60218 14.658 4.22064 14.9393 3.93934C15.2206 3.65804 15.6022 3.5 16 3.5C16.3978 3.5 16.7794 3.65804 17.0607 3.93934C17.342 4.22064 17.5 4.60218 17.5 5V14.5H27C27.3978 14.5 27.7794 14.658 28.0607 14.9393C28.342 15.2206 28.5 15.6022 28.5 16Z"
@@ -87,14 +126,18 @@ const CampaignContainer: React.FC = () => {
                     </div>
                     <h2 className="create-title">Start New Campaign</h2>
                     <p className="create-subtitle">Create a new adventure and invite your party</p>
-                    <button className="create-button">Create campaign</button>
+                    <button className="create-button" onClick={handleCreateCampaign}>
+                        Create campaign
+                    </button>
                 </div>
 
                 {/* Campaign Section */}
                 <section className="campaign-section">
                     <div className="section-header">
                         <h2 className="section-title">Active Campaigns</h2>
-                        <span className="view-all">View All</span>
+                        <span className="view-all" onClick={handleViewAll} style={{ cursor: 'pointer' }}>
+              View All
+            </span>
                     </div>
 
                     <div className="cards-list">
@@ -128,8 +171,12 @@ const CampaignContainer: React.FC = () => {
                                 {/* Campaign Footer */}
                                 <div className="campaign-footer">
                                     <span className="campaign-date">{formatLastPlayed(campaign.lastPlayed)}</span>
-                                    <div className={`campaign-status ${campaign.status}`}>
-                                        {campaign.status === 'active' ? 'Active' : 'Paused'}
+                                    <div
+                                        className={`campaign-status ${campaign.status}`}
+                                        onClick={() => toggleStatus(campaign.id)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        {campaign.status === 'active' ? 'ACTIVE' : 'PAUSED'}
                                     </div>
                                 </div>
                             </div>
