@@ -57,6 +57,7 @@ const CharacterContainer: React.FC = () => {
                 <div className="section-info">
                     <div className="info-title">Characters Details</div>
 
+                    {/* Первый ряд */}
                     <div className="info-grid">
                         <div className="info-item">
                             <span className="info-label">Level</span>
@@ -72,6 +73,7 @@ const CharacterContainer: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* Второй ряд */}
                     <div className="info-grid">
                         <div className="info-item">
                             <span className="info-label">Background</span>
@@ -83,7 +85,7 @@ const CharacterContainer: React.FC = () => {
                         </div>
                         <div className="info-item">
                             <span className="info-label">Speed</span>
-                            <span className="info-value">30ft</span>
+                            <span className="info-value">30 ft</span>
                         </div>
                     </div>
                 </div>
