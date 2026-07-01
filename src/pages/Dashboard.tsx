@@ -15,6 +15,14 @@ const Dashboard: React.FC = () => {
     const maxExp = 3000;
     const expPercent = (currentExp / maxExp) * 100;
 
+    // Данные для кампаний
+    const campaigns = [
+        { id: 1, name: 'Curse of Strahd', status: 'active', description: 'Ravenloft' },
+        { id: 2, name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin' },
+        { id: 3, name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep' },
+        { id: 4, name: 'Tomb of Annihilation', status: 'ended', description: 'Chult' },
+    ];
+
     return (
         <div className="page dashboard-page">
             <div className="dashboard-header">
@@ -63,9 +71,7 @@ const Dashboard: React.FC = () => {
                         <div className="character-info">
                             <div className="character-name">Aelar Dawn</div>
                             <div className="character-class">Wizard</div>
-                            <div className="character-level">
-                                Level 7 <span className="level-separator">•</span> Sage Background
-                            </div>
+                            <div className="character-level">Level 7</div>
                         </div>
                     </div>
                     <div className="stats-row">
@@ -79,7 +85,7 @@ const Dashboard: React.FC = () => {
                                     )}
                                 </div>
                             </div>
-                            <span className="stat-value-dashboard">
+                            <span className="stat-value-dashboard stat-value-hp">
                                 {currentHP} / {maxHP}
                                 {tempHP > 0 && <span className="temp-hp-value"> +{tempHP} temp</span>}
                             </span>
@@ -89,7 +95,7 @@ const Dashboard: React.FC = () => {
                             <div className="stat-progress">
                                 <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
                             </div>
-                            <span className="stat-value-dashboard">{currentExp.toLocaleString()} / {maxExp.toLocaleString()}</span>
+                            <span className="stat-value-dashboard stat-value-exp">{currentExp.toLocaleString()} / {maxExp.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
@@ -150,6 +156,23 @@ const Dashboard: React.FC = () => {
                                 </div>
                             </Link>
                         </div>
+                    </div>
+                </div>
+
+                {/* Character Campaigns */}
+                <div className="campaigns-container">
+                    <div className="campaigns-header">
+                        <span className="campaigns-title">Active campaigns</span>
+                        <button className="view-all-btn">View all</button>
+                    </div>
+                    <div className="campaigns-scroll">
+                        {campaigns.map(campaign => (
+                            <div key={campaign.id} className={`campaign-card ${campaign.status !== 'active' ? 'inactive' : ''}`}>
+                                <div className="campaign-name">{campaign.name}</div>
+                                <div className="campaign-description">{campaign.description}</div>
+                                <div className="campaign-status-label">{campaign.status}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
