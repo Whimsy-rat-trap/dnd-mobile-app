@@ -155,8 +155,12 @@
     transition: width 0.3s ease;
 }
 
-.exp-progress {
+/* Заполнение для EXP */
+.exp-fill {
+    height: 100%;
+    border-radius: 4px;
     background: linear-gradient(0deg, #3b82f6 0%, #60a5fa 100%);
+    transition: width 0.3s ease;
 }
 
 .stat-value {

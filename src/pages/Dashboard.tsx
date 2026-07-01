@@ -7,6 +7,10 @@ const Dashboard: React.FC = () => {
     const maxHP = 32;
     const hpPercent = (currentHP / maxHP) * 100; // 75%
 
+    const currentExp = 1250;
+    const maxExp = 3000;
+    const expPercent = (currentExp / maxExp) * 100;
+
     return (
         <div className="page dashboard-page">
             <div className="dashboard-header">
@@ -57,30 +61,17 @@ const Dashboard: React.FC = () => {
                     <div className="stats-row">
                         <div className="stat-block">
                             <span className="stat-label">HP</span>
-                            <svg className="hp-svg" viewBox="0 0 100 8" preserveAspectRatio="none">
-                                <rect
-                                    x="0"
-                                    y="0"
-                                    width="100"
-                                    height="8"
-                                    rx="4"
-                                    fill="#333333"
-                                />
-                                <rect
-                                    x="0"
-                                    y="0"
-                                    width={hpPercent}
-                                    height="8"
-                                    rx="4"
-                                    fill="#ef4444"
-                                />
-                            </svg>
+                            <div className="stat-progress">
+                                <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                            </div>
                             <span className="stat-value">{currentHP} / {maxHP}</span>
                         </div>
                         <div className="stat-block">
                             <span className="stat-label">EXP</span>
-                            <div className="stat-progress exp-progress"></div>
-                            <span className="stat-value">1,250 / 3,000</span>
+                            <div className="stat-progress">
+                                <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                            </div>
+                            <span className="stat-value">{currentExp.toLocaleString()} / {maxExp.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
