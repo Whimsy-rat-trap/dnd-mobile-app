@@ -71,7 +71,9 @@ const Dashboard: React.FC = () => {
                         <div className="character-info">
                             <div className="character-name">Aelar Dawn</div>
                             <div className="character-class">Wizard</div>
-                            <div className="character-level">Level 7</div>
+                            <div className="character-level">
+                                Level 7 <span className="level-separator">•</span> Sage Background
+                            </div>
                         </div>
                     </div>
                     <div className="stats-row">
