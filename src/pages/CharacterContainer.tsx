@@ -58,7 +58,7 @@ const CharacterContainer: React.FC = () => {
 
     return (
         <div className="character-page">
-            <header className="character-header">
+            <header className="character-header-charactercontainer">
                 <div className="character-back-btn" onClick={handleBack}>
                     <svg
                         width="20"

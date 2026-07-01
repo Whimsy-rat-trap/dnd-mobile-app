@@ -28,7 +28,7 @@ const Dashboard: React.FC = () => {
             <div className="content-wrapper">
                 {/* Character Card */}
                 <div className="character-card">
-                    <div className="character-header">
+                    <div className="character-header-dashboard">
                         <div className="avatar">
                             <svg
                                 width="36"
