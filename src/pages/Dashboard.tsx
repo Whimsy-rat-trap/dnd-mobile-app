@@ -7,6 +7,9 @@ const Dashboard: React.FC = () => {
     const maxHP = 32;
     const hpPercent = (currentHP / maxHP) * 100; // 75%
 
+    const tempHP = 4;
+    const tempPercent = (tempHP / maxHP) * 100;
+
     const currentExp = 1250;
     const maxExp = 3000;
     const expPercent = (currentExp / maxExp) * 100;
@@ -62,7 +65,12 @@ const Dashboard: React.FC = () => {
                         <div className="stat-block">
                             <span className="stat-label">HP</span>
                             <div className="stat-progress">
-                                <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                                <div className="progress-track">
+                                    <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                                    {tempHP > 0 && (
+                                        <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>
+                                    )}
+                                </div>
                             </div>
                             <span className="stat-value">{currentHP} / {maxHP}</span>
                         </div>

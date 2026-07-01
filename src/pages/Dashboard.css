@@ -139,6 +139,7 @@
     color: #9ca3af;
 }
 
+/* Контейнер прогресс-бара */
 .stat-progress {
     border-radius: 4px;
     width: 100%;
@@ -147,12 +148,33 @@
     overflow: hidden;
 }
 
+/* Внутренний трек для заполнений */
+.progress-track {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
 /* Заполнение для HP */
 .hp-fill {
     height: 100%;
-    border-radius: 4px;
     background: linear-gradient(0deg, #dc2626 0%, #ef4444 100%);
     transition: width 0.3s ease;
+    flex-shrink: 0;
+}
+
+/* Заполнение для temp HP */
+.temp-fill {
+    height: 100%;
+    background: repeating-linear-gradient(
+            45deg,
+            #ef4444 0px,
+            #ef4444 4px,
+            #1a1a1a 4px,
+            #1a1a1a 8px
+    );
+    transition: width 0.3s ease;
+    flex-shrink: 0;
 }
 
 /* Заполнение для EXP */
