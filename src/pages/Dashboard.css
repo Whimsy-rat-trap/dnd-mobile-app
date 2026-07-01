@@ -192,6 +192,12 @@
     color: #fff;
 }
 
+.temp-hp-value {
+    font-weight: 600;
+    color: #ef4444;
+    margin-left: 4px;
+}
+
 /* Quick Actions */
 .quick-actions {
     padding: 20px 0;

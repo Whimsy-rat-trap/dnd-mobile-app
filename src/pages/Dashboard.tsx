@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -19,7 +20,11 @@ const Dashboard: React.FC = () => {
             <div className="dashboard-header">
                 <div className="header-top">
                     <span className="header-title">Arcane Realms</span>
-                    <div className="header-icon">
+                    <div
+                        className="header-icon"
+                        onClick={() => {}}
+                        style={{ cursor: 'pointer' }}
+                    >
                         <svg
                             width="20"
                             height="20"
@@ -72,7 +77,10 @@ const Dashboard: React.FC = () => {
                                     )}
                                 </div>
                             </div>
-                            <span className="stat-value">{currentHP} / {maxHP}</span>
+                            <span className="stat-value">
+                                {currentHP} / {maxHP}
+                                {tempHP > 0 && <span className="temp-hp-value"> +{tempHP} temp</span>}
+                            </span>
                         </div>
                         <div className="stat-block">
                             <span className="stat-label">EXP</span>
@@ -90,7 +98,7 @@ const Dashboard: React.FC = () => {
                     <div className="action-grid">
                         <div className="action-row">
                             {/* Character Card Action */}
-                            <div className="action-item">
+                            <Link to="/characters" className="action-item" style={{ textDecoration: 'none' }}>
                                 <div className="action-content">
                                     <div className="action-icon">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -100,9 +108,9 @@ const Dashboard: React.FC = () => {
                                     <div className="action-title">Character</div>
                                     <div className="action-subtitle">Stats & Skills</div>
                                 </div>
-                            </div>
+                            </Link>
                             {/* Spell Card Action */}
-                            <div className="action-item">
+                            <Link to="/spellbook" className="action-item" style={{ textDecoration: 'none' }}>
                                 <div className="action-content">
                                     <div className="action-icon">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -112,11 +120,11 @@ const Dashboard: React.FC = () => {
                                     <div className="action-title">Spellbook</div>
                                     <div className="action-subtitle">12 Prepared</div>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                         <div className="action-row">
                             {/* Inventory Card Action */}
-                            <div className="action-item">
+                            <Link to="/inventory" className="action-item" style={{ textDecoration: 'none' }}>
                                 <div className="action-content">
                                     <div className="action-icon">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -126,9 +134,9 @@ const Dashboard: React.FC = () => {
                                     <div className="action-title">Inventory</div>
                                     <div className="action-subtitle">28 Items</div>
                                 </div>
-                            </div>
+                            </Link>
                             {/* Quest Card Action */}
-                            <div className="action-item">
+                            <Link to="/quests" className="action-item" style={{ textDecoration: 'none' }}>
                                 <div className="action-content">
                                     <div className="action-icon">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -138,7 +146,7 @@ const Dashboard: React.FC = () => {
                                     <div className="action-title">Quests</div>
                                     <div className="action-subtitle">3 Active</div>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     </div>
                 </div>
