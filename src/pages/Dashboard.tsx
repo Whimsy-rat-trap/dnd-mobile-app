@@ -2,6 +2,11 @@ import React from 'react';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
+    // temp
+    const currentHP = 24;
+    const maxHP = 32;
+    const hpPercent = (currentHP / maxHP) * 100; // 75%
+
     return (
         <div className="page dashboard-page">
             <div className="dashboard-header">
@@ -52,8 +57,25 @@ const Dashboard: React.FC = () => {
                     <div className="stats-row">
                         <div className="stat-block">
                             <span className="stat-label">HP</span>
-                            <div className="stat-progress hp-progress"></div>
-                            <span className="stat-value">24 / 32</span>
+                            <svg className="hp-svg" viewBox="0 0 100 8" preserveAspectRatio="none">
+                                <rect
+                                    x="0"
+                                    y="0"
+                                    width="100"
+                                    height="8"
+                                    rx="4"
+                                    fill="#333333"
+                                />
+                                <rect
+                                    x="0"
+                                    y="0"
+                                    width={hpPercent}
+                                    height="8"
+                                    rx="4"
+                                    fill="#ef4444"
+                                />
+                            </svg>
+                            <span className="stat-value">{currentHP} / {maxHP}</span>
                         </div>
                         <div className="stat-block">
                             <span className="stat-label">EXP</span>

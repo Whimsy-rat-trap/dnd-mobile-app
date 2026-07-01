@@ -144,10 +144,15 @@
     width: 100%;
     height: 8px;
     background: #333;
+    overflow: hidden;
 }
 
-.hp-progress {
+/* Заполнение для HP */
+.hp-fill {
+    height: 100%;
+    border-radius: 4px;
     background: linear-gradient(0deg, #dc2626 0%, #ef4444 100%);
+    transition: width 0.3s ease;
 }
 
 .exp-progress {
