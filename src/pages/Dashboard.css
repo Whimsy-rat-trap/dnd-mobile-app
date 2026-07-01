@@ -113,8 +113,8 @@
 
 .character-level {
     font-family: var(--font-family);
-    font-weight: 400;
-    font-size: 12px;
+    font-weight: 500;
+    font-size: 14px;
     color: #9ca3af;
 }
 
@@ -189,10 +189,10 @@
     transition: width 0.3s ease;
 }
 
-.stat-value {
+.stat-value-dashboard {
     font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 12px;
+    font-weight: 700;
+    font-size: 18px;
     color: #fff;
 }
 
@@ -204,7 +204,6 @@
 
 /* Quick Actions */
 .quick-actions {
-    padding: 20px 0;
     background: transparent;
 }
 

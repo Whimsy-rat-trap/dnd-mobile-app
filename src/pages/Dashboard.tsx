@@ -79,7 +79,7 @@ const Dashboard: React.FC = () => {
                                     )}
                                 </div>
                             </div>
-                            <span className="stat-value">
+                            <span className="stat-value-dashboard">
                                 {currentHP} / {maxHP}
                                 {tempHP > 0 && <span className="temp-hp-value"> +{tempHP} temp</span>}
                             </span>
@@ -89,7 +89,7 @@ const Dashboard: React.FC = () => {
                             <div className="stat-progress">
                                 <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
                             </div>
-                            <span className="stat-value">{currentExp.toLocaleString()} / {maxExp.toLocaleString()}</span>
+                            <span className="stat-value-dashboard">{currentExp.toLocaleString()} / {maxExp.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
