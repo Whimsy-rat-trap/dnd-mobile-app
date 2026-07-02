@@ -43,22 +43,13 @@ const Hub: React.FC = () => {
                         {characters.map((char) => (
                             <Link to={`/character/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
                                 <div className={`character-card-hub ${char.status !== 'active' ? 'inactive' : ''}`}>
-                                    <div className="character-card-header">
-                                        <div className="avatar-small">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="white"/>
-                                            </svg>
-                                        </div>
-                                        <div className="character-info-hub">
-                                            <div className="character-name-hub">{char.name}</div>
-                                            <div className="character-class-hub">{char.class} • Level {char.level}</div>
+                                    <div className="character-card-content">
+                                        <div className="character-name-hub">{char.name}</div>
+                                        <div className="character-class-hub">{char.class} • Level {char.level}</div>
+                                        <div className={`character-status-hub ${char.status}`}>
+                                            {char.status === 'active' ? 'Active' : char.status === 'dead' ? 'Deceased' : 'Archived'}
                                         </div>
                                     </div>
-                                    {char.status !== 'active' && (
-                                        <div className={`character-status-hub ${char.status}`}>
-                                            {char.status === 'dead' ? 'Deceased' : 'Archived'}
-                                        </div>
-                                    )}
                                 </div>
                             </Link>
                         ))}
