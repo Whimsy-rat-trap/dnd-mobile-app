@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
         <div className="page dashboard-page">
             <div className="dashboard-header">
                 <div className="header-top">
-                    <span className="header-title">Arcane Realms</span>
+                    <span className="header-title-dashboard">Arcane Realms</span>
                     <div
                         className="header-icon"
                         onClick={() => {}}

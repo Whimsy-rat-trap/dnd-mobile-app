@@ -147,7 +147,7 @@ const CampaignContainer: React.FC = () => {
                 {/* Campaign Section */}
                 <section className="campaign-section">
                     <div className="section-header">
-                        <h2 className="section-title">Active Campaigns</h2>
+                        <h2 className="section-title-campaign">Active Campaigns</h2>
                         <span className="view-all" onClick={handleViewAll} style={{ cursor: 'pointer' }}>
                             View All
                         </span>
