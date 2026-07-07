@@ -23,6 +23,19 @@ const Dashboard: React.FC = () => {
         { id: 4, name: 'Tomb of Annihilation', status: 'ended', description: 'Chult' },
     ];
 
+    // State для попапа
+    const [isPopupOpen, setPopupOpen] = React.useState(false);
+
+    const openPopup = () => setPopupOpen(true);
+    const closePopup = () => setPopupOpen(false);
+
+    // Обработчик клика по overlay (закрытие)
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            closePopup();
+        }
+    };
+
     return (
         <div className="page dashboard-page">
             <div className="dashboard-header">
@@ -77,7 +90,7 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
                     <div className="stats-row">
-                        <div className="stat-block">
+                        <div className="stat-block clickable" onClick={openPopup}>
                             <span className="stat-label">HP</span>
                             <div className="stat-progress">
                                 <div className="progress-track">
@@ -92,7 +105,7 @@ const Dashboard: React.FC = () => {
                                 {tempHP > 0 && <span className="temp-hp-value"> +{tempHP} temp</span>}
                             </span>
                         </div>
-                        <div className="stat-block">
+                        <div className="stat-block clickable" onClick={openPopup}>
                             <span className="stat-label">EXP</span>
                             <div className="stat-progress">
                                 <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
@@ -190,6 +203,18 @@ const Dashboard: React.FC = () => {
                         <button className="dice-btn">D20</button>
                     </div>
                 </div>
+
+                {/* Popup */}
+                {isPopupOpen && (
+                    <div className="popup-overlay" onClick={handleOverlayClick}>
+                        <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="popup-close" onClick={closePopup}>✕</button>
+                            <div className="popup-body">
+                                <p>Popup content (empty)</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
