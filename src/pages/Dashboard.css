@@ -129,11 +129,16 @@
     margin-top: 16px;
 }
 
+/* Базовый stat-block */
 .stat-block {
     display: flex;
     flex-direction: column;
     gap: 6px;
     flex: 1;
+    padding: 8px 4px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .stat-label {
@@ -405,10 +410,11 @@
 .stat-block.clickable {
     cursor: pointer;
     transition: opacity 0.2s;
+    border: dashed;
 }
 
 .stat-block.clickable:hover {
-    opacity: 0.8;
+    transform: scale(1.02);
 }
 
 /* Overlay */
@@ -464,4 +470,16 @@
 .popup-body {
     color: #fff;
     text-align: center;
+}
+
+/* Цвета для HP */
+.stat-hp:hover {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* Цвета для EXP */
+.stat-exp:hover {
+    border-color: #60a5fa;
+    background: rgba(96, 165, 250, 0.05);
 }

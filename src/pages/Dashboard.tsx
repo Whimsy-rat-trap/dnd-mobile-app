@@ -90,7 +90,7 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
                     <div className="stats-row">
-                        <div className="stat-block clickable" onClick={openPopup}>
+                        <div className="stat-block clickable stat-hp" onClick={openPopup}>
                             <span className="stat-label">HP</span>
                             <div className="stat-progress">
                                 <div className="progress-track">
@@ -105,7 +105,7 @@ const Dashboard: React.FC = () => {
                                 {tempHP > 0 && <span className="temp-hp-value"> +{tempHP} temp</span>}
                             </span>
                         </div>
-                        <div className="stat-block clickable" onClick={openPopup}>
+                        <div className="stat-block clickable stat-exp" onClick={openPopup}>
                             <span className="stat-label">EXP</span>
                             <div className="stat-progress">
                                 <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
