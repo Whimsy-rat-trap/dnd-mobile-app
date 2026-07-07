@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Hub.css';
 
 const Hub: React.FC = () => {
+    const [isCharactersOpen, setIsCharactersOpen] = useState(true);
+    const [isCampaignsOpen, setIsCampaignsOpen] = useState(true);
+
     const characters = [
         { id: 1, name: 'Aelar Dawn', class: 'Wizard', level: 7, status: 'active' },
         { id: 2, name: 'Thorin Oakenshield', class: 'Fighter', level: 5, status: 'dead' },
@@ -16,6 +19,32 @@ const Hub: React.FC = () => {
         { id: 2, name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin' },
         { id: 3, name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep' },
     ];
+
+    const toggleCharacters = () => setIsCharactersOpen(!isCharactersOpen);
+    const toggleCampaigns = () => setIsCampaignsOpen(!isCampaignsOpen);
+
+    const renderChevron = (isOpen: boolean) => (
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`chevron-icon ${isOpen ? 'open' : ''}`}
+        >
+            <g clipPath="url(#clip0_403_3483)">
+                <path
+                    d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
+                    fill="#374957"
+                />
+            </g>
+            <defs>
+                <clipPath id="clip0_403_3483">
+                    <rect width="24" height="24" fill="white" />
+                </clipPath>
+            </defs>
+        </svg>
+    );
 
     return (
         <div className="page hub-page">
@@ -34,44 +63,56 @@ const Hub: React.FC = () => {
             </div>
 
             <div className="hub-content">
+                {/* Секция персонажей */}
                 <div className="hub-section">
-                    <div className="section-header">
+                    <div className="section-header" onClick={toggleCharacters} style={{ cursor: 'pointer' }}>
                         <span className="section-title">Your Characters</span>
-                        <Link to="/characters" className="view-all-link">View all</Link>
+                        <div className="section-header-right">
+                            <Link to="/characters" className="view-all-link" onClick={(e) => e.stopPropagation()}>View all</Link>
+                            {renderChevron(isCharactersOpen)}
+                        </div>
                     </div>
-                    <div className="character-grid">
-                        {characters.map((char) => (
-                            <Link to={`/character/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
-                                <div className={`character-card-hub ${char.status !== 'active' ? 'inactive' : ''}`}>
-                                    <div className="character-card-content">
-                                        <div className="character-name-hub">{char.name}</div>
-                                        <div className="character-class-hub">{char.class} • Level {char.level}</div>
+                    {isCharactersOpen && (
+                        <div className="character-grid">
+                            {characters.map((char) => (
+                                <Link to={`/character/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
+                                    <div className={`character-card-hub ${char.status !== 'active' ? 'inactive' : ''}`}>
+                                        <div className="character-info-only">
+                                            <div className="character-name-hub">{char.name}</div>
+                                            <div className="character-class-hub">{char.class} • Level {char.level}</div>
+                                        </div>
                                         <div className={`character-status-hub ${char.status}`}>
                                             {char.status === 'active' ? 'Active' : char.status === 'dead' ? 'Deceased' : 'Archived'}
                                         </div>
                                     </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
+                {/* Секция кампаний */}
                 <div className="hub-section">
-                    <div className="section-header">
+                    <div className="section-header" onClick={toggleCampaigns} style={{ cursor: 'pointer' }}>
                         <span className="section-title">Campaigns</span>
-                        <Link to="/campaigns" className="view-all-link">View all</Link>
+                        <div className="section-header-right">
+                            <Link to="/campaigns" className="view-all-link" onClick={(e) => e.stopPropagation()}>View all</Link>
+                            {renderChevron(isCampaignsOpen)}
+                        </div>
                     </div>
-                    <div className="campaigns-grid">
-                        {campaigns.map((camp) => (
-                            <Link to={`/campaign/${camp.id}`} key={camp.id} className="campaign-card-link" style={{ textDecoration: 'none' }}>
-                                <div className={`campaign-card-hub ${camp.status !== 'active' ? 'inactive' : ''}`}>
-                                    <div className="campaign-name-hub">{camp.name}</div>
-                                    <div className="campaign-description-hub">{camp.description}</div>
-                                    <div className="campaign-status-hub">{camp.status}</div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+                    {isCampaignsOpen && (
+                        <div className="campaigns-grid">
+                            {campaigns.map((camp) => (
+                                <Link to={`/campaign/${camp.id}`} key={camp.id} className="campaign-card-link" style={{ textDecoration: 'none' }}>
+                                    <div className={`campaign-card-hub ${camp.status !== 'active' ? 'inactive' : ''}`}>
+                                        <div className="campaign-name-hub">{camp.name}</div>
+                                        <div className="campaign-description-hub">{camp.description}</div>
+                                        <div className="campaign-status-hub">{camp.status}</div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
