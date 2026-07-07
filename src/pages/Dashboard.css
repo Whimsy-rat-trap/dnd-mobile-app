@@ -483,3 +483,104 @@
     border-color: #60a5fa;
     background: rgba(96, 165, 250, 0.05);
 }
+
+/* Сообщение о смерти (на странице) */
+.death-warning {
+    font-size: 12px;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+    border-left: 3px solid #ef4444;
+}
+
+/* Стили для попапа HP */
+.popup-title {
+    color: #fff;
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.popup-stats {
+    color: #9ca3af;
+    margin-bottom: 20px;
+}
+
+.popup-stats .hp-value {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.popup-stats .temp-hp-value {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.popup-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.control-group label {
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.input-group input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #374151;
+    background: #1f2937;
+    color: #fff;
+    width: 80px;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #34d399;
+}
+
+.input-group button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #34d399;
+    color: #0f0f0f;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.input-group button:hover {
+    background: #059669;
+}
+
+.input-group button:active {
+    transform: scale(0.96);
+}
+
+.popup-death-warning {
+    margin-top: 16px;
+    padding: 10px;
+    background: rgba(239, 68, 68, 0.15);
+    border-left: 4px solid #ef4444;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #fca5a5;
+}
