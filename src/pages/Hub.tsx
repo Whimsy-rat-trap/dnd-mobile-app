@@ -46,6 +46,50 @@ const Hub: React.FC = () => {
         </svg>
     );
 
+    const renderAddCharacterCard = () => (
+        <div
+            className="character-card-hub add-card"
+            onClick={() => {/* navigate to /characters/new */}}
+            style={{ cursor: 'pointer' }}
+        >
+            <div className="add-card-content">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clipPath="url(#clip0_403_3756)">
+                        <path d="M16 24H8V16H0V8H8V0H16V8H24V16H16V24ZM10 22H14V14H22V10H14V2H10V10H2V14H10V22Z" fill="#34D399" />
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_403_3756">
+                            <rect width="24" height="24" fill="white" />
+                        </clipPath>
+                    </defs>
+                </svg>
+                <span className="add-card-label">Add new Character</span>
+            </div>
+        </div>
+    );
+
+    const renderAddCampaignCard = () => (
+        <div
+            className="campaign-card-hub add-card"
+            onClick={() => {/* navigate to /campaigns/new */}}
+            style={{ cursor: 'pointer' }}
+        >
+            <div className="add-card-content">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clipPath="url(#clip0_403_3756)">
+                        <path d="M16 24H8V16H0V8H8V0H16V8H24V16H16V24ZM10 22H14V14H22V10H14V2H10V10H2V14H10V22Z" fill="#34D399" />
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_403_3756">
+                            <rect width="24" height="24" fill="white" />
+                        </clipPath>
+                    </defs>
+                </svg>
+                <span className="add-card-label">Add new Campaign</span>
+            </div>
+        </div>
+    );
+
     return (
         <div className="page hub-page">
             <div className="hub-header">
@@ -87,6 +131,7 @@ const Hub: React.FC = () => {
                                     </div>
                                 </Link>
                             ))}
+                            {renderAddCharacterCard()}
                         </div>
                     )}
                 </div>
@@ -111,6 +156,7 @@ const Hub: React.FC = () => {
                                     </div>
                                 </Link>
                             ))}
+                            {renderAddCampaignCard()}
                         </div>
                     )}
                 </div>
