@@ -8,9 +8,14 @@ const Dashboard: React.FC = () => {
     const [tempHp, setTempHp] = React.useState(4);
     const maxHp = 32;
 
-    // Состояния для полей ввода в попапе
+    // Состояния для EXP
+    const [exp, setExp] = React.useState(1250);
+    const maxExp = 3000;
+
+    // Состояния для полей ввода в попапах
     const [inputValue, setInputValue] = React.useState<number>(0);
     const [tempInputValue, setTempInputValue] = React.useState<number>(0);
+    const [expInputValue, setExpInputValue] = React.useState<number>(0);
 
     // Управление попапом
     const [popupType, setPopupType] = React.useState<'hp' | 'exp' | null>(null);
@@ -29,17 +34,9 @@ const Dashboard: React.FC = () => {
         setHp(prev => Math.max(prev - amount, 0));
     };
 
-    const setHpDirect = (value: number) => {
-        setHp(Math.min(Math.max(value, 0), maxHp));
-    };
-
     const addTempHp = (amount: number) => {
         if (amount <= 0) return;
         setTempHp(prev => prev + amount);
-    };
-
-    const setTempHpDirect = (value: number) => {
-        setTempHp(Math.max(value, 0));
     };
 
     const subtractTempHp = (amount: number) => {
@@ -47,14 +44,21 @@ const Dashboard: React.FC = () => {
         setTempHp(prev => Math.max(prev - amount, 0));
     };
 
+    // Функции изменения EXP
+    const addExp = (amount: number) => {
+        if (amount <= 0) return;
+        setExp(prev => Math.min(prev + amount, maxExp));
+    };
+
+    const subtractExp = (amount: number) => {
+        if (amount <= 0) return;
+        setExp(prev => Math.max(prev - amount, 0));
+    };
+
     // Проценты для прогресс-баров
     const hpPercent = (hp / maxHp) * 100;
     const tempPercent = (tempHp / maxHp) * 100;
-
-    // EXP
-    const currentExp = 1250;
-    const maxExp = 3000;
-    const expPercent = (currentExp / maxExp) * 100;
+    const expPercent = (exp / maxExp) * 100;
 
     // Данные для кампаний
     const campaigns = [
@@ -101,6 +105,19 @@ const Dashboard: React.FC = () => {
                             <div className="character-class">Wizard</div>
                             <div className="character-level">Level 7 <span className="level-separator">•</span> Sage Background</div>
                         </div>
+                        {/* Иконка levelup */}
+                        <div className="levelup-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clipPath="url(#clip0_403_3729)">
+                                    <path d="M22.5861 18.1479L12.7071 8.26894C12.517 8.08645 12.2636 7.98455 12.0001 7.98455C11.7366 7.98455 11.4832 8.08645 11.2931 8.26894L1.4201 18.1419L0.00610352 16.7279L9.8791 6.85494C10.4507 6.30947 11.2105 6.00513 12.0006 6.00513C12.7907 6.00513 13.5505 6.30947 14.1221 6.85494L24.0001 16.7339L22.5861 18.1479Z" fill="#374957" />
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_403_3729">
+                                        <rect width="24" height="24" fill="white" />
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                        </div>
                     </div>
                     <div className="stats-row">
                         <div className="stat-block clickable stat-hp" onClick={() => openPopup('hp')}>
@@ -126,12 +143,12 @@ const Dashboard: React.FC = () => {
                             <div className="stat-progress">
                                 <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
                             </div>
-                            <span className="stat-value-dashboard stat-value-exp">{currentExp.toLocaleString()} / {maxExp.toLocaleString()}</span>
+                            <span className="stat-value-dashboard stat-value-exp">{exp.toLocaleString()} / {maxExp.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Quick Actions */}
+                {/* Quick Actions (без изменений) */}
                 <div className="quick-actions">
                     <div className="quick-actions-title">Quick Actions</div>
                     <div className="action-grid">
@@ -218,6 +235,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Попапы */}
+            {/* Попап HP */}
             {popupType === 'hp' && (
                 <div className="popup-overlay" onClick={handleOverlayClick}>
                     <div className="popup-content" onClick={(e) => e.stopPropagation()}>
@@ -225,7 +243,6 @@ const Dashboard: React.FC = () => {
                         <div className="popup-body">
                             <h3 className="popup-title">Edit HP</h3>
 
-                            {/* Блок HP */}
                             <div className="popup-stat-block">
                                 <span className="stat-label">HP</span>
                                 <div className="stat-progress">
@@ -237,12 +254,11 @@ const Dashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <span className="stat-value-dashboard stat-value-hp">
-                        {hp} / {maxHp}
+                                    {hp} / {maxHp}
                                     {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
-                    </span>
+                                </span>
                             </div>
 
-                            {/* Управление */}
                             <div className="popup-controls">
                                 <div className="control-group">
                                     <label>HP Adjustment</label>
@@ -282,12 +298,39 @@ const Dashboard: React.FC = () => {
                 </div>
             )}
 
+            {/* Попап EXP */}
             {popupType === 'exp' && (
                 <div className="popup-overlay" onClick={handleOverlayClick}>
                     <div className="popup-content" onClick={(e) => e.stopPropagation()}>
                         <button className="popup-close" onClick={closePopup}>✕</button>
                         <div className="popup-body">
-                            <p>EXP popup (empty)</p>
+                            <h3 className="popup-title">Edit EXP</h3>
+
+                            <div className="popup-stat-block">
+                                <span className="stat-label">EXP</span>
+                                <div className="stat-progress">
+                                    <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                                </div>
+                                <span className="stat-value-dashboard stat-value-exp">
+                                    {exp.toLocaleString()} / {maxExp.toLocaleString()}
+                                </span>
+                            </div>
+
+                            <div className="popup-controls">
+                                <div className="control-group">
+                                    <label>EXP Adjustment</label>
+                                    <div className="input-group">
+                                        <input
+                                            type="number"
+                                            value={expInputValue}
+                                            onChange={(e) => setExpInputValue(Number(e.target.value))}
+                                            min="0"
+                                        />
+                                        <button onClick={() => addExp(expInputValue)}>Add</button>
+                                        <button onClick={() => subtractExp(expInputValue)}>Subtract</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

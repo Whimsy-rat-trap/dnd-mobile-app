@@ -612,3 +612,21 @@
     font-size: 16px;
     font-weight: 700;
 }
+
+/* Иконка levelup */
+.levelup-icon {
+    border-radius: 12px;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(315deg, #34d399 0%, #059669 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.levelup-icon svg {
+    width: 36px;
+    height: 36px;
+}
