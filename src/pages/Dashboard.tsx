@@ -23,10 +23,12 @@ const Dashboard: React.FC = () => {
         if (amount <= 0) return;
         setHp(prev => Math.min(prev + amount, maxHp));
     };
+
     const subtractHp = (amount: number) => {
         if (amount <= 0) return;
         setHp(prev => Math.max(prev - amount, 0));
     };
+
     const setHpDirect = (value: number) => {
         setHp(Math.min(Math.max(value, 0), maxHp));
     };
@@ -35,8 +37,14 @@ const Dashboard: React.FC = () => {
         if (amount <= 0) return;
         setTempHp(prev => prev + amount);
     };
+
     const setTempHpDirect = (value: number) => {
         setTempHp(Math.max(value, 0));
+    };
+
+    const subtractTempHp = (amount: number) => {
+        if (amount <= 0) return;
+        setTempHp(prev => Math.max(prev - amount, 0));
     };
 
     // Проценты для прогресс-баров
@@ -123,7 +131,7 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Quick Actions (без изменений) */}
+                {/* Quick Actions */}
                 <div className="quick-actions">
                     <div className="quick-actions-title">Quick Actions</div>
                     <div className="action-grid">
@@ -178,7 +186,7 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Campaigns (без изменений) */}
+                {/* Campaigns */}
                 <div className="campaigns-container">
                     <div className="campaigns-header">
                         <span className="campaigns-title">Active campaigns</span>
@@ -195,7 +203,7 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Dice Roller (без изменений) */}
+                {/* Dice Roller */}
                 <div className="dice-roller">
                     <div className="dice-title">Dice Roller</div>
                     <div className="dice-grid">
@@ -216,10 +224,25 @@ const Dashboard: React.FC = () => {
                         <button className="popup-close" onClick={closePopup}>✕</button>
                         <div className="popup-body">
                             <h3 className="popup-title">Edit HP</h3>
-                            <div className="popup-stats">
-                                <p>Current HP: <span className="hp-value">{hp}</span> / {maxHp}</p>
-                                <p>Temp HP: <span className="temp-hp-value">{tempHp}</span></p>
+
+                            {/* Блок HP */}
+                            <div className="popup-stat-block">
+                                <span className="stat-label">HP</span>
+                                <div className="stat-progress">
+                                    <div className="progress-track">
+                                        <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                                        {tempHp > 0 && (
+                                            <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>
+                                        )}
+                                    </div>
+                                </div>
+                                <span className="stat-value-dashboard stat-value-hp">
+                        {hp} / {maxHp}
+                                    {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
+                    </span>
                             </div>
+
+                            {/* Управление */}
                             <div className="popup-controls">
                                 <div className="control-group">
                                     <label>HP Adjustment</label>
@@ -235,7 +258,7 @@ const Dashboard: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="control-group">
-                                    <label>Temp HP</label>
+                                    <label>Temp HP Adjustment</label>
                                     <div className="input-group">
                                         <input
                                             type="number"
@@ -244,9 +267,11 @@ const Dashboard: React.FC = () => {
                                             min="0"
                                         />
                                         <button onClick={() => addTempHp(tempInputValue)}>Add Temp</button>
+                                        <button onClick={() => subtractTempHp(tempInputValue)}>Subtract Temp</button>
                                     </div>
                                 </div>
                             </div>
+
                             {isZeroHp && (
                                 <div className="death-warning popup-death-warning">
                                     You need to make a death saving throw this is a temp text about it
