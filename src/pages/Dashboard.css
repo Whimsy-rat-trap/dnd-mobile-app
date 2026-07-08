@@ -630,3 +630,24 @@
     width: 36px;
     height: 36px;
 }
+
+/* Зелёная полоса переполнения опыта */
+.overlevel-fill {
+    height: 100%;
+    background: repeating-linear-gradient(
+            45deg,
+            #34d399 0px,
+            #34d399 4px,
+            #1a1a1a 4px,
+            #1a1a1a 8px
+    );
+    transition: width 0.3s ease;
+    flex-shrink: 0;
+}
+
+/* Текст переполнения */
+.overlevel-exp-value {
+    font-weight: 600;
+    color: #34d399;
+    margin-left: 4px;
+}

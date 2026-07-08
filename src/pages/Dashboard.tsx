@@ -8,9 +8,11 @@ const Dashboard: React.FC = () => {
     const [tempHp, setTempHp] = React.useState(4);
     const maxHp = 32;
 
-    // Состояния для EXP
-    const [exp, setExp] = React.useState(1250);
-    const maxExp = 3000;
+    // Состояния для EXP и уровня
+    const [level, setLevel] = React.useState(7);
+    const [exp, setExp] = React.useState(1250); // может быть > maxExp во время редактирования
+    const getMaxExp = (lvl: number) => lvl * 1000;
+    const maxExp = getMaxExp(level);
 
     // Состояния для полей ввода в попапах
     const [inputValue, setInputValue] = React.useState<number>(0);
@@ -21,7 +23,26 @@ const Dashboard: React.FC = () => {
     const [popupType, setPopupType] = React.useState<'hp' | 'exp' | null>(null);
 
     const openPopup = (type: 'hp' | 'exp') => setPopupType(type);
-    const closePopup = () => setPopupType(null);
+
+    const closePopup = () => {
+        // Если закрываем попап EXP – выполняем повышение уровня
+        if (popupType === 'exp') {
+            levelUpIfNeeded();
+        }
+        setPopupType(null);
+    };
+
+    // Функция повышения уровня при переполнении опыта
+    const levelUpIfNeeded = () => {
+        let newExp = exp;
+        let newLevel = level;
+        while (newExp >= getMaxExp(newLevel)) {
+            newExp -= getMaxExp(newLevel);
+            newLevel += 1;
+        }
+        setExp(newExp);
+        setLevel(newLevel);
+    };
 
     // Функции изменения HP
     const addHp = (amount: number) => {
@@ -47,7 +68,7 @@ const Dashboard: React.FC = () => {
     // Функции изменения EXP
     const addExp = (amount: number) => {
         if (amount <= 0) return;
-        setExp(prev => Math.min(prev + amount, maxExp));
+        setExp(prev => prev + amount);
     };
 
     const subtractExp = (amount: number) => {
@@ -58,7 +79,9 @@ const Dashboard: React.FC = () => {
     // Проценты для прогресс-баров
     const hpPercent = (hp / maxHp) * 100;
     const tempPercent = (tempHp / maxHp) * 100;
-    const expPercent = (exp / maxExp) * 100;
+    // EXP: основная полоса, зелёная – переполнение
+    const expPercent = Math.min((exp / maxExp) * 100, 100);
+    const overlevelPercent = exp > maxExp ? ((exp - maxExp) / maxExp) * 100 : 0;
 
     // Данные для кампаний
     const campaigns = [
@@ -79,6 +102,7 @@ const Dashboard: React.FC = () => {
 
     return (
         <div className="page dashboard-page">
+            {/* HEADER */}
             <div className="dashboard-header">
                 <div className="header-top">
                     <span className="header-title-dashboard">Arcane Realms</span>
@@ -103,9 +127,10 @@ const Dashboard: React.FC = () => {
                         <div className="character-info">
                             <div className="character-name">Aelar Dawn</div>
                             <div className="character-class">Wizard</div>
-                            <div className="character-level">Level 7 <span className="level-separator">•</span> Sage Background</div>
+                            <div className="character-level">
+                                Level {level} <span className="level-separator">•</span> Sage Background
+                            </div>
                         </div>
-                        {/* Иконка levelup */}
                         <div className="levelup-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clipPath="url(#clip0_403_3729)">
@@ -119,7 +144,9 @@ const Dashboard: React.FC = () => {
                             </svg>
                         </div>
                     </div>
+
                     <div className="stats-row">
+                        {/* HP блок */}
                         <div className="stat-block clickable stat-hp" onClick={() => openPopup('hp')}>
                             <span className="stat-label">HP</span>
                             <div className="stat-progress">
@@ -138,17 +165,27 @@ const Dashboard: React.FC = () => {
                                 <div className="death-warning">You need to make a death saving throw this is a temp text about it</div>
                             )}
                         </div>
+
+                        {/* EXP блок */}
                         <div className="stat-block clickable stat-exp" onClick={() => openPopup('exp')}>
                             <span className="stat-label">EXP</span>
                             <div className="stat-progress">
-                                <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                                <div className="progress-track">
+                                    <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                                    {overlevelPercent > 0 && (
+                                        <div className="overlevel-fill" style={{ width: `${overlevelPercent}%` }}></div>
+                                    )}
+                                </div>
                             </div>
-                            <span className="stat-value-dashboard stat-value-exp">{exp.toLocaleString()} / {maxExp.toLocaleString()}</span>
+                            <span className="stat-value-dashboard stat-value-exp">
+                                {exp.toLocaleString()} / {maxExp.toLocaleString()}
+                                {exp > maxExp && <span className="overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Quick Actions (без изменений) */}
+                {/* Quick Actions */}
                 <div className="quick-actions">
                     <div className="quick-actions-title">Quick Actions</div>
                     <div className="action-grid">
@@ -242,7 +279,6 @@ const Dashboard: React.FC = () => {
                         <button className="popup-close" onClick={closePopup}>✕</button>
                         <div className="popup-body">
                             <h3 className="popup-title">Edit HP</h3>
-
                             <div className="popup-stat-block">
                                 <span className="stat-label">HP</span>
                                 <div className="stat-progress">
@@ -258,7 +294,6 @@ const Dashboard: React.FC = () => {
                                     {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
                                 </span>
                             </div>
-
                             <div className="popup-controls">
                                 <div className="control-group">
                                     <label>HP Adjustment</label>
@@ -287,7 +322,6 @@ const Dashboard: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-
                             {isZeroHp && (
                                 <div className="death-warning popup-death-warning">
                                     You need to make a death saving throw this is a temp text about it
@@ -305,17 +339,21 @@ const Dashboard: React.FC = () => {
                         <button className="popup-close" onClick={closePopup}>✕</button>
                         <div className="popup-body">
                             <h3 className="popup-title">Edit EXP</h3>
-
                             <div className="popup-stat-block">
                                 <span className="stat-label">EXP</span>
                                 <div className="stat-progress">
-                                    <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                                    <div className="progress-track">
+                                        <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                                        {overlevelPercent > 0 && (
+                                            <div className="overlevel-fill" style={{ width: `${overlevelPercent}%` }}></div>
+                                        )}
+                                    </div>
                                 </div>
                                 <span className="stat-value-dashboard stat-value-exp">
                                     {exp.toLocaleString()} / {maxExp.toLocaleString()}
+                                    {exp > maxExp && <span className="overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
                                 </span>
                             </div>
-
                             <div className="popup-controls">
                                 <div className="control-group">
                                     <label>EXP Adjustment</label>
