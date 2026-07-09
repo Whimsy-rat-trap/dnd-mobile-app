@@ -651,3 +651,36 @@
     color: #34d399;
     margin-left: 4px;
 }
+
+/* Карточка добавления кампании */
+.campaign-card.add-campaign {
+    background: transparent !important;
+    border: 2px dashed #374957;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    flex: 0 0 140px;
+    min-height: 84px;
+}
+
+.campaign-card.add-campaign:hover {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.05) !important;
+}
+
+/* Анимация вращения костей */
+@keyframes spin {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(360deg) scale(1.1); }
+}
+
+.dice-btn.spinning {
+    animation: spin 1s ease-in-out;
+}
+
+.dice-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
