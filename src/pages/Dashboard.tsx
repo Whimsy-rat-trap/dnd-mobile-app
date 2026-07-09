@@ -14,7 +14,7 @@ const Dashboard: React.FC = () => {
     const getMaxExp = (lvl: number) => lvl * 1000;
     const maxExp = getMaxExp(level);
 
-    // Состояния для полей ввода в попапах
+    // Состояния для полей ввода
     const [inputValue, setInputValue] = React.useState<number>(0);
     const [tempInputValue, setTempInputValue] = React.useState<number>(0);
     const [expInputValue, setExpInputValue] = React.useState<number>(0);
@@ -23,15 +23,16 @@ const Dashboard: React.FC = () => {
     const [popupType, setPopupType] = React.useState<'hp' | 'exp' | 'settings' | 'profile' | null>(null);
 
     const openPopup = (type: 'hp' | 'exp' | 'settings' | 'profile') => setPopupType(type);
-
     const closePopup = () => {
-        if (popupType === 'exp') {
-            levelUpIfNeeded();
-        }
+        if (popupType === 'exp') levelUpIfNeeded();
         setPopupType(null);
     };
 
-    // Повышение уровня при переполнении опыта
+    // Закрытие overlay
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) closePopup();
+    };
+
     const levelUpIfNeeded = () => {
         let newExp = exp;
         let newLevel = level;
@@ -43,25 +44,30 @@ const Dashboard: React.FC = () => {
         setLevel(newLevel);
     };
 
-    // Функции изменения HP
+    // Функции HP
     const addHp = (amount: number) => {
         if (amount <= 0) return;
         setHp(prev => Math.min(prev + amount, maxHp));
     };
+
     const subtractHp = (amount: number) => {
         if (amount <= 0) return;
         setHp(prev => Math.max(prev - amount, 0));
     };
+
     const addTempHp = (amount: number) => {
         if (amount <= 0) return;
         setTempHp(prev => prev + amount);
     };
+
     const subtractTempHp = (amount: number) => {
         if (amount <= 0) return;
         setTempHp(prev => Math.max(prev - amount, 0));
     };
 
-    // Функции изменения EXP
+    const isZeroHp = hp === 0;
+
+    // Функции EXP
     const addExp = (amount: number) => {
         if (amount <= 0) return;
         setExp(prev => prev + amount);
@@ -71,13 +77,13 @@ const Dashboard: React.FC = () => {
         setExp(prev => Math.max(prev - amount, 0));
     };
 
-    // Проценты для прогресс-баров
+    // Проценты
     const hpPercent = (hp / maxHp) * 100;
     const tempPercent = (tempHp / maxHp) * 100;
     const expPercent = Math.min((exp / maxExp) * 100, 100);
     const overlevelPercent = exp > maxExp ? ((exp - maxExp) / maxExp) * 100 : 0;
 
-    // Данные для кампаний
+    // Данные кампаний
     const campaigns = [
         { id: 1, name: 'Curse of Strahd', status: 'active', description: 'Ravenloft' },
         { id: 2, name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin' },
@@ -85,10 +91,37 @@ const Dashboard: React.FC = () => {
         { id: 4, name: 'Tomb of Annihilation', status: 'ended', description: 'Chult' },
     ];
 
-    // Dice roller
+    // Dice roller состояния
     const diceTypes = [4, 6, 8, 10, 12, 20];
     const [diceResults, setDiceResults] = React.useState<(number | null)[]>(Array(6).fill(null));
     const [isSpinning, setIsSpinning] = React.useState<boolean[]>(Array(6).fill(false));
+
+    // Логи для каждого типа кости
+    const [logs, setLogs] = React.useState<Record<number, { result: number; timestamp: number }[]>>({
+        4: [],
+        6: [],
+        8: [],
+        10: [],
+        12: [],
+        20: [],
+    });
+
+    // Состояние открытия каждой секции
+    const [openSections, setOpenSections] = React.useState<Record<number, boolean>>({
+        4: false,
+        6: false,
+        8: false,
+        10: false,
+        12: false,
+        20: false,
+    });
+
+    const toggleSection = (diceType: number) => {
+        setOpenSections(prev => ({
+            ...prev,
+            [diceType]: !prev[diceType],
+        }));
+    };
 
     const rollDice = (index: number, sides: number) => {
         if (isSpinning[index]) return;
@@ -104,6 +137,10 @@ const Dashboard: React.FC = () => {
         });
         setTimeout(() => {
             const result = Math.floor(Math.random() * sides) + 1;
+            setLogs(prev => ({
+                ...prev,
+                [sides]: [...prev[sides], { result, timestamp: Date.now() }],
+            }));
             setDiceResults(prev => {
                 const newArr = [...prev];
                 newArr[index] = result;
@@ -117,14 +154,13 @@ const Dashboard: React.FC = () => {
         }, 1000);
     };
 
-    // Закрытие по клику на overlay
-    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (e.target === e.currentTarget) {
-            closePopup();
+    const getResultColor = (diceType: number, result: number) => {
+        if (diceType === 20) {
+            if (result === 1) return '#ef4444';
+            if (result === 20) return '#34d399';
         }
+        return '#fff';
     };
-
-    const isZeroHp = hp === 0;
 
     return (
         <div className="page dashboard-page">
@@ -132,11 +168,7 @@ const Dashboard: React.FC = () => {
             <div className="dashboard-header">
                 <div className="header-top">
                     <span className="header-title-dashboard">Arcane Realms</span>
-                    <div
-                        className="header-icon"
-                        onClick={() => openPopup('settings')}
-                        style={{ cursor: 'pointer' }}
-                    >
+                    <div className="header-icon" style={{ cursor: 'pointer' }} onClick={() => openPopup('settings')}>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 6.25C9.25833 6.25 8.5333 6.46994 7.91662 6.88199C7.29993 7.29405 6.81929 7.87972 6.53546 8.56494C6.25163 9.25016 6.17737 10.0042 6.32206 10.7316C6.46676 11.459 6.82391 12.1272 7.34835 12.6517C7.8728 13.1761 8.54099 13.5333 9.26842 13.6779C9.99585 13.8226 10.7498 13.7484 11.4351 13.4646C12.1203 13.1807 12.706 12.7001 13.118 12.0834C13.5301 11.4667 13.75 10.7417 13.75 10C13.749 9.00576 13.3536 8.05253 12.6505 7.34949C11.9475 6.64646 10.9942 6.25104 10 6.25ZM10 12.5C9.50555 12.5 9.0222 12.3534 8.61108 12.0787C8.19996 11.804 7.87953 11.4135 7.69031 10.9567C7.50109 10.4999 7.45158 9.99723 7.54804 9.51228C7.64451 9.02732 7.88261 8.58187 8.23224 8.23223C8.58187 7.8826 9.02733 7.6445 9.51228 7.54804C9.99723 7.45157 10.4999 7.50108 10.9567 7.6903C11.4135 7.87952 11.804 8.19995 12.0787 8.61108C12.3534 9.0222 12.5 9.50555 12.5 10C12.5 10.663 12.2366 11.2989 11.7678 11.7678C11.2989 12.2366 10.663 12.5 10 12.5ZM16.875 10.1688C16.8781 10.0563 16.8781 9.94375 16.875 9.83125L18.0406 8.375C18.1017 8.29854 18.1441 8.2088 18.1641 8.11299C18.1842 8.01719 18.1815 7.91801 18.1563 7.82344C17.9652 7.10516 17.6793 6.41551 17.3063 5.77266C17.2574 5.68853 17.1896 5.61697 17.1082 5.56367C17.0268 5.51036 16.9341 5.47679 16.8375 5.46563L14.9844 5.25938C14.9073 5.17813 14.8292 5.1 14.75 5.025L14.5313 3.16719C14.52 3.07048 14.4863 2.97774 14.4329 2.89635C14.3794 2.81497 14.3077 2.7472 14.2234 2.69844C13.5803 2.32605 12.8908 2.0405 12.1727 1.84922C12.078 1.82406 11.9788 1.82149 11.883 1.84171C11.7872 1.86193 11.6975 1.90437 11.6211 1.96563L10.1688 3.125C10.0563 3.125 9.94376 3.125 9.83125 3.125L8.375 1.96172C8.29855 1.9006 8.2088 1.8583 8.113 1.83821C8.01719 1.81813 7.91801 1.82083 7.82344 1.8461C7.10528 2.03752 6.41567 2.32335 5.77266 2.69609C5.68853 2.74494 5.61697 2.81276 5.56367 2.89413C5.51037 2.97551 5.4768 3.06821 5.46563 3.16484L5.25938 5.02109C5.17813 5.0987 5.10001 5.17682 5.02501 5.25547L3.16719 5.46875C3.07048 5.48 2.97774 5.51369 2.89636 5.56713C2.81497 5.62058 2.7472 5.69229 2.69844 5.77656C2.32606 6.41966 2.0405 7.10925 1.84922 7.82735C1.82407 7.92197 1.82149 8.02119 1.84171 8.117C1.86193 8.2128 1.90438 8.30252 1.96563 8.37891L3.12501 9.83125C3.12501 9.94375 3.12501 10.0563 3.12501 10.1688L1.96172 11.625C1.90061 11.7015 1.8583 11.7912 1.83822 11.887C1.81813 11.9828 1.82083 12.082 1.8461 12.1766C2.03718 12.8948 2.32303 13.5845 2.6961 14.2273C2.74495 14.3115 2.81276 14.383 2.89414 14.4363C2.97551 14.4896 3.06821 14.5232 3.16485 14.5344L5.01797 14.7406C5.09558 14.8219 5.1737 14.9 5.25235 14.975L5.46876 16.8328C5.48001 16.9295 5.5137 17.0223 5.56714 17.1036C5.62058 17.185 5.6923 17.2528 5.77657 17.3016C6.41966 17.674 7.10926 17.9595 7.82735 18.1508C7.92198 18.1759 8.02119 18.1785 8.117 18.1583C8.2128 18.1381 8.30252 18.0956 8.37891 18.0344L9.83125 16.875C9.94376 16.8781 10.0563 16.8781 10.1688 16.875L11.625 18.0406C11.7015 18.1017 11.7912 18.1441 11.887 18.1641C11.9828 18.1842 12.082 18.1815 12.1766 18.1562C12.8948 17.9652 13.5845 17.6793 14.2273 17.3063C14.3115 17.2574 14.383 17.1896 14.4363 17.1082C14.4896 17.0268 14.5232 16.9341 14.5344 16.8375L14.7406 14.9844C14.8219 14.9073 14.9 14.8292 14.975 14.75L16.8328 14.5313C16.9295 14.52 17.0223 14.4863 17.1037 14.4329C17.185 14.3794 17.2528 14.3077 17.3016 14.2234C17.674 13.5803 17.9595 12.8908 18.1508 12.1727C18.1759 12.078 18.1785 11.9788 18.1583 11.883C18.1381 11.7872 18.0956 11.6975 18.0344 11.6211L16.875 10.1688ZM15.6172 9.66094C15.6305 9.88679 15.6305 10.1132 15.6172 10.3391C15.6079 10.4937 15.6563 10.6463 15.7531 10.7672L16.8617 12.1523C16.7345 12.5566 16.5716 12.9488 16.375 13.3242L14.6094 13.5242C14.4556 13.5413 14.3137 13.6148 14.2109 13.7305C14.0606 13.8996 13.9004 14.0598 13.7313 14.2102C13.6156 14.3129 13.5421 14.4548 13.525 14.6086L13.3289 16.3727C12.9535 16.5694 12.5613 16.7323 12.157 16.8594L10.7711 15.7508C10.6602 15.6622 10.5224 15.614 10.3805 15.6141H10.343C10.1171 15.6273 9.8907 15.6273 9.66485 15.6141C9.51023 15.6048 9.35766 15.6532 9.23672 15.75L7.84766 16.8594C7.44339 16.7322 7.05122 16.5693 6.67579 16.3727L6.47579 14.6094C6.45872 14.4556 6.38523 14.3136 6.26954 14.2109C6.1004 14.0606 5.94023 13.9004 5.78985 13.7313C5.68714 13.6156 5.54517 13.5421 5.39141 13.525L3.62735 13.3281C3.43062 12.9527 3.26774 12.5606 3.14063 12.1563L4.24922 10.7703C4.34602 10.6494 4.39447 10.4968 4.38516 10.3422C4.37188 10.1163 4.37188 9.88991 4.38516 9.66406C4.39447 9.50944 4.34602 9.35687 4.24922 9.23594L3.14063 7.84766C3.26784 7.44339 3.43072 7.05122 3.62735 6.67578L5.39063 6.47578C5.54439 6.45871 5.68636 6.38523 5.78907 6.26953C5.93945 6.1004 6.09962 5.94023 6.26875 5.78985C6.38491 5.68707 6.4587 5.54478 6.47579 5.39063L6.67188 3.62735C7.04727 3.43062 7.43945 3.26774 7.84376 3.14063L9.22969 4.24922C9.35062 4.34602 9.50319 4.39447 9.65782 4.38516C9.88366 4.37188 10.1101 4.37188 10.3359 4.38516C10.4906 4.39447 10.6431 4.34602 10.7641 4.24922L12.1523 3.14063C12.5566 3.26783 12.9488 3.43071 13.3242 3.62735L13.5242 5.39063C13.5413 5.54439 13.6148 5.68636 13.7305 5.78906C13.8996 5.93945 14.0598 6.09962 14.2102 6.26875C14.3129 6.38444 14.4548 6.45793 14.6086 6.475L16.3727 6.67109C16.5694 7.04649 16.7323 7.43866 16.8594 7.84297L15.7508 9.22891C15.6531 9.35086 15.6046 9.505 15.6148 9.66094H15.6172Z" fill="#34D399" />
                         </svg>
@@ -149,7 +181,7 @@ const Dashboard: React.FC = () => {
                 {/* Character Card */}
                 <div className="character-card">
                     <div className="character-header-dashboard">
-                        <div className="avatar" onClick={() => openPopup('profile')} style={{ cursor: 'pointer' }}>
+                        <div className="avatar" style={{ cursor: 'pointer' }} onClick={() => openPopup('profile')}>
                             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M24.1875 16.875C24.1875 18.0988 23.8246 19.2951 23.1447 20.3126C22.4648 21.3301 21.4985 22.1232 20.3679 22.5915C19.2372 23.0598 17.9931 23.1824 16.7929 22.9436C15.5926 22.7049 14.4901 22.1156 13.6248 21.2502C12.7594 20.3849 12.1701 19.2824 11.9314 18.0821C11.6926 16.8819 11.8152 15.6378 12.2835 14.5071C12.7518 13.3765 13.5449 12.4102 14.5624 11.7303C15.5799 11.0504 16.7762 10.6875 18 10.6875C19.6405 10.6894 21.2132 11.3419 22.3732 12.5018C23.5331 13.6618 24.1856 15.2345 24.1875 16.875ZM32.625 18C32.625 20.8926 31.7673 23.7201 30.1602 26.1252C28.5532 28.5303 26.2691 30.4048 23.5967 31.5117C20.9244 32.6187 17.9838 32.9083 15.1468 32.344C12.3098 31.7797 9.70391 30.3868 7.65856 28.3414C5.61322 26.2961 4.22032 23.6902 3.65601 20.8532C3.09171 18.0162 3.38133 15.0756 4.48826 12.4033C5.59519 9.73089 7.46972 7.44677 9.87478 5.83976C12.2799 4.23274 15.1074 3.375 18 3.375C21.8775 3.37909 25.5951 4.92125 28.3369 7.66309C31.0787 10.4049 32.6209 14.1225 32.625 18ZM30.375 18C30.3732 16.3343 30.0355 14.6862 29.3821 13.154C28.7287 11.6219 27.773 10.2372 26.5722 9.08288C25.3714 7.92854 23.9502 7.02823 22.3934 6.43579C20.8367 5.84334 19.1765 5.57093 17.512 5.63484C10.8886 5.89078 5.60672 11.4075 5.625 18.0352C5.63135 21.0523 6.74412 23.9623 8.7525 26.2139C9.57041 25.0276 10.6094 24.0101 11.8125 23.2172C11.9151 23.1494 12.037 23.1172 12.1597 23.1253C12.2824 23.1334 12.399 23.1815 12.4917 23.2622C14.0206 24.5846 15.9744 25.3123 17.9958 25.3123C20.0172 25.3123 21.971 24.5846 23.4998 23.2622C23.5926 23.1815 23.7092 23.1334 23.8319 23.1253C23.9545 23.1172 24.0765 23.1494 24.1791 23.2172C25.3837 24.0097 26.4241 25.0272 27.2433 26.2139C29.2616 23.9541 30.3765 21.0299 30.375 18Z" fill="white" />
                             </svg>
@@ -195,7 +227,6 @@ const Dashboard: React.FC = () => {
                                 <div className="death-warning">You need to make a death saving throw this is a temp text about it</div>
                             )}
                         </div>
-
                         {/* EXP блок */}
                         <div className="stat-block clickable stat-exp" onClick={() => openPopup('exp')}>
                             <span className="stat-label">EXP</span>
@@ -278,13 +309,17 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="campaigns-scroll">
                         {campaigns.map(campaign => (
-                            <div key={campaign.id} className={`campaign-card ${campaign.status !== 'active' ? 'inactive' : ''}`}>
+                            <Link
+                                key={campaign.id}
+                                to="/campaigns"
+                                className={`campaign-card ${campaign.status !== 'active' ? 'inactive' : ''}`}
+                                style={{ textDecoration: 'none' }}
+                            >
                                 <div className="campaign-name">{campaign.name}</div>
                                 <div className="campaign-description">{campaign.description}</div>
                                 <div className="campaign-status-label">{campaign.status}</div>
-                            </div>
+                            </Link>
                         ))}
-                        {/* Карточка добавления кампании */}
                         <Link to="/campaigns" className="campaign-card add-campaign" style={{ textDecoration: 'none' }}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
@@ -307,6 +342,62 @@ const Dashboard: React.FC = () => {
                                 {diceResults[index] !== null ? diceResults[index] : `D${sides}`}
                             </button>
                         ))}
+                    </div>
+
+                    {/* Секция логов */}
+                    <div className="dice-logs-section">
+                        {diceTypes.some(type => logs[type].length > 0) && (
+                            <>
+                                <div className="dice-logs-header" onClick={() => {}}>
+                                    <span className="dice-logs-title">Dice Roller Logs</span>
+                                </div>
+                                {diceTypes.map(sides => (
+                                    logs[sides].length > 0 && (
+                                        <div key={sides} className="dice-log-group">
+                                            <div
+                                                className="dice-log-group-header"
+                                                onClick={() => toggleSection(sides)}
+                                            >
+                                                <span className="dice-log-type">D{sides}</span>
+                                                <svg
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className={`chevron-icon ${openSections[sides] ? 'open' : ''}`}
+                                                >
+                                                    <g clipPath="url(#clip0_403_3483)">
+                                                        <path
+                                                            d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
+                                                            fill="#374957"
+                                                        />
+                                                    </g>
+                                                    <defs>
+                                                        <clipPath id="clip0_403_3483">
+                                                            <rect width="24" height="24" fill="white" />
+                                                        </clipPath>
+                                                    </defs>
+                                                </svg>
+                                            </div>
+                                            {openSections[sides] && (
+                                                <div className="dice-logs-body">
+                                                    {logs[sides].map((log, idx) => (
+                                                        <div key={idx} className="log-entry">
+                                                            <span className="log-dice">D{sides}</span>
+                                                            <span className="log-result" style={{ color: getResultColor(sides, log.result) }}>
+                                                                {log.result}
+                                                            </span>
+                                                            <span className="log-time">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )
+                                ))}
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

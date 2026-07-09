@@ -684,3 +684,100 @@
     opacity: 0.7;
     cursor: not-allowed;
 }
+
+/* Стили для секции логов внутри dice-roller */
+.dice-logs-section {
+    margin-top: 16px;
+    padding: 0;
+}
+
+.dice-logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #374957;
+    margin-bottom: 8px;
+}
+
+.dice-logs-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.dice-log-group {
+    margin-bottom: 8px;
+}
+
+.dice-log-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 6px 0;
+    border-bottom: 1px solid #2a3747;
+}
+
+.dice-log-type {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+.chevron-icon {
+    transition: transform 0.3s ease;
+}
+
+.chevron-icon.open {
+    transform: rotate(180deg);
+}
+
+.dice-logs-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 0;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    background: #1f2937;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.log-dice {
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.log-result {
+    font-weight: 700;
+}
+
+.log-time {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+/* Стили скролла для логов */
+.dice-logs-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.dice-logs-body::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+.dice-logs-body::-webkit-scrollbar-thumb {
+    background: #374957;
+    border-radius: 2px;
+}
