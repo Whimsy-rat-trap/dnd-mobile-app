@@ -8,35 +8,55 @@ const Hub: React.FC = () => {
     const [isItemsOpen, setIsItemsOpen] = useState(true);
     const [isSpellsOpen, setIsSpellsOpen] = useState(true);
 
+    // Персонажи
     const characters = [
-        { id: 1, name: 'Aelar Dawn', class: 'Wizard', level: 7, status: 'active' },
-        { id: 2, name: 'Thorin Oakenshield', class: 'Fighter', level: 5, status: 'dead' },
-        { id: 3, name: 'Luna Silvermoon', class: 'Cleric', level: 6, status: 'archived' },
-        { id: 4, name: 'Eragon Shadeslayer', class: 'Ranger', level: 8, status: 'active' },
-        { id: 5, name: 'Gandalf Grey', class: 'Wizard', level: 10, status: 'archived' },
+        { id: 1, name: 'Aelar Dawn', class: 'Wizard', level: 7, status: 'active', date: '2026-06-28', created: '2026-05-01' },
+        { id: 2, name: 'Thorin Oakenshield', class: 'Fighter', level: 5, status: 'dead', date: '2026-06-15', created: '2026-04-10' },
+        { id: 3, name: 'Luna Silvermoon', class: 'Cleric', level: 6, status: 'archived', date: '2026-06-10', created: '2026-03-20' },
+        { id: 4, name: 'Eragon Shadeslayer', class: 'Ranger', level: 8, status: 'active', date: '2026-07-01', created: '2026-05-15' },
+        { id: 5, name: 'Gandalf Grey', class: 'Wizard', level: 10, status: 'archived', date: '2026-05-20', created: '2026-02-01' },
     ];
 
+    // Кампании
     const campaigns = [
-        { id: 1, name: 'Curse of Strahd', status: 'active', description: 'Ravenloft' },
-        { id: 2, name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin' },
-        { id: 3, name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep' },
+        { id: 1, name: 'Curse of Strahd', status: 'active', description: 'Ravenloft', playedWith: ['Alice', 'Bob', 'Charlie'], lastPlayed: '2026-07-01' },
+        { id: 2, name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin', playedWith: ['Dave', 'Eve'], lastPlayed: '2026-06-28' },
+        { id: 3, name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep', playedWith: ['Frank', 'Grace'], archivedDate: '2026-05-15' },
     ];
 
-    // Обновлённые данные предметов
+    // Предметы
     const items = [
-        { id: 1, name: 'Health Potion', description: 'Restores 2d4+2 hit points.', charges: 3, diceRoll: '2d4+2' },
-        { id: 2, name: 'Mana Potion', description: 'Restores 1d6+1 mana points.', charges: 2, diceRoll: '1d6+1' },
-        { id: 3, name: 'Antidote', description: 'Cures poison and disease.', charges: 1, diceRoll: null },
-        { id: 4, name: 'Scroll of Healing', description: 'Cast Cure Wounds at 3rd level.', charges: 1, diceRoll: '3d8+3' },
-        { id: 5, name: 'Greater Health Potion', description: 'Restores 4d4+4 hit points. Very powerful.', charges: 2, diceRoll: '4d4+4' },
+        { id: 1, name: 'Potion of Healing', description: 'Restores 2d4+2 hit points.', charges: { current: 1, max: 1 }, diceRoll: '2d4+2', healing: true },
+        { id: 2, name: 'Greater Potion of Healing', description: 'Restores 4d4+4 hit points.', charges: { current: 1, max: 1 }, diceRoll: '4d4+4', healing: true },
+        { id: 3, name: 'Antidote', description: 'Cures poison and disease.', charges: { current: 1, max: 1 }, diceRoll: null, healing: false },
+        { id: 4, name: 'Potion of Invisibility', description: 'Become invisible for 1 hour.', charges: { current: 1, max: 1 }, diceRoll: null, healing: false },
+        { id: 5, name: 'Scroll of Protection', description: 'Creates a protective barrier.', charges: { current: 1, max: 1 }, diceRoll: null, healing: false },
     ];
 
+    // Заклинания
     const spells = [
-        { id: 1, name: 'Fireball', level: 3, school: 'Evocation', description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame.', diceRoll: '8d6' },
-        { id: 2, name: 'Magic Missile', level: 1, school: 'Evocation', description: 'You create three glowing darts of magical force.', diceRoll: '1d4+1 per dart' },
-        { id: 3, name: 'Cure Wounds', level: 1, school: 'Evocation', description: 'A creature you touch regains a number of hit points.', diceRoll: '1d8+mod' },
-        { id: 4, name: 'Shield', level: 1, school: 'Abjuration', description: 'An invisible barrier of magical force appears and protects you.', diceRoll: null },
+        { id: 1, name: 'Fireball', level: 3, school: 'Evocation', description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame.', element: 'fire', diceRoll: '8d6' },
+        { id: 2, name: 'Magic Missile', level: 1, school: 'Evocation', description: 'You create three glowing darts of magical force.', element: 'force', diceRoll: '1d4+1 per dart' },
+        { id: 3, name: 'Cure Wounds', level: 1, school: 'Evocation', description: 'A creature you touch regains a number of hit points.', element: 'healing', diceRoll: '1d8+mod' },
+        { id: 4, name: 'Shield', level: 1, school: 'Abjuration', description: 'An invisible barrier of magical force appears and protects you.', element: 'force', diceRoll: null },
+        { id: 5, name: 'Chill Touch', level: 0, school: 'Necromancy', description: 'You create a ghostly, skeletal hand that attacks a creature.', element: 'necrotic', diceRoll: '1d8' },
+        { id: 6, name: 'Acid Splash', level: 0, school: 'Conjuration', description: 'You hurl a bubble of acid.', element: 'acid', diceRoll: '1d6' },
+        { id: 7, name: 'Poison Spray', level: 0, school: 'Conjuration', description: 'You project a puff of noxious gas.', element: 'poison', diceRoll: '1d12' },
     ];
+
+    const elementColors: Record<string, string> = {
+        fire: '#ef4444',
+        force: '#a855f7',
+        necrotic: '#8b5cf6',
+        acid: '#22c55e',
+        cold: '#38bdf8',
+        lightning: '#fbbf24',
+        thunder: '#a855f7',
+        psychic: '#f472b6',
+        radiant: '#fcd34d',
+        poison: '#84cc16',
+        healing: '#22c55e',
+    };
 
     const toggleCharacters = () => setIsCharactersOpen(!isCharactersOpen);
     const toggleCampaigns = () => setIsCampaignsOpen(!isCampaignsOpen);
@@ -66,13 +86,13 @@ const Hub: React.FC = () => {
         </svg>
     );
 
-    // Вспомогательная функция обрезки описания
     const truncateDescription = (text: string, maxLength: number = 70) => {
         if (!text) return '';
         if (text.length <= maxLength) return text;
         return text.slice(0, maxLength) + '...';
     };
 
+    // Add Character Card
     const renderAddCharacterCard = () => (
         <div
             className="character-card-hub add-card"
@@ -97,6 +117,7 @@ const Hub: React.FC = () => {
         </div>
     );
 
+    // Add Campaign Card
     const renderAddCampaignCard = () => (
         <div
             className="campaign-card-hub add-card"
@@ -112,6 +133,7 @@ const Hub: React.FC = () => {
         </div>
     );
 
+    // Add Item Card
     const renderAddItemCard = () => (
         <div
             className="item-card-hub add-card"
@@ -135,6 +157,7 @@ const Hub: React.FC = () => {
         </div>
     );
 
+    // Add Spell Card
     const renderAddSpellCard = () => (
         <div
             className="spell-card-hub add-card"
@@ -142,13 +165,39 @@ const Hub: React.FC = () => {
             style={{ cursor: 'pointer' }}
         >
             <div className="add-card-content">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18.5231 12.0994L13.6847 10.3181L11.9034 5.47594C11.798 5.18937 11.6071 4.94206 11.3567 4.76736C11.1062 4.59267 10.8082 4.499 10.5028 4.499C10.1974 4.499 9.89943 4.59267 9.64898 4.76736C9.39852 4.94206 9.20767 5.18937 9.10219 5.47594L7.31906 10.3125L2.47688 12.0938C2.19031 12.1992 1.94299 12.3901 1.7683 12.6405C1.59361 12.891 1.49994 13.189 1.49994 13.4944C1.49994 13.7997 1.59361 14.0978 1.7683 14.3482C1.94299 14.5987 2.19031 14.7895 2.47688 14.895L7.3125 16.6875L9.09375 21.5269C9.19923 21.8134 9.39008 22.0608 9.64054 22.2355C9.891 22.4101 10.189 22.5038 10.4944 22.5038C10.7997 22.5038 11.0978 22.4101 11.3482 22.2355C11.5987 22.0608 11.7895 21.8134 11.895 21.5269L13.6763 16.6884L18.5184 14.9072C18.805 14.8017 19.0523 14.6109 19.227 14.3604C19.4017 14.1099 19.4954 13.8119 19.4954 13.5066C19.4954 13.2012 19.4017 12.9032 19.227 12.6527C19.0523 12.4023 18.805 12.2114 18.5184 12.1059L18.5231 12.0994ZM13.1616 15.2812C12.9589 15.3556 12.7748 15.4732 12.6222 15.6259C12.4695 15.7786 12.3519 15.9626 12.2775 16.1653L10.4963 20.9897L8.71875 16.1616C8.6443 15.96 8.52706 15.7769 8.3751 15.6249C8.22313 15.4729 8.04005 15.3557 7.83844 15.2812L3.01406 13.5L7.83844 11.7188C8.04005 11.6443 8.22313 11.5271 8.3751 11.3751C8.52706 11.2231 8.6443 11.04 8.71875 10.8384L10.5 6.01406L12.2812 10.8384C12.3556 11.0411 12.4732 11.2252 12.6259 11.3778C12.7786 11.5305 12.9626 11.6481 13.1653 11.7225L17.9897 13.5037L13.1616 15.2812Z" fill="#34D399" />
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.9 56C15.6062 56 17.8 53.8062 17.8 51.1C17.8 48.3938 15.6062 46.2 12.9 46.2C10.1938 46.2 8 48.3938 8 51.1C8 53.8062 10.1938 56 12.9 56Z" stroke="#34D399" strokeWidth="3"/>
+                    <path d="M51.1 17.8C53.8062 17.8 56 15.6062 56 12.9C56 10.1938 53.8062 8 51.1 8C48.3938 8 46.2 10.1938 46.2 12.9C46.2 15.6062 48.3938 17.8 51.1 17.8Z" stroke="#34D399" strokeWidth="3"/>
+                    <path d="M18.76 41C16.6336 37.9209 15.6536 34.1939 15.9906 30.4671C16.3275 26.7403 17.96 23.2495 20.6042 20.6017C23.2484 17.9539 26.737 16.3167 30.4634 15.9748C34.1897 15.6328 37.918 16.6077 41 18.73" stroke="#34D399" strokeWidth="3"/>
+                    <path d="M45.05 22.74C47.2241 25.7952 48.2561 29.517 47.9657 33.2556C47.6754 36.9942 46.0811 40.512 43.4613 43.1949C40.8415 45.8778 37.3626 47.5553 33.632 47.9346C29.9014 48.3139 26.1561 47.3708 23.05 45.27" stroke="#34D399" strokeWidth="3"/>
                 </svg>
                 <span className="add-card-label">Add new Spell</span>
             </div>
         </div>
     );
+
+    // Вспомогательная функция для отображения даты в зависимости от статуса персонажа
+    const getCharacterDateLabel = (status: string, date: string) => {
+        switch (status) {
+            case 'active': return `Last used: ${date}`;
+            case 'dead': return `Died: ${date}`;
+            case 'archived': return `Archived: ${date}`;
+            default: return '';
+        }
+    };
+
+    const getCampaignPlayers = (players: string[]) => {
+        const text = `Played with: ${players.join(', ')}`;
+        if (text.length <= 35) return text;
+        return text.slice(0, 32) + '...';
+    };
+
+    // Вспомогательная функция для отображения даты кампании
+    const getCampaignDateLabel = (status: string, lastPlayed?: string, archivedDate?: string) => {
+        if (status === 'active' && lastPlayed) return `Last played: ${lastPlayed}`;
+        if (status === 'inactive' && archivedDate) return `Archived: ${archivedDate}`;
+        return '';
+    };
 
     return (
         <div className="page hub-page">
@@ -184,6 +233,8 @@ const Hub: React.FC = () => {
                                         <div className="character-info-only">
                                             <div className="character-name-hub">{char.name}</div>
                                             <div className="character-class-hub">{char.class} • Level {char.level}</div>
+                                            <div className="character-created-hub">Created: {char.created}</div>
+                                            <div className="character-date-hub">{getCharacterDateLabel(char.status, char.date)}</div>
                                         </div>
                                         <div className={`character-status-hub ${char.status}`}>
                                             {char.status === 'active' ? 'Active' : char.status === 'dead' ? 'Deceased' : 'Archived'}
@@ -213,6 +264,10 @@ const Hub: React.FC = () => {
                                         <div className="campaign-info-only">
                                             <div className="campaign-name-hub">{camp.name}</div>
                                             <div className="campaign-description-hub">{camp.description}</div>
+                                            <div className="campaign-players-hub">{getCampaignPlayers(camp.playedWith)}</div>
+                                            <div className="campaign-date-hub">
+                                                {getCampaignDateLabel(camp.status, camp.lastPlayed, camp.archivedDate)}
+                                            </div>
                                         </div>
                                         <div className="campaign-status-hub">{camp.status}</div>
                                     </div>
@@ -241,11 +296,19 @@ const Hub: React.FC = () => {
                                             <div className="item-name-hub">{item.name}</div>
                                             <div className="item-description-hub">{truncateDescription(item.description)}</div>
                                             <div className="item-details-hub">
-                                                {item.charges !== undefined && item.charges !== null && (
-                                                    <span className="item-charges">Uses: {item.charges}</span>
+                                                {item.healing && (
+                                                    <span className="item-tag-healing">Healing</span>
+                                                )}
+                                                {item.charges && (
+                                                    <span className="item-charges">Uses: {item.charges.current}/{item.charges.max}</span>
                                                 )}
                                                 {item.diceRoll && (
-                                                    <span className="item-dice">{item.diceRoll}</span>
+                                                    <span
+                                                        className="item-dice"
+                                                        style={{ color: item.healing ? elementColors.healing : undefined }}
+                                                    >
+                                                        {item.diceRoll}
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
@@ -275,9 +338,21 @@ const Hub: React.FC = () => {
                                             <div className="spell-name-hub">{spell.name}</div>
                                             <div className="spell-description-hub">{truncateDescription(spell.description)}</div>
                                             <div className="spell-details-hub">
-                                                <span className="spell-level">Lv.{spell.level}</span>
+                                                <span className="spell-level">
+                                                    {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
+                                                </span>
                                                 <span className="spell-school">{spell.school}</span>
-                                                {spell.diceRoll && (
+                                                {spell.element && (
+                                                    <span className="spell-element" style={{ color: elementColors[spell.element] || '#6b7280' }}>
+                                                        {spell.element}
+                                                    </span>
+                                                )}
+                                                {spell.diceRoll && spell.element && elementColors[spell.element] && (
+                                                    <span className="spell-dice" style={{ color: elementColors[spell.element] }}>
+                                                        {spell.diceRoll}
+                                                    </span>
+                                                )}
+                                                {spell.diceRoll && !spell.element && (
                                                     <span className="spell-dice">{spell.diceRoll}</span>
                                                 )}
                                             </div>
