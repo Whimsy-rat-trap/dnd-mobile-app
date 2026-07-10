@@ -8,10 +8,11 @@ import CampaignContainer from './pages/CampaignContainer';
 import Hub from './pages/Hub';
 import Quest from './pages/Quest';
 import Inventory from './pages/Inventory';
+import ItemsLibrary from './pages/ItemsLibrary';
 
 const App: React.FC = () => {
     return (
-        <BrowserRouter>
+        <BrowserRouter>s
             <div className="app-container">
                 <div className="page-content">
                     <Routes>
@@ -23,6 +24,7 @@ const App: React.FC = () => {
                         <Route path="/hub" element={<Hub />} />
                         <Route path="/quests" element={<Quest />} />
                         <Route path="/inventory" element={<Inventory />} />
+                        <Route path="/items" element={<ItemsLibrary />} />
                     </Routes>
                 </div>
             </div>
