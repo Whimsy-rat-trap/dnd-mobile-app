@@ -6,6 +6,7 @@ const Hub: React.FC = () => {
     const [isCharactersOpen, setIsCharactersOpen] = useState(true);
     const [isCampaignsOpen, setIsCampaignsOpen] = useState(true);
     const [isItemsOpen, setIsItemsOpen] = useState(true);
+    const [isSpellsOpen, setIsSpellsOpen] = useState(true);
 
     const characters = [
         { id: 1, name: 'Aelar Dawn', class: 'Wizard', level: 7, status: 'active' },
@@ -30,9 +31,17 @@ const Hub: React.FC = () => {
         { id: 5, name: 'Greater Health Potion', description: 'Restores 4d4+4 hit points. Very powerful.', charges: 2, diceRoll: '4d4+4' },
     ];
 
+    const spells = [
+        { id: 1, name: 'Fireball', level: 3, school: 'Evocation', description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame.', diceRoll: '8d6' },
+        { id: 2, name: 'Magic Missile', level: 1, school: 'Evocation', description: 'You create three glowing darts of magical force.', diceRoll: '1d4+1 per dart' },
+        { id: 3, name: 'Cure Wounds', level: 1, school: 'Evocation', description: 'A creature you touch regains a number of hit points.', diceRoll: '1d8+mod' },
+        { id: 4, name: 'Shield', level: 1, school: 'Abjuration', description: 'An invisible barrier of magical force appears and protects you.', diceRoll: null },
+    ];
+
     const toggleCharacters = () => setIsCharactersOpen(!isCharactersOpen);
     const toggleCampaigns = () => setIsCampaignsOpen(!isCampaignsOpen);
     const toggleItems = () => setIsItemsOpen(!isItemsOpen);
+    const toggleSpells = () => setIsSpellsOpen(!isSpellsOpen);
 
     const renderChevron = (isOpen: boolean) => (
         <svg
@@ -122,6 +131,21 @@ const Hub: React.FC = () => {
                     </defs>
                 </svg>
                 <span className="add-card-label">Add new Item</span>
+            </div>
+        </div>
+    );
+
+    const renderAddSpellCard = () => (
+        <div
+            className="spell-card-hub add-card"
+            onClick={() => {/* navigate to /spells/new */}}
+            style={{ cursor: 'pointer' }}
+        >
+            <div className="add-card-content">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.5231 12.0994L13.6847 10.3181L11.9034 5.47594C11.798 5.18937 11.6071 4.94206 11.3567 4.76736C11.1062 4.59267 10.8082 4.499 10.5028 4.499C10.1974 4.499 9.89943 4.59267 9.64898 4.76736C9.39852 4.94206 9.20767 5.18937 9.10219 5.47594L7.31906 10.3125L2.47688 12.0938C2.19031 12.1992 1.94299 12.3901 1.7683 12.6405C1.59361 12.891 1.49994 13.189 1.49994 13.4944C1.49994 13.7997 1.59361 14.0978 1.7683 14.3482C1.94299 14.5987 2.19031 14.7895 2.47688 14.895L7.3125 16.6875L9.09375 21.5269C9.19923 21.8134 9.39008 22.0608 9.64054 22.2355C9.891 22.4101 10.189 22.5038 10.4944 22.5038C10.7997 22.5038 11.0978 22.4101 11.3482 22.2355C11.5987 22.0608 11.7895 21.8134 11.895 21.5269L13.6763 16.6884L18.5184 14.9072C18.805 14.8017 19.0523 14.6109 19.227 14.3604C19.4017 14.1099 19.4954 13.8119 19.4954 13.5066C19.4954 13.2012 19.4017 12.9032 19.227 12.6527C19.0523 12.4023 18.805 12.2114 18.5184 12.1059L18.5231 12.0994ZM13.1616 15.2812C12.9589 15.3556 12.7748 15.4732 12.6222 15.6259C12.4695 15.7786 12.3519 15.9626 12.2775 16.1653L10.4963 20.9897L8.71875 16.1616C8.6443 15.96 8.52706 15.7769 8.3751 15.6249C8.22313 15.4729 8.04005 15.3557 7.83844 15.2812L3.01406 13.5L7.83844 11.7188C8.04005 11.6443 8.22313 11.5271 8.3751 11.3751C8.52706 11.2231 8.6443 11.04 8.71875 10.8384L10.5 6.01406L12.2812 10.8384C12.3556 11.0411 12.4732 11.2252 12.6259 11.3778C12.7786 11.5305 12.9626 11.6481 13.1653 11.7225L17.9897 13.5037L13.1616 15.2812Z" fill="#34D399" />
+                </svg>
+                <span className="add-card-label">Add new Spell</span>
             </div>
         </div>
     );
@@ -229,6 +253,39 @@ const Hub: React.FC = () => {
                                 </Link>
                             ))}
                             {renderAddItemCard()}
+                        </div>
+                    )}
+                </div>
+
+                {/* Секция заклинаний */}
+                <div className="hub-section">
+                    <div className="section-header" onClick={toggleSpells} style={{ cursor: 'pointer' }}>
+                        <span className="section-title">Spells</span>
+                        <div className="section-header-right">
+                            <Link to="/spells" className="view-all-link" onClick={(e) => e.stopPropagation()}>View all</Link>
+                            {renderChevron(isSpellsOpen)}
+                        </div>
+                    </div>
+                    {isSpellsOpen && (
+                        <div className="spells-grid">
+                            {spells.map((spell) => (
+                                <Link to={`/spell/${spell.id}`} key={spell.id} className="spell-card-link" style={{ textDecoration: 'none' }}>
+                                    <div className="spell-card-hub">
+                                        <div className="spell-info-only">
+                                            <div className="spell-name-hub">{spell.name}</div>
+                                            <div className="spell-description-hub">{truncateDescription(spell.description)}</div>
+                                            <div className="spell-details-hub">
+                                                <span className="spell-level">Lv.{spell.level}</span>
+                                                <span className="spell-school">{spell.school}</span>
+                                                {spell.diceRoll && (
+                                                    <span className="spell-dice">{spell.diceRoll}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                            {renderAddSpellCard()}
                         </div>
                     )}
                 </div>

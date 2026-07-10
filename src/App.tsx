@@ -9,6 +9,7 @@ import Hub from './pages/Hub';
 import Quest from './pages/Quest';
 import Inventory from './pages/Inventory';
 import ItemsLibrary from './pages/ItemsLibrary';
+import SpellsLibrary from './pages/SpellsLibrary';
 
 const App: React.FC = () => {
     return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                         <Route path="/quests" element={<Quest />} />
                         <Route path="/inventory" element={<Inventory />} />
                         <Route path="/items" element={<ItemsLibrary />} />
+                        <Route path="/spells" element={<SpellsLibrary />} />
                     </Routes>
                 </div>
             </div>
