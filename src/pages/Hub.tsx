@@ -5,6 +5,7 @@ import './Hub.css';
 const Hub: React.FC = () => {
     const [isCharactersOpen, setIsCharactersOpen] = useState(true);
     const [isCampaignsOpen, setIsCampaignsOpen] = useState(true);
+    const [isItemsOpen, setIsItemsOpen] = useState(true);
 
     const characters = [
         { id: 1, name: 'Aelar Dawn', class: 'Wizard', level: 7, status: 'active' },
@@ -20,8 +21,18 @@ const Hub: React.FC = () => {
         { id: 3, name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep' },
     ];
 
+    // Обновлённые данные предметов
+    const items = [
+        { id: 1, name: 'Health Potion', description: 'Restores 2d4+2 hit points.', charges: 3, diceRoll: '2d4+2' },
+        { id: 2, name: 'Mana Potion', description: 'Restores 1d6+1 mana points.', charges: 2, diceRoll: '1d6+1' },
+        { id: 3, name: 'Antidote', description: 'Cures poison and disease.', charges: 1, diceRoll: null },
+        { id: 4, name: 'Scroll of Healing', description: 'Cast Cure Wounds at 3rd level.', charges: 1, diceRoll: '3d8+3' },
+        { id: 5, name: 'Greater Health Potion', description: 'Restores 4d4+4 hit points. Very powerful.', charges: 2, diceRoll: '4d4+4' },
+    ];
+
     const toggleCharacters = () => setIsCharactersOpen(!isCharactersOpen);
     const toggleCampaigns = () => setIsCampaignsOpen(!isCampaignsOpen);
+    const toggleItems = () => setIsItemsOpen(!isItemsOpen);
 
     const renderChevron = (isOpen: boolean) => (
         <svg
@@ -45,6 +56,13 @@ const Hub: React.FC = () => {
             </defs>
         </svg>
     );
+
+    // Вспомогательная функция обрезки описания
+    const truncateDescription = (text: string, maxLength: number = 70) => {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        return text.slice(0, maxLength) + '...';
+    };
 
     const renderAddCharacterCard = () => (
         <div
@@ -81,6 +99,29 @@ const Hub: React.FC = () => {
                     <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
                 </svg>
                 <span className="add-card-label">Add new Campaign</span>
+            </div>
+        </div>
+    );
+
+    const renderAddItemCard = () => (
+        <div
+            className="item-card-hub add-card"
+            onClick={() => {/* navigate to /items/new */}}
+            style={{ cursor: 'pointer' }}
+        >
+            <div className="add-card-content">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clipPath="url(#clip0_403_3361)">
+                        <path d="M18 6C18 4.4087 17.3679 2.88258 16.2426 1.75736C15.1174 0.632141 13.5913 0 12 0C10.4087 0 8.88258 0.632141 7.75736 1.75736C6.63214 2.88258 6 4.4087 6 6H0V21C0 21.7956 0.31607 22.5587 0.87868 23.1213C1.44129 23.6839 2.20435 24 3 24H14V22H3C2.73478 22 2.48043 21.8946 2.29289 21.7071C2.10536 21.5196 2 21.2652 2 21V8H6V10H8V8H16V10H18V8H22V14H24V6H18ZM8 6C8 4.93913 8.42143 3.92172 9.17157 3.17157C9.92172 2.42143 10.9391 2 12 2C13.0609 2 14.0783 2.42143 14.8284 3.17157C15.5786 3.92172 16 4.93913 16 6H8Z" fill="#34D399" />
+                        <path d="M21.0003 15.9994H19.0003V18.9994H16.0003V20.9994H19.0003V23.9994H21.0003V20.9994H24.0003V18.9994H21.0003V15.9994Z" fill="#34D399" />
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_403_3361">
+                            <rect width="24" height="24" fill="white" />
+                        </clipPath>
+                    </defs>
+                </svg>
+                <span className="add-card-label">Add new Item</span>
             </div>
         </div>
     );
@@ -154,6 +195,40 @@ const Hub: React.FC = () => {
                                 </Link>
                             ))}
                             {renderAddCampaignCard()}
+                        </div>
+                    )}
+                </div>
+
+                {/* Секция предметов */}
+                <div className="hub-section">
+                    <div className="section-header" onClick={toggleItems} style={{ cursor: 'pointer' }}>
+                        <span className="section-title">Items</span>
+                        <div className="section-header-right">
+                            <Link to="/items" className="view-all-link" onClick={(e) => e.stopPropagation()}>View all</Link>
+                            {renderChevron(isItemsOpen)}
+                        </div>
+                    </div>
+                    {isItemsOpen && (
+                        <div className="items-grid">
+                            {items.map((item) => (
+                                <Link to={`/item/${item.id}`} key={item.id} className="item-card-link" style={{ textDecoration: 'none' }}>
+                                    <div className="item-card-hub">
+                                        <div className="item-info-only">
+                                            <div className="item-name-hub">{item.name}</div>
+                                            <div className="item-description-hub">{truncateDescription(item.description)}</div>
+                                            <div className="item-details-hub">
+                                                {item.charges !== undefined && item.charges !== null && (
+                                                    <span className="item-charges">Uses: {item.charges}</span>
+                                                )}
+                                                {item.diceRoll && (
+                                                    <span className="item-dice">{item.diceRoll}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                            {renderAddItemCard()}
                         </div>
                     )}
                 </div>
