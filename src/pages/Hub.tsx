@@ -1,30 +1,24 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCharacters } from '../context/CharacterContext';
 import './Hub.css';
 
 const Hub: React.FC = () => {
+    const navigate = useNavigate();
+    const { characters } = useCharacters();
+
     const [isCharactersOpen, setIsCharactersOpen] = useState(true);
     const [isCampaignsOpen, setIsCampaignsOpen] = useState(true);
     const [isItemsOpen, setIsItemsOpen] = useState(true);
     const [isSpellsOpen, setIsSpellsOpen] = useState(true);
 
-    // Персонажи
-    const characters = [
-        { id: 1, name: 'Aelar Dawn', class: 'Wizard', level: 7, status: 'active', date: '2026-06-28', created: '2026-05-01' },
-        { id: 2, name: 'Thorin Oakenshield', class: 'Fighter', level: 5, status: 'dead', date: '2026-06-15', created: '2026-04-10' },
-        { id: 3, name: 'Luna Silvermoon', class: 'Cleric', level: 6, status: 'archived', date: '2026-06-10', created: '2026-03-20' },
-        { id: 4, name: 'Eragon Shadeslayer', class: 'Ranger', level: 8, status: 'active', date: '2026-07-01', created: '2026-05-15' },
-        { id: 5, name: 'Gandalf Grey', class: 'Wizard', level: 10, status: 'archived', date: '2026-05-20', created: '2026-02-01' },
-    ];
-
-    // Кампании
+    // Локальные данные (заглушки) для кампаний, предметов и заклинаний
     const campaigns = [
         { id: 1, name: 'Curse of Strahd', status: 'active', description: 'Ravenloft', playedWith: ['Alice', 'Bob', 'Charlie'], lastPlayed: '2026-07-01' },
         { id: 2, name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin', playedWith: ['Dave', 'Eve'], lastPlayed: '2026-06-28' },
         { id: 3, name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep', playedWith: ['Frank', 'Grace'], archivedDate: '2026-05-15' },
     ];
 
-    // Предметы
     const items = [
         { id: 1, name: 'Potion of Healing', description: 'Restores 2d4+2 hit points.', charges: { current: 1, max: 1 }, diceRoll: '2d4+2', healing: true },
         { id: 2, name: 'Greater Potion of Healing', description: 'Restores 4d4+4 hit points.', charges: { current: 1, max: 1 }, diceRoll: '4d4+4', healing: true },
@@ -33,15 +27,14 @@ const Hub: React.FC = () => {
         { id: 5, name: 'Scroll of Protection', description: 'Creates a protective barrier.', charges: { current: 1, max: 1 }, diceRoll: null, healing: false },
     ];
 
-    // Заклинания
     const spells = [
-        { id: 1, name: 'Fireball', level: 3, school: 'Evocation', description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame.', element: 'fire', diceRoll: '8d6' },
-        { id: 2, name: 'Magic Missile', level: 1, school: 'Evocation', description: 'You create three glowing darts of magical force.', element: 'force', diceRoll: '1d4+1 per dart' },
-        { id: 3, name: 'Cure Wounds', level: 1, school: 'Evocation', description: 'A creature you touch regains a number of hit points.', element: 'healing', diceRoll: '1d8+mod' },
-        { id: 4, name: 'Shield', level: 1, school: 'Abjuration', description: 'An invisible barrier of magical force appears and protects you.', element: 'force', diceRoll: null },
-        { id: 5, name: 'Chill Touch', level: 0, school: 'Necromancy', description: 'You create a ghostly, skeletal hand that attacks a creature.', element: 'necrotic', diceRoll: '1d8' },
-        { id: 6, name: 'Acid Splash', level: 0, school: 'Conjuration', description: 'You hurl a bubble of acid.', element: 'acid', diceRoll: '1d6' },
-        { id: 7, name: 'Poison Spray', level: 0, school: 'Conjuration', description: 'You project a puff of noxious gas.', element: 'poison', diceRoll: '1d12' },
+        { id: 1, name: 'Fireball', level: 3, school: 'Evocation', description: 'A bright streak flashes from your pointing finger...', element: 'fire', diceRoll: '8d6' },
+        { id: 2, name: 'Magic Missile', level: 1, school: 'Evocation', description: 'You create three glowing darts...', element: 'force', diceRoll: '1d4+1 per dart' },
+        { id: 3, name: 'Cure Wounds', level: 1, school: 'Evocation', description: 'A creature you touch regains...', element: 'healing', diceRoll: '1d8+mod' },
+        { id: 4, name: 'Shield', level: 1, school: 'Abjuration', description: 'An invisible barrier...', element: 'force', diceRoll: null },
+        { id: 5, name: 'Chill Touch', level: 0, school: 'Necromancy', description: 'You create a ghostly, skeletal hand...', element: 'necrotic', diceRoll: '1d8' },
+        { id: 6, name: 'Acid Splash', level: 0, school: 'Conjuration', description: 'You hurl a bubble of acid...', element: 'acid', diceRoll: '1d6' },
+        { id: 7, name: 'Poison Spray', level: 0, school: 'Conjuration', description: 'You project a puff of noxious gas...', element: 'poison', diceRoll: '1d12' },
     ];
 
     const elementColors: Record<string, string> = {
@@ -96,7 +89,7 @@ const Hub: React.FC = () => {
     const renderAddCharacterCard = () => (
         <div
             className="character-card-hub add-card"
-            onClick={() => {/* navigate to /characters/new */}}
+            onClick={() => navigate('/characters/new')}
             style={{ cursor: 'pointer' }}
         >
             <div className="add-card-content">
@@ -121,7 +114,7 @@ const Hub: React.FC = () => {
     const renderAddCampaignCard = () => (
         <div
             className="campaign-card-hub add-card"
-            onClick={() => {/* navigate to /campaigns/new */}}
+            onClick={() => navigate('/campaigns')}
             style={{ cursor: 'pointer' }}
         >
             <div className="add-card-content">
@@ -137,7 +130,7 @@ const Hub: React.FC = () => {
     const renderAddItemCard = () => (
         <div
             className="item-card-hub add-card"
-            onClick={() => {/* navigate to /items/new */}}
+            onClick={() => navigate('/items')}
             style={{ cursor: 'pointer' }}
         >
             <div className="add-card-content">
@@ -161,7 +154,7 @@ const Hub: React.FC = () => {
     const renderAddSpellCard = () => (
         <div
             className="spell-card-hub add-card"
-            onClick={() => {/* navigate to /spells/new */}}
+            onClick={() => navigate('/spells')}
             style={{ cursor: 'pointer' }}
         >
             <div className="add-card-content">
@@ -176,12 +169,12 @@ const Hub: React.FC = () => {
         </div>
     );
 
-    // Вспомогательная функция для отображения даты в зависимости от статуса персонажа
-    const getCharacterDateLabel = (status: string, date: string) => {
+    const getCharacterDateLabel = (status: string | undefined, date: string | undefined) => {
+        if (!status) return '';
         switch (status) {
-            case 'active': return `Last used: ${date}`;
-            case 'dead': return `Died: ${date}`;
-            case 'archived': return `Archived: ${date}`;
+            case 'active': return `Last used: ${date || 'N/A'}`;
+            case 'dead': return `Died: ${date || 'N/A'}`;
+            case 'archived': return `Archived: ${date || 'N/A'}`;
             default: return '';
         }
     };
@@ -192,7 +185,6 @@ const Hub: React.FC = () => {
         return text.slice(0, 32) + '...';
     };
 
-    // Вспомогательная функция для отображения даты кампании
     const getCampaignDateLabel = (status: string, lastPlayed?: string, archivedDate?: string) => {
         if (status === 'active' && lastPlayed) return `Last played: ${lastPlayed}`;
         if (status === 'inactive' && archivedDate) return `Archived: ${archivedDate}`;
@@ -228,15 +220,15 @@ const Hub: React.FC = () => {
                     {isCharactersOpen && (
                         <div className="character-grid">
                             {characters.map((char) => (
-                                <Link to={`/character/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
+                                <Link to={`/characters/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
                                     <div className={`character-card-hub ${char.status !== 'active' ? 'inactive' : ''}`}>
                                         <div className="character-info-only">
                                             <div className="character-name-hub">{char.name}</div>
                                             <div className="character-class-hub">{char.class} • Level {char.level}</div>
-                                            <div className="character-created-hub">Created: {char.created}</div>
-                                            <div className="character-date-hub">{getCharacterDateLabel(char.status, char.date)}</div>
+                                            <div className="character-created-hub">Created: {char.created || 'N/A'}</div>
+                                            <div className="character-date-hub">{getCharacterDateLabel(char.status, char.lastUsed || char.died || char.archived)}</div>
                                         </div>
-                                        <div className={`character-status-hub ${char.status}`}>
+                                        <div className={`character-status-hub ${char.status || 'active'}`}>
                                             {char.status === 'active' ? 'Active' : char.status === 'dead' ? 'Deceased' : 'Archived'}
                                         </div>
                                     </div>
@@ -303,12 +295,9 @@ const Hub: React.FC = () => {
                                                     <span className="item-charges">Uses: {item.charges.current}/{item.charges.max}</span>
                                                 )}
                                                 {item.diceRoll && (
-                                                    <span
-                                                        className="item-dice"
-                                                        style={{ color: item.healing ? elementColors.healing : undefined }}
-                                                    >
-                                                        {item.diceRoll}
-                                                    </span>
+                                                    <span className="item-dice" style={{ color: item.healing ? elementColors.healing : undefined }}>
+                            {item.diceRoll}
+                          </span>
                                                 )}
                                             </div>
                                         </div>
@@ -338,19 +327,19 @@ const Hub: React.FC = () => {
                                             <div className="spell-name-hub">{spell.name}</div>
                                             <div className="spell-description-hub">{truncateDescription(spell.description)}</div>
                                             <div className="spell-details-hub">
-                                                <span className="spell-level">
-                                                    {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
-                                                </span>
+                        <span className="spell-level">
+                          {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
+                        </span>
                                                 <span className="spell-school">{spell.school}</span>
                                                 {spell.element && (
                                                     <span className="spell-element" style={{ color: elementColors[spell.element] || '#6b7280' }}>
-                                                        {spell.element}
-                                                    </span>
+                            {spell.element}
+                          </span>
                                                 )}
                                                 {spell.diceRoll && spell.element && elementColors[spell.element] && (
                                                     <span className="spell-dice" style={{ color: elementColors[spell.element] }}>
-                                                        {spell.diceRoll}
-                                                    </span>
+                            {spell.diceRoll}
+                          </span>
                                                 )}
                                                 {spell.diceRoll && !spell.element && (
                                                     <span className="spell-dice">{spell.diceRoll}</span>

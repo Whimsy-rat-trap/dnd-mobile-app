@@ -1,206 +1,63 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCharacters } from '../context/CharacterContext';
 import './Inventory.css';
 
-// Типы предметов
-type ItemType = 'weapon' | 'armor' | 'potion' | 'scroll' | 'other';
-type Rarity = 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
-
-interface Item {
-    id: string;
-    name: string;
-    type: ItemType;
-    rarity: Rarity;
-    description: string;
-    equipped: boolean;
-}
-
 const Inventory: React.FC = () => {
-    // Начальные предметы
-    const [items, setItems] = useState<Item[]>([
-        {
-            id: '1',
-            name: 'Longsword +1',
-            type: 'weapon',
-            rarity: 'uncommon',
-            description: 'A finely crafted longsword with a faint magical aura.',
-            equipped: true,
-        },
-        {
-            id: '2',
-            name: 'Leather Armor',
-            type: 'armor',
+    const { currentCharacterId, getCharacter, addItemToInventory, removeItemFromInventory, updateItemInInventory } = useCharacters();
+    const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
+
+    const [newItemName, setNewItemName] = useState('');
+
+    if (!character) {
+        return <div className="page">No character selected. Please go to Dashboard and select one.</div>;
+    }
+
+    const handleAddItem = () => {
+        if (!newItemName.trim()) return;
+        addItemToInventory(character.id, {
+            name: newItemName,
+            type: 'other',
             rarity: 'common',
-            description: 'Standard leather armor, well-worn but sturdy.',
+            description: '',
             equipped: false,
-        },
-        {
-            id: '3',
-            name: 'Healing Potion',
-            type: 'potion',
-            rarity: 'common',
-            description: 'Restores 2d4+2 hit points when consumed.',
-            equipped: false,
-        },
-        {
-            id: '4',
-            name: 'Scroll of Fireball',
-            type: 'scroll',
-            rarity: 'rare',
-            description: 'Casts Fireball (3rd level) as an action.',
-            equipped: false,
-        },
-    ]);
-
-    const [filterType, setFilterType] = useState<ItemType | 'all'>('all');
-    const [filterRarity, setFilterRarity] = useState<Rarity | 'all'>('all');
-    const [searchQuery, setSearchQuery] = useState('');
-
-    const handleRemove = (id: string) => {
-        setItems(items.filter(item => item.id !== id));
+        });
+        setNewItemName('');
     };
 
-    const handleEquip = (id: string) => {
-        setItems(items.map(item => {
-            if (item.id === id) {
-                return { ...item, equipped: !item.equipped };
-            }
-            return item;
-        }));
+    const handleRemove = (itemId: string) => {
+        removeItemFromInventory(character.id, itemId);
     };
 
-    const handleUse = (id: string) => {
-        // Для расходников (зелья, свитки) – удаляем после использования
-        const item = items.find(i => i.id === id);
-        if (item && (item.type === 'potion' || item.type === 'scroll')) {
-            setItems(items.filter(i => i.id !== id));
-            alert(`Used ${item.name}`);
-        } else {
-            alert(`You used ${item?.name}`);
+    const handleEquip = (itemId: string) => {
+        const item = character.inventory.find(i => i.id === itemId);
+        if (item) {
+            updateItemInInventory(character.id, itemId, { equipped: !item.equipped });
         }
-    };
-
-    const filteredItems = items.filter(item => {
-        const matchType = filterType === 'all' || item.type === filterType;
-        const matchRarity = filterRarity === 'all' || item.rarity === filterRarity;
-        const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchType && matchRarity && matchSearch;
-    });
-
-    // Функция для получения цвета редкости
-    const getRarityColor = (rarity: Rarity) => {
-        switch (rarity) {
-            case 'common': return '#9ca3af';
-            case 'uncommon': return '#34d399';
-            case 'rare': return '#60a5fa';
-            case 'very rare': return '#a78bfa';
-            case 'legendary': return '#fbbf24';
-            default: return '#fff';
-        }
-    };
-
-    // Добавление предмета (заглушка)
-    const addItem = (newItem: Omit<Item, 'id' | 'equipped'>) => {
-        const id = Date.now().toString();
-        setItems([...items, { ...newItem, id, equipped: false }]);
     };
 
     return (
         <div className="page inventory-page">
-            <div className="inventory-header">
-                <div className="header-top">
-                    <span className="header-title-inventory">Inventory</span>
-                    <Link to="/items" className="browse-items-btn">Browse Items</Link>
-                </div>
-                <div className="header-subtitle">Manage your character's belongings</div>
+            <h2>Inventory of {character.name}</h2>
+            <div className="add-item">
+                <input
+                    type="text"
+                    placeholder="Item name"
+                    value={newItemName}
+                    onChange={(e) => setNewItemName(e.target.value)}
+                />
+                <button onClick={handleAddItem}>Add Item</button>
             </div>
-
-            <div className="content-wrapper">
-                {/* Фильтры и поиск */}
-                <div className="inventory-filters">
-                    <div className="filter-group">
-                        <label>Type</label>
-                        <select value={filterType} onChange={(e) => setFilterType(e.target.value as ItemType | 'all')}>
-                            <option value="all">All</option>
-                            <option value="weapon">Weapon</option>
-                            <option value="armor">Armor</option>
-                            <option value="potion">Potion</option>
-                            <option value="scroll">Scroll</option>
-                            <option value="other">Other</option>
-                        </select>
+            <div className="inventory-list">
+                {character.inventory.map(item => (
+                    <div key={item.id} className={`inventory-item ${item.equipped ? 'equipped' : ''}`}>
+                        <span>{item.name}</span>
+                        <span>{item.type}</span>
+                        <button onClick={() => handleEquip(item.id)}>
+                            {item.equipped ? 'Unequip' : 'Equip'}
+                        </button>
+                        <button onClick={() => handleRemove(item.id)}>Remove</button>
                     </div>
-                    <div className="filter-group">
-                        <label>Rarity</label>
-                        <select value={filterRarity} onChange={(e) => setFilterRarity(e.target.value as Rarity | 'all')}>
-                            <option value="all">All</option>
-                            <option value="common">Common</option>
-                            <option value="uncommon">Uncommon</option>
-                            <option value="rare">Rare</option>
-                            <option value="very rare">Very Rare</option>
-                            <option value="legendary">Legendary</option>
-                        </select>
-                    </div>
-                    <div className="filter-group search-group">
-                        <input
-                            type="text"
-                            placeholder="Search items..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                {/* Список предметов */}
-                <div className="inventory-list">
-                    {filteredItems.length === 0 ? (
-                        <div className="empty-state">No items found. Add some from the library!</div>
-                    ) : (
-                        filteredItems.map(item => (
-                            <div key={item.id} className={`inventory-item ${item.equipped ? 'equipped' : ''}`}>
-                                <div className="item-info">
-                                    <span className="item-name">{item.name}</span>
-                                    <span className="item-type">{item.type}</span>
-                                    <span className="item-rarity" style={{ color: getRarityColor(item.rarity) }}>
-                    {item.rarity}
-                  </span>
-                                    <span className="item-description">{item.description}</span>
-                                </div>
-                                <div className="item-actions">
-                                    {item.equipped && <span className="equipped-badge">Equipped</span>}
-                                    <button
-                                        className="action-btn use-btn"
-                                        onClick={() => handleUse(item.id)}
-                                    >
-                                        Use
-                                    </button>
-                                    <button
-                                        className="action-btn equip-btn"
-                                        onClick={() => handleEquip(item.id)}
-                                    >
-                                        {item.equipped ? 'Unequip' : 'Equip'}
-                                    </button>
-                                    <button
-                                        className="action-btn remove-btn"
-                                        onClick={() => handleRemove(item.id)}
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-
-                {/* Кнопка добавления (заглушка) */}
-                <div className="add-item-container">
-                    <Link to="/items" className="add-item-btn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
-                        </svg>
-                        Add from Library
-                    </Link>
-                </div>
+                ))}
             </div>
         </div>
     );

@@ -1,0 +1,99 @@
+.create-character-page {
+    padding: 20px;
+    color: #fff;
+}
+
+.create-character-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-right: 16px;
+}
+
+.create-character-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.create-character-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    color: #9ca3af;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #374957;
+    background: #1f2937;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.ability-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.ability-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #1f2937;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.ability-input label {
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+.ability-input input {
+    width: 60px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.submit-btn {
+    background: var(--gradient-green);
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 12px;
+}

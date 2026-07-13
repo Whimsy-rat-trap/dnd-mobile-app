@@ -1,26 +1,20 @@
 import React, { useState } from 'react';
+import { useCharacters } from '../context/CharacterContext';
 import './SpellbookContainer.css';
 
 type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
 
-interface Spell {
-    id: string;
-    name: string;
-    level: number;
-    school: string;
-    castingTime: string;
-    range: string;
-    components: string;
-    description: string;
-}
-
 const SpellbookContainer: React.FC = () => {
+    const { currentCharacterId, getCharacter, updateSpell } = useCharacters();
+    const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
+
     const [activeTab, setActiveTab] = useState<TabKey>('cantrips');
 
     const handleBack = () => {
         console.log('Back button clicked');
     };
 
+    // Вкладки
     const tabs: { id: TabKey; label: string }[] = [
         { id: 'cantrips', label: 'Cantrips' },
         { id: 'level1', label: 'Level 1' },
@@ -28,149 +22,44 @@ const SpellbookContainer: React.FC = () => {
         { id: 'level3', label: 'Level 3' },
     ];
 
-    const spellsData: Record<TabKey, Spell[]> = {
-        cantrips: [
-            {
-                id: '1',
-                name: 'Acid Splash',
-                level: 0,
-                school: 'Conjuration',
-                castingTime: '1 action',
-                range: '60 ft',
-                components: 'V, S',
-                description: 'You hurl a bubble of acid. Choose one creature within range, or two creatures within 5 feet of each other.',
-            },
-            {
-                id: '2',
-                name: 'Blade Ward',
-                level: 0,
-                school: 'Abjuration',
-                castingTime: '1 action',
-                range: 'Self',
-                components: 'V, S',
-                description: 'You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage dealt by weapon attacks.',
-            },
-            {
-                id: '3',
-                name: 'Dancing Lights',
-                level: 0,
-                school: 'Evocation',
-                castingTime: '1 action',
-                range: '120 ft',
-                components: 'V, S, M (a bit of phosphorus or wychwood)',
-                description: 'You create up to four torch-sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air.',
-            },
-            {
-                id: '4',
-                name: 'Fire Bolt',
-                level: 0,
-                school: 'Evocation',
-                castingTime: '1 action',
-                range: '120 ft',
-                components: 'V, S',
-                description: 'You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, it takes 1d10 fire damage.',
-            },
-        ],
-        level1: [
-            {
-                id: '5',
-                name: 'Chromatic Orb',
-                level: 1,
-                school: 'Evocation',
-                castingTime: '1 action',
-                range: '90 ft',
-                components: 'V, S, M (a diamond worth at least 50 gp)',
-                description: 'You hurl a 4-inch-diameter sphere of energy at a creature within range. Choose acid, cold, fire, lightning, poison, or thunder for the type of orb you create.',
-            },
-            {
-                id: '6',
-                name: 'Magic Missile',
-                level: 1,
-                school: 'Evocation',
-                castingTime: '1 action',
-                range: '120 ft',
-                components: 'V, S',
-                description: 'You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4+1 force damage.',
-            },
-            {
-                id: '7',
-                name: 'Shield',
-                level: 1,
-                school: 'Abjuration',
-                castingTime: '1 reaction, which you take when you are hit by an attack or targeted by the magic missile spell',
-                range: 'Self',
-                components: 'V, S',
-                description: 'An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile.',
-            },
-        ],
-        level2: [
-            {
-                id: '8',
-                name: 'Invisibility',
-                level: 2,
-                school: 'Illusion',
-                castingTime: '1 action',
-                range: 'Touch',
-                components: 'V, S, M (an eyelash in gum arabic)',
-                description: 'A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target\'s person.',
-            },
-            {
-                id: '9',
-                name: 'Misty Step',
-                level: 2,
-                school: 'Conjuration',
-                castingTime: '1 bonus action',
-                range: 'Self',
-                components: 'V',
-                description: 'Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.',
-            },
-            {
-                id: '10',
-                name: 'Scorching Ray',
-                level: 2,
-                school: 'Evocation',
-                castingTime: '1 action',
-                range: '120 ft',
-                components: 'V, S',
-                description: 'You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several. Make a ranged spell attack for each ray. On a hit, the target takes 2d6 fire damage.',
-            },
-        ],
-        level3: [
-            {
-                id: '11',
-                name: 'Counterspell',
-                level: 3,
-                school: 'Abjuration',
-                castingTime: '1 reaction, which you take when you see a creature within 60 feet of you casting a spell',
-                range: '60 ft',
-                components: 'S',
-                description: 'You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect.',
-            },
-            {
-                id: '12',
-                name: 'Fireball',
-                level: 3,
-                school: 'Evocation',
-                castingTime: '1 action',
-                range: '150 ft',
-                components: 'V, S, M (a tiny ball of bat guano and sulfur)',
-                description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere must make a Dexterity saving throw.',
-            },
-            {
-                id: '13',
-                name: 'Haste',
-                level: 3,
-                school: 'Transmutation',
-                castingTime: '1 action',
-                range: '30 ft',
-                components: 'V, S, M (a shaving of licorice root)',
-                description: 'Choose a willing creature that you can see within range. Until the spell ends, the target\'s speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns.',
-            },
-        ],
+    // Если персонаж не выбран
+    if (!character) {
+        return (
+            <div className="spellbook-page">
+                <div className="spellbook-empty">
+                    <p>No character selected. Please go to Dashboard and select a character.</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Фильтруем заклинания по уровню
+    const getSpellsByLevel = (level: number) => {
+        return character.spells.filter(spell => spell.level === level);
+    };
+
+    const cantrips = getSpellsByLevel(0);
+    const level1 = getSpellsByLevel(1);
+    const level2 = getSpellsByLevel(2);
+    const level3 = getSpellsByLevel(3);
+
+    const spellsData: Record<TabKey, typeof character.spells> = {
+        cantrips,
+        level1,
+        level2,
+        level3,
     };
 
     const currentSpells = spellsData[activeTab];
     const title = `${activeTab === 'cantrips' ? 'Cantrips' : `Level ${activeTab.replace('level', '')}`} (${currentSpells.length})`;
+
+    // Переключение подготовленного заклинания
+    const togglePrepared = (spellId: string) => {
+        const spell = character.spells.find(s => s.id === spellId);
+        if (spell) {
+            updateSpell(character.id, spellId, { prepared: !spell.prepared });
+        }
+    };
 
     return (
         <div className="spellbook-page">
@@ -183,7 +72,7 @@ const SpellbookContainer: React.FC = () => {
                 </button>
                 <div className="spell-header-info">
                     <div className="spell-title">Spellbook</div>
-                    <div className="spell-subtitle">Arcane Arsenal</div>
+                    <div className="spell-subtitle">{character.name}</div>
                 </div>
             </header>
 
@@ -191,15 +80,15 @@ const SpellbookContainer: React.FC = () => {
             <div className="spell-stats spell-section">
                 <div className="stat-item">
                     <div className="stat-label">Spell Slots</div>
-                    <div className="stat-value">8 / 12</div>
+                    <div className="stat-value">8 / 12</div> {/* Заглушка, можно вынести в character */}
                 </div>
                 <div className="stat-item">
                     <div className="stat-label">Prepared</div>
-                    <div className="stat-value">12</div>
+                    <div className="stat-value">{character.spells.filter(s => s.prepared).length}</div>
                 </div>
                 <div className="stat-item">
                     <div className="stat-label">Known</div>
-                    <div className="stat-value">18</div>
+                    <div className="stat-value">{character.spells.length}</div>
                 </div>
             </div>
 
@@ -219,49 +108,62 @@ const SpellbookContainer: React.FC = () => {
             {/* Spell Content */}
             <div className="spell-content spell-section">
                 <div className="spell-list-title">{title}</div>
-                <div className="spell-cards">
-                    {currentSpells.map((spell) => (
-                        <div key={spell.id} className="spell-card">
-                            {/* Header */}
-                            <div className="spell-card-header">
-                                <div className="spell-card-left">
-                                    <div className="spell-card-icon">
-                                        {/* Иконка */}
+                {currentSpells.length === 0 ? (
+                    <div className="spell-empty-message">No spells in this level.</div>
+                ) : (
+                    <div className="spell-cards">
+                        {currentSpells.map((spell) => (
+                            <div key={spell.id} className="spell-card">
+                                {/* Header */}
+                                <div className="spell-card-header">
+                                    <div className="spell-card-left">
+                                        <div className="spell-card-icon">
+                                            {/* Можно добавить иконку школы */}
+                                        </div>
+                                        <div className="spell-card-info">
+                                            <div className="spell-card-name">{spell.name}</div>
+                                            <div className="spell-card-school">{spell.school}</div>
+                                        </div>
                                     </div>
-                                    <div className="spell-card-info">
-                                        <div className="spell-card-name">{spell.name}</div>
-                                        <div className="spell-card-school">{spell.school}</div>
+                                    <div
+                                        className="spell-card-prepared"
+                                        onClick={() => togglePrepared(spell.id)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        {spell.prepared ? (
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M14.5306 5.03063L6.5306 13.0306C6.46092 13.1005 6.37813 13.156 6.28696 13.1939C6.1958 13.2317 6.09806 13.2512 5.99935 13.2512C5.90064 13.2512 5.8029 13.2317 5.71173 13.1939C5.62057 13.156 5.53778 13.1005 5.4681 13.0306L1.9681 9.53063C1.89833 9.46087 1.84299 9.37804 1.80524 9.28689C1.76748 9.19574 1.74805 9.09804 1.74805 8.99938C1.74805 8.90072 1.76748 8.80302 1.80524 8.71187C1.84299 8.62072 1.89833 8.53789 1.9681 8.46813C2.03786 8.39837 2.12069 8.34302 2.21184 8.30527C2.30299 8.26751 2.40069 8.24808 2.49935 8.24808C2.59801 8.24808 2.69571 8.26751 2.78686 8.30527C2.87801 8.34302 2.96083 8.39837 3.0306 8.46813L5.99997 11.4375L13.4693 3.96938C13.6102 3.82848 13.8013 3.74933 14.0006 3.74933C14.1999 3.74933 14.391 3.82848 14.5318 3.96938C14.6727 4.11028 14.7519 4.30137 14.7519 4.50063C14.7519 4.69989 14.6727 4.89098 14.5318 5.03188L14.5306 5.03063Z" fill="#34D399" />
+                                            </svg>
+                                        ) : (
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect x="0.5" y="0.5" width="15" height="15" rx="1.5" stroke="#6B7280" strokeOpacity="0.6" />
+                                            </svg>
+                                        )}
                                     </div>
                                 </div>
-                                <div className="spell-card-prepared">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M14.5306 5.03063L6.5306 13.0306C6.46092 13.1005 6.37813 13.156 6.28696 13.1939C6.1958 13.2317 6.09806 13.2512 5.99935 13.2512C5.90064 13.2512 5.8029 13.2317 5.71173 13.1939C5.62057 13.156 5.53778 13.1005 5.4681 13.0306L1.9681 9.53063C1.89833 9.46087 1.84299 9.37804 1.80524 9.28689C1.76748 9.19574 1.74805 9.09804 1.74805 8.99938C1.74805 8.90072 1.76748 8.80302 1.80524 8.71187C1.84299 8.62072 1.89833 8.53789 1.9681 8.46813C2.03786 8.39837 2.12069 8.34302 2.21184 8.30527C2.30299 8.26751 2.40069 8.24808 2.49935 8.24808C2.59801 8.24808 2.69571 8.26751 2.78686 8.30527C2.87801 8.34302 2.96083 8.39837 3.0306 8.46813L5.99997 11.4375L13.4693 3.96938C13.6102 3.82848 13.8013 3.74933 14.0006 3.74933C14.1999 3.74933 14.391 3.82848 14.5318 3.96938C14.6727 4.11028 14.7519 4.30137 14.7519 4.50063C14.7519 4.69989 14.6727 4.89098 14.5318 5.03188L14.5306 5.03063Z" fill="white" />
-                                    </svg>
+
+                                {/* Details */}
+                                <div className="spell-card-details">
+                                    <div className="spell-card-row">
+                                        <div className="spell-detail-item">
+                                            <span className="spell-detail-label">Casting</span>
+                                            <span className="spell-detail-value">{spell.castingTime}</span>
+                                        </div>
+                                        <div className="spell-detail-item">
+                                            <span className="spell-detail-label">Range</span>
+                                            <span className="spell-detail-value">{spell.range}</span>
+                                        </div>
+                                        <div className="spell-detail-item">
+                                            <span className="spell-detail-label">Components</span>
+                                            <span className="spell-detail-value">{spell.components}</span>
+                                        </div>
+                                    </div>
+                                    <div className="spell-card-description">{spell.description}</div>
                                 </div>
                             </div>
-                            {/* Details */}
-                            <div className="spell-card-details">
-                                <div className="spell-card-row">
-                                    <div className="spell-detail-item">
-                                        <span className="spell-detail-label">Casting</span>
-                                        <span className="spell-detail-value">{spell.castingTime}</span>
-                                    </div>
-                                    <div className="spell-detail-item">
-                                        <span className="spell-detail-label">Range</span>
-                                        <span className="spell-detail-value">{spell.range}</span>
-                                    </div>
-                                    <div className="spell-detail-item">
-                                        <span className="spell-detail-label">Components</span>
-                                        <span className="spell-detail-value">{spell.components}</span>
-                                    </div>
-                                </div>
-                                <div className="spell-card-description">
-                                    {spell.description}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
