@@ -7,6 +7,8 @@ const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
     const { addCharacter } = useCharacters();
 
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
     const [formData, setFormData] = useState({
         name: '',
         class: '',
@@ -17,6 +19,8 @@ const CreateCharacter: React.FC = () => {
         maxHp: 10,
         tempHp: 0,
         exp: 0,
+        ac: 10,
+        speed: 30,
         abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
         skills: [],
         inventory: [],
@@ -29,7 +33,7 @@ const CreateCharacter: React.FC = () => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: name === 'level' || name === 'hp' || name === 'maxHp' || name === 'tempHp' || name === 'exp'
+            [name]: name === 'level' || name === 'hp' || name === 'maxHp' || name === 'tempHp' || name === 'exp' || name === 'ac' || name === 'speed'
                 ? Number(value)
                 : value,
         }));
@@ -44,99 +48,72 @@ const CreateCharacter: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        addCharacter(formData);
+        const newCharacter = {
+            ...formData,
+            status: 'active' as const,
+            created: today,
+            lastUsed: today,
+            died: undefined,
+            archived: undefined,
+        };
+        addCharacter(newCharacter);
         navigate('/hub');
     };
 
     return (
         <div className="page create-character-page">
             <div className="create-character-header">
-                <button className="back-btn" onClick={() => navigate(-1)}>
-                    ← Back
-                </button>
+                <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
                 <h1>Create Character</h1>
             </div>
 
             <form onSubmit={handleSubmit} className="create-character-form">
                 <div className="form-group">
-                    <label>Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                    />
+                    <label>Name *</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} required />
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label>Class</label>
-                        <input
-                            type="text"
-                            name="class"
-                            value={formData.class}
-                            onChange={handleChange}
-                            required
-                        />
+                        <label>Class *</label>
+                        <input type="text" name="class" value={formData.class} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
-                        <label>Race</label>
-                        <input
-                            type="text"
-                            name="race"
-                            value={formData.race}
-                            onChange={handleChange}
-                            required
-                        />
+                        <label>Race *</label>
+                        <input type="text" name="race" value={formData.race} onChange={handleChange} required />
                     </div>
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
                         <label>Background</label>
-                        <input
-                            type="text"
-                            name="background"
-                            value={formData.background}
-                            onChange={handleChange}
-                        />
+                        <input type="text" name="background" value={formData.background} onChange={handleChange} />
                     </div>
                     <div className="form-group">
-                        <label>Level</label>
-                        <input
-                            type="number"
-                            name="level"
-                            value={formData.level}
-                            onChange={handleChange}
-                            min="1"
-                            required
-                        />
+                        <label>Level *</label>
+                        <input type="number" name="level" value={formData.level} onChange={handleChange} min="1" required />
                     </div>
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label>HP</label>
-                        <input
-                            type="number"
-                            name="hp"
-                            value={formData.hp}
-                            onChange={handleChange}
-                            min="0"
-                            required
-                        />
+                        <label>HP *</label>
+                        <input type="number" name="hp" value={formData.hp} onChange={handleChange} min="0" required />
                     </div>
                     <div className="form-group">
-                        <label>Max HP</label>
-                        <input
-                            type="number"
-                            name="maxHp"
-                            value={formData.maxHp}
-                            onChange={handleChange}
-                            min="0"
-                            required
-                        />
+                        <label>Max HP *</label>
+                        <input type="number" name="maxHp" value={formData.maxHp} onChange={handleChange} min="0" required />
+                    </div>
+                </div>
+
+                <div className="form-row">
+                    <div className="form-group">
+                        <label>AC</label>
+                        <input type="number" name="ac" value={formData.ac} onChange={handleChange} min="0" />
+                    </div>
+                    <div className="form-group">
+                        <label>Speed (ft)</label>
+                        <input type="number" name="speed" value={formData.speed} onChange={handleChange} min="0" />
                     </div>
                 </div>
 

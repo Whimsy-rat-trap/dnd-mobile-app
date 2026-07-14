@@ -9,13 +9,13 @@ export interface Character {
     maxHp: number;
     tempHp: number;
     exp: number;
-    ac?: number;              // добавлено
-    speed?: number;           // добавлено
-    status?: 'active' | 'dead' | 'archived';  // добавлено
-    created?: string;         // добавлено
-    lastUsed?: string;        // добавлено
-    died?: string;            // добавлено
-    archived?: string;        // добавлено
+    ac?: number;
+    speed?: number;
+    status: 'active' | 'dead' | 'archived';
+    created: string;
+    lastUsed: string;
+    died?: string;
+    archived?: string;
     abilities: {
         str: number;
         dex: number;
