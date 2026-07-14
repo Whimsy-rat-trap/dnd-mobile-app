@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
-    const navigate = useNavigate();
     const {
         characters,
         currentCharacterId,
         setCurrentCharacterId,
         getCharacter,
         updateCharacter,
+        addDiceLog,
         addCampaignToCharacter,
     } = useCharacters();
 
@@ -23,19 +23,12 @@ const Dashboard: React.FC = () => {
     const [tempInputValue, setTempInputValue] = useState<number>(0);
     const [expInputValue, setExpInputValue] = useState<number>(0);
 
-    // Dice roller состояния (не зависят от персонажа)
+    // Dice roller состояния (локальные для UI)
     const diceTypes = [4, 6, 8, 10, 12, 20];
     const [diceResults, setDiceResults] = useState<(number | null)[]>(Array(6).fill(null));
     const [isSpinning, setIsSpinning] = useState<boolean[]>(Array(6).fill(false));
-    const [logs, setLogs] = useState<Record<number, { result: number; timestamp: number }[]>>({
-        4: [],
-        6: [],
-        8: [],
-        10: [],
-        12: [],
-        20: [],
-    });
 
+    // Состояние открытия секций логов (локальное)
     const [openSections, setOpenSections] = useState<Record<number, boolean>>({
         4: false,
         6: false,
@@ -175,7 +168,9 @@ const Dashboard: React.FC = () => {
         if (e.target === e.currentTarget) closePopup();
     };
 
-    // Dice roller
+    // --- Dice roller – используем логи из character.diceLogs ---
+    const logs = character.diceLogs || {};
+
     const toggleSection = (diceType: number) => {
         setOpenSections(prev => ({ ...prev, [diceType]: !prev[diceType] }));
     };
@@ -194,10 +189,7 @@ const Dashboard: React.FC = () => {
         });
         setTimeout(() => {
             const result = Math.floor(Math.random() * sides) + 1;
-            setLogs(prev => ({
-                ...prev,
-                [sides]: [...prev[sides], { result, timestamp: Date.now() }],
-            }));
+            addDiceLog(character.id, sides, result);
             setDiceResults(prev => {
                 const newArr = [...prev];
                 newArr[index] = result;
@@ -220,7 +212,6 @@ const Dashboard: React.FC = () => {
     };
 
     // Данные кампаний
-    // Temp data
     const campaigns = character.campaigns.length > 0
         ? character.campaigns.map(c => ({
             id: c.id,
@@ -431,13 +422,13 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="dice-logs-section">
-                        {diceTypes.some(type => logs[type].length > 0) && (
+                        {diceTypes.some(type => (logs[type] || []).length > 0) && (
                             <>
                                 <div className="dice-logs-header">
                                     <span className="dice-logs-title">Dice Roller Logs</span>
                                 </div>
                                 {diceTypes.map(sides => (
-                                    logs[sides].length > 0 && (
+                                    (logs[sides] || []).length > 0 && (
                                         <div key={sides} className="dice-log-group">
                                             <div
                                                 className="dice-log-group-header"

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Character, InventoryItem, Spell, Quest, Campaign } from '../types/Character';
 
-// Дефолтный список навыков
+// Дефолтный список навыков (используется при создании и для миграции старых персонажей)
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
     { name: 'Animal Handling', attribute: 'WIS', proficient: false },
@@ -23,6 +23,7 @@ const defaultSkills = [
     { name: 'Survival', attribute: 'WIS', proficient: false },
 ];
 
+// Интерфейс контекста
 interface CharacterContextType {
     characters: Character[];
     currentCharacterId: string | null;
@@ -43,23 +44,28 @@ interface CharacterContextType {
     addCampaignToCharacter: (characterId: string, campaign: Omit<Campaign, 'id'>) => void;
     removeCampaignFromCharacter: (characterId: string, campaignId: string) => void;
     updateCampaign: (characterId: string, campaignId: string, updates: Partial<Campaign>) => void;
+    addDiceLog: (characterId: string, sides: number, result: number) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
-
 const STORAGE_KEY = 'dnd_characters';
 
 export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    // Инициализация состояния с миграцией для старых персонажей
     const [characters, setCharacters] = useState<Character[]>(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (!stored) return [];
         try {
             const parsed = JSON.parse(stored);
             return parsed.map((char: any) => {
-                if (!char.skills || char.skills.length === 0) {
-                    return { ...char, skills: defaultSkills };
+                const updated = { ...char };
+                if (!updated.skills || updated.skills.length === 0) {
+                    updated.skills = defaultSkills;
                 }
-                return char;
+                if (!updated.diceLogs) {
+                    updated.diceLogs = {};
+                }
+                return updated;
             });
         } catch (e) {
             console.error('Failed to parse characters from localStorage', e);
@@ -80,6 +86,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             ...character,
             id: Date.now().toString(),
             skills: character.skills || defaultSkills,
+            diceLogs: character.diceLogs || {},
         };
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);
@@ -210,6 +217,20 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    // ---- Dice Logs ----
+    const addDiceLog = (characterId: string, sides: number, result: number) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+        const newLog = { result, timestamp: Date.now() };
+        const currentLogs = char.diceLogs || {};
+        const updatedLogs = {
+            ...currentLogs,
+            [sides]: [...(currentLogs[sides] || []), newLog],
+        };
+        updateCharacter(characterId, { diceLogs: updatedLogs });
+    };
+
+    // ---- Значения передаваемые в контекст ----
     const value: CharacterContextType = {
         characters,
         currentCharacterId,
@@ -230,6 +251,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         addCampaignToCharacter,
         removeCampaignFromCharacter,
         updateCampaign,
+        addDiceLog,
     };
 
     return (

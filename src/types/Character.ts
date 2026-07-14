@@ -29,6 +29,7 @@ export interface Character {
     spells: Spell[];
     quests: Quest[];
     campaigns: Campaign[];
+    diceLogs: Record<number, { result: number; timestamp: number }[]>;
 }
 
 export interface InventoryItem {
