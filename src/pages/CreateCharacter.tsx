@@ -7,6 +7,27 @@ const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
     const { addCharacter } = useCharacters();
 
+    const defaultSkills = [
+        { name: 'Acrobatics', attribute: 'DEX', proficient: false },
+        { name: 'Animal Handling', attribute: 'WIS', proficient: false },
+        { name: 'Arcana', attribute: 'INT', proficient: false },
+        { name: 'Athletics', attribute: 'STR', proficient: false },
+        { name: 'Deception', attribute: 'CHA', proficient: false },
+        { name: 'History', attribute: 'INT', proficient: false },
+        { name: 'Insight', attribute: 'WIS', proficient: false },
+        { name: 'Intimidation', attribute: 'CHA', proficient: false },
+        { name: 'Investigation', attribute: 'INT', proficient: false },
+        { name: 'Medicine', attribute: 'WIS', proficient: false },
+        { name: 'Nature', attribute: 'INT', proficient: false },
+        { name: 'Perception', attribute: 'WIS', proficient: false },
+        { name: 'Performance', attribute: 'CHA', proficient: false },
+        { name: 'Persuasion', attribute: 'CHA', proficient: false },
+        { name: 'Religion', attribute: 'INT', proficient: false },
+        { name: 'Sleight of Hand', attribute: 'DEX', proficient: false },
+        { name: 'Stealth', attribute: 'DEX', proficient: false },
+        { name: 'Survival', attribute: 'WIS', proficient: false },
+    ];
+
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
     const [formData, setFormData] = useState({
@@ -22,7 +43,7 @@ const CreateCharacter: React.FC = () => {
         ac: 10,
         speed: 30,
         abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
-        skills: [],
+        skills: defaultSkills,
         inventory: [],
         spells: [],
         quests: [],

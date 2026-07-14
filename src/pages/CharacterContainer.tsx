@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import './CharacterContainer.css';
@@ -6,15 +6,11 @@ import './CharacterContainer.css';
 const CharacterContainer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { getCharacter, setCurrentCharacterId } = useCharacters();
+    const { getCharacter, updateCharacter, setCurrentCharacterId } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
-    // Хуки вызываются до любых условных возвратов
-    const [checkedSkills, setCheckedSkills] = useState<boolean[]>(
-        character?.skills.map(() => true) || []
-    );
-
-    // Теперь можно делать ранний возврат
+    // Ранний возврат до вызова хуков не допускается.
+    // Хуки вызываются всегда в одном порядке, поэтому проверка перенесена ниже.
     if (!character) {
         return <div className="page">Character not found</div>;
     }
@@ -25,16 +21,39 @@ const CharacterContainer: React.FC = () => {
         navigate('/dashboard');
     };
 
+    // Вычисление бонуса мастерства (proficiency) по уровню
+    const getProficiencyBonus = (level: number) => {
+        if (level <= 4) return 2;
+        if (level <= 8) return 3;
+        if (level <= 12) return 4;
+        if (level <= 16) return 5;
+        return 6;
+    };
+
+    const proficiencyBonus = getProficiencyBonus(character.level);
+
+    // Получение модификатора способности
     const getModifier = (attr: keyof typeof character.abilities) => {
         const score = character.abilities[attr];
         return Math.floor((score - 10) / 2);
     };
 
+    // Вычисление итогового бонуса навыка с учётом proficiency
     const getSkillBonus = (skill: typeof character.skills[0]) => {
-        const mod = getModifier(skill.attribute.toLowerCase() as keyof typeof character.abilities);
-        return skill.proficient ? mod + 2 : mod;
+        const attrKey = skill.attribute.toLowerCase() as keyof typeof character.abilities;
+        const mod = getModifier(attrKey);
+        return skill.proficient ? mod + proficiencyBonus : mod;
     };
 
+    // Переключение состояния proficient для навыка (сохраняется в контекст)
+    const toggleProficient = (index: number) => {
+        const updatedSkills = character.skills.map((s, i) =>
+            i === index ? { ...s, proficient: !s.proficient } : s
+        );
+        updateCharacter(character.id, { skills: updatedSkills });
+    };
+
+    // Данные способностей из персонажа
     const abilitiesData = [
         { name: 'STR', score: character.abilities.str, modifier: getModifier('str') },
         { name: 'CON', score: character.abilities.con, modifier: getModifier('con') },
@@ -43,14 +62,6 @@ const CharacterContainer: React.FC = () => {
         { name: 'INT', score: character.abilities.int, modifier: getModifier('int') },
         { name: 'CHA', score: character.abilities.cha, modifier: getModifier('cha') },
     ];
-
-    const toggleSkillCheck = (index: number) => {
-        setCheckedSkills((prev) => {
-            const newState = [...prev];
-            newState[index] = !newState[index];
-            return newState;
-        });
-    };
 
     return (
         <div className="character-page">
@@ -64,12 +75,26 @@ const CharacterContainer: React.FC = () => {
                     <div className="character-title">Character Sheet</div>
                     <div className="character-subtitle">{character.name}</div>
                 </div>
-                <button className="set-current-btn" onClick={handleSetCurrent} style={{ background: '#34d399', border: 'none', padding: '8px 16px', borderRadius: '8px', color: '#fff', fontWeight: 'bold' }}>
+                <button
+                    className="set-current-btn"
+                    onClick={handleSetCurrent}
+                    style={{
+                        background: '#34d399',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        marginLeft: 'auto',
+                    }}
+                >
                     Set as current
                 </button>
             </header>
 
             <div className="character-content">
+                {/* Информация о персонаже */}
                 <div className="section-info">
                     <div className="info-title">Character Details</div>
                     <div className="info-grid">
@@ -100,8 +125,16 @@ const CharacterContainer: React.FC = () => {
                             <span className="info-value">{character.speed ? `${character.speed} ft` : '—'}</span>
                         </div>
                     </div>
+                    {/* Добавляем строку с бонусом мастерства */}
+                    <div className="info-grid">
+                        <div className="info-item">
+                            <span className="info-label">Proficiency Bonus</span>
+                            <span className="info-value">+{proficiencyBonus}</span>
+                        </div>
+                    </div>
                 </div>
 
+                {/* HP */}
                 <div className="section-hp">
                     <div className="hp-title">Hit Points</div>
                     <div className="hp-display">
@@ -115,6 +148,7 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Abilities */}
                 <div className="section-abilities">
                     <div className="abilities-title">Abilities</div>
                     <div className="abilities-grid">
@@ -122,12 +156,15 @@ const CharacterContainer: React.FC = () => {
                             <div className="ability-card" key={ability.name}>
                                 <span className="ability-name">{ability.name}</span>
                                 <span className="ability-score">{ability.score}</span>
-                                <span className="ability-modifier">{ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}</span>
+                                <span className="ability-modifier">
+                  {ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}
+                </span>
                             </div>
                         ))}
                     </div>
                 </div>
 
+                {/* Skills & Proficiencies — теперь динамические, из данных персонажа */}
                 <div className="section-skills">
                     <div className="skills-title">Skills & Proficiencies</div>
                     <div className="skills-grid">
@@ -138,12 +175,15 @@ const CharacterContainer: React.FC = () => {
                                     <div className="skill-left">
                                         <div
                                             className="skill-check"
-                                            onClick={() => toggleSkillCheck(index)}
+                                            onClick={() => toggleProficient(index)}
                                             style={{ cursor: 'pointer' }}
                                         >
-                                            {checkedSkills[index] ? (
+                                            {skill.proficient ? (
                                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M12.7143 4.40178L5.7143 11.4018C5.65334 11.463 5.58089 11.5115 5.50112 11.5446C5.42135 11.5777 5.33583 11.5948 5.24946 11.5948C5.16309 11.5948 5.07757 11.5777 4.9978 11.5446C4.91803 11.5115 4.84558 11.463 4.78462 11.4018L1.72212 8.33928C1.66107 8.27823 1.61265 8.20576 1.57961 8.12601C1.54658 8.04625 1.52957 7.96076 1.52957 7.87443C1.52957 7.78811 1.54658 7.70262 1.57961 7.62286C1.61265 7.5431 1.66107 7.47063 1.72212 7.40959C1.78316 7.34855 1.85563 7.30012 1.93539 7.26709C2.01515 7.23405 2.10063 7.21705 2.18696 7.21705C2.27329 7.21705 2.35877 7.23405 2.43853 7.26709C2.51829 7.30012 2.59076 7.34855 2.6518 7.40959L5.25001 10.0078L11.7857 3.47318C11.909 3.3499 12.0762 3.28064 12.2506 3.28064C12.4249 3.28064 12.5921 3.3499 12.7154 3.47318C12.8387 3.59647 12.9079 3.76368 12.9079 3.93803C12.9079 4.11238 12.8387 4.27959 12.7154 4.40287L12.7143 4.40178Z" fill="white" />
+                                                    <path
+                                                        d="M12.7143 4.40178L5.7143 11.4018C5.65334 11.463 5.58089 11.5115 5.50112 11.5446C5.42135 11.5777 5.33583 11.5948 5.24946 11.5948C5.16309 11.5948 5.07757 11.5777 4.9978 11.5446C4.91803 11.5115 4.84558 11.463 4.78462 11.4018L1.72212 8.33928C1.66107 8.27823 1.61265 8.20576 1.57961 8.12601C1.54658 8.04625 1.52957 7.96076 1.52957 7.87443C1.52957 7.78811 1.54658 7.70262 1.57961 7.62286C1.61265 7.5431 1.66107 7.47063 1.72212 7.40959C1.78316 7.34855 1.85563 7.30012 1.93539 7.26709C2.01515 7.23405 2.10063 7.21705 2.18696 7.21705C2.27329 7.21705 2.35877 7.23405 2.43853 7.26709C2.51829 7.30012 2.59076 7.34855 2.6518 7.40959L5.25001 10.0078L11.7857 3.47318C11.909 3.3499 12.0762 3.28064 12.2506 3.28064C12.4249 3.28064 12.5921 3.3499 12.7154 3.47318C12.8387 3.59647 12.9079 3.76368 12.9079 3.93803C12.9079 4.11238 12.8387 4.27959 12.7154 4.40287L12.7143 4.40178Z"
+                                                        fill="white"
+                                                    />
                                                 </svg>
                                             ) : (
                                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,6 +1,28 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Character, InventoryItem, Spell, Quest, Campaign } from '../types/Character';
 
+// Дефолтный список навыков
+const defaultSkills = [
+    { name: 'Acrobatics', attribute: 'DEX', proficient: false },
+    { name: 'Animal Handling', attribute: 'WIS', proficient: false },
+    { name: 'Arcana', attribute: 'INT', proficient: false },
+    { name: 'Athletics', attribute: 'STR', proficient: false },
+    { name: 'Deception', attribute: 'CHA', proficient: false },
+    { name: 'History', attribute: 'INT', proficient: false },
+    { name: 'Insight', attribute: 'WIS', proficient: false },
+    { name: 'Intimidation', attribute: 'CHA', proficient: false },
+    { name: 'Investigation', attribute: 'INT', proficient: false },
+    { name: 'Medicine', attribute: 'WIS', proficient: false },
+    { name: 'Nature', attribute: 'INT', proficient: false },
+    { name: 'Perception', attribute: 'WIS', proficient: false },
+    { name: 'Performance', attribute: 'CHA', proficient: false },
+    { name: 'Persuasion', attribute: 'CHA', proficient: false },
+    { name: 'Religion', attribute: 'INT', proficient: false },
+    { name: 'Sleight of Hand', attribute: 'DEX', proficient: false },
+    { name: 'Stealth', attribute: 'DEX', proficient: false },
+    { name: 'Survival', attribute: 'WIS', proficient: false },
+];
+
 interface CharacterContextType {
     characters: Character[];
     currentCharacterId: string | null;
@@ -30,18 +52,34 @@ const STORAGE_KEY = 'dnd_characters';
 export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [characters, setCharacters] = useState<Character[]>(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
-        return stored ? JSON.parse(stored) : [];
+        if (!stored) return [];
+        try {
+            const parsed = JSON.parse(stored);
+            return parsed.map((char: any) => {
+                if (!char.skills || char.skills.length === 0) {
+                    return { ...char, skills: defaultSkills };
+                }
+                return char;
+            });
+        } catch (e) {
+            console.error('Failed to parse characters from localStorage', e);
+            return [];
+        }
     });
+
     const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
 
+    // Сохранение в localStorage при каждом изменении
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
 
+    // ---- Базовые CRUD операции ----
     const addCharacter = (character: Omit<Character, 'id'>) => {
         const newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
+            skills: character.skills || defaultSkills,
         };
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);
@@ -60,6 +98,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     const getCharacter = (id: string) => characters.find(char => char.id === id);
 
+    // ---- Инвентарь ----
     const addItemToInventory = (characterId: string, item: Omit<InventoryItem, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -87,10 +126,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    // ---- Заклинания ----
     const addSpellToCharacter = (characterId: string, spell: Omit<Spell, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const newSpell: Spell = { ...spell, id: Date.now().toString() };
+        const newSpell: Spell = { ...spell, id: Date.now().toString(), prepared: spell.prepared || false };
         updateCharacter(characterId, {
             spells: [...char.spells, newSpell],
         });
@@ -114,6 +154,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    // ---- Квесты ----
     const addQuestToCharacter = (characterId: string, quest: Omit<Quest, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -141,6 +182,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    // ---- Кампании ----
     const addCampaignToCharacter = (characterId: string, campaign: Omit<Campaign, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -168,35 +210,36 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    const value: CharacterContextType = {
+        characters,
+        currentCharacterId,
+        addCharacter,
+        updateCharacter,
+        deleteCharacter,
+        getCharacter,
+        setCurrentCharacterId,
+        addItemToInventory,
+        removeItemFromInventory,
+        updateItemInInventory,
+        addSpellToCharacter,
+        removeSpellFromCharacter,
+        updateSpell,
+        addQuestToCharacter,
+        removeQuestFromCharacter,
+        updateQuest,
+        addCampaignToCharacter,
+        removeCampaignFromCharacter,
+        updateCampaign,
+    };
+
     return (
-        <CharacterContext.Provider
-            value={{
-                characters,
-                currentCharacterId,
-                addCharacter,
-                updateCharacter,
-                deleteCharacter,
-                getCharacter,
-                setCurrentCharacterId,
-                addItemToInventory,
-                removeItemFromInventory,
-                updateItemInInventory,
-                addSpellToCharacter,
-                removeSpellFromCharacter,
-                updateSpell,
-                addQuestToCharacter,
-                removeQuestFromCharacter,
-                updateQuest,
-                addCampaignToCharacter,
-                removeCampaignFromCharacter,
-                updateCampaign,
-            }}
-        >
+        <CharacterContext.Provider value={value}>
             {children}
         </CharacterContext.Provider>
     );
 };
 
+// Хук для использования контекста
 export const useCharacters = () => {
     const context = useContext(CharacterContext);
     if (!context) {

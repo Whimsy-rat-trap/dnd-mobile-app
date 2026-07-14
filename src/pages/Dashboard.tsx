@@ -35,6 +35,7 @@ const Dashboard: React.FC = () => {
         12: [],
         20: [],
     });
+
     const [openSections, setOpenSections] = useState<Record<number, boolean>>({
         4: false,
         6: false,
@@ -43,6 +44,14 @@ const Dashboard: React.FC = () => {
         12: false,
         20: false,
     });
+
+    const getProficiencyBonus = (level: number) => {
+        if (level <= 4) return 2;
+        if (level <= 8) return 3;
+        if (level <= 12) return 4;
+        if (level <= 16) return 5;
+        return 6;
+    };
 
     // Если персонаж не выбран – показываем экран выбора
     if (!character) {
@@ -315,6 +324,11 @@ const Dashboard: React.FC = () => {
                                 {exp > maxExp && <span className="overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
                             </span>
                         </div>
+                    </div>
+
+                    {/* Proficiency bonus */}
+                    <div className="character-level">
+                        Proficiency +{getProficiencyBonus(character.level)}
                     </div>
                 </div>
 
