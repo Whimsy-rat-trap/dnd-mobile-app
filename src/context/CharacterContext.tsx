@@ -65,6 +65,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 if (!updated.diceLogs) {
                     updated.diceLogs = {};
                 }
+
+                if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
+                if (updated.deathFailures === undefined) updated.deathFailures = 0;
+                if (updated.isStable === undefined) updated.isStable = false;
+
                 return updated;
             });
         } catch (e) {
@@ -87,6 +92,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             id: Date.now().toString(),
             skills: character.skills || defaultSkills,
             diceLogs: character.diceLogs || {},
+            deathSuccesses: character.deathSuccesses ?? 0,
+            deathFailures: character.deathFailures ?? 0,
+            isStable: character.isStable ?? false,
         };
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);

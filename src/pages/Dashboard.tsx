@@ -11,24 +11,19 @@ const Dashboard: React.FC = () => {
         getCharacter,
         updateCharacter,
         addDiceLog,
-        addCampaignToCharacter,
     } = useCharacters();
 
-    // Текущий персонаж
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
-    // Состояния для попапов и ввода
     const [popupType, setPopupType] = useState<'hp' | 'exp' | 'settings' | 'profile' | null>(null);
     const [inputValue, setInputValue] = useState<number>(0);
     const [tempInputValue, setTempInputValue] = useState<number>(0);
     const [expInputValue, setExpInputValue] = useState<number>(0);
 
-    // Dice roller состояния (локальные для UI)
     const diceTypes = [4, 6, 8, 10, 12, 20];
     const [diceResults, setDiceResults] = useState<(number | null)[]>(Array(6).fill(null));
     const [isSpinning, setIsSpinning] = useState<boolean[]>(Array(6).fill(false));
 
-    // Состояние открытия секций логов (локальное)
     const [openSections, setOpenSections] = useState<Record<number, boolean>>({
         4: false,
         6: false,
@@ -46,7 +41,6 @@ const Dashboard: React.FC = () => {
         return 6;
     };
 
-    // Если персонаж не выбран – показываем экран выбора
     if (!character) {
         return (
             <div className="page dashboard-page">
@@ -62,9 +56,7 @@ const Dashboard: React.FC = () => {
                             <div
                                 key={char.id}
                                 className="character-select-card"
-                                onClick={() => {
-                                    setCurrentCharacterId(char.id);
-                                }}
+                                onClick={() => setCurrentCharacterId(char.id)}
                                 style={{ cursor: 'pointer' }}
                             >
                                 <div className="character-name">{char.name}</div>
@@ -85,8 +77,6 @@ const Dashboard: React.FC = () => {
         );
     }
 
-    // --- Функции для работы с HP и EXP (используют updateCharacter) ---
-
     const updateChar = (updates: Partial<typeof character>) => {
         updateCharacter(character.id, updates);
     };
@@ -104,8 +94,56 @@ const Dashboard: React.FC = () => {
     const tempPercent = (tempHp / maxHp) * 100;
     const expPercent = Math.min((exp / maxExp) * 100, 100);
     const overlevelPercent = exp > maxExp ? ((exp - maxExp) / maxExp) * 100 : 0;
-
     const isZeroHp = hp === 0;
+
+    const resetDeathSaves = () => {
+        if (character.hp > 0) {
+            updateCharacter(character.id, {
+                deathSuccesses: 0,
+                deathFailures: 0,
+                isStable: false,
+            });
+        }
+    };
+
+    const addHp = (amount: number) => {
+        if (amount <= 0) return;
+        const newHp = Math.min(hp + amount, maxHp);
+        updateChar({ hp: newHp });
+        if (newHp > 0) resetDeathSaves();
+    };
+
+    const subtractHp = (amount: number) => {
+        if (amount <= 0) return;
+        const newHp = Math.max(hp - amount, 0);
+        updateChar({ hp: newHp });
+        if (newHp === 0) {
+            updateCharacter(character.id, { isStable: false });
+        }
+    };
+
+    const addTempHp = (amount: number) => {
+        if (amount <= 0) return;
+        const newTemp = tempHp + amount;
+        updateChar({ tempHp: newTemp });
+    };
+
+    const subtractTempHp = (amount: number) => {
+        if (amount <= 0) return;
+        const newTemp = Math.max(tempHp - amount, 0);
+        updateChar({ tempHp: newTemp });
+    };
+
+    const addExp = (amount: number) => {
+        if (amount <= 0) return;
+        updateChar({ exp: exp + amount });
+    };
+
+    const subtractExp = (amount: number) => {
+        if (amount <= 0) return;
+        const newExp = Math.max(exp - amount, 0);
+        updateChar({ exp: newExp });
+    };
 
     const levelUpIfNeeded = () => {
         let newExp = exp;
@@ -121,54 +159,79 @@ const Dashboard: React.FC = () => {
         }
     };
 
-    const addHp = (amount: number) => {
-        if (amount <= 0) return;
-        const newHp = Math.min(hp + amount, maxHp);
-        updateChar({ hp: newHp });
-    };
-
-    const subtractHp = (amount: number) => {
-        if (amount <= 0) return;
-        const newHp = Math.max(hp - amount, 0);
-        updateChar({ hp: newHp });
-    };
-
-    const addTempHp = (amount: number) => {
-        if (amount <= 0) return;
-        updateChar({ tempHp: tempHp + amount });
-    };
-
-    const subtractTempHp = (amount: number) => {
-        if (amount <= 0) return;
-        const newTemp = Math.max(tempHp - amount, 0);
-        updateChar({ tempHp: newTemp });
-    };
-
-    const addExp = (amount: number) => {
-        if (amount <= 0) return;
-        const newExp = exp + amount;
-        updateChar({ exp: newExp });
-        // levelUpIfNeeded будет вызван при закрытии попапа
-    };
-
-    const subtractExp = (amount: number) => {
-        if (amount <= 0) return;
-        const newExp = Math.max(exp - amount, 0);
-        updateChar({ exp: newExp });
-    };
-
-    // Функции попапов
     const openPopup = (type: 'hp' | 'exp' | 'settings' | 'profile') => setPopupType(type);
     const closePopup = () => {
         if (popupType === 'exp') levelUpIfNeeded();
         setPopupType(null);
     };
-
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) closePopup();
     };
 
-    // --- Dice roller – используем логи из character.diceLogs ---
+    const rollDeathSave = () => {
+        if (character.isStable || character.status === 'dead') return;
+        const roll = Math.floor(Math.random() * 20) + 1;
+        let newSuccesses: number = character.deathSuccesses;
+        let newFailures: number = character.deathFailures;
+        let newHp: number = character.hp;
+        let newStatus: 'active' | 'dead' | 'archived' = character.status;
+        let newIsStable: boolean = character.isStable;
+
+        if (roll === 20) {
+            newHp = 1;
+            newIsStable = true;
+            newSuccesses = 0;
+            newFailures = 0;
+            updateCharacter(character.id, {
+                hp: newHp,
+                deathSuccesses: newSuccesses,
+                deathFailures: newFailures,
+                isStable: newIsStable,
+                status: 'active',
+            });
+            addDiceLog(character.id, 20, roll);
+            return;
+        }
+
+        if (roll === 1) {
+            newFailures += 2;
+        } else if (roll >= 10) {
+            newSuccesses += 1;
+        } else {
+            newFailures += 1;
+        }
+
+        if (newSuccesses >= 3) {
+            newIsStable = true;
+            newSuccesses = 3;
+        }
+        if (newFailures >= 3) {
+            newStatus = 'dead';
+            newFailures = 3;
+            updateCharacter(character.id, {
+                deathSuccesses: newSuccesses,
+                deathFailures: newFailures,
+                isStable: newIsStable,
+                status: newStatus,
+                died: new Date().toISOString().split('T')[0],
+            });
+            addDiceLog(character.id, 20, roll);
+            return;
+        }
+
+        updateCharacter(character.id, {
+            deathSuccesses: newSuccesses,
+            deathFailures: newFailures,
+            isStable: newIsStable,
+            status: newStatus,
+        });
+        addDiceLog(character.id, 20, roll);
+    };
+
+    const switchCharacter = () => {
+        setCurrentCharacterId(null);
+    };
+
     const logs = character.diceLogs || {};
 
     const toggleSection = (diceType: number) => {
@@ -211,7 +274,6 @@ const Dashboard: React.FC = () => {
         return '#fff';
     };
 
-    // Данные кампаний
     const campaigns = character.campaigns.length > 0
         ? character.campaigns.map(c => ({
             id: c.id,
@@ -225,11 +287,6 @@ const Dashboard: React.FC = () => {
             { id: '3', name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep' },
             { id: '4', name: 'Tomb of Annihilation', status: 'ended', description: 'Chult' },
         ];
-
-    // Функция для переключения персонажа
-    const switchCharacter = () => {
-        setCurrentCharacterId(null);
-    };
 
     return (
         <div className="page dashboard-page">
@@ -317,10 +374,47 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Proficiency bonus */}
-                    <div className="character-level">
+                    <div className="character-level" style={{ marginTop: '8px' }}>
                         Proficiency +{getProficiencyBonus(character.level)}
                     </div>
+
+                    {hp === 0 && character.status !== 'dead' && (
+                        <div className="death-saves-container">
+                            <div className="death-saves-title">Death Saving Throws</div>
+                            <div className="death-saves-status">
+                                {character.isStable ? (
+                                    <span className="stable-text">✦ Stable</span>
+                                ) : (
+                                    <>
+                                        <div className="death-saves-group">
+                                            <span className="death-saves-label">Successes</span>
+                                            <div className="death-saves-dots">
+                                                {[0, 1, 2].map(i => (
+                                                    <div key={i} className={`dot ${i < character.deathSuccesses ? 'filled success' : 'empty'}`} />
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="death-saves-group">
+                                            <span className="death-saves-label">Failures</span>
+                                            <div className="death-saves-dots">
+                                                {[0, 1, 2].map(i => (
+                                                    <div key={i} className={`dot ${i < character.deathFailures ? 'filled failure' : 'empty'}`} />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                            {!character.isStable && (
+                                <button className="roll-death-save-btn" onClick={rollDeathSave}>
+                                    Roll Death Save (d20)
+                                </button>
+                            )}
+                            {character.isStable && (
+                                <div className="stable-message">Character is stable. Heal to regain consciousness.</div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Quick Actions */}

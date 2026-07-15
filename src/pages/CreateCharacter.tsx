@@ -77,6 +77,9 @@ const CreateCharacter: React.FC = () => {
             died: undefined,
             archived: undefined,
             diceLogs: {},
+            deathSuccesses: 0,
+            deathFailures: 0,
+            isStable: false,
         };
         addCharacter(newCharacter);
         navigate('/hub');
