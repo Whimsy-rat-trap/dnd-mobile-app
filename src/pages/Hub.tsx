@@ -79,6 +79,28 @@ const Hub: React.FC = () => {
         </svg>
     );
 
+    const renderDeathSaves = (character: any) => {
+        if (character.hp === 0 && character.status !== 'dead' && !character.isStable) {
+            const successes = character.deathSuccesses || 0;
+            const failures = character.deathFailures || 0;
+            return (
+                <div className="death-saves-indicator">
+                    <span className="death-saves-label">Death Saves</span>
+                    <div className="death-saves-dots">
+                        {[0, 1, 2].map(i => (
+                            <span key={`s-${i}`} className={`dot ${i < successes ? 'success' : 'empty'}`} />
+                        ))}
+                        <span className="separator">/</span>
+                        {[0, 1, 2].map(i => (
+                            <span key={`f-${i}`} className={`dot ${i < failures ? 'failure' : 'empty'}`} />
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    };
+
     const truncateDescription = (text: string, maxLength: number = 70) => {
         if (!text) return '';
         if (text.length <= maxLength) return text;
@@ -219,21 +241,25 @@ const Hub: React.FC = () => {
                     </div>
                     {isCharactersOpen && (
                         <div className="character-grid">
-                            {characters.map((char) => (
-                                <Link to={`/characters/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
-                                    <div className={`character-card-hub ${char.status !== 'active' ? 'inactive' : ''}`}>
-                                        <div className="character-info-only">
-                                            <div className="character-name-hub">{char.name}</div>
-                                            <div className="character-class-hub">{char.class} • Level {char.level}</div>
-                                            <div className="character-created-hub">Created: {char.created || 'N/A'}</div>
-                                            <div className="character-date-hub">{getCharacterDateLabel(char.status, char.lastUsed || char.died || char.archived)}</div>
+                            {characters.map((char) => {
+                                const needsDeathSave = char.hp === 0 && char.status !== 'dead' && !char.isStable;
+                                return (
+                                    <Link to={`/characters/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
+                                        <div className={`character-card-hub ${char.status !== 'active' ? 'inactive' : ''} ${needsDeathSave ? 'needs-death-save' : ''}`}>
+                                            <div className="character-info-only">
+                                                <div className="character-name-hub">{char.name}</div>
+                                                <div className="character-class-hub">{char.class} • Level {char.level}</div>
+                                                <div className="character-created-hub">Created: {char.created || 'N/A'}</div>
+                                                <div className="character-date-hub">{getCharacterDateLabel(char.status, char.lastUsed || char.died || char.archived)}</div>
+                                                {needsDeathSave && renderDeathSaves(char)}
+                                            </div>
+                                            <div className={`character-status-hub ${char.status || 'active'}`}>
+                                                {char.status === 'active' ? 'Active' : char.status === 'dead' ? 'Deceased' : 'Archived'}
+                                            </div>
                                         </div>
-                                        <div className={`character-status-hub ${char.status || 'active'}`}>
-                                            {char.status === 'active' ? 'Active' : char.status === 'dead' ? 'Deceased' : 'Archived'}
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
+                                    </Link>
+                                );
+                            })}
                             {renderAddCharacterCard()}
                         </div>
                     )}
