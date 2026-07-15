@@ -9,8 +9,7 @@ const CharacterContainer: React.FC = () => {
     const { getCharacter, updateCharacter, setCurrentCharacterId } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
-    // Ранний возврат до вызова хуков не допускается.
-    // Хуки вызываются всегда в одном порядке, поэтому проверка перенесена ниже.
+    // Ранний возврат после всех хуков
     if (!character) {
         return <div className="page">Character not found</div>;
     }
@@ -63,6 +62,11 @@ const CharacterContainer: React.FC = () => {
         { name: 'CHA', score: character.abilities.cha, modifier: getModifier('cha') },
     ];
 
+    // Отображаем классы через слеш
+    const classDisplay = character.classes && character.classes.length > 0
+        ? character.classes.join(' / ')
+        : 'No class';
+
     return (
         <div className="character-page">
             <header className="character-header-charactercontainer">
@@ -104,7 +108,7 @@ const CharacterContainer: React.FC = () => {
                         </div>
                         <div className="info-item">
                             <span className="info-label">Class</span>
-                            <span className="info-value">{character.class}</span>
+                            <span className="info-value">{classDisplay}</span>
                         </div>
                         <div className="info-item">
                             <span className="info-label">Race</span>
@@ -125,7 +129,6 @@ const CharacterContainer: React.FC = () => {
                             <span className="info-value">{character.speed ? `${character.speed} ft` : '—'}</span>
                         </div>
                     </div>
-                    {/* Добавляем строку с бонусом мастерства */}
                     <div className="info-grid">
                         <div className="info-item">
                             <span className="info-label">Proficiency Bonus</span>
@@ -157,14 +160,14 @@ const CharacterContainer: React.FC = () => {
                                 <span className="ability-name">{ability.name}</span>
                                 <span className="ability-score">{ability.score}</span>
                                 <span className="ability-modifier">
-                  {ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}
-                </span>
+                                    {ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}
+                                </span>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* Skills & Proficiencies — теперь динамические, из данных персонажа */}
+                {/* Skills & Proficiencies */}
                 <div className="section-skills">
                     <div className="skills-title">Skills & Proficiencies</div>
                     <div className="skills-grid">

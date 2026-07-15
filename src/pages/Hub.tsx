@@ -79,35 +79,12 @@ const Hub: React.FC = () => {
         </svg>
     );
 
-    const renderDeathSaves = (character: any) => {
-        if (character.hp === 0 && character.status !== 'dead' && !character.isStable) {
-            const successes = character.deathSuccesses || 0;
-            const failures = character.deathFailures || 0;
-            return (
-                <div className="death-saves-indicator">
-                    <span className="death-saves-label">Death Saves</span>
-                    <div className="death-saves-dots">
-                        {[0, 1, 2].map(i => (
-                            <span key={`s-${i}`} className={`dot ${i < successes ? 'success' : 'empty'}`} />
-                        ))}
-                        <span className="separator">/</span>
-                        {[0, 1, 2].map(i => (
-                            <span key={`f-${i}`} className={`dot ${i < failures ? 'failure' : 'empty'}`} />
-                        ))}
-                    </div>
-                </div>
-            );
-        }
-        return null;
-    };
-
     const truncateDescription = (text: string, maxLength: number = 70) => {
         if (!text) return '';
         if (text.length <= maxLength) return text;
         return text.slice(0, maxLength) + '...';
     };
 
-    // Add Character Card
     const renderAddCharacterCard = () => (
         <div
             className="character-card-hub add-card"
@@ -132,7 +109,6 @@ const Hub: React.FC = () => {
         </div>
     );
 
-    // Add Campaign Card
     const renderAddCampaignCard = () => (
         <div
             className="campaign-card-hub add-card"
@@ -148,7 +124,6 @@ const Hub: React.FC = () => {
         </div>
     );
 
-    // Add Item Card
     const renderAddItemCard = () => (
         <div
             className="item-card-hub add-card"
@@ -172,7 +147,6 @@ const Hub: React.FC = () => {
         </div>
     );
 
-    // Add Spell Card
     const renderAddSpellCard = () => (
         <div
             className="spell-card-hub add-card"
@@ -213,6 +187,25 @@ const Hub: React.FC = () => {
         return '';
     };
 
+    const renderDeathSaves = (character: any) => {
+        const successes = character.deathSuccesses || 0;
+        const failures = character.deathFailures || 0;
+        return (
+            <div className="death-saves-indicator">
+                <span className="death-saves-label">Death Saves</span>
+                <div className="death-saves-dots">
+                    {[0, 1, 2].map(i => (
+                        <span key={`s-${i}`} className={`dot ${i < successes ? 'success' : 'empty'}`} />
+                    ))}
+                    <span className="separator">/</span>
+                    {[0, 1, 2].map(i => (
+                        <span key={`f-${i}`} className={`dot ${i < failures ? 'failure' : 'empty'}`} />
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="page hub-page">
             <div className="hub-header">
@@ -248,7 +241,7 @@ const Hub: React.FC = () => {
                                         <div className={`character-card-hub ${char.status !== 'active' ? 'inactive' : ''} ${needsDeathSave ? 'needs-death-save' : ''}`}>
                                             <div className="character-info-only">
                                                 <div className="character-name-hub">{char.name}</div>
-                                                <div className="character-class-hub">{char.class} • Level {char.level}</div>
+                                                <div className="character-class-hub">{char.classes.join(' / ')} • Level {char.level}</div>
                                                 <div className="character-created-hub">Created: {char.created || 'N/A'}</div>
                                                 <div className="character-date-hub">{getCharacterDateLabel(char.status, char.lastUsed || char.died || char.archived)}</div>
                                                 {needsDeathSave && renderDeathSaves(char)}
@@ -322,8 +315,8 @@ const Hub: React.FC = () => {
                                                 )}
                                                 {item.diceRoll && (
                                                     <span className="item-dice" style={{ color: item.healing ? elementColors.healing : undefined }}>
-                            {item.diceRoll}
-                          </span>
+                                                        {item.diceRoll}
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
@@ -353,19 +346,19 @@ const Hub: React.FC = () => {
                                             <div className="spell-name-hub">{spell.name}</div>
                                             <div className="spell-description-hub">{truncateDescription(spell.description)}</div>
                                             <div className="spell-details-hub">
-                        <span className="spell-level">
-                          {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
-                        </span>
+                                                <span className="spell-level">
+                                                    {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
+                                                </span>
                                                 <span className="spell-school">{spell.school}</span>
                                                 {spell.element && (
                                                     <span className="spell-element" style={{ color: elementColors[spell.element] || '#6b7280' }}>
-                            {spell.element}
-                          </span>
+                                                        {spell.element}
+                                                    </span>
                                                 )}
                                                 {spell.diceRoll && spell.element && elementColors[spell.element] && (
                                                     <span className="spell-dice" style={{ color: elementColors[spell.element] }}>
-                            {spell.diceRoll}
-                          </span>
+                                                        {spell.diceRoll}
+                                                    </span>
                                                 )}
                                                 {spell.diceRoll && !spell.element && (
                                                     <span className="spell-dice">{spell.diceRoll}</span>

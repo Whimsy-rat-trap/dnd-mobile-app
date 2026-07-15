@@ -1,7 +1,7 @@
 export interface Character {
     id: string;
     name: string;
-    class: string;
+    classes: string[];
     level: number;
     race: string;
     background: string;

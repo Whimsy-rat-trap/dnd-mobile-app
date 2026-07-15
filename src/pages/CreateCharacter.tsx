@@ -1,38 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
+import { DND_CLASSES } from '../constants/classes';
 import './CreateCharacter.css';
 
 const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
     const { addCharacter } = useCharacters();
-
-    const defaultSkills = [
-        { name: 'Acrobatics', attribute: 'DEX', proficient: false },
-        { name: 'Animal Handling', attribute: 'WIS', proficient: false },
-        { name: 'Arcana', attribute: 'INT', proficient: false },
-        { name: 'Athletics', attribute: 'STR', proficient: false },
-        { name: 'Deception', attribute: 'CHA', proficient: false },
-        { name: 'History', attribute: 'INT', proficient: false },
-        { name: 'Insight', attribute: 'WIS', proficient: false },
-        { name: 'Intimidation', attribute: 'CHA', proficient: false },
-        { name: 'Investigation', attribute: 'INT', proficient: false },
-        { name: 'Medicine', attribute: 'WIS', proficient: false },
-        { name: 'Nature', attribute: 'INT', proficient: false },
-        { name: 'Perception', attribute: 'WIS', proficient: false },
-        { name: 'Performance', attribute: 'CHA', proficient: false },
-        { name: 'Persuasion', attribute: 'CHA', proficient: false },
-        { name: 'Religion', attribute: 'INT', proficient: false },
-        { name: 'Sleight of Hand', attribute: 'DEX', proficient: false },
-        { name: 'Stealth', attribute: 'DEX', proficient: false },
-        { name: 'Survival', attribute: 'WIS', proficient: false },
-    ];
-
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
 
     const [formData, setFormData] = useState({
         name: '',
-        class: '',
+        classes: [] as string[],
         race: '',
         background: '',
         level: 1,
@@ -43,7 +22,7 @@ const CreateCharacter: React.FC = () => {
         ac: 10,
         speed: 30,
         abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
-        skills: defaultSkills,
+        skills: [],
         inventory: [],
         spells: [],
         quests: [],
@@ -54,10 +33,16 @@ const CreateCharacter: React.FC = () => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: name === 'level' || name === 'hp' || name === 'maxHp' || name === 'tempHp' || name === 'exp' || name === 'ac' || name === 'speed'
+            [name]: ['level', 'hp', 'maxHp', 'tempHp', 'exp', 'ac', 'speed'].includes(name)
                 ? Number(value)
                 : value,
         }));
+    };
+
+    // Обработка мультиселекта для классов
+    const handleClassChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selected = Array.from(e.target.selectedOptions, option => option.value);
+        setFormData(prev => ({ ...prev, classes: selected }));
     };
 
     const handleAbilityChange = (ability: keyof typeof formData.abilities, value: number) => {
@@ -91,51 +76,64 @@ const CreateCharacter: React.FC = () => {
                 <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
                 <h1>Create Character</h1>
             </div>
-
             <form onSubmit={handleSubmit} className="create-character-form">
                 <div className="form-group">
                     <label>Name *</label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} required />
                 </div>
 
+                <div className="form-group">
+                    <label>Starting Class(es) (hold Ctrl/Cmd to select multiple)</label>
+                    <select
+                        multiple
+                        name="classes"
+                        value={formData.classes}
+                        onChange={handleClassChange}
+                        className="class-select"
+                    >
+                        {DND_CLASSES.map(cls => (
+                            <option key={cls} value={cls}>{cls}</option>
+                        ))}
+                    </select>
+                </div>
+
                 <div className="form-row">
-                    <div className="form-group">
-                        <label>Class *</label>
-                        <input type="text" name="class" value={formData.class} onChange={handleChange} required />
-                    </div>
                     <div className="form-group">
                         <label>Race *</label>
                         <input type="text" name="race" value={formData.race} onChange={handleChange} required />
                     </div>
-                </div>
 
-                <div className="form-row">
                     <div className="form-group">
                         <label>Background</label>
                         <input type="text" name="background" value={formData.background} onChange={handleChange} />
                     </div>
+                </div>
+
+                <div className="form-row">
                     <div className="form-group">
                         <label>Level *</label>
                         <input type="number" name="level" value={formData.level} onChange={handleChange} min="1" required />
                     </div>
-                </div>
 
-                <div className="form-row">
                     <div className="form-group">
                         <label>HP *</label>
                         <input type="number" name="hp" value={formData.hp} onChange={handleChange} min="0" required />
                     </div>
-                    <div className="form-group">
-                        <label>Max HP *</label>
-                        <input type="number" name="maxHp" value={formData.maxHp} onChange={handleChange} min="0" required />
-                    </div>
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
+                        <label>Max HP *</label>
+                        <input type="number" name="maxHp" value={formData.maxHp} onChange={handleChange} min="0" required />
+                    </div>
+
+                    <div className="form-group">
                         <label>AC</label>
                         <input type="number" name="ac" value={formData.ac} onChange={handleChange} min="0" />
                     </div>
+                </div>
+
+                <div className="form-row">
                     <div className="form-group">
                         <label>Speed (ft)</label>
                         <input type="number" name="speed" value={formData.speed} onChange={handleChange} min="0" />

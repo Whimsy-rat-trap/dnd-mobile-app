@@ -59,17 +59,24 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             const parsed = JSON.parse(stored);
             return parsed.map((char: any) => {
                 const updated = { ...char };
+                if (char.class && !char.classes) {
+                    updated.classes = [char.class];
+                    delete updated.class;
+                } else if (!char.classes) {
+                    updated.classes = [];
+                }
+                // Миграция: skills
                 if (!updated.skills || updated.skills.length === 0) {
                     updated.skills = defaultSkills;
                 }
+                // Миграция: diceLogs
                 if (!updated.diceLogs) {
                     updated.diceLogs = {};
                 }
-
+                // Миграция: death saves
                 if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
                 if (updated.deathFailures === undefined) updated.deathFailures = 0;
                 if (updated.isStable === undefined) updated.isStable = false;
-
                 return updated;
             });
         } catch (e) {
@@ -85,11 +92,12 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
 
-    // ---- Базовые CRUD операции ----
+    // Базовые CRUD операции
     const addCharacter = (character: Omit<Character, 'id'>) => {
         const newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
+            classes: character.classes || [],
             skills: character.skills || defaultSkills,
             diceLogs: character.diceLogs || {},
             deathSuccesses: character.deathSuccesses ?? 0,
@@ -113,7 +121,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     const getCharacter = (id: string) => characters.find(char => char.id === id);
 
-    // ---- Инвентарь ----
+    // Инвентарь
     const addItemToInventory = (characterId: string, item: Omit<InventoryItem, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -141,7 +149,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    // ---- Заклинания ----
+    // Заклинания
     const addSpellToCharacter = (characterId: string, spell: Omit<Spell, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -169,7 +177,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    // ---- Квесты ----
+    // Квесты
     const addQuestToCharacter = (characterId: string, quest: Omit<Quest, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -197,7 +205,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    // ---- Кампании ----
+    // Кампании
     const addCampaignToCharacter = (characterId: string, campaign: Omit<Campaign, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -225,7 +233,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    // ---- Dice Logs ----
+    // Dice Logs
     const addDiceLog = (characterId: string, sides: number, result: number) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -238,7 +246,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCharacter(characterId, { diceLogs: updatedLogs });
     };
 
-    // ---- Значения передаваемые в контекст ----
+    // Значения передаваемые в контекст
     const value: CharacterContextType = {
         characters,
         currentCharacterId,

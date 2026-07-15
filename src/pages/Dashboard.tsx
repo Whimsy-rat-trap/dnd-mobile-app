@@ -15,11 +15,13 @@ const Dashboard: React.FC = () => {
 
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
+    // Состояния для попапов и ввода
     const [popupType, setPopupType] = useState<'hp' | 'exp' | 'settings' | 'profile' | null>(null);
     const [inputValue, setInputValue] = useState<number>(0);
     const [tempInputValue, setTempInputValue] = useState<number>(0);
     const [expInputValue, setExpInputValue] = useState<number>(0);
 
+    // Dice roller состояния
     const diceTypes = [4, 6, 8, 10, 12, 20];
     const [diceResults, setDiceResults] = useState<(number | null)[]>(Array(6).fill(null));
     const [isSpinning, setIsSpinning] = useState<boolean[]>(Array(6).fill(false));
@@ -41,6 +43,7 @@ const Dashboard: React.FC = () => {
         return 6;
     };
 
+    // Если персонаж не выбран – показываем экран выбора
     if (!character) {
         return (
             <div className="page dashboard-page">
@@ -60,7 +63,9 @@ const Dashboard: React.FC = () => {
                                 style={{ cursor: 'pointer' }}
                             >
                                 <div className="character-name">{char.name}</div>
-                                <div className="character-class">{char.class} • Level {char.level}</div>
+                                <div className="character-class">
+                                    {char.classes?.join(' / ') || 'Unknown'} • Level {char.level}
+                                </div>
                             </div>
                         ))}
                         <Link to="/characters/new" className="character-select-card add-card">
@@ -77,13 +82,14 @@ const Dashboard: React.FC = () => {
         );
     }
 
+    // Функции для работы с HP и EXP
     const updateChar = (updates: Partial<typeof character>) => {
         updateCharacter(character.id, updates);
     };
 
     const hp = character.hp;
     const maxHp = character.maxHp;
-    const tempHp = character.tempHp;
+    const tempHp = character.tempHp || 0;
     const exp = character.exp;
     const level = character.level;
 
@@ -94,8 +100,24 @@ const Dashboard: React.FC = () => {
     const tempPercent = (tempHp / maxHp) * 100;
     const expPercent = Math.min((exp / maxExp) * 100, 100);
     const overlevelPercent = exp > maxExp ? ((exp - maxExp) / maxExp) * 100 : 0;
+
     const isZeroHp = hp === 0;
 
+    const levelUpIfNeeded = () => {
+        let newExp = exp;
+        let newLevel = level;
+        let leveledUp = false;
+        while (newExp >= getMaxExp(newLevel)) {
+            newExp -= getMaxExp(newLevel);
+            newLevel += 1;
+            leveledUp = true;
+        }
+        if (leveledUp) {
+            updateChar({ exp: newExp, level: newLevel });
+        }
+    };
+
+    // Сброс death saves при восстановлении HP > 0
     const resetDeathSaves = () => {
         if (character.hp > 0) {
             updateCharacter(character.id, {
@@ -117,15 +139,11 @@ const Dashboard: React.FC = () => {
         if (amount <= 0) return;
         const newHp = Math.max(hp - amount, 0);
         updateChar({ hp: newHp });
-        if (newHp === 0) {
-            updateCharacter(character.id, { isStable: false });
-        }
     };
 
     const addTempHp = (amount: number) => {
         if (amount <= 0) return;
-        const newTemp = tempHp + amount;
-        updateChar({ tempHp: newTemp });
+        updateChar({ tempHp: tempHp + amount });
     };
 
     const subtractTempHp = (amount: number) => {
@@ -136,7 +154,8 @@ const Dashboard: React.FC = () => {
 
     const addExp = (amount: number) => {
         if (amount <= 0) return;
-        updateChar({ exp: exp + amount });
+        const newExp = exp + amount;
+        updateChar({ exp: newExp });
     };
 
     const subtractExp = (amount: number) => {
@@ -145,37 +164,15 @@ const Dashboard: React.FC = () => {
         updateChar({ exp: newExp });
     };
 
-    const levelUpIfNeeded = () => {
-        let newExp = exp;
-        let newLevel = level;
-        let leveledUp = false;
-        while (newExp >= getMaxExp(newLevel)) {
-            newExp -= getMaxExp(newLevel);
-            newLevel += 1;
-            leveledUp = true;
-        }
-        if (leveledUp) {
-            updateChar({ exp: newExp, level: newLevel });
-        }
-    };
-
-    const openPopup = (type: 'hp' | 'exp' | 'settings' | 'profile') => setPopupType(type);
-    const closePopup = () => {
-        if (popupType === 'exp') levelUpIfNeeded();
-        setPopupType(null);
-    };
-    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (e.target === e.currentTarget) closePopup();
-    };
-
+    // Death Saving Throws
     const rollDeathSave = () => {
         if (character.isStable || character.status === 'dead') return;
         const roll = Math.floor(Math.random() * 20) + 1;
-        let newSuccesses: number = character.deathSuccesses;
-        let newFailures: number = character.deathFailures;
+        let newSuccesses: number = character.deathSuccesses || 0;
+        let newFailures: number = character.deathFailures || 0;
         let newHp: number = character.hp;
         let newStatus: 'active' | 'dead' | 'archived' = character.status;
-        let newIsStable: boolean = character.isStable;
+        let newIsStable: boolean = character.isStable || false;
 
         if (roll === 20) {
             newHp = 1;
@@ -228,10 +225,17 @@ const Dashboard: React.FC = () => {
         addDiceLog(character.id, 20, roll);
     };
 
-    const switchCharacter = () => {
-        setCurrentCharacterId(null);
+    // Popups
+    const openPopup = (type: 'hp' | 'exp' | 'settings' | 'profile') => setPopupType(type);
+    const closePopup = () => {
+        if (popupType === 'exp') levelUpIfNeeded();
+        setPopupType(null);
+    };
+    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) closePopup();
     };
 
+    // Dice roller
     const logs = character.diceLogs || {};
 
     const toggleSection = (diceType: number) => {
@@ -274,7 +278,8 @@ const Dashboard: React.FC = () => {
         return '#fff';
     };
 
-    const campaigns = character.campaigns.length > 0
+    // Данные кампаний
+    const campaigns = character.campaigns && character.campaigns.length > 0
         ? character.campaigns.map(c => ({
             id: c.id,
             name: c.name,
@@ -287,6 +292,10 @@ const Dashboard: React.FC = () => {
             { id: '3', name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep' },
             { id: '4', name: 'Tomb of Annihilation', status: 'ended', description: 'Chult' },
         ];
+
+    const switchCharacter = () => {
+        setCurrentCharacterId(null);
+    };
 
     return (
         <div className="page dashboard-page">
@@ -319,7 +328,7 @@ const Dashboard: React.FC = () => {
                         </div>
                         <div className="character-info">
                             <div className="character-name">{character.name}</div>
-                            <div className="character-class">{character.class}</div>
+                            <div className="character-class">{character.classes?.join(' / ') || 'Unknown'}</div>
                             <div className="character-level">
                                 Level {level} <span className="level-separator">•</span> {character.background || 'No Background'}
                             </div>
@@ -354,7 +363,7 @@ const Dashboard: React.FC = () => {
                                 {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
                             </span>
                             {isZeroHp && (
-                                <div className="death-warning">You need to make a death saving throw this is a temp text about it</div>
+                                <div className="death-warning">You need to make a death saving throw</div>
                             )}
                         </div>
                         <div className="stat-block clickable stat-exp" onClick={() => openPopup('exp')}>
@@ -374,10 +383,12 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* Proficiency bonus */}
                     <div className="character-level" style={{ marginTop: '8px' }}>
                         Proficiency +{getProficiencyBonus(character.level)}
                     </div>
 
+                    {/* Death Saving Throws – показываем только если HP === 0 и персонаж не мёртв */}
                     {hp === 0 && character.status !== 'dead' && (
                         <div className="death-saves-container">
                             <div className="death-saves-title">Death Saving Throws</div>
@@ -390,7 +401,7 @@ const Dashboard: React.FC = () => {
                                             <span className="death-saves-label">Successes</span>
                                             <div className="death-saves-dots">
                                                 {[0, 1, 2].map(i => (
-                                                    <div key={i} className={`dot ${i < character.deathSuccesses ? 'filled success' : 'empty'}`} />
+                                                    <div key={i} className={`dot ${i < (character.deathSuccesses || 0) ? 'filled success' : 'empty'}`} />
                                                 ))}
                                             </div>
                                         </div>
@@ -398,7 +409,7 @@ const Dashboard: React.FC = () => {
                                             <span className="death-saves-label">Failures</span>
                                             <div className="death-saves-dots">
                                                 {[0, 1, 2].map(i => (
-                                                    <div key={i} className={`dot ${i < character.deathFailures ? 'filled failure' : 'empty'}`} />
+                                                    <div key={i} className={`dot ${i < (character.deathFailures || 0) ? 'filled failure' : 'empty'}`} />
                                                 ))}
                                             </div>
                                         </div>
@@ -441,7 +452,7 @@ const Dashboard: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div className="action-title">Spellbook</div>
-                                    <div className="action-subtitle">{character.spells.length} Prepared</div>
+                                    <div className="action-subtitle">{character.spells?.length || 0} Prepared</div>
                                 </div>
                             </Link>
                         </div>
@@ -454,7 +465,7 @@ const Dashboard: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div className="action-title">Inventory</div>
-                                    <div className="action-subtitle">{character.inventory.length} Items</div>
+                                    <div className="action-subtitle">{character.inventory?.length || 0} Items</div>
                                 </div>
                             </Link>
                             <Link to="/quests" className="action-item" style={{ textDecoration: 'none' }}>
@@ -465,7 +476,7 @@ const Dashboard: React.FC = () => {
                                         </svg>
                                     </div>
                                     <div className="action-title">Quests</div>
-                                    <div className="action-subtitle">{character.quests.filter(q => q.status === 'active').length} Active</div>
+                                    <div className="action-subtitle">{character.quests?.filter(q => q.status === 'active').length || 0} Active</div>
                                 </div>
                             </Link>
                         </div>
@@ -624,7 +635,7 @@ const Dashboard: React.FC = () => {
                             </div>
                             {isZeroHp && (
                                 <div className="death-warning popup-death-warning">
-                                    You need to make a death saving throw this is a temp text about it
+                                    You need to make a death saving throw
                                 </div>
                             )}
                         </div>

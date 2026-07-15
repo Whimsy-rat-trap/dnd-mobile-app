@@ -97,3 +97,24 @@
     cursor: pointer;
     margin-top: 12px;
 }
+
+.class-select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #374957;
+    background: #1f2937;
+    color: #fff;
+    font-size: 1rem;
+    width: 100%;
+    min-height: 100px;
+    appearance: auto;
+}
+
+.class-select option {
+    padding: 4px 8px;
+}
+
+.class-select:focus {
+    outline: none;
+    border-color: #34d399;
+}
