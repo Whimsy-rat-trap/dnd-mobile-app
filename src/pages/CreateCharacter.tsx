@@ -5,6 +5,7 @@ import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { DND_BACKGROUNDS } from '../constants/backgrounds';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
+import { RACIAL_BONUSES } from '../constants/racialBonuses';
 import './CreateCharacter.css';
 
 const CreateCharacter: React.FC = () => {
@@ -29,6 +30,22 @@ const CreateCharacter: React.FC = () => {
         speed: 30,
         abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
     });
+
+    const [selectedBonusAttrs, setSelectedBonusAttrs] = useState<(string | null)[]>([]);
+
+    // При изменении расы сбрасываем выбранные бонусы
+    useEffect(() => {
+        const raceBonus = RACIAL_BONUSES[formData.race];
+        if (!raceBonus) {
+            setSelectedBonusAttrs([]);
+            return;
+        }
+        if (raceBonus.fixed) {
+            setSelectedBonusAttrs([]);
+        } else if (raceBonus.choose) {
+            setSelectedBonusAttrs(new Array(raceBonus.choose.count).fill(null));
+        }
+    }, [formData.race]);
 
     // При изменении класса или CON в режиме rules обновляем maxHp
     useEffect(() => {
@@ -72,6 +89,16 @@ const CreateCharacter: React.FC = () => {
         }));
     };
 
+    const handleBonusSelect = (index: number, attr: string) => {
+        const newAttrs = [...selectedBonusAttrs];
+        const existingIndex = newAttrs.indexOf(attr);
+        if (existingIndex !== -1 && existingIndex !== index) {
+            newAttrs[existingIndex] = null;
+        }
+        newAttrs[index] = attr;
+        setSelectedBonusAttrs(newAttrs);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         let finalData = { ...formData };
@@ -84,6 +111,27 @@ const CreateCharacter: React.FC = () => {
             finalData.ac = 10 + Math.floor((formData.abilities.dex - 10) / 2);
             finalData.speed = 30;
         }
+
+        // Применяем расовые бонусы
+        const abilitiesWithBonuses = { ...finalData.abilities };
+        const raceBonus = RACIAL_BONUSES[finalData.race];
+        if (raceBonus) {
+            if (raceBonus.fixed) {
+                for (const [attr, bonus] of Object.entries(raceBonus.fixed)) {
+                    if (abilitiesWithBonuses.hasOwnProperty(attr)) {
+                        abilitiesWithBonuses[attr as keyof typeof abilitiesWithBonuses] += bonus;
+                    }
+                }
+            } else if (raceBonus.choose) {
+                for (const attr of selectedBonusAttrs) {
+                    if (attr && abilitiesWithBonuses.hasOwnProperty(attr)) {
+                        abilitiesWithBonuses[attr as keyof typeof abilitiesWithBonuses] += raceBonus.choose.bonus;
+                    }
+                }
+            }
+        }
+        finalData.abilities = abilitiesWithBonuses;
+
         const newCharacter = {
             ...finalData,
             classes: [finalData.class],
@@ -105,6 +153,9 @@ const CreateCharacter: React.FC = () => {
         addCharacter(newCharacter);
         navigate('/hub');
     };
+
+    // Определяем бонусы для текущей расы
+    const raceBonuses = RACIAL_BONUSES[formData.race] || null;
 
     return (
         <div className="page create-character-page">
@@ -183,22 +234,67 @@ const CreateCharacter: React.FC = () => {
                 <div className="form-group">
                     <label>Ability Scores</label>
                     <div className="ability-grid">
-                        {Object.entries(formData.abilities).map(([key, value]) => (
-                            <div key={key} className="ability-input">
-                                <label>{key.toUpperCase()}</label>
-                                <input
-                                    type="number"
-                                    value={value}
-                                    onChange={(e) =>
-                                        handleAbilityChange(key as keyof typeof formData.abilities, Number(e.target.value))
-                                    }
-                                    min="1"
-                                    max="30"
-                                />
-                            </div>
-                        ))}
+                        {Object.entries(formData.abilities).map(([key, value]) => {
+                            const attr = key as keyof typeof formData.abilities;
+                            let bonusDisplay = null;
+                            if (raceBonuses) {
+                                if (raceBonuses.fixed && raceBonuses.fixed[attr]) {
+                                    const bonus = raceBonuses.fixed[attr];
+                                    bonusDisplay = <span className="ability-bonus">+{bonus}</span>;
+                                } else if (raceBonuses.choose && selectedBonusAttrs.includes(attr)) {
+                                    const bonus = raceBonuses.choose.bonus;
+                                    bonusDisplay = <span className="ability-bonus">+{bonus}</span>;
+                                }
+                            }
+                            return (
+                                <div key={key} className="ability-input">
+                                    <label>{key.toUpperCase()}</label>
+                                    <div className="ability-input-wrapper">
+                                        <input
+                                            type="number"
+                                            value={value}
+                                            onChange={(e) =>
+                                                handleAbilityChange(attr, Number(e.target.value))
+                                            }
+                                            min="1"
+                                            max="30"
+                                        />
+                                        {bonusDisplay}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
+
+                {raceBonuses && raceBonuses.choose && (() => {
+                    const choose = raceBonuses.choose;
+                    return (
+                        <div className="form-group">
+                            <label>Assign racial bonuses (choose {choose.count} attributes)</label>
+                            <div className="bonus-selectors">
+                                {selectedBonusAttrs.map((selectedAttr, index) => (
+                                    <select
+                                        key={index}
+                                        value={selectedAttr || ''}
+                                        onChange={(e) => handleBonusSelect(index, e.target.value)}
+                                        className="bonus-select"
+                                    >
+                                        <option value="">Select attribute</option>
+                                        {choose.options.map(opt => {
+                                            const isSelected = selectedBonusAttrs.includes(opt) && selectedBonusAttrs.indexOf(opt) !== index;
+                                            return (
+                                                <option key={opt} value={opt} disabled={isSelected}>
+                                                    {opt.toUpperCase()}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })()}
 
                 <button type="submit" className="submit-btn">Create Character</button>
             </form>
