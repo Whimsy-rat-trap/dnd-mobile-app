@@ -59,26 +59,23 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             const parsed = JSON.parse(stored);
             return parsed.map((char: any) => {
                 const updated = { ...char };
-                if (char.class) {
-                    updated.class = char.class;
-                    if (!char.classes) {
-                        updated.classes = [char.class];
-                    }
-                } else if (!char.class) {
-                    updated.class = 'Fighter';
-                }
-                if (!updated.classes) {
+                if (typeof updated.class === 'string' && !updated.classes) {
                     updated.classes = [updated.class];
+                } else if (!updated.classes) {
+                    updated.classes = [updated.class || 'Fighter'];
                 }
-                // Миграция: skills
+                if (!updated.class) {
+                    updated.class = updated.classes[0] || 'Fighter';
+                }
+                // заполняем skills, если их нет или они пустые
                 if (!updated.skills || updated.skills.length === 0) {
                     updated.skills = defaultSkills;
                 }
-                // Миграция: diceLogs
+
                 if (!updated.diceLogs) {
                     updated.diceLogs = {};
                 }
-                // Миграция: death saves
+
                 if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
                 if (updated.deathFailures === undefined) updated.deathFailures = 0;
                 if (updated.isStable === undefined) updated.isStable = false;
@@ -104,7 +101,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             id: Date.now().toString(),
             class: character.class || 'Fighter',
             classes: character.classes || [character.class || 'Fighter'],
-            skills: character.skills || defaultSkills,
+            skills: (character.skills && character.skills.length > 0) ? character.skills : defaultSkills,
             diceLogs: character.diceLogs || {},
             deathSuccesses: character.deathSuccesses ?? 0,
             deathFailures: character.deathFailures ?? 0,
