@@ -1,12 +1,14 @@
 .create-character-page {
-    padding: 20px;
+    padding: 12px 16px;
     color: #fff;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .create-character-header {
     display: flex;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .back-btn {
@@ -15,11 +17,11 @@
     color: #9ca3af;
     font-size: 1rem;
     cursor: pointer;
-    margin-right: 16px;
+    margin-right: 12px;
 }
 
 .create-character-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: #fff;
 }
@@ -27,40 +29,41 @@
 .create-character-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
 }
 
 .form-group label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #9ca3af;
 }
 
 .form-group input,
 .form-group select {
-    padding: 10px 12px;
-    border-radius: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
     border: 1px solid #374957;
     background: #1f2937;
     color: #fff;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    height: 36px;
 }
 
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
 }
 
 .ability-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 6px;
 }
 
 .ability-input {
@@ -68,53 +71,34 @@
     flex-direction: column;
     align-items: center;
     background: #1f2937;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 4px 0;
+    border-radius: 6px;
 }
 
 .ability-input label {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: #9ca3af;
 }
 
 .ability-input input {
-    width: 60px;
+    width: 50px;
     text-align: center;
     background: transparent;
     border: none;
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 1rem;
+    padding: 0;
+    height: 30px;
 }
 
 .submit-btn {
     background: var(--gradient-green);
     border: none;
-    padding: 14px;
-    border-radius: 12px;
-    font-size: 1rem;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #fff;
     cursor: pointer;
-    margin-top: 12px;
-}
-
-.class-select {
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #374957;
-    background: #1f2937;
-    color: #fff;
-    font-size: 1rem;
-    width: 100%;
-    min-height: 100px;
-    appearance: auto;
-}
-
-.class-select option {
-    padding: 4px 8px;
-}
-
-.class-select:focus {
-    outline: none;
-    border-color: #34d399;
+    margin-top: 8px;
 }

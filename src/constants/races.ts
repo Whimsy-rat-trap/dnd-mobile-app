@@ -1,0 +1,19 @@
+export const DND_RACES = [
+    'Dragonborn',
+    'Dwarf',
+    'Elf',
+    'Gnome',
+    'Half-Elf',
+    'Half-Orc',
+    'Halfling',
+    'Human',
+    'Tiefling',
+    'Aarakocra',
+    'Aasimar',
+    'Firbolg',
+    'Goliath',
+    'Kenku',
+    'Lizardfolk',
+    'Tabaxi',
+    'Tortle'
+];

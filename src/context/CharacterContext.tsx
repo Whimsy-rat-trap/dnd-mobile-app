@@ -59,11 +59,16 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             const parsed = JSON.parse(stored);
             return parsed.map((char: any) => {
                 const updated = { ...char };
-                if (char.class && !char.classes) {
-                    updated.classes = [char.class];
-                    delete updated.class;
-                } else if (!char.classes) {
-                    updated.classes = [];
+                if (char.class) {
+                    updated.class = char.class;
+                    if (!char.classes) {
+                        updated.classes = [char.class];
+                    }
+                } else if (!char.class) {
+                    updated.class = 'Fighter';
+                }
+                if (!updated.classes) {
+                    updated.classes = [updated.class];
                 }
                 // Миграция: skills
                 if (!updated.skills || updated.skills.length === 0) {
@@ -97,7 +102,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
-            classes: character.classes || [],
+            class: character.class || 'Fighter',
+            classes: character.classes || [character.class || 'Fighter'],
             skills: character.skills || defaultSkills,
             diceLogs: character.diceLogs || {},
             deathSuccesses: character.deathSuccesses ?? 0,
