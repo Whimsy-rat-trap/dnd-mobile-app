@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
+import CreateModePopup from '../components/CreateModePopup';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
     const {
         characters,
         currentCharacterId,
@@ -20,6 +22,9 @@ const Dashboard: React.FC = () => {
     const [inputValue, setInputValue] = useState<number>(0);
     const [tempInputValue, setTempInputValue] = useState<number>(0);
     const [expInputValue, setExpInputValue] = useState<number>(0);
+
+    // Состояние для попапа выбора режима создания персонажа
+    const [showCreatePopup, setShowCreatePopup] = useState(false);
 
     // Dice roller состояния
     const diceTypes = [4, 6, 8, 10, 12, 20];
@@ -68,16 +73,29 @@ const Dashboard: React.FC = () => {
                                 </div>
                             </div>
                         ))}
-                        <Link to="/characters/new" className="character-select-card add-card">
+                        <div
+                            className="character-select-card add-card"
+                            onClick={() => setShowCreatePopup(true)}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <div className="add-card-content">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
                                 </svg>
                                 <span className="add-card-label">Create New Character</span>
                             </div>
-                        </Link>
+                        </div>
                     </div>
                 </div>
+                {showCreatePopup && (
+                    <CreateModePopup
+                        onSelect={(mode) => {
+                            setShowCreatePopup(false);
+                            navigate(`/characters/new?mode=${mode}`);
+                        }}
+                        onClose={() => setShowCreatePopup(false)}
+                    />
+                )}
             </div>
         );
     }

@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { DND_BACKGROUNDS } from '../constants/backgrounds';
+import { CLASS_HIT_DICE } from '../constants/classHitDice';
 import './CreateCharacter.css';
 
 const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
     const { addCharacter } = useCharacters();
     const today = new Date().toISOString().split('T')[0];
+    const [searchParams] = useSearchParams();
+    const mode = searchParams.get('mode') || 'creative';
+    const isCreative = mode === 'creative';
 
     const [formData, setFormData] = useState({
         name: '',
@@ -25,6 +29,31 @@ const CreateCharacter: React.FC = () => {
         speed: 30,
         abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
     });
+
+    // При изменении класса или CON в режиме rules обновляем maxHp
+    useEffect(() => {
+        if (!isCreative) {
+            const conMod = Math.floor((formData.abilities.con - 10) / 2);
+            const hitDie = CLASS_HIT_DICE[formData.class] || 6;
+            const calculatedMaxHp = hitDie + conMod;
+            setFormData(prev => ({
+                ...prev,
+                maxHp: calculatedMaxHp,
+                hp: calculatedMaxHp,
+            }));
+        }
+    }, [formData.class, formData.abilities.con, isCreative]);
+
+    // При изменении DEX в режиме rules обновляем AC
+    useEffect(() => {
+        if (!isCreative) {
+            const dexMod = Math.floor((formData.abilities.dex - 10) / 2);
+            setFormData(prev => ({
+                ...prev,
+                ac: 10 + dexMod,
+            }));
+        }
+    }, [formData.abilities.dex, isCreative]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -45,9 +74,19 @@ const CreateCharacter: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        let finalData = { ...formData };
+        if (!isCreative) {
+            const conMod = Math.floor((formData.abilities.con - 10) / 2);
+            const hitDie = CLASS_HIT_DICE[formData.class] || 6;
+            const calculatedMaxHp = hitDie + conMod;
+            finalData.maxHp = calculatedMaxHp;
+            finalData.hp = calculatedMaxHp;
+            finalData.ac = 10 + Math.floor((formData.abilities.dex - 10) / 2);
+            finalData.speed = 30;
+        }
         const newCharacter = {
-            ...formData,
-            classes: [formData.class],
+            ...finalData,
+            classes: [finalData.class],
             status: 'active' as const,
             created: today,
             lastUsed: today,
@@ -118,22 +157,28 @@ const CreateCharacter: React.FC = () => {
                         <label>HP *</label>
                         <input type="number" name="hp" value={formData.hp} onChange={handleChange} min="0" required />
                     </div>
-                    <div className="form-group">
-                        <label>Max HP *</label>
-                        <input type="number" name="maxHp" value={formData.maxHp} onChange={handleChange} min="0" required />
-                    </div>
+                    {isCreative && (
+                        <div className="form-group">
+                            <label>Max HP *</label>
+                            <input type="number" name="maxHp" value={formData.maxHp} onChange={handleChange} min="0" required />
+                        </div>
+                    )}
                 </div>
 
-                <div className="form-row">
-                    <div className="form-group">
-                        <label>AC</label>
-                        <input type="number" name="ac" value={formData.ac} onChange={handleChange} min="0" />
+                {isCreative ? (
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>AC</label>
+                            <input type="number" name="ac" value={formData.ac} onChange={handleChange} min="0" />
+                        </div>
+                        <div className="form-group">
+                            <label>Speed (ft)</label>
+                            <input type="number" name="speed" value={formData.speed} onChange={handleChange} min="0" />
+                        </div>
                     </div>
-                    <div className="form-group">
-                        <label>Speed (ft)</label>
-                        <input type="number" name="speed" value={formData.speed} onChange={handleChange} min="0" />
-                    </div>
-                </div>
+                ) : (
+                    <div className="info-text">HP, AC and Speed are calculated automatically based on your class, race and abilities.</div>
+                )}
 
                 <div className="form-group">
                     <label>Ability Scores</label>

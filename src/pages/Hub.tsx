@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
+import CreateModePopup from '../components/CreateModePopup';
 import './Hub.css';
 
 const Hub: React.FC = () => {
@@ -11,6 +12,7 @@ const Hub: React.FC = () => {
     const [isCampaignsOpen, setIsCampaignsOpen] = useState(true);
     const [isItemsOpen, setIsItemsOpen] = useState(true);
     const [isSpellsOpen, setIsSpellsOpen] = useState(true);
+    const [showCreatePopup, setShowCreatePopup] = useState(false);
 
     // Локальные данные (заглушки) для кампаний, предметов и заклинаний
     const campaigns = [
@@ -88,7 +90,7 @@ const Hub: React.FC = () => {
     const renderAddCharacterCard = () => (
         <div
             className="character-card-hub add-card"
-            onClick={() => navigate('/characters/new')}
+            onClick={() => setShowCreatePopup(true)}
             style={{ cursor: 'pointer' }}
         >
             <div className="add-card-content">
@@ -204,6 +206,11 @@ const Hub: React.FC = () => {
                 </div>
             </div>
         );
+    };
+
+    const handleCreateModeSelect = (mode: 'creative' | 'rules') => {
+        setShowCreatePopup(false);
+        navigate(`/characters/new?mode=${mode}`);
     };
 
     return (
@@ -373,6 +380,13 @@ const Hub: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            {showCreatePopup && (
+                <CreateModePopup
+                    onSelect={handleCreateModeSelect}
+                    onClose={() => setShowCreatePopup(false)}
+                />
+            )}
         </div>
     );
 };
