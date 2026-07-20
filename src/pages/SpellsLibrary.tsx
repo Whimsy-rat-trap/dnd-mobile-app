@@ -43,36 +43,29 @@ const SpellsLibrary: React.FC = () => {
                 </button>
                 <div className="spell-header-info">
                     <div className="spell-title">Spells Library</div>
-                    {character ? (
-                        <div className="spell-subtitle">Adding spells to {character.name}</div>
-                    ) : (
-                        <div className="spell-subtitle">Select a character first</div>
-                    )}
+                    <div className="spell-subtitle">
+                        {character ? `Adding to ${character.name}` : 'Select a character to add spells'}
+                    </div>
                 </div>
             </header>
 
             <div className="spells-library-content">
-                {!character ? (
-                    <div className="empty-state">
-                        <p>No character selected. Please go to Dashboard and select a character.</p>
-                        <button className="btn-primary" onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
-                    </div>
-                ) : (
-                    <div className="spell-list">
-                        {ALL_SPELLS.map((spell, index) => {
-                            const inBook = isSpellInBook(spell.name);
-                            return (
-                                <div key={index} className="spell-item">
-                                    <div className="spell-item-info">
-                                        <div className="spell-item-name">{spell.name}</div>
-                                        <div className="spell-item-meta">
-                                            <span className="spell-item-level">{spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}</span>
-                                            <span className="spell-item-school">{spell.school}</span>
-                                        </div>
-                                        <div className="spell-item-description">{spell.description}</div>
+                <div className="spell-list">
+                    {ALL_SPELLS.map((spell, index) => {
+                        const inBook = isSpellInBook(spell.name);
+                        return (
+                            <div key={index} className="spell-item">
+                                <div className="spell-item-info">
+                                    <div className="spell-item-name">{spell.name}</div>
+                                    <div className="spell-item-meta">
+                                        <span className="spell-item-level">{spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}</span>
+                                        <span className="spell-item-school">{spell.school}</span>
                                     </div>
-                                    <div className="spell-item-actions">
-                                        {inBook ? (
+                                    <div className="spell-item-description">{spell.description}</div>
+                                </div>
+                                <div className="spell-item-actions">
+                                    {character ? (
+                                        inBook ? (
                                             <button className="btn-remove" onClick={() => handleRemoveSpell(spell.name)}>
                                                 Remove
                                             </button>
@@ -80,13 +73,15 @@ const SpellsLibrary: React.FC = () => {
                                             <button className="btn-add" onClick={() => handleAddSpell(spell)}>
                                                 Add to Spellbook
                                             </button>
-                                        )}
-                                    </div>
+                                        )
+                                    ) : (
+                                        <span className="hint">Select a character</span>
+                                    )}
                                 </div>
-                            );
-                        })}
-                    </div>
-                )}
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

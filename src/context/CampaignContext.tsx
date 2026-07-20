@@ -23,7 +23,13 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
     }, [campaigns]);
 
     const addCampaign = (campaign: Omit<Campaign, 'id'>) => {
-        const newCampaign: Campaign = { ...campaign, id: Date.now().toString() };
+        const newCampaign: Campaign = {
+            ...campaign,
+            id: Date.now().toString(),
+            dm: campaign.dm || 'Dungeon Master',
+            players: campaign.players || 4,
+            sessions: campaign.sessions || 0,
+        };
         setCampaigns(prev => [...prev, newCampaign]);
     };
 

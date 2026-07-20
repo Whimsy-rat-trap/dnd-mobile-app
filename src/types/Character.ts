@@ -70,4 +70,7 @@ export interface Campaign {
     name: string;
     description: string;
     status: 'active' | 'paused' | 'ended';
+    dm?: string;
+    players?: number;
+    sessions?: number;
 }

@@ -10,7 +10,6 @@ import Quest from './pages/Quest';
 import Inventory from './pages/Inventory';
 import ItemsLibrary from './pages/ItemsLibrary';
 import SpellsLibrary from './pages/SpellsLibrary';
-import CampaignsLibrary from './pages/CampaignsLibrary';
 import CreateCharacter from './pages/CreateCharacter';
 import { CharacterProvider } from './context/CharacterContext';
 import { CampaignProvider } from './context/CampaignContext';
@@ -28,7 +27,7 @@ const App: React.FC = () => {
                                 <Route path="/characters/new" element={<CreateCharacter />} />
                                 <Route path="/characters/:id" element={<CharacterContainer />} />
                                 <Route path="/spellbook" element={<SpellbookContainer />} />
-                                <Route path="/campaigns" element={<CampaignsLibrary />} />
+                                <Route path="/campaigns" element={<CampaignContainer />} />
                                 <Route path="/campaign/:id" element={<CampaignContainer />} />
                                 <Route path="/hub" element={<Hub />} />
                                 <Route path="/quests" element={<Quest />} />

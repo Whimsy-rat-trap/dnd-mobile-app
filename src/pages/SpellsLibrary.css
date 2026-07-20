@@ -167,3 +167,9 @@
 .btn-remove:hover {
     background: #dc2626;
 }
+
+.hint {
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+}
