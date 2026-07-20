@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import './SpellbookContainer.css';
 
 type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
 
 const SpellbookContainer: React.FC = () => {
+    const navigate = useNavigate();
     const { currentCharacterId, getCharacter, updateSpell } = useCharacters();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
     const [activeTab, setActiveTab] = useState<TabKey>('cantrips');
 
-    const handleBack = () => {
-        console.log('Back button clicked');
-    };
-
-    // Вкладки
     const tabs: { id: TabKey; label: string }[] = [
         { id: 'cantrips', label: 'Cantrips' },
         { id: 'level1', label: 'Level 1' },
@@ -28,6 +25,7 @@ const SpellbookContainer: React.FC = () => {
             <div className="spellbook-page">
                 <div className="spellbook-empty">
                     <p>No character selected. Please go to Dashboard and select a character.</p>
+                    <button className="btn-primary" onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
                 </div>
             </div>
         );
@@ -61,6 +59,9 @@ const SpellbookContainer: React.FC = () => {
         }
     };
 
+    const handleBack = () => navigate(-1);
+    const handleAddFromLibrary = () => navigate('/spells');
+
     return (
         <div className="spellbook-page">
             {/* Spell Header */}
@@ -74,13 +75,16 @@ const SpellbookContainer: React.FC = () => {
                     <div className="spell-title">Spellbook</div>
                     <div className="spell-subtitle">{character.name}</div>
                 </div>
+                <button className="btn-add-library" onClick={handleAddFromLibrary}>
+                    + Library
+                </button>
             </header>
 
             {/* Spell Stats */}
             <div className="spell-stats spell-section">
                 <div className="stat-item">
                     <div className="stat-label">Spell Slots</div>
-                    <div className="stat-value">8 / 12</div> {/* Заглушка, можно вынести в character */}
+                    <div className="stat-value">8 / 12</div>
                 </div>
                 <div className="stat-item">
                     <div className="stat-label">Prepared</div>
@@ -109,7 +113,12 @@ const SpellbookContainer: React.FC = () => {
             <div className="spell-content spell-section">
                 <div className="spell-list-title">{title}</div>
                 {currentSpells.length === 0 ? (
-                    <div className="spell-empty-message">No spells in this level.</div>
+                    <div className="spell-empty-message">
+                        <p>No spells in this level.</p>
+                        <button className="btn-add-library" onClick={handleAddFromLibrary}>
+                            Add from Library
+                        </button>
+                    </div>
                 ) : (
                     <div className="spell-cards">
                         {currentSpells.map((spell) => (
@@ -117,9 +126,7 @@ const SpellbookContainer: React.FC = () => {
                                 {/* Header */}
                                 <div className="spell-card-header">
                                     <div className="spell-card-left">
-                                        <div className="spell-card-icon">
-                                            {/* Можно добавить иконку школы */}
-                                        </div>
+                                        <div className="spell-card-icon" />
                                         <div className="spell-card-info">
                                             <div className="spell-card-name">{spell.name}</div>
                                             <div className="spell-card-school">{spell.school}</div>
