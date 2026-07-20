@@ -1,0 +1,91 @@
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useCampaigns } from '../context/CampaignContext';
+import './CampaignsLibrary.css';
+
+const CampaignsLibrary: React.FC = () => {
+    const navigate = useNavigate();
+    const { campaigns, addCampaign, deleteCampaign } = useCampaigns();
+
+    const [isCreating, setIsCreating] = useState(false);
+    const [newCampaign, setNewCampaign] = useState({ name: '', description: '', status: 'active' as 'active' | 'paused' | 'ended' });
+
+    const handleBack = () => navigate(-1);
+
+    const handleAdd = () => {
+        if (!newCampaign.name.trim()) return;
+        addCampaign(newCampaign);
+        setNewCampaign({ name: '', description: '', status: 'active' });
+        setIsCreating(false);
+    };
+
+    return (
+        <div className="page campaigns-library-page">
+            <header className="campaigns-header">
+                <button className="back-btn" onClick={handleBack}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.3169 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H4.6336L9.19219 15.1828C9.25026 15.2409 9.29632 15.3098 9.32775 15.3857C9.35918 15.4616 9.37535 15.5429 9.37535 15.625C9.37535 15.7071 9.35918 15.7884 9.32775 15.8643C9.29632 15.9402 9.25026 16.0091 9.19219 16.0672C9.13412 16.1253 9.06518 16.1713 8.98931 16.2027C8.91344 16.2342 8.83213 16.2503 8.75 16.2503C8.66788 16.2503 8.58656 16.2342 8.51069 16.2027C8.43482 16.1713 8.36588 16.1253 8.30782 16.0672L2.68282 10.4422C2.62471 10.3841 2.57861 10.3152 2.54715 10.2393C2.5157 10.1635 2.49951 10.0821 2.49951 10C2.49951 9.91787 2.5157 9.83654 2.54715 9.76066C2.57861 9.68479 2.62471 9.61586 2.68282 9.55781L8.30782 3.93281C8.42509 3.81554 8.58415 3.74965 8.75 3.74965C8.91586 3.74965 9.07492 3.81554 9.19219 3.93281C9.30947 4.05009 9.37535 4.20915 9.37535 4.375C9.37535 4.54085 9.30947 4.69991 9.19219 4.81719L4.6336 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.3169 9.55806C17.4342 9.67527 17.5 9.83424 17.5 10Z" fill="#9CA3AF" />
+                    </svg>
+                </button>
+                <div className="header-info">
+                    <span className="header-title">Campaigns</span>
+                    <span className="header-subtitle">All campaigns</span>
+                </div>
+                <button className="btn-add" onClick={() => setIsCreating(true)}>+ New</button>
+            </header>
+
+            <div className="campaigns-list">
+                {campaigns.length === 0 ? (
+                    <div className="empty-state">No campaigns yet. Create your first!</div>
+                ) : (
+                    campaigns.map(camp => (
+                        <div key={camp.id} className="campaign-item">
+                            <Link to={`/campaign/${camp.id}`} className="campaign-item-link">
+                                <div className="campaign-item-info">
+                                    <div className="campaign-item-name">{camp.name}</div>
+                                    <div className="campaign-item-description">{camp.description}</div>
+                                    <div className="campaign-item-status">{camp.status}</div>
+                                </div>
+                            </Link>
+                            <button className="btn-delete" onClick={() => deleteCampaign(camp.id)}>✕</button>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {isCreating && (
+                <div className="popup-overlay" onClick={() => setIsCreating(false)}>
+                    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Create New Campaign</h3>
+                        <input
+                            type="text"
+                            placeholder="Name"
+                            value={newCampaign.name}
+                            onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Description"
+                            value={newCampaign.description}
+                            onChange={(e) => setNewCampaign({ ...newCampaign, description: e.target.value })}
+                        />
+                        <select
+                            value={newCampaign.status}
+                            onChange={(e) => setNewCampaign({ ...newCampaign, status: e.target.value as 'active' | 'paused' | 'ended' })}
+                        >
+                            <option value="active">Active</option>
+                            <option value="paused">Paused</option>
+                            <option value="ended">Ended</option>
+                        </select>
+                        <div className="popup-actions">
+                            <button className="btn-cancel" onClick={() => setIsCreating(false)}>Cancel</button>
+                            <button className="btn-confirm" onClick={handleAdd}>Create</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default CampaignsLibrary;
