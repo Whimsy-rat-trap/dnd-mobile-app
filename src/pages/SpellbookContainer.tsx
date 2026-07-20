@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
+import { getTotalSpellSlots, getMaxPreparedSpells } from '../constants/classSpellSlots';
 import './SpellbookContainer.css';
 
 type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
+type FilterType = 'all' | 'prepared' | 'notPrepared';
 
 const SpellbookContainer: React.FC = () => {
     const navigate = useNavigate();
@@ -14,6 +16,7 @@ const SpellbookContainer: React.FC = () => {
 
     const [activeTab, setActiveTab] = useState<TabKey>('cantrips');
     const [searchQuery, setSearchQuery] = useState('');
+    const [filterType, setFilterType] = useState<FilterType>('all');
 
     const tabs: { id: TabKey; label: string }[] = [
         { id: 'cantrips', label: 'Cantrips' },
@@ -49,11 +52,26 @@ const SpellbookContainer: React.FC = () => {
         level3,
     };
 
-    const currentSpells = spellsData[activeTab].filter(spell =>
-        spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        spell.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        spell.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Фильтрация по статусу подготовки
+    const applyFilter = (spells: typeof character.spells) => {
+        if (filterType === 'all') return spells;
+        if (filterType === 'prepared') return spells.filter(s => s.prepared);
+        if (filterType === 'notPrepared') return spells.filter(s => !s.prepared);
+        return spells;
+    };
+
+    // Поиск
+    const applySearch = (spells: typeof character.spells) => {
+        if (!searchQuery.trim()) return spells;
+        const query = searchQuery.toLowerCase();
+        return spells.filter(s =>
+            s.name.toLowerCase().includes(query) ||
+            s.school.toLowerCase().includes(query) ||
+            s.description.toLowerCase().includes(query)
+        );
+    };
+
+    const currentSpells = applySearch(applyFilter(spellsData[activeTab]));
 
     const title = `${activeTab === 'cantrips' ? 'Cantrips' : `Level ${activeTab.replace('level', '')}`} (${currentSpells.length})`;
 
@@ -66,6 +84,12 @@ const SpellbookContainer: React.FC = () => {
 
     const handleBack = () => navigate(-1);
     const handleAddFromLibrary = () => navigate('/spells');
+
+    // Вычисления
+    const totalSlots = getTotalSpellSlots(character.class, character.level);
+    const maxPrepared = getMaxPreparedSpells(character);
+    const preparedCount = character.spells.filter(s => s.prepared).length;
+    const knownCount = character.spells.length;
 
     return (
         <div className="spellbook-page">
@@ -87,15 +111,15 @@ const SpellbookContainer: React.FC = () => {
             <div className="spell-stats spell-section">
                 <div className="stat-item">
                     <div className="stat-label">Spell Slots</div>
-                    <div className="stat-value">8 / 12</div>
+                    <div className="stat-value">{totalSlots}</div>
                 </div>
                 <div className="stat-item">
                     <div className="stat-label">Prepared</div>
-                    <div className="stat-value">{character.spells.filter(s => s.prepared).length}</div>
+                    <div className="stat-value">{preparedCount} / {maxPrepared}</div>
                 </div>
                 <div className="stat-item">
                     <div className="stat-label">Known</div>
-                    <div className="stat-value">{character.spells.length}</div>
+                    <div className="stat-value">{knownCount}</div>
                 </div>
             </div>
 
@@ -112,15 +136,37 @@ const SpellbookContainer: React.FC = () => {
             </div>
 
             <div className="spell-content spell-section">
-                <SearchBar
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder="Search spells..."
-                />
+                <div className="spell-controls">
+                    <SearchBar
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        placeholder="Search spells..."
+                    />
+                    <div className="filter-buttons">
+                        <button
+                            className={`filter-btn ${filterType === 'all' ? 'active' : ''}`}
+                            onClick={() => setFilterType('all')}
+                        >
+                            All
+                        </button>
+                        <button
+                            className={`filter-btn ${filterType === 'prepared' ? 'active' : ''}`}
+                            onClick={() => setFilterType('prepared')}
+                        >
+                            Prepared
+                        </button>
+                        <button
+                            className={`filter-btn ${filterType === 'notPrepared' ? 'active' : ''}`}
+                            onClick={() => setFilterType('notPrepared')}
+                        >
+                            Not Prepared
+                        </button>
+                    </div>
+                </div>
                 <div className="spell-list-title">{title}</div>
                 {currentSpells.length === 0 ? (
                     <div className="spell-empty-message">
-                        <p>No spells in this level.</p>
+                        <p>No spells match your filters.</p>
                         <button className="btn-add-library" onClick={handleAddFromLibrary}>
                             Add from Library
                         </button>

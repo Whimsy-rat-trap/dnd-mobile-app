@@ -317,3 +317,37 @@
     color: #9ca3af;
     font-size: 14px;
 }
+
+.spell-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.filter-btn {
+    padding: 4px 12px;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn.active {
+    background: #34d399;
+    border-color: #34d399;
+    color: #0f0f0f;
+}
+
+.filter-btn:hover:not(.active) {
+    border-color: #6b7280;
+    color: #e5e7eb;
+}
