@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import { ALL_SPELLS } from '../constants/spells';
+import SpellCard from '../components/SpellCard';
+import SearchBar from '../components/SearchBar';
 import './SpellsLibrary.css';
 
 const SpellsLibrary: React.FC = () => {
@@ -9,12 +11,12 @@ const SpellsLibrary: React.FC = () => {
     const { currentCharacterId, getCharacter, addSpellToCharacter, removeSpellFromCharacter } = useCharacters();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
+    const [searchQuery, setSearchQuery] = useState('');
+
     const handleAddSpell = (spellData: typeof ALL_SPELLS[0]) => {
         if (!character) return;
-        // Проверяем, есть ли уже такое заклинание
         const exists = character.spells.some(s => s.name === spellData.name);
         if (exists) return;
-        // Добавляем заклинание с prepared: false
         addSpellToCharacter(character.id, { ...spellData, prepared: false });
     };
 
@@ -33,6 +35,12 @@ const SpellsLibrary: React.FC = () => {
 
     const handleBack = () => navigate(-1);
 
+    const filteredSpells = ALL_SPELLS.filter(spell =>
+        spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        spell.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        spell.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div className="page spells-library-page">
             <header className="spell-header">
@@ -50,35 +58,23 @@ const SpellsLibrary: React.FC = () => {
             </header>
 
             <div className="spells-library-content">
+                <SearchBar
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder="Search spells..."
+                />
                 <div className="spell-list">
-                    {ALL_SPELLS.map((spell, index) => {
+                    {filteredSpells.map((spell, index) => {
                         const inBook = isSpellInBook(spell.name);
                         return (
-                            <div key={index} className="spell-item">
-                                <div className="spell-item-info">
-                                    <div className="spell-item-name">{spell.name}</div>
-                                    <div className="spell-item-meta">
-                                        <span className="spell-item-level">{spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}</span>
-                                        <span className="spell-item-school">{spell.school}</span>
-                                    </div>
-                                    <div className="spell-item-description">{spell.description}</div>
-                                </div>
-                                <div className="spell-item-actions">
-                                    {character ? (
-                                        inBook ? (
-                                            <button className="btn-remove" onClick={() => handleRemoveSpell(spell.name)}>
-                                                Remove
-                                            </button>
-                                        ) : (
-                                            <button className="btn-add" onClick={() => handleAddSpell(spell)}>
-                                                Add to Spellbook
-                                            </button>
-                                        )
-                                    ) : (
-                                        <span className="hint">Select a character</span>
-                                    )}
-                                </div>
-                            </div>
+                            <SpellCard
+                                key={index}
+                                spell={{ ...spell, id: `library-${index}`, prepared: false }}
+                                showAddButton={!!character && !inBook}
+                                onAdd={() => handleAddSpell(spell)}
+                                showRemoveButton={!!character && inBook}
+                                onRemove={() => handleRemoveSpell(spell.name)}
+                            />
                         );
                     })}
                 </div>

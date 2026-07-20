@@ -30,6 +30,7 @@
 .spell-header-info {
     display: flex;
     flex-direction: column;
+    flex: 1;
 }
 
 .spell-title {
@@ -48,128 +49,15 @@
 
 .spells-library-content {
     flex: 1;
-    padding: 20px;
+    padding: 16px 20px;
     overflow-y: auto;
-}
-
-.empty-state {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    gap: 16px;
-}
-
-.empty-state p {
-    color: #9ca3af;
-    font-size: 16px;
-}
-
-.btn-primary {
-    padding: 10px 24px;
-    background: #34d399;
-    border: none;
-    border-radius: 8px;
-    color: #0f0f0f;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-primary:hover {
-    background: #059669;
+    gap: 12px;
 }
 
 .spell-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-}
-
-.spell-item {
-    background: #1f2937;
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.spell-item-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.spell-item-name {
-    font-family: var(--font-family);
-    font-weight: 600;
-    font-size: 16px;
-    color: #fff;
-}
-
-.spell-item-meta {
-    display: flex;
-    gap: 12px;
-    font-size: 12px;
-    color: #9ca3af;
-}
-
-.spell-item-level {
-    font-weight: 500;
-}
-
-.spell-item-school {
-    font-style: italic;
-}
-
-.spell-item-description {
-    font-size: 13px;
-    color: #d1d5db;
-    line-height: 1.4;
-    margin-top: 4px;
-}
-
-.spell-item-actions {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
     gap: 8px;
-}
-
-.btn-add, .btn-remove {
-    padding: 6px 14px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-add {
-    background: #34d399;
-    color: #0f0f0f;
-}
-
-.btn-add:hover {
-    background: #059669;
-}
-
-.btn-remove {
-    background: #ef4444;
-    color: #fff;
-}
-
-.btn-remove:hover {
-    background: #dc2626;
-}
-
-.hint {
-    font-size: 12px;
-    color: #6b7280;
-    font-style: italic;
 }
