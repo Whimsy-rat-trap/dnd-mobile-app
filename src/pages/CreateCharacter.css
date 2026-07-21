@@ -179,3 +179,18 @@ input[type=number] {
     color: #fbbf24;
     font-weight: 600;
 }
+
+.bg-tool-tag {
+    background: #6b7280;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.bg-tool-none {
+    color: #6b7280;
+    font-size: 13px;
+    padding: 4px 0;
+}

@@ -26,6 +26,7 @@ export interface Character {
         cha: number;
     };
     skills: { name: string; attribute: string; proficient: boolean }[];
+    toolProficiencies: string[];
     inventory: InventoryItem[];
     spells: Spell[];
     quests: Quest[];

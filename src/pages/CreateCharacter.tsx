@@ -171,6 +171,7 @@ const CreateCharacter: React.FC = () => {
         // Получаем навыки из выбранного background-а
         const bg = DND_BACKGROUNDS.find(b => b.name === finalData.background);
         const backgroundSkills = bg ? bg.skillProficiencies : [];
+        const backgroundTools = bg ? bg.toolProficiencies || [] : [];
 
         const skillsWithProficiencies = defaultSkills.map(skill => {
             if (backgroundSkills.includes(skill.name)) {
@@ -183,6 +184,7 @@ const CreateCharacter: React.FC = () => {
             ...finalData,
             classes: [finalData.class],
             skills: skillsWithProficiencies,
+            toolProficiencies: backgroundTools,
             status: 'active' as const,
             created: today,
             lastUsed: today,
@@ -287,6 +289,23 @@ const CreateCharacter: React.FC = () => {
                             <div className="background-skills-display">
                                 {bg.skillProficiencies.map(skill => (
                                     <span key={skill} className="bg-skill-tag">{skill}</span>
+                                ))}
+                            </div>
+                        );
+                    })()}
+                </div>
+
+                <div className="form-group">
+                    <label>Background Tool Proficiencies</label>
+                    {(() => {
+                        const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
+                        if (!bg || !bg.toolProficiencies || bg.toolProficiencies.length === 0) {
+                            return <div className="bg-tool-none">None</div>;
+                        }
+                        return (
+                            <div className="background-skills-display">
+                                {bg.toolProficiencies.map(tool => (
+                                    <span key={tool} className="bg-tool-tag">{tool}</span>
                                 ))}
                             </div>
                         );

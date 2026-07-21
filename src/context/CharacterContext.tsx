@@ -67,18 +67,26 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 if (!updated.class) {
                     updated.class = updated.classes[0] || 'Fighter';
                 }
+
                 // заполняем skills, если их нет или они пустые
                 if (!updated.skills || updated.skills.length === 0) {
                     updated.skills = defaultSkills;
                 }
 
+                // Dice logs
                 if (!updated.diceLogs) {
                     updated.diceLogs = {};
                 }
 
+                // Death saves
                 if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
                 if (updated.deathFailures === undefined) updated.deathFailures = 0;
                 if (updated.isStable === undefined) updated.isStable = false;
+
+                // Tool proficiencies
+                if (!updated.toolProficiencies) {
+                    updated.toolProficiencies = [];
+                }
                 return updated;
             });
         } catch (e) {
@@ -106,6 +114,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             deathSuccesses: character.deathSuccesses ?? 0,
             deathFailures: character.deathFailures ?? 0,
             isStable: character.isStable ?? false,
+            toolProficiencies: character.toolProficiencies || [],
         };
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);

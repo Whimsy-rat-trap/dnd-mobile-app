@@ -98,7 +98,7 @@ const CharacterContainer: React.FC = () => {
             </header>
 
             <div className="character-content">
-                {/* Информация о персонаже */}
+                {/* Character Details */}
                 <div className="section-info">
                     <div className="info-title">Character Details</div>
                     <div className="info-grid">
@@ -201,6 +201,20 @@ const CharacterContainer: React.FC = () => {
                             );
                         })}
                     </div>
+                </div>
+
+                {/* Tool Proficiencies */}
+                <div className="section-tools">
+                    <div className="tools-title">Tool Proficiencies</div>
+                    {character.toolProficiencies && character.toolProficiencies.length > 0 ? (
+                        <div className="tools-grid">
+                            {character.toolProficiencies.map((tool, index) => (
+                                <span key={index} className="tool-tag">{tool}</span>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="tools-empty">No tool proficiencies</div>
+                    )}
                 </div>
             </div>
         </div>
