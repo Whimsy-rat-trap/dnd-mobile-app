@@ -1,0 +1,22 @@
+.skill-check {
+    border-radius: 4px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border: 2px solid #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.skill-check.checked {
+    background: #34d399;
+    border-color: #34d399;
+}
+
+.skill-check:not(.checked):hover {
+    border-color: #9ca3af;
+}

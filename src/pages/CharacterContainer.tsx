@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
+import SkillCheck from '../components/SkillCheck';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -176,24 +177,7 @@ const CharacterContainer: React.FC = () => {
                             return (
                                 <div className="skill-card" key={skill.name}>
                                     <div className="skill-left">
-                                        <div
-                                            className="skill-check"
-                                            onClick={() => toggleProficient(index)}
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            {skill.proficient ? (
-                                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M12.7143 4.40178L5.7143 11.4018C5.65334 11.463 5.58089 11.5115 5.50112 11.5446C5.42135 11.5777 5.33583 11.5948 5.24946 11.5948C5.16309 11.5948 5.07757 11.5777 4.9978 11.5446C4.91803 11.5115 4.84558 11.463 4.78462 11.4018L1.72212 8.33928C1.66107 8.27823 1.61265 8.20576 1.57961 8.12601C1.54658 8.04625 1.52957 7.96076 1.52957 7.87443C1.52957 7.78811 1.54658 7.70262 1.57961 7.62286C1.61265 7.5431 1.66107 7.47063 1.72212 7.40959C1.78316 7.34855 1.85563 7.30012 1.93539 7.26709C2.01515 7.23405 2.10063 7.21705 2.18696 7.21705C2.27329 7.21705 2.35877 7.23405 2.43853 7.26709C2.51829 7.30012 2.59076 7.34855 2.6518 7.40959L5.25001 10.0078L11.7857 3.47318C11.909 3.3499 12.0762 3.28064 12.2506 3.28064C12.4249 3.28064 12.5921 3.3499 12.7154 3.47318C12.8387 3.59647 12.9079 3.76368 12.9079 3.93803C12.9079 4.11238 12.8387 4.27959 12.7154 4.40287L12.7143 4.40178Z"
-                                                        fill="white"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <rect x="0.5" y="0.5" width="13" height="13" stroke="white" strokeOpacity="0.5" />
-                                                </svg>
-                                            )}
-                                        </div>
+                                        <SkillCheck proficient={skill.proficient} onToggle={() => toggleProficient(index)} />
                                         <span className="skill-name">{skill.name} ({skill.attribute})</span>
                                     </div>
                                     <span className="skill-bonus">{bonus >= 0 ? `+${bonus}` : `${bonus}`}</span>

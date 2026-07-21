@@ -322,17 +322,6 @@
     gap: 12px;
 }
 
-.skill-check {
-    border-radius: 4px;
-    width: 20px;
-    height: 20px;
-    background: #34d399;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
 .skill-name {
     font-family: var(--font-family);
     font-weight: 500;
