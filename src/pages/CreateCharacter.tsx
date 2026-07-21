@@ -8,6 +8,7 @@ import { CLASS_HIT_DICE } from '../constants/classHitDice';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
 import { RACE_DETAILS } from '../constants/raceDetails';
 import { LANGUAGES } from '../constants/languages';
+import DiceRoller from '../components/DiceRoller';
 import './CreateCharacter.css';
 
 // Вспомогательная функция для получения бонусов background-а к характеристикам
@@ -42,6 +43,10 @@ const CreateCharacter: React.FC = () => {
 
     const [selectedBonusAttrs, setSelectedBonusAttrs] = useState<(string | null)[]>([]);
 
+    // Для HP calculation в режиме "by rules"
+    const [hpMethod, setHpMethod] = useState<'average' | 'roll'>('average');
+    const [rolledHps, setRolledHps] = useState<number[]>([]);
+
     // При изменении расы обновляем размер и creature type
     useEffect(() => {
         const details = RACE_DETAILS[formData.race];
@@ -63,19 +68,48 @@ const CreateCharacter: React.FC = () => {
         }
     }, [formData.race]);
 
-    // При изменении класса или CON в режиме rules обновляем maxHp
+    // При переключении метода на Average сбрасываем броски
     useEffect(() => {
-        if (!isCreative) {
-            const conMod = Math.floor((formData.abilities.con - 10) / 2);
-            const hitDie = CLASS_HIT_DICE[formData.class] || 6;
-            const calculatedMaxHp = hitDie + conMod;
-            setFormData(prev => ({
-                ...prev,
-                maxHp: calculatedMaxHp,
-                hp: calculatedMaxHp,
-            }));
+        if (hpMethod === 'average') {
+            setRolledHps([]);
         }
-    }, [formData.class, formData.abilities.con, isCreative]);
+    }, [hpMethod]);
+
+    // Пересчёт HP в режиме "by rules" при изменении класса, уровня, CON, метода или бросков
+    useEffect(() => {
+        if (isCreative) return;
+
+        const conMod = Math.floor((formData.abilities.con - 10) / 2);
+        const hitDie = CLASS_HIT_DICE[formData.class] || 6;
+        const level = formData.level;
+
+        // Уровень 1: hitDie + conMod
+        let totalHp = hitDie + conMod;
+
+        if (level > 1) {
+            const additionalLevels = level - 1;
+            if (hpMethod === 'average') {
+                const average = Math.floor(hitDie / 2) + 1;
+                totalHp += additionalLevels * (average + conMod);
+            } else {
+                // roll method: используем только существующие броски
+                const currentRolls = rolledHps;
+                if (currentRolls.length > 0) {
+                    // Суммируем только те броски, которые есть
+                    const sumRolls = currentRolls.reduce((sum, r) => sum + r + conMod, 0);
+                    totalHp += sumRolls;
+                }
+                // Если бросков недостаточно, HP будет неполным — это нормально,
+                // пользователь увидит это и сможет добавить броски.
+            }
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            maxHp: totalHp,
+            hp: totalHp,
+        }));
+    }, [formData.class, formData.level, formData.abilities.con, hpMethod, rolledHps, isCreative]);
 
     // При изменении DEX в режиме rules обновляем AC
     useEffect(() => {
@@ -115,15 +149,56 @@ const CreateCharacter: React.FC = () => {
         setSelectedBonusAttrs(newAttrs);
     };
 
+    const handleRoll = (result: number) => {
+        if (isCreative) return;
+        const hitDie = CLASS_HIT_DICE[formData.class] || 6;
+        const additionalLevels = formData.level - 1;
+
+        if (additionalLevels === 0) {
+            // Уровень 1 — броски не нужны
+            return;
+        }
+
+        // Если уже есть все броски, перегенерируем все заново
+        if (rolledHps.length === additionalLevels) {
+            const newRolls = Array.from({ length: additionalLevels }, () =>
+                Math.floor(Math.random() * hitDie) + 1
+            );
+            setRolledHps(newRolls);
+        } else {
+            // Добавляем новый бросок
+            const newRolls = [...rolledHps, result];
+            setRolledHps(newRolls);
+        }
+    };
+
+    const handleRerollAll = () => {
+        if (isCreative) return;
+        const hitDie = CLASS_HIT_DICE[formData.class] || 6;
+        const additionalLevels = formData.level - 1;
+        if (additionalLevels === 0) return;
+        const newRolls = Array.from({ length: additionalLevels }, () =>
+            Math.floor(Math.random() * hitDie) + 1
+        );
+        setRolledHps(newRolls);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Валидация HP для метода Roll
+        if (!isCreative && hpMethod === 'roll' && formData.level > 1) {
+            const neededRolls = formData.level - 1;
+            if (rolledHps.length < neededRolls) {
+                alert(`Please roll HP for all levels (${neededRolls} rolls needed). Currently: ${rolledHps.length}`);
+                return;
+            }
+        }
+
         let finalData = { ...formData };
         if (!isCreative) {
-            const conMod = Math.floor((formData.abilities.con - 10) / 2);
-            const hitDie = CLASS_HIT_DICE[formData.class] || 6;
-            const calculatedMaxHp = hitDie + conMod;
-            finalData.maxHp = calculatedMaxHp;
-            finalData.hp = calculatedMaxHp;
+            // HP уже вычислен в эффекте, используем его
+            // AC и Speed уже вычислены
             finalData.ac = 10 + Math.floor((formData.abilities.dex - 10) / 2);
             finalData.speed = 30;
         }
@@ -275,7 +350,7 @@ const CreateCharacter: React.FC = () => {
                     </div>
                     <div className="form-group">
                         <label>Level *</label>
-                        <input type="number" name="level" value={formData.level} onChange={handleChange} min="1" required />
+                        <input type="number" name="level" value={formData.level} onChange={handleChange} min="1" max="20" required />
                     </div>
                 </div>
 
@@ -294,20 +369,79 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 )}
 
-                <div className="form-row">
-                    <div className="form-group">
-                        <label>HP *</label>
-                        <input type="number" name="hp" value={formData.hp} onChange={handleChange} min="0" required />
-                    </div>
-                    {isCreative && (
+                {isCreative ? (
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>HP *</label>
+                            <input type="number" name="hp" value={formData.hp} onChange={handleChange} min="0" required />
+                        </div>
                         <div className="form-group">
                             <label>Max HP *</label>
                             <input type="number" name="maxHp" value={formData.maxHp} onChange={handleChange} min="0" required />
                         </div>
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    <div className="hp-calculator">
+                        <div className="form-group">
+                            <label>Hit Points</label>
+                            <div className="hp-method-selector">
+                                <button
+                                    type="button"
+                                    className={`method-btn ${hpMethod === 'average' ? 'active' : ''}`}
+                                    onClick={() => setHpMethod('average')}
+                                >
+                                    Average
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`method-btn ${hpMethod === 'roll' ? 'active' : ''}`}
+                                    onClick={() => setHpMethod('roll')}
+                                >
+                                    Roll
+                                </button>
+                            </div>
+                        </div>
 
-                {isCreative ? (
+                        {hpMethod === 'roll' && formData.level > 1 && (
+                            <div className="hp-roll-area">
+                                <div className="roll-controls">
+                                    <DiceRoller
+                                        sides={CLASS_HIT_DICE[formData.class] || 6}
+                                        onRoll={handleRoll}
+                                        label="Roll HP"
+                                    />
+                                    {rolledHps.length === formData.level - 1 && (
+                                        <button type="button" className="reroll-btn" onClick={handleRerollAll}>
+                                            Reroll All
+                                        </button>
+                                    )}
+                                </div>
+                                {rolledHps.length > 0 && (
+                                    <div className="roll-results">
+                                        <span>Rolls: {rolledHps.join(', ')} ({rolledHps.length}/{formData.level - 1})</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="hp-formula">
+                            <span>Total HP: <strong>{formData.maxHp}</strong></span>
+                            <span className="formula-details">
+                                ({CLASS_HIT_DICE[formData.class] || 6} + CON) + {formData.level > 1 && (
+                                hpMethod === 'average'
+                                    ? `(${formData.level - 1} × (${Math.floor((CLASS_HIT_DICE[formData.class] || 6) / 2) + 1} + CON))`
+                                    : `(${rolledHps.length} × (rolls + CON))`
+                            )}
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+                {!isCreative && (
+                    <div className="info-text">AC and Speed are calculated automatically based on your class, race and abilities.</div>
+                )}
+
+                {isCreative && (
                     <div className="form-row">
                         <div className="form-group">
                             <label>AC</label>
@@ -318,8 +452,6 @@ const CreateCharacter: React.FC = () => {
                             <input type="number" name="speed" value={formData.speed} onChange={handleChange} min="0" />
                         </div>
                     </div>
-                ) : (
-                    <div className="info-text">HP, AC and Speed are calculated automatically based on your class, race and abilities.</div>
                 )}
 
                 <div className="form-group">

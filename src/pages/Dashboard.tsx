@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import CreateModePopup from '../components/CreateModePopup';
+import DiceRoller from '../components/DiceRoller';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -533,14 +534,11 @@ const Dashboard: React.FC = () => {
                     <div className="dice-title">Dice Roller</div>
                     <div className="dice-grid">
                         {diceTypes.map((sides, index) => (
-                            <button
+                            <DiceRoller
                                 key={sides}
-                                className={`dice-btn ${isSpinning[index] ? 'spinning' : ''}`}
-                                onClick={() => rollDice(index, sides)}
-                                disabled={isSpinning[index]}
-                            >
-                                {diceResults[index] !== null ? diceResults[index] : `D${sides}`}
-                            </button>
+                                sides={sides}
+                                onRoll={(result) => addDiceLog(character.id, sides, result)}
+                            />
                         ))}
                     </div>
 
