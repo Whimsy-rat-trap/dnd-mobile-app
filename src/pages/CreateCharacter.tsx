@@ -3,10 +3,16 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
-import { DND_BACKGROUNDS } from '../constants/backgrounds';
+import { DND_BACKGROUNDS, BackgroundData } from '../constants/backgrounds';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
 import './CreateCharacter.css';
+
+// Вспомогательная функция для получения бонусов background-а к характеристикам
+const getBackgroundAbilityBonuses = (bgName: string): { [key: string]: number } => {
+    const bg = DND_BACKGROUNDS.find(b => b.name === bgName);
+    return bg?.abilityBonuses || {};
+};
 
 const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
@@ -20,7 +26,7 @@ const CreateCharacter: React.FC = () => {
         name: '',
         class: DND_CLASSES[0],
         race: DND_RACES[0],
-        background: DND_BACKGROUNDS[0],
+        background: DND_BACKGROUNDS[0].name,
         level: 1,
         hp: 10,
         maxHp: 10,
@@ -130,11 +136,53 @@ const CreateCharacter: React.FC = () => {
                 }
             }
         }
+
+        // Применяем бонусы background-а к способностям
+        const bgBonuses = getBackgroundAbilityBonuses(finalData.background);
+        for (const [attr, bonus] of Object.entries(bgBonuses)) {
+            if (abilitiesWithBonuses.hasOwnProperty(attr)) {
+                abilitiesWithBonuses[attr as keyof typeof abilitiesWithBonuses] += bonus;
+            }
+        }
         finalData.abilities = abilitiesWithBonuses;
+
+        // Создаём список навыков с учётом выбранных от background-а
+        const defaultSkills = [
+            { name: 'Acrobatics', attribute: 'DEX', proficient: false },
+            { name: 'Animal Handling', attribute: 'WIS', proficient: false },
+            { name: 'Arcana', attribute: 'INT', proficient: false },
+            { name: 'Athletics', attribute: 'STR', proficient: false },
+            { name: 'Deception', attribute: 'CHA', proficient: false },
+            { name: 'History', attribute: 'INT', proficient: false },
+            { name: 'Insight', attribute: 'WIS', proficient: false },
+            { name: 'Intimidation', attribute: 'CHA', proficient: false },
+            { name: 'Investigation', attribute: 'INT', proficient: false },
+            { name: 'Medicine', attribute: 'WIS', proficient: false },
+            { name: 'Nature', attribute: 'INT', proficient: false },
+            { name: 'Perception', attribute: 'WIS', proficient: false },
+            { name: 'Performance', attribute: 'CHA', proficient: false },
+            { name: 'Persuasion', attribute: 'CHA', proficient: false },
+            { name: 'Religion', attribute: 'INT', proficient: false },
+            { name: 'Sleight of Hand', attribute: 'DEX', proficient: false },
+            { name: 'Stealth', attribute: 'DEX', proficient: false },
+            { name: 'Survival', attribute: 'WIS', proficient: false },
+        ];
+
+        // Получаем навыки из выбранного background-а
+        const bg = DND_BACKGROUNDS.find(b => b.name === finalData.background);
+        const backgroundSkills = bg ? bg.skillProficiencies : [];
+
+        const skillsWithProficiencies = defaultSkills.map(skill => {
+            if (backgroundSkills.includes(skill.name)) {
+                return { ...skill, proficient: true };
+            }
+            return skill;
+        });
 
         const newCharacter = {
             ...finalData,
             classes: [finalData.class],
+            skills: skillsWithProficiencies,
             status: 'active' as const,
             created: today,
             lastUsed: today,
@@ -144,7 +192,6 @@ const CreateCharacter: React.FC = () => {
             deathSuccesses: 0,
             deathFailures: 0,
             isStable: false,
-            skills: [],
             inventory: [],
             spells: [],
             quests: [],
@@ -193,7 +240,7 @@ const CreateCharacter: React.FC = () => {
                         <label>Background *</label>
                         <select name="background" value={formData.background} onChange={handleChange} required>
                             {DND_BACKGROUNDS.map(bg => (
-                                <option key={bg} value={bg}>{bg}</option>
+                                <option key={bg.name} value={bg.name}>{bg.name}</option>
                             ))}
                         </select>
                     </div>
@@ -232,6 +279,21 @@ const CreateCharacter: React.FC = () => {
                 )}
 
                 <div className="form-group">
+                    <label>Background Skill Proficiencies</label>
+                    {(() => {
+                        const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
+                        if (!bg) return null;
+                        return (
+                            <div className="background-skills-display">
+                                {bg.skillProficiencies.map(skill => (
+                                    <span key={skill} className="bg-skill-tag">{skill}</span>
+                                ))}
+                            </div>
+                        );
+                    })()}
+                </div>
+
+                <div className="form-group">
                     <label>Ability Scores</label>
                     <div className="ability-grid">
                         {Object.entries(formData.abilities).map(([key, value]) => {
@@ -244,6 +306,21 @@ const CreateCharacter: React.FC = () => {
                                 } else if (raceBonuses.choose && selectedBonusAttrs.includes(attr)) {
                                     const bonus = raceBonuses.choose.bonus;
                                     bonusDisplay = <span className="ability-bonus">+{bonus}</span>;
+                                }
+                            }
+                            // Бонусы от background-а
+                            const bgBonuses = getBackgroundAbilityBonuses(formData.background);
+                            if (bgBonuses[attr]) {
+                                const bgBonus = bgBonuses[attr];
+                                if (bonusDisplay) {
+                                    bonusDisplay = (
+                                        <>
+                                            {bonusDisplay}
+                                            <span className="ability-bonus bg-bonus">+{bgBonus}</span>
+                                        </>
+                                    );
+                                } else {
+                                    bonusDisplay = <span className="ability-bonus">+{bgBonus}</span>;
                                 }
                             }
                             return (
