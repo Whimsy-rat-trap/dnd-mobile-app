@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
@@ -10,7 +10,11 @@ const CharacterContainer: React.FC = () => {
     const { getCharacter, updateCharacter, setCurrentCharacterId } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
-    // Ранний возврат после всех хуков
+    const [useVariant, setUseVariant] = useState(false);
+    // Бэкапы для восстановления при выключении variant
+    const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
+    const [backupToolAttributes, setBackupToolAttributes] = useState<{ name: string; attribute: string }[]>([]);
+
     if (!character) {
         return <div className="page">Character not found</div>;
     }
@@ -45,15 +49,63 @@ const CharacterContainer: React.FC = () => {
         return skill.proficient ? mod + proficiencyBonus : mod;
     };
 
-    // Переключение состояния proficient для навыка (сохраняется в контекст)
-    const toggleProficient = (index: number) => {
+    const getToolBonus = (tool: typeof character.toolProficiencies[0]) => {
+        const attrKey = (tool.attribute || 'DEX').toLowerCase() as keyof typeof character.abilities;
+        const mod = getModifier(attrKey);
+        return tool.proficient ? mod + proficiencyBonus : mod;
+    };
+
+    const toggleSkillProficient = (index: number) => {
         const updatedSkills = character.skills.map((s, i) =>
             i === index ? { ...s, proficient: !s.proficient } : s
         );
         updateCharacter(character.id, { skills: updatedSkills });
     };
 
-    // Данные способностей из персонажа
+    const toggleToolProficient = (index: number) => {
+        const updatedTools = character.toolProficiencies.map((t, i) =>
+            i === index ? { ...t, proficient: !t.proficient } : t
+        );
+        updateCharacter(character.id, { toolProficiencies: updatedTools });
+    };
+
+    const handleSkillAttributeChange = (index: number, newAttr: string) => {
+        const updatedSkills = character.skills.map((s, i) =>
+            i === index ? { ...s, attribute: newAttr } : s
+        );
+        updateCharacter(character.id, { skills: updatedSkills });
+    };
+
+    const handleToolAttributeChange = (index: number, newAttr: string) => {
+        const updatedTools = character.toolProficiencies.map((t, i) =>
+            i === index ? { ...t, attribute: newAttr } : t
+        );
+        updateCharacter(character.id, { toolProficiencies: updatedTools });
+    };
+
+    // Переключение variant-режима с сохранением/восстановлением атрибутов
+    const handleVariantToggle = () => {
+        if (!useVariant) {
+            // Включаем variant: сохраняем текущие атрибуты
+            const skillAttrs = character.skills.map(s => ({ name: s.name, attribute: s.attribute }));
+            const toolAttrs = character.toolProficiencies.map(t => ({ name: t.name, attribute: t.attribute || 'DEX' }));
+            setBackupSkillAttributes(skillAttrs);
+            setBackupToolAttributes(toolAttrs);
+        } else {
+            // Выключаем variant: восстанавливаем атрибуты из бэкапа
+            const restoredSkills = character.skills.map(skill => {
+                const backup = backupSkillAttributes.find(b => b.name === skill.name);
+                return backup ? { ...skill, attribute: backup.attribute } : skill;
+            });
+            const restoredTools = character.toolProficiencies.map(tool => {
+                const backup = backupToolAttributes.find(b => b.name === tool.name);
+                return backup ? { ...tool, attribute: backup.attribute } : tool;
+            });
+            updateCharacter(character.id, { skills: restoredSkills, toolProficiencies: restoredTools });
+        }
+        setUseVariant(!useVariant);
+    };
+
     const abilitiesData = [
         { name: 'STR', score: character.abilities.str, modifier: getModifier('str') },
         { name: 'CON', score: character.abilities.con, modifier: getModifier('con') },
@@ -168,6 +220,19 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Переключатель */}
+                <div className="variant-toggle-container">
+                    <label className="variant-toggle">
+                        <span className="toggle-label">Use Skills with Different Abilities variant rule?</span>
+                        <input
+                            type="checkbox"
+                            checked={useVariant}
+                            onChange={handleVariantToggle}
+                        />
+                        <span className="toggle-slider"></span>
+                    </label>
+                </div>
+
                 {/* Skills & Proficiencies */}
                 <div className="section-skills">
                     <div className="skills-title">Skills & Proficiencies</div>
@@ -177,10 +242,23 @@ const CharacterContainer: React.FC = () => {
                             return (
                                 <div className="skill-card" key={skill.name}>
                                     <div className="skill-left">
-                                        <SkillCheck proficient={skill.proficient} onToggle={() => toggleProficient(index)} />
+                                        <SkillCheck proficient={skill.proficient} onToggle={() => toggleSkillProficient(index)} />
                                         <span className="skill-name">{skill.name} ({skill.attribute})</span>
                                     </div>
-                                    <span className="skill-bonus">{bonus >= 0 ? `+${bonus}` : `${bonus}`}</span>
+                                    <div className="skill-right">
+                                        {useVariant && (
+                                            <select
+                                                value={skill.attribute}
+                                                onChange={(e) => handleSkillAttributeChange(index, e.target.value)}
+                                                className="attr-select"
+                                            >
+                                                {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(attr => (
+                                                    <option key={attr} value={attr}>{attr}</option>
+                                                ))}
+                                            </select>
+                                        )}
+                                        <span className="skill-bonus">{bonus >= 0 ? `+${bonus}` : `${bonus}`}</span>
+                                    </div>
                                 </div>
                             );
                         })}
@@ -191,10 +269,32 @@ const CharacterContainer: React.FC = () => {
                 <div className="section-tools">
                     <div className="tools-title">Tool Proficiencies</div>
                     {character.toolProficiencies && character.toolProficiencies.length > 0 ? (
-                        <div className="tools-grid">
-                            {character.toolProficiencies.map((tool, index) => (
-                                <span key={index} className="tool-tag">{tool}</span>
-                            ))}
+                        <div className="skills-grid">
+                            {character.toolProficiencies.map((tool, index) => {
+                                const bonus = getToolBonus(tool);
+                                return (
+                                    <div className="skill-card" key={tool.name}>
+                                        <div className="skill-left">
+                                            <SkillCheck proficient={tool.proficient} onToggle={() => toggleToolProficient(index)} />
+                                            <span className="skill-name">{tool.name} ({tool.attribute || 'DEX'})</span>
+                                        </div>
+                                        <div className="skill-right">
+                                            {useVariant && (
+                                                <select
+                                                    value={tool.attribute || 'DEX'}
+                                                    onChange={(e) => handleToolAttributeChange(index, e.target.value)}
+                                                    className="attr-select"
+                                                >
+                                                    {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(attr => (
+                                                        <option key={attr} value={attr}>{attr}</option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                            <span className="skill-bonus">{bonus >= 0 ? `+${bonus}` : `${bonus}`}</span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="tools-empty">No tool proficiencies</div>

@@ -287,7 +287,7 @@
     gap: 12px;
     flex-shrink: 0;
     margin-bottom: 0;
-    padding-bottom: 20px;
+    padding-bottom: 8px;
 }
 
 .skills-title {
@@ -343,7 +343,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
 }
 
 .tools-title {
@@ -372,4 +372,115 @@
     color: #6b7280;
     font-size: 14px;
     font-style: italic;
+}
+
+.tool-attribute-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.attr-select {
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    color: #d1d5db;
+    font-size: 12px;
+    padding: 2px 4px;
+    height: 28px;
+    outline: none;
+}
+
+.attr-select:focus {
+    border-color: #34d399;
+}
+
+.skill-bonus {
+    min-width: 30px;
+    text-align: right;
+}
+
+/* Переключатель variant rule */
+.variant-toggle-container {
+    width: 353px;
+    display: flex;
+    justify-content: flex-start;
+    margin: 4px 0 8px 0;
+}
+
+.variant-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 14px;
+    color: #d1d5db;
+    user-select: none;
+}
+
+.variant-toggle input {
+    display: none;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #374151;
+    border-radius: 12px;
+    transition: background 0.3s;
+    flex-shrink: 0;
+}
+
+.toggle-slider::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.variant-toggle input:checked + .toggle-slider {
+    background: #34d399;
+}
+
+.variant-toggle input:checked + .toggle-slider::after {
+    transform: translateX(20px);
+}
+
+/* Атрибут-селектор для навыков и инструментов */
+.skill-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.attr-select {
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    color: #d1d5db;
+    font-size: 12px;
+    padding: 2px 4px;
+    height: 28px;
+    outline: none;
+    min-width: 40px;
+}
+
+.attr-select:focus {
+    border-color: #34d399;
+}
+
+.skill-bonus {
+    min-width: 30px;
+    text-align: right;
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 16px;
+    color: #34d399;
 }

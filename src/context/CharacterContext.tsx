@@ -59,6 +59,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             const parsed = JSON.parse(stored);
             return parsed.map((char: any) => {
                 const updated = { ...char };
+
+                // Миграция class -> classes
                 if (typeof updated.class === 'string' && !updated.classes) {
                     updated.classes = [updated.class];
                 } else if (!updated.classes) {
@@ -68,9 +70,23 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.class = updated.classes[0] || 'Fighter';
                 }
 
-                // заполняем skills, если их нет или они пустые
+                // Навыки (skills)
                 if (!updated.skills || updated.skills.length === 0) {
                     updated.skills = defaultSkills;
+                }
+
+                // Tool Proficiencies – миграция
+                if (!updated.toolProficiencies) {
+                    updated.toolProficiencies = [];
+                } else {
+                    updated.toolProficiencies = updated.toolProficiencies.map((tool: any) => {
+                        if (typeof tool === 'string') {
+                            // Было: ["Thieves' Tools", "Disguise Kit"] => преобразуем
+                            return { name: tool, attribute: 'DEX', proficient: true };
+                        }
+                        // Уже объект, но без attribute? Добавляем.
+                        return { ...tool, attribute: tool.attribute || 'DEX' };
+                    });
                 }
 
                 // Dice logs
@@ -83,10 +99,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 if (updated.deathFailures === undefined) updated.deathFailures = 0;
                 if (updated.isStable === undefined) updated.isStable = false;
 
-                // Tool proficiencies
-                if (!updated.toolProficiencies) {
-                    updated.toolProficiencies = [];
-                }
                 return updated;
             });
         } catch (e) {
@@ -110,11 +122,15 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             class: character.class || 'Fighter',
             classes: character.classes || [character.class || 'Fighter'],
             skills: (character.skills && character.skills.length > 0) ? character.skills : defaultSkills,
+            toolProficiencies: character.toolProficiencies ? character.toolProficiencies.map((tool: any) => ({
+                name: tool.name || tool,
+                attribute: tool.attribute || 'DEX',
+                proficient: tool.proficient !== undefined ? tool.proficient : true,
+            })) : [],
             diceLogs: character.diceLogs || {},
             deathSuccesses: character.deathSuccesses ?? 0,
             deathFailures: character.deathFailures ?? 0,
             isStable: character.isStable ?? false,
-            toolProficiencies: character.toolProficiencies || [],
         };
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);
@@ -289,7 +305,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     );
 };
 
-// Хук для использования контекста
 export const useCharacters = () => {
     const context = useContext(CharacterContext);
     if (!context) {
