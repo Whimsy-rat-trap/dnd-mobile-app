@@ -27,6 +27,9 @@ export interface Character {
     };
     skills: { name: string; attribute: string; proficient: boolean }[];
     toolProficiencies: { name: string; attribute: string; proficient: boolean }[];
+    size: string;
+    creatureType: string;
+    languages: string[];
     inventory: InventoryItem[];
     spells: Spell[];
     quests: Quest[];

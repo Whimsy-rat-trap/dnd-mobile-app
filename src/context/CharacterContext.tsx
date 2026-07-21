@@ -89,6 +89,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     });
                 }
 
+                if (!updated.size) updated.size = 'Medium';
+                if (!updated.creatureType) updated.creatureType = 'Humanoid';
+                if (!updated.languages) updated.languages = [];
+
                 // Dice logs
                 if (!updated.diceLogs) {
                     updated.diceLogs = {};
@@ -127,6 +131,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 attribute: tool.attribute || 'DEX',
                 proficient: tool.proficient !== undefined ? tool.proficient : true,
             })) : [],
+            size: character.size || 'Medium',
+            creatureType: character.creatureType || 'Humanoid',
+            languages: character.languages || [],
             diceLogs: character.diceLogs || {},
             deathSuccesses: character.deathSuccesses ?? 0,
             deathFailures: character.deathFailures ?? 0,

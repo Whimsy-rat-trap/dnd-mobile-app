@@ -6,7 +6,15 @@ import { DND_RACES } from '../constants/races';
 import { DND_BACKGROUNDS } from '../constants/backgrounds';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
+import { RACE_DETAILS } from '../constants/raceDetails';
+import { LANGUAGES } from '../constants/languages';
 import './CreateCharacter.css';
+
+// Вспомогательная функция для получения бонусов background-а к характеристикам
+const getBackgroundAbilityBonuses = (bgName: string): { [key: string]: number } => {
+    const bg = DND_BACKGROUNDS.find(b => b.name === bgName);
+    return bg?.abilityBonuses || {};
+};
 
 const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
@@ -29,21 +37,29 @@ const CreateCharacter: React.FC = () => {
         ac: 10,
         speed: 30,
         abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+        size: 'Medium',
     });
 
     const [selectedBonusAttrs, setSelectedBonusAttrs] = useState<(string | null)[]>([]);
 
-    // При изменении расы сбрасываем выбранные бонусы
+    // При изменении расы обновляем размер и creature type
     useEffect(() => {
-        const raceBonus = RACIAL_BONUSES[formData.race];
-        if (!raceBonus) {
-            setSelectedBonusAttrs([]);
-            return;
+        const details = RACE_DETAILS[formData.race];
+        if (details) {
+            let size = 'Medium';
+            if (typeof details.size === 'string') {
+                size = details.size;
+            } else if (details.size.options) {
+                size = details.size.default || details.size.options[0] || 'Medium';
+            }
+            setFormData(prev => ({ ...prev, size }));
         }
-        if (raceBonus.fixed) {
-            setSelectedBonusAttrs([]);
-        } else if (raceBonus.choose) {
+        // Сбрасываем выбранные бонусы для расы
+        const raceBonus = RACIAL_BONUSES[formData.race];
+        if (raceBonus && raceBonus.choose) {
             setSelectedBonusAttrs(new Array(raceBonus.choose.count).fill(null));
+        } else {
+            setSelectedBonusAttrs([]);
         }
     }, [formData.race]);
 
@@ -131,15 +147,11 @@ const CreateCharacter: React.FC = () => {
             }
         }
 
-        // ---- ОДНО ОБЪЯВЛЕНИЕ bg ----
-        const bg = DND_BACKGROUNDS.find(b => b.name === finalData.background);
-
-        // Применяем бонусы background-a к способностям
-        if (bg && bg.abilityBonuses) {
-            for (const [attr, bonus] of Object.entries(bg.abilityBonuses)) {
-                if (abilitiesWithBonuses.hasOwnProperty(attr)) {
-                    abilitiesWithBonuses[attr as keyof typeof abilitiesWithBonuses] += bonus;
-                }
+        // Применяем бонусы background-а к способностям
+        const bgBonuses = getBackgroundAbilityBonuses(finalData.background);
+        for (const [attr, bonus] of Object.entries(bgBonuses)) {
+            if (abilitiesWithBonuses.hasOwnProperty(attr)) {
+                abilitiesWithBonuses[attr as keyof typeof abilitiesWithBonuses] += bonus;
             }
         }
         finalData.abilities = abilitiesWithBonuses;
@@ -166,6 +178,7 @@ const CreateCharacter: React.FC = () => {
             { name: 'Survival', attribute: 'WIS', proficient: false },
         ];
 
+        const bg = DND_BACKGROUNDS.find(b => b.name === finalData.background);
         const backgroundSkills = bg ? bg.skillProficiencies : [];
         const skillsWithProficiencies = defaultSkills.map(skill => {
             if (backgroundSkills.includes(skill.name)) {
@@ -174,18 +187,29 @@ const CreateCharacter: React.FC = () => {
             return skill;
         });
 
-        // Получаем tool proficiencies из background-а (используем тот же bg)
+        // Получаем tool proficiencies из background-а
         const toolProficiencies = bg?.toolProficiencies?.map(tool => ({
             name: tool.name,
             attribute: tool.attribute || 'DEX',
             proficient: true,
         })) || [];
 
+        // Получаем языки из background-а
+        const languages = bg?.languages || [];
+
+        // Получаем creature type и размер
+        const raceDetails = RACE_DETAILS[finalData.race];
+        const creatureType = raceDetails ? raceDetails.creatureType : 'Humanoid';
+        const size = finalData.size || (typeof raceDetails?.size === 'string' ? raceDetails.size : 'Medium');
+
         const newCharacter = {
             ...finalData,
             classes: [finalData.class],
             skills: skillsWithProficiencies,
             toolProficiencies: toolProficiencies,
+            languages: languages,
+            creatureType: creatureType,
+            size: size,
             status: 'active' as const,
             created: today,
             lastUsed: today,
@@ -206,6 +230,8 @@ const CreateCharacter: React.FC = () => {
 
     // Определяем бонусы для текущей расы
     const raceBonuses = RACIAL_BONUSES[formData.race] || null;
+    const raceDetails = RACE_DETAILS[formData.race] || null;
+    const sizeOptions = raceDetails && typeof raceDetails.size === 'object' ? raceDetails.size.options : null;
 
     return (
         <div className="page create-character-page">
@@ -252,6 +278,21 @@ const CreateCharacter: React.FC = () => {
                         <input type="number" name="level" value={formData.level} onChange={handleChange} min="1" required />
                     </div>
                 </div>
+
+                {/* Если раса предлагает выбор размера */}
+                {sizeOptions && (
+                    <div className="form-group">
+                        <label>Size</label>
+                        <select
+                            value={formData.size}
+                            onChange={(e) => setFormData(prev => ({ ...prev, size: e.target.value }))}
+                        >
+                            {sizeOptions.map(opt => (
+                                <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
                 <div className="form-row">
                     <div className="form-group">
@@ -301,7 +342,7 @@ const CreateCharacter: React.FC = () => {
                     {(() => {
                         const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
                         if (!bg || !bg.toolProficiencies || bg.toolProficiencies.length === 0) {
-                            return <div className="tools-empty">None</div>;
+                            return <div className="tools-empty">No tool proficiencies</div>;
                         }
                         return (
                             <div className="background-skills-display">
@@ -314,11 +355,29 @@ const CreateCharacter: React.FC = () => {
                 </div>
 
                 <div className="form-group">
+                    <label>Background Languages</label>
+                    {(() => {
+                        const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
+                        if (!bg || !bg.languages || bg.languages.length === 0) {
+                            return <div className="tools-empty">No languages</div>;
+                        }
+                        return (
+                            <div className="background-skills-display">
+                                {bg.languages.map(lang => (
+                                    <span key={lang} className="bg-skill-tag">{lang}</span>
+                                ))}
+                            </div>
+                        );
+                    })()}
+                </div>
+
+                <div className="form-group">
                     <label>Ability Scores</label>
                     <div className="ability-grid">
                         {Object.entries(formData.abilities).map(([key, value]) => {
                             const attr = key as keyof typeof formData.abilities;
                             let bonusDisplay = null;
+                            // Расовые бонусы (фиксированные и выбранные)
                             if (raceBonuses) {
                                 if (raceBonuses.fixed && raceBonuses.fixed[attr]) {
                                     const bonus = raceBonuses.fixed[attr];
@@ -328,10 +387,10 @@ const CreateCharacter: React.FC = () => {
                                     bonusDisplay = <span className="ability-bonus">+{bonus}</span>;
                                 }
                             }
-                            // Бонусы от background-a
-                            const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
-                            if (bg && bg.abilityBonuses && bg.abilityBonuses[attr]) {
-                                const bgBonus = bg.abilityBonuses[attr];
+                            // Бонусы от background-а
+                            const bgBonuses = getBackgroundAbilityBonuses(formData.background);
+                            if (bgBonuses[attr]) {
+                                const bgBonus = bgBonuses[attr];
                                 if (bonusDisplay) {
                                     bonusDisplay = (
                                         <>

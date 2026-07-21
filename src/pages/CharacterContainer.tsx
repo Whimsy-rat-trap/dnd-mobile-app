@@ -184,6 +184,16 @@ const CharacterContainer: React.FC = () => {
                     </div>
                     <div className="info-grid">
                         <div className="info-item">
+                            <span className="info-label">Size</span>
+                            <span className="info-value">{character.size || 'Medium'}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Creature Type</span>
+                            <span className="info-value">{character.creatureType || 'Humanoid'}</span>
+                        </div>
+                    </div>
+                    <div className="info-grid">
+                        <div className="info-item">
                             <span className="info-label">Proficiency Bonus</span>
                             <span className="info-value">+{proficiencyBonus}</span>
                         </div>
@@ -298,6 +308,20 @@ const CharacterContainer: React.FC = () => {
                         </div>
                     ) : (
                         <div className="tools-empty">No tool proficiencies</div>
+                    )}
+                </div>
+
+                {/* Languages */}
+                <div className="section-languages">
+                    <div className="languages-title">Languages</div>
+                    {character.languages && character.languages.length > 0 ? (
+                        <div className="languages-grid">
+                            {character.languages.map((lang, index) => (
+                                <span key={index} className="language-tag">{lang}</span>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="languages-empty">No languages</div>
                     )}
                 </div>
             </div>
