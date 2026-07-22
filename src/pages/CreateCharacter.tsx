@@ -21,7 +21,7 @@ const getBackgroundAbilityBonuses = (bgName: string): { [key: string]: number } 
 const roll4d6DropLowest = (): number => {
     const rolls = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1);
     rolls.sort((a, b) => a - b);
-    rolls.shift(); // удаляем наименьшее
+    rolls.shift();
     return rolls.reduce((sum, r) => sum + r, 0);
 };
 
@@ -118,7 +118,6 @@ const CreateCharacter: React.FC = () => {
         const hitDie = CLASS_HIT_DICE[formData.class] || 6;
         const level = formData.level;
 
-        // Уровень 1: hitDie + conMod
         let totalHp = hitDie + conMod;
 
         if (level > 1) {
@@ -127,15 +126,11 @@ const CreateCharacter: React.FC = () => {
                 const average = Math.floor(hitDie / 2) + 1;
                 totalHp += additionalLevels * (average + conMod);
             } else {
-                // roll method: используем только существующие броски
                 const currentRolls = rolledHps;
                 if (currentRolls.length > 0) {
-                    // Суммируем только те броски, которые есть
                     const sumRolls = currentRolls.reduce((sum, r) => sum + r + conMod, 0);
                     totalHp += sumRolls;
                 }
-                // Если бросков недостаточно, HP будет неполным — это нормально,
-                // пользователь увидит это и сможет добавить броски.
             }
         }
 
@@ -189,19 +184,14 @@ const CreateCharacter: React.FC = () => {
         const hitDie = CLASS_HIT_DICE[formData.class] || 6;
         const additionalLevels = formData.level - 1;
 
-        if (additionalLevels === 0) {
-            // Уровень 1 — броски не нужны
-            return;
-        }
+        if (additionalLevels === 0) return;
 
-        // Если уже есть все броски, перегенерируем все заново
         if (rolledHps.length === additionalLevels) {
             const newRolls = Array.from({ length: additionalLevels }, () =>
                 Math.floor(Math.random() * hitDie) + 1
             );
             setRolledHps(newRolls);
         } else {
-            // Добавляем новый бросок
             const newRolls = [...rolledHps, result];
             setRolledHps(newRolls);
         }
@@ -218,7 +208,6 @@ const CreateCharacter: React.FC = () => {
         setRolledHps(newRolls);
     };
 
-    // Генерация статов стандартным набором
     const handleStandardArray = () => {
         const stats = standardArray();
         setFormData(prev => ({
@@ -227,7 +216,6 @@ const CreateCharacter: React.FC = () => {
         }));
     };
 
-    // Генерация статов через 4d6 drop lowest
     const handleRollStats = () => {
         const stats = generateRolledStats();
         setFormData(prev => ({
@@ -239,7 +227,6 @@ const CreateCharacter: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Валидация HP для метода Roll
         if (!isCreative && hpMethod === 'roll' && formData.level > 1) {
             const neededRolls = formData.level - 1;
             if (rolledHps.length < neededRolls) {
@@ -250,8 +237,6 @@ const CreateCharacter: React.FC = () => {
 
         let finalData = { ...formData };
         if (!isCreative) {
-            // HP уже вычислен в эффекте, используем его
-            // AC и Speed уже вычислены
             finalData.ac = 10 + Math.floor((formData.abilities.dex - 10) / 2);
             finalData.speed = 30;
         }
@@ -284,7 +269,7 @@ const CreateCharacter: React.FC = () => {
         }
         finalData.abilities = abilitiesWithBonuses;
 
-        // Создаём список навыков с учётом выбранных от background-а
+        // Создаём список навыков
         const defaultSkills = [
             { name: 'Acrobatics', attribute: 'DEX', proficient: false },
             { name: 'Animal Handling', attribute: 'WIS', proficient: false },
@@ -315,17 +300,14 @@ const CreateCharacter: React.FC = () => {
             return skill;
         });
 
-        // Получаем tool proficiencies из background-а
         const toolProficiencies = bg?.toolProficiencies?.map(tool => ({
             name: tool.name,
             attribute: tool.attribute || 'DEX',
             proficient: true,
         })) || [];
 
-        // Получаем языки из background-а
         const languages = bg?.languages || [];
 
-        // Получаем creature type и размер
         const raceDetails = RACE_DETAILS[finalData.race];
         const creatureType = raceDetails ? raceDetails.creatureType : 'Humanoid';
         const size = finalData.size || (typeof raceDetails?.size === 'string' ? raceDetails.size : 'Medium');
@@ -356,7 +338,6 @@ const CreateCharacter: React.FC = () => {
         navigate('/hub');
     };
 
-    // Определяем бонусы для текущей расы
     const raceBonuses = RACIAL_BONUSES[formData.race] || null;
     const raceDetails = RACE_DETAILS[formData.race] || null;
     const sizeOptions = raceDetails && typeof raceDetails.size === 'object' ? raceDetails.size.options : null;
@@ -407,7 +388,6 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Если раса предлагает выбор размера */}
                 {sizeOptions && (
                     <div className="form-group">
                         <label>Size</label>
@@ -437,7 +417,6 @@ const CreateCharacter: React.FC = () => {
                     <div className="hp-calculator">
                         <div className="form-group">
                             <label>Hit Points</label>
-                            {/* Показываем выбор метода только если уровень > 1 */}
                             {formData.level > 1 && (
                                 <div className="hp-method-selector">
                                     <button
@@ -606,7 +585,7 @@ const CreateCharacter: React.FC = () => {
                                         </>
                                     );
                                 } else {
-                                    bonusDisplay = <span className="ability-bonus">+{bgBonus}</span>;
+                                    bonusDisplay = <span className="ability-bonus bg-bonus">+{bgBonus}</span>;
                                 }
                             }
                             return (
@@ -627,6 +606,10 @@ const CreateCharacter: React.FC = () => {
                                 </div>
                             );
                         })}
+                    </div>
+                    <div className="ability-scores-legend">
+                        <span><span className="legend-color racial"></span> Racial bonus</span>
+                        <span><span className="legend-color background"></span> Background bonus</span>
                     </div>
                 </div>
 
