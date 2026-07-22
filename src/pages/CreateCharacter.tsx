@@ -52,6 +52,17 @@ const standardArray = (): { str: number; dex: number; con: number; int: number; 
     };
 };
 
+// Стоимость для Point Buy по правилам D&D 5e
+const getPointBuyCost = (value: number): number => {
+    if (value < 8 || value > 15) return 0;
+    const costMap: Record<number, number> = {
+        8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9
+    };
+    return costMap[value] || 0;
+};
+
+const POINT_BUY_POINTS = 27;
+
 const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
     const { addCharacter } = useCharacters();
@@ -81,6 +92,57 @@ const CreateCharacter: React.FC = () => {
     // Для HP calculation в режиме "by rules"
     const [hpMethod, setHpMethod] = useState<'average' | 'roll'>('average');
     const [rolledHps, setRolledHps] = useState<number[]>([]);
+
+    // Для Point Buy
+    const [showPointBuy, setShowPointBuy] = useState(false);
+    const [pointBuyValues, setPointBuyValues] = useState<{ str: number; dex: number; con: number; int: number; wis: number; cha: number }>({
+        str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8
+    });
+
+    // Вычисляем оставшиеся очки для Point Buy
+    const getRemainingPoints = (): number => {
+        const totalCost = Object.values(pointBuyValues).reduce((sum, val) => sum + getPointBuyCost(val), 0);
+        return POINT_BUY_POINTS - totalCost;
+    };
+
+    // Проверка, можно ли увеличить стат
+    const canIncrease = (stat: keyof typeof pointBuyValues): boolean => {
+        const current = pointBuyValues[stat];
+        if (current >= 15) return false;
+        const nextCost = getPointBuyCost(current + 1);
+        const currentCost = getPointBuyCost(current);
+        const diff = nextCost - currentCost;
+        return getRemainingPoints() >= diff;
+    };
+
+    // Проверка, можно ли уменьшить стат
+    const canDecrease = (stat: keyof typeof pointBuyValues): boolean => {
+        const current = pointBuyValues[stat];
+        return current > 8;
+    };
+
+    // Изменение значения stat для Point Buy
+    const handlePointBuyChange = (stat: keyof typeof pointBuyValues, delta: number) => {
+        if (delta > 0 && !canIncrease(stat)) return;
+        if (delta < 0 && !canDecrease(stat)) return;
+        const newVal = pointBuyValues[stat] + delta;
+        if (newVal < 8 || newVal > 15) return;
+        // Проверяем, хватит ли очков
+        const newCost = getPointBuyCost(newVal);
+        const oldCost = getPointBuyCost(pointBuyValues[stat]);
+        const diff = newCost - oldCost;
+        if (diff > getRemainingPoints()) return;
+        setPointBuyValues(prev => ({ ...prev, [stat]: newVal }));
+    };
+
+    // Применить Point Buy
+    const applyPointBuy = () => {
+        setFormData(prev => ({
+            ...prev,
+            abilities: { ...prev.abilities, ...pointBuyValues }
+        }));
+        setShowPointBuy(false);
+    };
 
     // При изменении расы обновляем размер и creature type
     useEffect(() => {
@@ -553,6 +615,12 @@ const CreateCharacter: React.FC = () => {
                             <button type="button" className="stat-btn" onClick={handleRollStats}>
                                 Roll 4d6
                             </button>
+                            <button type="button" className="stat-btn" onClick={() => {
+                                setPointBuyValues({ str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 });
+                                setShowPointBuy(true);
+                            }}>
+                                Point Buy
+                            </button>
                         </div>
                     </div>
                 )}
@@ -644,6 +712,50 @@ const CreateCharacter: React.FC = () => {
 
                 <button type="submit" className="submit-btn">Create Character</button>
             </form>
+
+            {/* Point Buy Modal */}
+            {showPointBuy && (
+                <div className="modal-overlay" onClick={() => setShowPointBuy(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Point Buy</h3>
+                        <div className="pointbuy-points">Points remaining: <strong>{getRemainingPoints()}</strong></div>
+                        <div className="pointbuy-grid">
+                            {Object.entries(pointBuyValues).map(([stat, value]) => (
+                                <div key={stat} className="pointbuy-stat">
+                                    <span className="pointbuy-stat-label">{stat.toUpperCase()}</span>
+                                    <div className="pointbuy-controls">
+                                        <button
+                                            type="button"
+                                            className="pointbuy-btn"
+                                            onClick={() => handlePointBuyChange(stat as keyof typeof pointBuyValues, -1)}
+                                            disabled={!canDecrease(stat as keyof typeof pointBuyValues)}
+                                        >
+                                            −
+                                        </button>
+                                        <span className="pointbuy-stat-value">{value}</span>
+                                        <button
+                                            type="button"
+                                            className="pointbuy-btn"
+                                            onClick={() => handlePointBuyChange(stat as keyof typeof pointBuyValues, 1)}
+                                            disabled={!canIncrease(stat as keyof typeof pointBuyValues)}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="modal-actions">
+                            <button type="button" className="modal-btn cancel" onClick={() => setShowPointBuy(false)}>
+                                Cancel
+                            </button>
+                            <button type="button" className="modal-btn apply" onClick={applyPointBuy}>
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

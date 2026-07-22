@@ -341,5 +341,141 @@ input[type=number] {
 }
 
 .ability-bonus.bg-bonus {
-    color: #fbbf24; /* жёлтый для фоновых бонусов */
+    color: #fbbf24;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #1f2937;
+    border-radius: 16px;
+    padding: 24px;
+    width: 90%;
+    max-width: 360px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content h3 {
+    color: #fff;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.pointbuy-points {
+    text-align: center;
+    color: #9ca3af;
+    margin-bottom: 16px;
+    font-size: 16px;
+}
+
+.pointbuy-points strong {
+    color: #34d399;
+    font-size: 20px;
+}
+
+.pointbuy-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pointbuy-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0f0f0f;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.pointbuy-stat-label {
+    color: #d1d5db;
+    font-weight: 600;
+    font-size: 14px;
+    min-width: 40px;
+}
+
+.pointbuy-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pointbuy-stat-value {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    min-width: 30px;
+    text-align: center;
+}
+
+.pointbuy-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #374957;
+    background: transparent;
+    color: #d1d5db;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.pointbuy-btn:hover:not(:disabled) {
+    border-color: #34d399;
+    color: #fff;
+}
+
+.pointbuy-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-btn.cancel {
+    background: #374151;
+    color: #9ca3af;
+}
+
+.modal-btn.cancel:hover {
+    background: #4b5563;
+}
+
+.modal-btn.apply {
+    background: #34d399;
+    color: #0f0f0f;
+}
+
+.modal-btn.apply:hover {
+    background: #059669;
 }
