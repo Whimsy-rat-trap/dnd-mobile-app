@@ -384,22 +384,25 @@ const CreateCharacter: React.FC = () => {
                     <div className="hp-calculator">
                         <div className="form-group">
                             <label>Hit Points</label>
-                            <div className="hp-method-selector">
-                                <button
-                                    type="button"
-                                    className={`method-btn ${hpMethod === 'average' ? 'active' : ''}`}
-                                    onClick={() => setHpMethod('average')}
-                                >
-                                    Average
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`method-btn ${hpMethod === 'roll' ? 'active' : ''}`}
-                                    onClick={() => setHpMethod('roll')}
-                                >
-                                    Roll
-                                </button>
-                            </div>
+                            {/* Показываем выбор метода только если уровень > 1 */}
+                            {formData.level > 1 && (
+                                <div className="hp-method-selector">
+                                    <button
+                                        type="button"
+                                        className={`method-btn ${hpMethod === 'average' ? 'active' : ''}`}
+                                        onClick={() => setHpMethod('average')}
+                                    >
+                                        Average
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`method-btn ${hpMethod === 'roll' ? 'active' : ''}`}
+                                        onClick={() => setHpMethod('roll')}
+                                    >
+                                        Roll
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {hpMethod === 'roll' && formData.level > 1 && (
@@ -426,13 +429,18 @@ const CreateCharacter: React.FC = () => {
 
                         <div className="hp-formula">
                             <span>Total HP: <strong>{formData.maxHp}</strong></span>
-                            <span className="formula-details">
-                                ({CLASS_HIT_DICE[formData.class] || 6} + CON) + {formData.level > 1 && (
-                                hpMethod === 'average'
-                                    ? `(${formData.level - 1} × (${Math.floor((CLASS_HIT_DICE[formData.class] || 6) / 2) + 1} + CON))`
-                                    : `(${rolledHps.length} × (rolls + CON))`
+                            {formData.level > 1 && (
+                                <span className="formula-details">
+                                    ({CLASS_HIT_DICE[formData.class] || 6} + CON) + {formData.level > 1 && (
+                                    hpMethod === 'average'
+                                        ? `(${formData.level - 1} × (${Math.floor((CLASS_HIT_DICE[formData.class] || 6) / 2) + 1} + CON))`
+                                        : `(${rolledHps.length} × (rolls + CON))`
+                                )}
+                                </span>
                             )}
-                            </span>
+                            {formData.level === 1 && (
+                                <span className="formula-details">(Level 1: {CLASS_HIT_DICE[formData.class] || 6} + CON modifier)</span>
+                            )}
                         </div>
                     </div>
                 )}
