@@ -17,6 +17,41 @@ const getBackgroundAbilityBonuses = (bgName: string): { [key: string]: number } 
     return bg?.abilityBonuses || {};
 };
 
+// Генерация одного значения 4d6 drop lowest
+const roll4d6DropLowest = (): number => {
+    const rolls = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1);
+    rolls.sort((a, b) => a - b);
+    rolls.shift(); // удаляем наименьшее
+    return rolls.reduce((sum, r) => sum + r, 0);
+};
+
+// Генерация массива из 6 значений (для способностей) с сортировкой по убыванию
+const generateRolledStats = (): { str: number; dex: number; con: number; int: number; wis: number; cha: number } => {
+    const stats = Array.from({ length: 6 }, () => roll4d6DropLowest());
+    stats.sort((a, b) => b - a);
+    return {
+        str: stats[0],
+        dex: stats[1],
+        con: stats[2],
+        int: stats[3],
+        wis: stats[4],
+        cha: stats[5],
+    };
+};
+
+// Стандартный набор
+const standardArray = (): { str: number; dex: number; con: number; int: number; wis: number; cha: number } => {
+    const array = [15, 14, 13, 12, 10, 8];
+    return {
+        str: array[0],
+        dex: array[1],
+        con: array[2],
+        int: array[3],
+        wis: array[4],
+        cha: array[5],
+    };
+};
+
 const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
     const { addCharacter } = useCharacters();
@@ -181,6 +216,24 @@ const CreateCharacter: React.FC = () => {
             Math.floor(Math.random() * hitDie) + 1
         );
         setRolledHps(newRolls);
+    };
+
+    // Генерация статов стандартным набором
+    const handleStandardArray = () => {
+        const stats = standardArray();
+        setFormData(prev => ({
+            ...prev,
+            abilities: { ...prev.abilities, ...stats },
+        }));
+    };
+
+    // Генерация статов через 4d6 drop lowest
+    const handleRollStats = () => {
+        const stats = generateRolledStats();
+        setFormData(prev => ({
+            ...prev,
+            abilities: { ...prev.abilities, ...stats },
+        }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -510,6 +563,20 @@ const CreateCharacter: React.FC = () => {
                         );
                     })()}
                 </div>
+
+                {!isCreative && (
+                    <div className="form-group stat-generation">
+                        <label>Stat Generation Methods</label>
+                        <div className="stat-buttons">
+                            <button type="button" className="stat-btn" onClick={handleStandardArray}>
+                                Standard Array
+                            </button>
+                            <button type="button" className="stat-btn" onClick={handleRollStats}>
+                                Roll 4d6
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <div className="form-group">
                     <label>Ability Scores</label>
