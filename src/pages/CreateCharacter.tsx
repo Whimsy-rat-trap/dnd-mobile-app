@@ -91,24 +91,6 @@ const CreateCharacter: React.FC = () => {
     const [statAssignments, setStatAssignments] = useState<{ [key: string]: number | null }>({
         str: null, dex: null, con: null, int: null, wis: null, cha: null
     });
-    const [rollsAnimated, setRollsAnimated] = useState<boolean[]>([]);
-
-    // При открытии модалки сбрасываем анимацию
-    useEffect(() => {
-        if (showRollDistribution) {
-            setRollsAnimated(Array(6).fill(false));
-            // Запускаем анимацию с задержкой для каждого дайса
-            rollValues.forEach((_, idx) => {
-                setTimeout(() => {
-                    setRollsAnimated(prev => {
-                        const newArr = [...prev];
-                        newArr[idx] = true;
-                        return newArr;
-                    });
-                }, 100 + idx * 150);
-            });
-        }
-    }, [showRollDistribution, rollValues]);
 
     // Вычисляем оставшиеся очки для Point Buy
     const getRemainingPoints = (): number => {
@@ -163,8 +145,10 @@ const CreateCharacter: React.FC = () => {
     };
 
     const assignRollToStat = (stat: keyof typeof statAssignments, index: number) => {
+        // Проверяем, не занят ли этот индекс уже в другом стате
         const usedIndices = Object.values(statAssignments).filter(v => v !== null) as number[];
         if (usedIndices.includes(index)) {
+            // Если индекс уже используется, снимаем его с предыдущего стата
             for (const key of Object.keys(statAssignments) as (keyof typeof statAssignments)[]) {
                 if (statAssignments[key] === index) {
                     setStatAssignments(prev => ({ ...prev, [key]: null }));
@@ -172,6 +156,7 @@ const CreateCharacter: React.FC = () => {
                 }
             }
         }
+        // Назначаем индекс на стат
         setStatAssignments(prev => ({ ...prev, [stat]: index }));
     };
 
@@ -810,12 +795,13 @@ const CreateCharacter: React.FC = () => {
                         <div className="roll-distribution">
                             <div className="roll-values">
                                 {rollValues.map((value, idx) => (
-                                    <div
+                                    <DiceRoller
                                         key={idx}
-                                        className={`roll-value-item ${rollsAnimated[idx] ? 'animated' : ''}`}
-                                    >
-                                        {rollsAnimated[idx] ? value : '?'}
-                                    </div>
+                                        sides={6}
+                                        initialResult={value}
+                                        autoRoll={true}
+                                        displayOnly={true}
+                                    />
                                 ))}
                             </div>
                             <div className="stat-assignment-grid">
