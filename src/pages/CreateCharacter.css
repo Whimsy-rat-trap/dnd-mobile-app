@@ -340,10 +340,9 @@ input[type=number] {
     background: #fbbf24;
 }
 
-.ability-bonus.bg-bonus {
-    color: #fbbf24;
-}
+/* Убираем дублирование .ability-bonus.bg-bonus (уже есть выше) */
 
+/* Модальные окна */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -480,6 +479,7 @@ input[type=number] {
     background: #059669;
 }
 
+/* Roll Distribution Modal */
 .roll-distribution {
     display: flex;
     flex-direction: column;
@@ -488,17 +488,32 @@ input[type=number] {
 
 .roll-values {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
     justify-content: center;
 }
 
-.roll-value-item {
-    background: #0f0f0f;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 24px;
-    font-weight: 700;
-    color: #34d399;
+/* Стили для дайсов в модалке распределения */
+.roll-values .dice-roller-component .dice-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 12px;
+    background: linear-gradient(315deg, #3b82f6 0%, #1e40af 100%);
+}
+
+.roll-values .dice-roller-component .dice-btn:disabled {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.roll-values .dice-roller-component {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.roll-values .dice-roller-component .dice-label {
+    display: none;
 }
 
 .stat-assignment-grid {

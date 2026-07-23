@@ -85,12 +85,30 @@ const CreateCharacter: React.FC = () => {
         str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8
     });
 
-    // Для Roll 4d6 distribution
+    // Для Roll Distribution
     const [showRollDistribution, setShowRollDistribution] = useState(false);
     const [rollValues, setRollValues] = useState<number[]>([]);
     const [statAssignments, setStatAssignments] = useState<{ [key: string]: number | null }>({
         str: null, dex: null, con: null, int: null, wis: null, cha: null
     });
+    const [rollsAnimated, setRollsAnimated] = useState<boolean[]>([]);
+
+    // При открытии модалки сбрасываем анимацию
+    useEffect(() => {
+        if (showRollDistribution) {
+            setRollsAnimated(Array(6).fill(false));
+            // Запускаем анимацию с задержкой для каждого дайса
+            rollValues.forEach((_, idx) => {
+                setTimeout(() => {
+                    setRollsAnimated(prev => {
+                        const newArr = [...prev];
+                        newArr[idx] = true;
+                        return newArr;
+                    });
+                }, 100 + idx * 150);
+            });
+        }
+    }, [showRollDistribution, rollValues]);
 
     // Вычисляем оставшиеся очки для Point Buy
     const getRemainingPoints = (): number => {
@@ -120,7 +138,6 @@ const CreateCharacter: React.FC = () => {
         if (delta < 0 && !canDecrease(stat)) return;
         const newVal = pointBuyValues[stat] + delta;
         if (newVal < 8 || newVal > 15) return;
-        // Проверяем, хватит ли очков
         const newCost = getPointBuyCost(newVal);
         const oldCost = getPointBuyCost(pointBuyValues[stat]);
         const diff = newCost - oldCost;
@@ -137,7 +154,7 @@ const CreateCharacter: React.FC = () => {
         setShowPointBuy(false);
     };
 
-    // Генерация шести значений и открытие модалки
+    // Roll Distribution
     const handleRollStats = () => {
         const stats = Array.from({ length: 6 }, () => roll4d6DropLowest());
         setRollValues(stats);
@@ -145,24 +162,17 @@ const CreateCharacter: React.FC = () => {
         setShowRollDistribution(true);
     };
 
-    // Назначение числа на стат
-    const assignRollToStat = (stat: keyof typeof statAssignments, value: number) => {
-        const newAssignments = { ...statAssignments };
-        // Если стат уже занят, ничего не делаем
-        if (newAssignments[stat] !== null) return;
-        // Проверяем, не используется ли это число уже в другом стате
-        const usedValues = Object.values(newAssignments).filter(v => v !== null);
-        if (usedValues.includes(value)) {
-            // Если число уже используется, снимаем его с того стата
-            for (const key of Object.keys(newAssignments) as (keyof typeof statAssignments)[]) {
-                if (newAssignments[key] === value) {
-                    newAssignments[key] = null;
+    const assignRollToStat = (stat: keyof typeof statAssignments, index: number) => {
+        const usedIndices = Object.values(statAssignments).filter(v => v !== null) as number[];
+        if (usedIndices.includes(index)) {
+            for (const key of Object.keys(statAssignments) as (keyof typeof statAssignments)[]) {
+                if (statAssignments[key] === index) {
+                    setStatAssignments(prev => ({ ...prev, [key]: null }));
                     break;
                 }
             }
         }
-        newAssignments[stat] = value;
-        setStatAssignments(newAssignments);
+        setStatAssignments(prev => ({ ...prev, [stat]: index }));
     };
 
     // Отменить назначение
@@ -178,9 +188,9 @@ const CreateCharacter: React.FC = () => {
             return;
         }
         const newAbilities = { ...formData.abilities };
-        for (const [stat, value] of Object.entries(statAssignments)) {
-            if (value !== null) {
-                newAbilities[stat as keyof typeof newAbilities] = value;
+        for (const [stat, index] of Object.entries(statAssignments)) {
+            if (index !== null) {
+                newAbilities[stat as keyof typeof newAbilities] = rollValues[index];
             }
         }
         setFormData(prev => ({ ...prev, abilities: newAbilities }));
@@ -792,7 +802,7 @@ const CreateCharacter: React.FC = () => {
                 </div>
             )}
 
-            {/* Roll 4d6 Distribution Modal */}
+            {/* Roll Distribution Modal */}
             {showRollDistribution && (
                 <div className="modal-overlay" onClick={() => setShowRollDistribution(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -800,32 +810,35 @@ const CreateCharacter: React.FC = () => {
                         <div className="roll-distribution">
                             <div className="roll-values">
                                 {rollValues.map((value, idx) => (
-                                    <div key={idx} className="roll-value-item">
-                                        <span className="roll-number">{value}</span>
+                                    <div
+                                        key={idx}
+                                        className={`roll-value-item ${rollsAnimated[idx] ? 'animated' : ''}`}
+                                    >
+                                        {rollsAnimated[idx] ? value : '?'}
                                     </div>
                                 ))}
                             </div>
                             <div className="stat-assignment-grid">
-                                {Object.entries(statAssignments).map(([stat, assigned]) => {
-                                    const usedValues = Object.values(statAssignments).filter(v => v !== null);
-                                    const availableValues = rollValues.filter(v => !usedValues.includes(v) || v === assigned);
+                                {Object.entries(statAssignments).map(([stat, assignedIndex]) => {
+                                    const usedIndices = Object.values(statAssignments).filter(v => v !== null) as number[];
+                                    const availableIndices = rollValues.map((_, idx) => idx).filter(idx => !usedIndices.includes(idx) || idx === assignedIndex);
                                     return (
                                         <div key={stat} className="assign-row">
                                             <span className="assign-stat-label">{stat.toUpperCase()}</span>
                                             <select
-                                                value={assigned !== null ? assigned : ''}
+                                                value={assignedIndex !== null ? assignedIndex : ''}
                                                 onChange={(e) => {
-                                                    const val = Number(e.target.value);
-                                                    if (val) assignRollToStat(stat as keyof typeof statAssignments, val);
+                                                    const idx = Number(e.target.value);
+                                                    if (!isNaN(idx)) assignRollToStat(stat as keyof typeof statAssignments, idx);
                                                 }}
                                                 className="assign-select"
                                             >
                                                 <option value="">—</option>
-                                                {availableValues.map(v => (
-                                                    <option key={v} value={v}>{v}</option>
+                                                {availableIndices.map(idx => (
+                                                    <option key={idx} value={idx}>{rollValues[idx]}</option>
                                                 ))}
                                             </select>
-                                            {assigned !== null && (
+                                            {assignedIndex !== null && (
                                                 <button type="button" className="unassign-btn" onClick={() => unassignRoll(stat as keyof typeof statAssignments)}>✕</button>
                                             )}
                                         </div>
@@ -833,12 +846,8 @@ const CreateCharacter: React.FC = () => {
                                 })}
                             </div>
                             <div className="modal-actions">
-                                <button type="button" className="modal-btn cancel" onClick={() => setShowRollDistribution(false)}>
-                                    Cancel
-                                </button>
-                                <button type="button" className="modal-btn apply" onClick={applyRollDistribution}>
-                                    Apply
-                                </button>
+                                <button type="button" className="modal-btn cancel" onClick={() => setShowRollDistribution(false)}>Cancel</button>
+                                <button type="button" className="modal-btn apply" onClick={applyRollDistribution}>Apply</button>
                             </div>
                         </div>
                     </div>
