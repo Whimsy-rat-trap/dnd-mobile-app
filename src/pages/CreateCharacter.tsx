@@ -25,20 +25,6 @@ const roll4d6DropLowest = (): number => {
     return rolls.reduce((sum, r) => sum + r, 0);
 };
 
-// Генерация массива из 6 значений (для способностей) с сортировкой по убыванию
-const generateRolledStats = (): { str: number; dex: number; con: number; int: number; wis: number; cha: number } => {
-    const stats = Array.from({ length: 6 }, () => roll4d6DropLowest());
-    stats.sort((a, b) => b - a);
-    return {
-        str: stats[0],
-        dex: stats[1],
-        con: stats[2],
-        int: stats[3],
-        wis: stats[4],
-        cha: stats[5],
-    };
-};
-
 // Стандартный набор
 const standardArray = (): { str: number; dex: number; con: number; int: number; wis: number; cha: number } => {
     const array = [15, 14, 13, 12, 10, 8];
@@ -99,6 +85,13 @@ const CreateCharacter: React.FC = () => {
         str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8
     });
 
+    // Для Roll 4d6 distribution
+    const [showRollDistribution, setShowRollDistribution] = useState(false);
+    const [rollValues, setRollValues] = useState<number[]>([]);
+    const [statAssignments, setStatAssignments] = useState<{ [key: string]: number | null }>({
+        str: null, dex: null, con: null, int: null, wis: null, cha: null
+    });
+
     // Вычисляем оставшиеся очки для Point Buy
     const getRemainingPoints = (): number => {
         const totalCost = Object.values(pointBuyValues).reduce((sum, val) => sum + getPointBuyCost(val), 0);
@@ -144,6 +137,56 @@ const CreateCharacter: React.FC = () => {
         setShowPointBuy(false);
     };
 
+    // Генерация шести значений и открытие модалки
+    const handleRollStats = () => {
+        const stats = Array.from({ length: 6 }, () => roll4d6DropLowest());
+        setRollValues(stats);
+        setStatAssignments({ str: null, dex: null, con: null, int: null, wis: null, cha: null });
+        setShowRollDistribution(true);
+    };
+
+    // Назначение числа на стат
+    const assignRollToStat = (stat: keyof typeof statAssignments, value: number) => {
+        const newAssignments = { ...statAssignments };
+        // Если стат уже занят, ничего не делаем
+        if (newAssignments[stat] !== null) return;
+        // Проверяем, не используется ли это число уже в другом стате
+        const usedValues = Object.values(newAssignments).filter(v => v !== null);
+        if (usedValues.includes(value)) {
+            // Если число уже используется, снимаем его с того стата
+            for (const key of Object.keys(newAssignments) as (keyof typeof statAssignments)[]) {
+                if (newAssignments[key] === value) {
+                    newAssignments[key] = null;
+                    break;
+                }
+            }
+        }
+        newAssignments[stat] = value;
+        setStatAssignments(newAssignments);
+    };
+
+    // Отменить назначение
+    const unassignRoll = (stat: keyof typeof statAssignments) => {
+        setStatAssignments(prev => ({ ...prev, [stat]: null }));
+    };
+
+    // Применить распределение
+    const applyRollDistribution = () => {
+        const allAssigned = Object.values(statAssignments).every(v => v !== null);
+        if (!allAssigned) {
+            alert('Please assign all rolled values to ability scores.');
+            return;
+        }
+        const newAbilities = { ...formData.abilities };
+        for (const [stat, value] of Object.entries(statAssignments)) {
+            if (value !== null) {
+                newAbilities[stat as keyof typeof newAbilities] = value;
+            }
+        }
+        setFormData(prev => ({ ...prev, abilities: newAbilities }));
+        setShowRollDistribution(false);
+    };
+
     // При изменении расы обновляем размер и creature type
     useEffect(() => {
         const details = RACE_DETAILS[formData.race];
@@ -172,7 +215,7 @@ const CreateCharacter: React.FC = () => {
         }
     }, [hpMethod]);
 
-    // Пересчёт HP в режиме "by rules" при изменении класса, уровня, CON, метода или бросков
+    // Пересчёт HP в режиме "by rules"
     useEffect(() => {
         if (isCreative) return;
 
@@ -272,14 +315,6 @@ const CreateCharacter: React.FC = () => {
 
     const handleStandardArray = () => {
         const stats = standardArray();
-        setFormData(prev => ({
-            ...prev,
-            abilities: { ...prev.abilities, ...stats },
-        }));
-    };
-
-    const handleRollStats = () => {
-        const stats = generateRolledStats();
         setFormData(prev => ({
             ...prev,
             abilities: { ...prev.abilities, ...stats },
@@ -752,6 +787,59 @@ const CreateCharacter: React.FC = () => {
                             <button type="button" className="modal-btn apply" onClick={applyPointBuy}>
                                 Apply
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Roll 4d6 Distribution Modal */}
+            {showRollDistribution && (
+                <div className="modal-overlay" onClick={() => setShowRollDistribution(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Assign Rolled Stats</h3>
+                        <div className="roll-distribution">
+                            <div className="roll-values">
+                                {rollValues.map((value, idx) => (
+                                    <div key={idx} className="roll-value-item">
+                                        <span className="roll-number">{value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="stat-assignment-grid">
+                                {Object.entries(statAssignments).map(([stat, assigned]) => {
+                                    const usedValues = Object.values(statAssignments).filter(v => v !== null);
+                                    const availableValues = rollValues.filter(v => !usedValues.includes(v) || v === assigned);
+                                    return (
+                                        <div key={stat} className="assign-row">
+                                            <span className="assign-stat-label">{stat.toUpperCase()}</span>
+                                            <select
+                                                value={assigned !== null ? assigned : ''}
+                                                onChange={(e) => {
+                                                    const val = Number(e.target.value);
+                                                    if (val) assignRollToStat(stat as keyof typeof statAssignments, val);
+                                                }}
+                                                className="assign-select"
+                                            >
+                                                <option value="">—</option>
+                                                {availableValues.map(v => (
+                                                    <option key={v} value={v}>{v}</option>
+                                                ))}
+                                            </select>
+                                            {assigned !== null && (
+                                                <button type="button" className="unassign-btn" onClick={() => unassignRoll(stat as keyof typeof statAssignments)}>✕</button>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <div className="modal-actions">
+                                <button type="button" className="modal-btn cancel" onClick={() => setShowRollDistribution(false)}>
+                                    Cancel
+                                </button>
+                                <button type="button" className="modal-btn apply" onClick={applyRollDistribution}>
+                                    Apply
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
