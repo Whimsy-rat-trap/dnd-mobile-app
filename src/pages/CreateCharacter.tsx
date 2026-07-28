@@ -7,6 +7,7 @@ import { DND_BACKGROUNDS } from '../constants/backgrounds';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
 import { RACE_DETAILS } from '../constants/raceDetails';
+import { RACE_FEATURES } from '../constants/raceFeatures';
 import { LANGUAGES } from '../constants/languages';
 import DiceRoller from '../components/DiceRoller';
 import './CreateCharacter.css';
@@ -91,6 +92,9 @@ const CreateCharacter: React.FC = () => {
     const [statAssignments, setStatAssignments] = useState<{ [key: string]: number | null }>({
         str: null, dex: null, con: null, int: null, wis: null, cha: null
     });
+
+    // Для Race Features
+    const [isRaceFeaturesOpen, setIsRaceFeaturesOpen] = useState(true);
 
     // Вычисляем оставшиеся очки для Point Buy
     const getRemainingPoints = (): number => {
@@ -434,6 +438,29 @@ const CreateCharacter: React.FC = () => {
     const raceDetails = RACE_DETAILS[formData.race] || null;
     const sizeOptions = raceDetails && typeof raceDetails.size === 'object' ? raceDetails.size.options : null;
 
+    const renderChevron = (isOpen: boolean) => (
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`chevron-icon ${isOpen ? 'open' : ''}`}
+        >
+            <g clipPath="url(#clip0_403_3483)">
+                <path
+                    d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
+                    fill="#374957"
+                />
+            </g>
+            <defs>
+                <clipPath id="clip0_403_3483">
+                    <rect width="24" height="24" fill="white" />
+                </clipPath>
+            </defs>
+        </svg>
+    );
+
     return (
         <div className="page create-character-page">
             <div className="create-character-header">
@@ -633,6 +660,24 @@ const CreateCharacter: React.FC = () => {
                             </div>
                         );
                     })()}
+                </div>
+
+                {/* Race Features */}
+                <div className="form-group race-features-section">
+                    <div
+                        className="race-features-header"
+                        onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
+                    >
+                        <span className="race-features-title">Race Features</span>
+                        {renderChevron(isRaceFeaturesOpen)}
+                    </div>
+                    {isRaceFeaturesOpen && (
+                        <div className="race-features-list">
+                            {RACE_FEATURES[formData.race]?.map((feature, idx) => (
+                                <span key={idx} className="race-feature-tag">{feature}</span>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {!isCreative && (
