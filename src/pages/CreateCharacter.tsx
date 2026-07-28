@@ -58,6 +58,7 @@ const CreateCharacter: React.FC = () => {
     const mode = searchParams.get('mode') || 'creative';
     const isCreative = mode === 'creative';
 
+    // Основные данные формы
     const [formData, setFormData] = useState({
         name: '',
         class: DND_CLASSES[0],
@@ -95,6 +96,7 @@ const CreateCharacter: React.FC = () => {
 
     // Для Race Features
     const [isRaceFeaturesOpen, setIsRaceFeaturesOpen] = useState(true);
+    const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
 
     // Вычисляем оставшиеся очки для Point Buy
     const getRemainingPoints = (): number => {
@@ -186,7 +188,7 @@ const CreateCharacter: React.FC = () => {
         setShowRollDistribution(false);
     };
 
-    // При изменении расы обновляем размер и creature type
+    // При изменении расы обновляем размер, creature type и сбрасываем выбранную фичу
     useEffect(() => {
         const details = RACE_DETAILS[formData.race];
         if (details) {
@@ -205,6 +207,8 @@ const CreateCharacter: React.FC = () => {
         } else {
             setSelectedBonusAttrs([]);
         }
+        // Сброс выбранной фичи при смене расы
+        setSelectedFeature(null);
     }, [formData.race]);
 
     // При переключении метода на Average сбрасываем броски
@@ -434,10 +438,13 @@ const CreateCharacter: React.FC = () => {
         navigate('/hub');
     };
 
+    // Определяем бонусы для текущей расы
     const raceBonuses = RACIAL_BONUSES[formData.race] || null;
     const raceDetails = RACE_DETAILS[formData.race] || null;
     const sizeOptions = raceDetails && typeof raceDetails.size === 'object' ? raceDetails.size.options : null;
+    const currentRaceFeatures = RACE_FEATURES[formData.race] || [];
 
+    // Функция для рендера шеврона
     const renderChevron = (isOpen: boolean) => (
         <svg
             width="24"
@@ -663,20 +670,34 @@ const CreateCharacter: React.FC = () => {
                 </div>
 
                 {/* Race Features */}
-                <div className="form-group race-features-section">
+                <div className="race-features-section">
                     <div
                         className="race-features-header"
                         onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
+                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                     >
                         <span className="race-features-title">Race Features</span>
                         {renderChevron(isRaceFeaturesOpen)}
                     </div>
                     {isRaceFeaturesOpen && (
-                        <div className="race-features-list">
-                            {RACE_FEATURES[formData.race]?.map((feature, idx) => (
-                                <span key={idx} className="race-feature-tag">{feature}</span>
-                            ))}
-                        </div>
+                        <>
+                            <div className="race-features-list">
+                                {currentRaceFeatures.map((feature, idx) => (
+                                    <span
+                                        key={idx}
+                                        className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
+                                        onClick={() => setSelectedFeature(selectedFeature === feature.name ? null : feature.name)}
+                                    >
+                                        {feature.name}
+                                    </span>
+                                ))}
+                            </div>
+                            {selectedFeature && (
+                                <div className="race-feature-description">
+                                    {currentRaceFeatures.find(f => f.name === selectedFeature)?.description}
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 

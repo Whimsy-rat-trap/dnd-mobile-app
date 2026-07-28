@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
-import { RACE_FEATURES } from '../constants/raceFeatures';
+import { RACE_FEATURES, Feature } from '../constants/raceFeatures';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -11,10 +11,13 @@ const CharacterContainer: React.FC = () => {
     const { getCharacter, updateCharacter, setCurrentCharacterId } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
-    // Состояние для переключателя
+    // Состояние для переключателя variant rule
     const [useVariant, setUseVariant] = useState(false);
+    // Состояние для раскрытия списка расовых фич
     const [isRaceFeaturesOpen, setIsRaceFeaturesOpen] = useState(true);
-    // Бэкапы для восстановления при выключении variant
+    // Состояние для выбранной фичи (для отображения описания)
+    const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
+    // Бэкапы для восстановления атрибутов при выключении variant
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
     const [backupToolAttributes, setBackupToolAttributes] = useState<{ name: string; attribute: string }[]>([]);
 
@@ -52,12 +55,14 @@ const CharacterContainer: React.FC = () => {
         return skill.proficient ? mod + proficiencyBonus : mod;
     };
 
+    // Вычисление бонуса инструмента
     const getToolBonus = (tool: typeof character.toolProficiencies[0]) => {
         const attrKey = (tool.attribute || 'DEX').toLowerCase() as keyof typeof character.abilities;
         const mod = getModifier(attrKey);
         return tool.proficient ? mod + proficiencyBonus : mod;
     };
 
+    // Переключение proficient для навыка
     const toggleSkillProficient = (index: number) => {
         const updatedSkills = character.skills.map((s, i) =>
             i === index ? { ...s, proficient: !s.proficient } : s
@@ -65,6 +70,7 @@ const CharacterContainer: React.FC = () => {
         updateCharacter(character.id, { skills: updatedSkills });
     };
 
+    // Переключение proficient для инструмента
     const toggleToolProficient = (index: number) => {
         const updatedTools = character.toolProficiencies.map((t, i) =>
             i === index ? { ...t, proficient: !t.proficient } : t
@@ -72,6 +78,7 @@ const CharacterContainer: React.FC = () => {
         updateCharacter(character.id, { toolProficiencies: updatedTools });
     };
 
+    // Изменение атрибута для навыка (variant mode)
     const handleSkillAttributeChange = (index: number, newAttr: string) => {
         const updatedSkills = character.skills.map((s, i) =>
             i === index ? { ...s, attribute: newAttr } : s
@@ -79,6 +86,7 @@ const CharacterContainer: React.FC = () => {
         updateCharacter(character.id, { skills: updatedSkills });
     };
 
+    // Изменение атрибута для инструмента (variant mode)
     const handleToolAttributeChange = (index: number, newAttr: string) => {
         const updatedTools = character.toolProficiencies.map((t, i) =>
             i === index ? { ...t, attribute: newAttr } : t
@@ -133,6 +141,7 @@ const CharacterContainer: React.FC = () => {
         </svg>
     );
 
+    // Данные способностей из персонажа
     const abilitiesData = [
         { name: 'STR', score: character.abilities.str, modifier: getModifier('str') },
         { name: 'CON', score: character.abilities.con, modifier: getModifier('con') },
@@ -142,12 +151,17 @@ const CharacterContainer: React.FC = () => {
         { name: 'CHA', score: character.abilities.cha, modifier: getModifier('cha') },
     ];
 
-    // Отображаем классы через слеш
     const classDisplay = character.classes && character.classes.length > 0
         ? character.classes.join(' / ')
         : 'No class';
 
-    const raceFeatures = RACE_FEATURES[character.race] || [];
+    // Получаем фичи расы персонажа
+    const raceFeatures: Feature[] = RACE_FEATURES[character.race] || [];
+
+    // Обработчик клика по фиче
+    const handleFeatureClick = (featureName: string) => {
+        setSelectedFeature(selectedFeature === featureName ? null : featureName);
+    };
 
     return (
         <div className="character-page">
@@ -270,13 +284,27 @@ const CharacterContainer: React.FC = () => {
                         {renderChevron(isRaceFeaturesOpen)}
                     </div>
                     {isRaceFeaturesOpen && (
-                        <div className="race-features-list">
-                            {raceFeatures.length > 0 ? (
-                                raceFeatures.map((feature, idx) => (
-                                    <span key={idx} className="race-feature-tag">{feature}</span>
-                                ))
-                            ) : (
-                                <span className="race-features-empty">No features for this race</span>
+                        <div className="race-features-container">
+                            <div className="race-features-list">
+                                {raceFeatures.length > 0 ? (
+                                    raceFeatures.map((feature) => (
+                                        <span
+                                            key={feature.name}
+                                            className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
+                                            onClick={() => handleFeatureClick(feature.name)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            {feature.name}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className="race-features-empty">No features for this race</span>
+                                )}
+                            </div>
+                            {selectedFeature && (
+                                <div className="race-feature-description">
+                                    {raceFeatures.find(f => f.name === selectedFeature)?.description}
+                                </div>
                             )}
                         </div>
                     )}
