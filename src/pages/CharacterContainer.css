@@ -521,3 +521,57 @@
     font-size: 14px;
     font-style: italic;
 }
+
+/* Race Features */
+.race-features-section {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+}
+
+.race-features-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #374957;
+    user-select: none;
+}
+
+.race-features-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.race-features-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.race-feature-tag {
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: #d1d5db;
+}
+
+.race-features-empty {
+    color: #6b7280;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.chevron-icon {
+    transition: transform 0.3s ease;
+}
+
+.chevron-icon.open {
+    transform: rotate(180deg);
+}

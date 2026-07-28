@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
+import { RACE_FEATURES } from '../constants/raceFeatures';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -10,7 +11,9 @@ const CharacterContainer: React.FC = () => {
     const { getCharacter, updateCharacter, setCurrentCharacterId } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
+    // Состояние для переключателя
     const [useVariant, setUseVariant] = useState(false);
+    const [isRaceFeaturesOpen, setIsRaceFeaturesOpen] = useState(true);
     // Бэкапы для восстановления при выключении variant
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
     const [backupToolAttributes, setBackupToolAttributes] = useState<{ name: string; attribute: string }[]>([]);
@@ -106,6 +109,30 @@ const CharacterContainer: React.FC = () => {
         setUseVariant(!useVariant);
     };
 
+    // Функция для рендера шеврона
+    const renderChevron = (isOpen: boolean) => (
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`chevron-icon ${isOpen ? 'open' : ''}`}
+        >
+            <g clipPath="url(#clip0_403_3483)">
+                <path
+                    d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
+                    fill="#374957"
+                />
+            </g>
+            <defs>
+                <clipPath id="clip0_403_3483">
+                    <rect width="24" height="24" fill="white" />
+                </clipPath>
+            </defs>
+        </svg>
+    );
+
     const abilitiesData = [
         { name: 'STR', score: character.abilities.str, modifier: getModifier('str') },
         { name: 'CON', score: character.abilities.con, modifier: getModifier('con') },
@@ -119,6 +146,8 @@ const CharacterContainer: React.FC = () => {
     const classDisplay = character.classes && character.classes.length > 0
         ? character.classes.join(' / ')
         : 'No class';
+
+    const raceFeatures = RACE_FEATURES[character.race] || [];
 
     return (
         <div className="character-page">
@@ -228,6 +257,29 @@ const CharacterContainer: React.FC = () => {
                             </div>
                         ))}
                     </div>
+                </div>
+
+                {/* Race Features */}
+                <div className="race-features-section">
+                    <div
+                        className="race-features-header"
+                        onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
+                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                    >
+                        <span className="race-features-title">Race Features</span>
+                        {renderChevron(isRaceFeaturesOpen)}
+                    </div>
+                    {isRaceFeaturesOpen && (
+                        <div className="race-features-list">
+                            {raceFeatures.length > 0 ? (
+                                raceFeatures.map((feature, idx) => (
+                                    <span key={idx} className="race-feature-tag">{feature}</span>
+                                ))
+                            ) : (
+                                <span className="race-features-empty">No features for this race</span>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Переключатель */}
