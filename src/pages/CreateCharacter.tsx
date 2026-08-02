@@ -7,8 +7,9 @@ import { DND_BACKGROUNDS } from '../constants/backgrounds';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
 import { RACE_DETAILS } from '../constants/raceDetails';
-import { SUBRACES } from '../constants/subraces';
 import { RACE_FEATURES } from '../constants/raceFeatures';
+import { SUBRACES } from '../constants/subraces';
+import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { LANGUAGES } from '../constants/languages';
 import DiceRoller from '../components/DiceRoller';
 import './CreateCharacter.css';
@@ -96,9 +97,11 @@ const CreateCharacter: React.FC = () => {
         str: null, dex: null, con: null, int: null, wis: null, cha: null
     });
 
-    // Для Race Features
+    // Для сворачивания фич расы и подрасы
     const [isRaceFeaturesOpen, setIsRaceFeaturesOpen] = useState(true);
+    const [isSubraceFeaturesOpen, setIsSubraceFeaturesOpen] = useState(true);
     const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
+    const [selectedSubraceFeature, setSelectedSubraceFeature] = useState<string | null>(null);
 
     // Вычисляем оставшиеся очки для Point Buy
     const getRemainingPoints = (): number => {
@@ -190,7 +193,7 @@ const CreateCharacter: React.FC = () => {
         setShowRollDistribution(false);
     };
 
-    // При изменении расы обновляем размер, creature type и сбрасываем подрасу
+    // При изменении расы обновляем размер и creature type, сбрасываем подрасу
     useEffect(() => {
         const details = RACE_DETAILS[formData.race];
         if (details) {
@@ -209,7 +212,7 @@ const CreateCharacter: React.FC = () => {
         } else {
             setSelectedBonusAttrs([]);
         }
-        // Сбрасываем выбранную фичу
+        // Сбрасываем выбранную фичу расы
         setSelectedFeature(null);
     }, [formData.race]);
 
@@ -220,7 +223,7 @@ const CreateCharacter: React.FC = () => {
         }
     }, [hpMethod]);
 
-    // Пересчёт HP в режиме "by rules" при изменении класса, уровня, CON, метода или бросков
+    // Пересчёт HP в режиме "by rules"
     useEffect(() => {
         if (isCreative) return;
 
@@ -326,29 +329,6 @@ const CreateCharacter: React.FC = () => {
         }));
     };
 
-    const renderChevron = (isOpen: boolean) => (
-        <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={`chevron-icon ${isOpen ? 'open' : ''}`}
-        >
-            <g clipPath="url(#clip0_403_3483)">
-                <path
-                    d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
-                    fill="#374957"
-                />
-            </g>
-            <defs>
-                <clipPath id="clip0_403_3483">
-                    <rect width="24" height="24" fill="white" />
-                </clipPath>
-            </defs>
-        </svg>
-    );
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -385,7 +365,19 @@ const CreateCharacter: React.FC = () => {
             }
         }
 
-        // Применяем бонусы background-а к способностям
+        // Применяем бонусы подрасы
+        if (finalData.subrace) {
+            const subraceBonus = SUBRACE_DETAILS[finalData.subrace]?.abilityBonuses;
+            if (subraceBonus) {
+                for (const [attr, bonus] of Object.entries(subraceBonus)) {
+                    if (abilitiesWithBonuses.hasOwnProperty(attr)) {
+                        abilitiesWithBonuses[attr as keyof typeof abilitiesWithBonuses] += bonus;
+                    }
+                }
+            }
+        }
+
+        // Применяем бонусы background-а
         const bgBonuses = getBackgroundAbilityBonuses(finalData.background);
         for (const [attr, bonus] of Object.entries(bgBonuses)) {
             if (abilitiesWithBonuses.hasOwnProperty(attr)) {
@@ -463,12 +455,38 @@ const CreateCharacter: React.FC = () => {
         navigate('/hub');
     };
 
-    // Определяем бонусы для текущей расы
     const raceBonuses = RACIAL_BONUSES[formData.race] || null;
     const raceDetails = RACE_DETAILS[formData.race] || null;
     const sizeOptions = raceDetails && typeof raceDetails.size === 'object' ? raceDetails.size.options : null;
-    const subraceOptions = SUBRACES[formData.race] || [];
+
+    // Получаем фичи расы и подрасы
     const raceFeatures = RACE_FEATURES[formData.race] || [];
+    const subraceFeatures = formData.subrace ? SUBRACE_DETAILS[formData.subrace]?.features || [] : [];
+    const subraceBonus = formData.subrace ? SUBRACE_DETAILS[formData.subrace]?.abilityBonuses : null;
+
+    // Функция рендера шеврона
+    const renderChevron = (isOpen: boolean) => (
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`chevron-icon ${isOpen ? 'open' : ''}`}
+        >
+            <g clipPath="url(#clip0_403_3483)">
+                <path
+                    d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
+                    fill="#374957"
+                />
+            </g>
+            <defs>
+                <clipPath id="clip0_403_3483">
+                    <rect width="24" height="24" fill="white" />
+                </clipPath>
+            </defs>
+        </svg>
+    );
 
     return (
         <div className="page create-character-page">
@@ -477,11 +495,13 @@ const CreateCharacter: React.FC = () => {
                 <h1>Create Character</h1>
             </div>
             <form onSubmit={handleSubmit} className="create-character-form">
+                {/* Имя */}
                 <div className="form-group">
                     <label>Name *</label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} required />
                 </div>
 
+                {/* Класс и Раса */}
                 <div className="form-row">
                     <div className="form-group">
                         <label>Class *</label>
@@ -501,22 +521,23 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 </div>
 
-                {subraceOptions.length > 0 && (
+                {/* Subrace (если есть) */}
+                {SUBRACES[formData.race] && SUBRACES[formData.race].length > 0 && (
                     <div className="form-group">
                         <label>Subrace</label>
                         <select
                             value={formData.subrace}
                             onChange={(e) => setFormData(prev => ({ ...prev, subrace: e.target.value }))}
-                            required
                         >
                             <option value="">Select subrace</option>
-                            {subraceOptions.map(sub => (
+                            {SUBRACES[formData.race].map(sub => (
                                 <option key={sub} value={sub}>{sub}</option>
                             ))}
                         </select>
                     </div>
                 )}
 
+                {/* Фон и Уровень */}
                 <div className="form-row">
                     <div className="form-group">
                         <label>Background *</label>
@@ -532,6 +553,7 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Размер (если выбор) */}
                 {sizeOptions && (
                     <div className="form-group">
                         <label>Size</label>
@@ -546,6 +568,7 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 )}
 
+                {/* HP */}
                 {isCreative ? (
                     <div className="form-row">
                         <div className="form-group">
@@ -621,6 +644,7 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 )}
 
+                {/* AC и Speed (creative) или инфо (rules) */}
                 {!isCreative && (
                     <div className="info-text">AC and Speed are calculated automatically based on your class, race and abilities.</div>
                 )}
@@ -638,6 +662,7 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 )}
 
+                {/* Background Proficiencies */}
                 <div className="form-group">
                     <label>Background Skill Proficiencies</label>
                     {(() => {
@@ -687,38 +712,7 @@ const CreateCharacter: React.FC = () => {
                     })()}
                 </div>
 
-                {/* Race Features */}
-                <div className="race-features-section">
-                    <div
-                        className="race-features-header"
-                        onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
-                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                    >
-                        <span className="race-features-title">Race Features</span>
-                        {renderChevron(isRaceFeaturesOpen)}
-                    </div>
-                    {isRaceFeaturesOpen && (
-                        <>
-                            <div className="race-features-list">
-                                {raceFeatures.map((feature, idx) => (
-                                    <span
-                                        key={idx}
-                                        className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
-                                        onClick={() => setSelectedFeature(selectedFeature === feature.name ? null : feature.name)}
-                                    >
-                                        {feature.name}
-                                    </span>
-                                ))}
-                            </div>
-                            {selectedFeature && (
-                                <div className="race-feature-description">
-                                    {raceFeatures.find(f => f.name === selectedFeature)?.description}
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
-
+                {/* Stat Generation (только в rules) */}
                 {!isCreative && (
                     <div className="form-group stat-generation">
                         <label>Stat Generation Methods</label>
@@ -739,6 +733,7 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 )}
 
+                {/* Ability Scores */}
                 <div className="form-group">
                     <label>Ability Scores</label>
                     <div className="ability-grid">
@@ -753,6 +748,20 @@ const CreateCharacter: React.FC = () => {
                                 } else if (raceBonuses.choose && selectedBonusAttrs.includes(attr)) {
                                     const bonus = raceBonuses.choose.bonus;
                                     bonusDisplay = <span className="ability-bonus">+{bonus}</span>;
+                                }
+                            }
+                            // Бонусы подрасы (синим)
+                            if (subraceBonus && subraceBonus[attr]) {
+                                const bonus = subraceBonus[attr];
+                                if (bonusDisplay) {
+                                    bonusDisplay = (
+                                        <>
+                                            {bonusDisplay}
+                                            <span className="ability-bonus subrace-bonus">+{bonus}</span>
+                                        </>
+                                    );
+                                } else {
+                                    bonusDisplay = <span className="ability-bonus subrace-bonus">+{bonus}</span>;
                                 }
                             }
                             // Бонусы от background-а
@@ -791,6 +800,9 @@ const CreateCharacter: React.FC = () => {
                     </div>
                     <div className="ability-scores-legend">
                         <span><span className="legend-color racial"></span> Racial bonus</span>
+                        {subraceBonus && Object.keys(subraceBonus).length > 0 && (
+                            <span><span className="legend-color subrace"></span> Subrace bonus</span>
+                        )}
                         <span><span className="legend-color background"></span> Background bonus</span>
                     </div>
                 </div>
@@ -823,6 +835,72 @@ const CreateCharacter: React.FC = () => {
                         </div>
                     );
                 })()}
+
+                {/* Race Features */}
+                <div className="race-features-section">
+                    <div
+                        className="race-features-header"
+                        onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
+                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                    >
+                        <span className="race-features-title">Race Features</span>
+                        {renderChevron(isRaceFeaturesOpen)}
+                    </div>
+                    {isRaceFeaturesOpen && (
+                        <div className="race-features-content">
+                            <div className="race-features-list">
+                                {raceFeatures.map((feature, idx) => (
+                                    <span
+                                        key={idx}
+                                        className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
+                                        onClick={() => setSelectedFeature(selectedFeature === feature.name ? null : feature.name)}
+                                    >
+                                        {feature.name}
+                                    </span>
+                                ))}
+                            </div>
+                            {selectedFeature && (
+                                <div className="race-feature-description">
+                                    {raceFeatures.find(f => f.name === selectedFeature)?.description}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {/* Subrace Features (если есть) */}
+                {formData.subrace && subraceFeatures.length > 0 && (
+                    <div className="race-features-section subrace-features">
+                        <div
+                            className="race-features-header"
+                            onClick={() => setIsSubraceFeaturesOpen(!isSubraceFeaturesOpen)}
+                            style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                        >
+                            <span className="race-features-title subrace-features-title">Subrace Features</span>
+                            {renderChevron(isSubraceFeaturesOpen)}
+                        </div>
+                        {isSubraceFeaturesOpen && (
+                            <div className="race-features-content">
+                                <div className="race-features-list">
+                                    {subraceFeatures.map((feature, idx) => (
+                                        <span
+                                            key={idx}
+                                            className={`race-feature-tag ${selectedSubraceFeature === feature.name ? 'active' : ''}`}
+                                            onClick={() => setSelectedSubraceFeature(selectedSubraceFeature === feature.name ? null : feature.name)}
+                                        >
+                                            {feature.name}
+                                        </span>
+                                    ))}
+                                </div>
+                                {selectedSubraceFeature && (
+                                    <div className="race-feature-description subrace-feature-description">
+                                        {subraceFeatures.find(f => f.name === selectedSubraceFeature)?.description}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <button type="submit" className="submit-btn">Create Character</button>
             </form>

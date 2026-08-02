@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
+import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -156,6 +157,24 @@ const CharacterContainer: React.FC = () => {
         : 'No class';
 
     const raceFeatures = RACE_FEATURES[character.race] || [];
+    const subraceDetail = character.subrace ? SUBRACE_DETAILS[character.subrace] : null;
+    const subraceFeatures = subraceDetail?.features || [];
+
+    // Объединяем фичи для отображения (с меткой, откуда они)
+    const allFeatures = [
+        ...raceFeatures.map(f => ({ ...f, source: 'race' as const })),
+        ...subraceFeatures.map(f => ({ ...f, source: 'subrace' as const })),
+    ];
+
+    const handleFeatureClick = (featureName: string) => {
+        setSelectedFeature(selectedFeature === featureName ? null : featureName);
+    };
+
+    const getSubraceAbilityBonuses = () => {
+        return subraceDetail?.abilityBonuses || {};
+    };
+
+    const subraceBonuses = getSubraceAbilityBonuses();
 
     return (
         <div className="character-page">
@@ -205,15 +224,11 @@ const CharacterContainer: React.FC = () => {
                             <span className="info-value">{character.race}</span>
                         </div>
                     </div>
-                    {character.subrace && (
-                        <div className="info-grid">
-                            <div className="info-item">
-                                <span className="info-label">Subrace</span>
-                                <span className="info-value">{character.subrace}</span>
-                            </div>
-                        </div>
-                    )}
                     <div className="info-grid">
+                        <div className="info-item">
+                            <span className="info-label">Subrace</span>
+                            <span className="info-value">{character.subrace || '—'}</span>
+                        </div>
                         <div className="info-item">
                             <span className="info-label">Background</span>
                             <span className="info-value">{character.background}</span>
@@ -222,6 +237,8 @@ const CharacterContainer: React.FC = () => {
                             <span className="info-label">AC</span>
                             <span className="info-value">{character.ac || '—'}</span>
                         </div>
+                    </div>
+                    <div className="info-grid">
                         <div className="info-item">
                             <span className="info-label">Speed</span>
                             <span className="info-value">{character.speed ? `${character.speed} ft` : '—'}</span>
@@ -263,15 +280,22 @@ const CharacterContainer: React.FC = () => {
                 <div className="section-abilities">
                     <div className="abilities-title">Abilities</div>
                     <div className="abilities-grid">
-                        {abilitiesData.map((ability) => (
-                            <div className="ability-card" key={ability.name}>
-                                <span className="ability-name">{ability.name}</span>
-                                <span className="ability-score">{ability.score}</span>
-                                <span className="ability-modifier">
-                                    {ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}
-                                </span>
-                            </div>
-                        ))}
+                        {abilitiesData.map((ability) => {
+                            const attr = ability.name.toLowerCase() as keyof typeof character.abilities;
+                            const subraceBonus = subraceBonuses[attr];
+                            return (
+                                <div className="ability-card" key={ability.name}>
+                                    <span className="ability-name">{ability.name}</span>
+                                    <span className="ability-score">{ability.score}</span>
+                                    <span className="ability-modifier">
+                                        {ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}
+                                        {subraceBonus && (
+                                            <span className="ability-bonus subrace-bonus"> +{subraceBonus}</span>
+                                        )}
+                                    </span>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -280,31 +304,35 @@ const CharacterContainer: React.FC = () => {
                     <div
                         className="race-features-header"
                         onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
+                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                     >
                         <span className="race-features-title">Race Features</span>
                         {renderChevron(isRaceFeaturesOpen)}
                     </div>
                     {isRaceFeaturesOpen && (
                         <>
-                            <div className="race-features-list">
-                                {raceFeatures.length > 0 ? (
-                                    raceFeatures.map((feature, idx) => (
-                                        <span
-                                            key={idx}
-                                            className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
-                                            onClick={() => setSelectedFeature(selectedFeature === feature.name ? null : feature.name)}
-                                        >
-                                            {feature.name}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <span className="race-features-empty">No features for this race</span>
-                                )}
-                            </div>
-                            {selectedFeature && (
-                                <div className="race-feature-description">
-                                    {raceFeatures.find(f => f.name === selectedFeature)?.description}
-                                </div>
+                            {allFeatures.length > 0 ? (
+                                <>
+                                    <div className="race-features-list">
+                                        {allFeatures.map((feature, idx) => (
+                                            <span
+                                                key={idx}
+                                                className={`race-feature-tag ${feature.source === 'subrace' ? 'subrace-feature' : ''} ${selectedFeature === feature.name ? 'active' : ''}`}
+                                                onClick={() => handleFeatureClick(feature.name)}
+                                            >
+                                                {feature.name}
+                                                {feature.source === 'subrace' && ' (Subrace)'}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    {selectedFeature && (
+                                        <div className="race-feature-description">
+                                            {allFeatures.find(f => f.name === selectedFeature)?.description || 'No description available.'}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="race-features-empty">No features for this race</div>
                             )}
                         </>
                     )}
