@@ -3,6 +3,7 @@ export interface Character {
     name: string;
     class: string;
     classes: string[];
+    subclass?: string;
     level: number;
     race: string;
     subrace?: string;

@@ -215,13 +215,21 @@ const CharacterContainer: React.FC = () => {
                             <span className="info-label">Level</span>
                             <span className="info-value">{character.level}</span>
                         </div>
-                        <div className="info-item">
-                            <span className="info-label">Class</span>
-                            <span className="info-value">{classDisplay}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">Race</span>
-                            <span className="info-value">{character.race}</span>
+                        <div className="info-grid">
+                            <div className="info-item">
+                                <span className="info-label">Class</span>
+                                <span className="info-value">{classDisplay}</span>
+                            </div>
+                            {character.subclass && (
+                                <div className="info-item">
+                                    <span className="info-label">Subclass</span>
+                                    <span className="info-value">{character.subclass}</span>
+                                </div>
+                            )}
+                            <div className="info-item">
+                                <span className="info-label">Race</span>
+                                <span className="info-value">{character.race}</span>
+                            </div>
                         </div>
                     </div>
                     <div className="info-grid">

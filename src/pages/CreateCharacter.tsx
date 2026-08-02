@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import { DND_CLASSES } from '../constants/classes';
+import { SUBCLASSES } from '../constants/subclasses';
 import { DND_RACES } from '../constants/races';
 import { DND_BACKGROUNDS } from '../constants/backgrounds';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
@@ -64,6 +65,7 @@ const CreateCharacter: React.FC = () => {
     const [formData, setFormData] = useState({
         name: '',
         class: DND_CLASSES[0],
+        subclass: '',
         race: DND_RACES[0],
         subrace: '',
         background: DND_BACKGROUNDS[0].name,
@@ -215,6 +217,11 @@ const CreateCharacter: React.FC = () => {
         // Сбрасываем выбранную фичу расы
         setSelectedFeature(null);
     }, [formData.race]);
+
+    // При смене класса сбрасываем подкласс
+    useEffect(() => {
+        setFormData(prev => ({ ...prev, subclass: '' }));
+    }, [formData.class]);
 
     // При переключении метода на Average сбрасываем броски
     useEffect(() => {
@@ -432,6 +439,7 @@ const CreateCharacter: React.FC = () => {
         const newCharacter = {
             ...finalData,
             classes: [finalData.class],
+            subclass: finalData.subclass,
             skills: skillsWithProficiencies,
             toolProficiencies: toolProficiencies,
             languages: languages,
@@ -520,6 +528,22 @@ const CreateCharacter: React.FC = () => {
                         </select>
                     </div>
                 </div>
+
+                {/* Subclass (если есть) */}
+                {SUBCLASSES[formData.class] && SUBCLASSES[formData.class].length > 0 && (
+                    <div className="form-group">
+                        <label>Subclass</label>
+                        <select
+                            value={formData.subclass}
+                            onChange={(e) => setFormData(prev => ({ ...prev, subclass: e.target.value }))}
+                        >
+                            <option value="">Select subclass</option>
+                            {SUBCLASSES[formData.class].map(sub => (
+                                <option key={sub} value={sub}>{sub}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
                 {/* Subrace (если есть) */}
                 {SUBRACES[formData.race] && SUBRACES[formData.race].length > 0 && (
