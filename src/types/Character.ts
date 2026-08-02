@@ -5,6 +5,7 @@ export interface Character {
     classes: string[];
     level: number;
     race: string;
+    subrace?: string;
     background: string;
     hp: number;
     maxHp: number;

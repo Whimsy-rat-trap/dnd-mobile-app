@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
-import { RACE_FEATURES, Feature } from '../constants/raceFeatures';
+import { RACE_FEATURES } from '../constants/raceFeatures';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -155,13 +155,7 @@ const CharacterContainer: React.FC = () => {
         ? character.classes.join(' / ')
         : 'No class';
 
-    // Получаем фичи расы персонажа
-    const raceFeatures: Feature[] = RACE_FEATURES[character.race] || [];
-
-    // Обработчик клика по фиче
-    const handleFeatureClick = (featureName: string) => {
-        setSelectedFeature(selectedFeature === featureName ? null : featureName);
-    };
+    const raceFeatures = RACE_FEATURES[character.race] || [];
 
     return (
         <div className="character-page">
@@ -211,6 +205,14 @@ const CharacterContainer: React.FC = () => {
                             <span className="info-value">{character.race}</span>
                         </div>
                     </div>
+                    {character.subrace && (
+                        <div className="info-grid">
+                            <div className="info-item">
+                                <span className="info-label">Subrace</span>
+                                <span className="info-value">{character.subrace}</span>
+                            </div>
+                        </div>
+                    )}
                     <div className="info-grid">
                         <div className="info-item">
                             <span className="info-label">Background</span>
@@ -278,21 +280,19 @@ const CharacterContainer: React.FC = () => {
                     <div
                         className="race-features-header"
                         onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
-                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                     >
                         <span className="race-features-title">Race Features</span>
                         {renderChevron(isRaceFeaturesOpen)}
                     </div>
                     {isRaceFeaturesOpen && (
-                        <div className="race-features-container">
+                        <>
                             <div className="race-features-list">
                                 {raceFeatures.length > 0 ? (
-                                    raceFeatures.map((feature) => (
+                                    raceFeatures.map((feature, idx) => (
                                         <span
-                                            key={feature.name}
+                                            key={idx}
                                             className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
-                                            onClick={() => handleFeatureClick(feature.name)}
-                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => setSelectedFeature(selectedFeature === feature.name ? null : feature.name)}
                                         >
                                             {feature.name}
                                         </span>
@@ -306,11 +306,11 @@ const CharacterContainer: React.FC = () => {
                                     {raceFeatures.find(f => f.name === selectedFeature)?.description}
                                 </div>
                             )}
-                        </div>
+                        </>
                     )}
                 </div>
 
-                {/* Переключатель */}
+                {/* Variant toggle */}
                 <div className="variant-toggle-container">
                     <label className="variant-toggle">
                         <span className="toggle-label">Use Skills with Different Abilities variant rule?</span>

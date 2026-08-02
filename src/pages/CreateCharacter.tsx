@@ -7,6 +7,7 @@ import { DND_BACKGROUNDS } from '../constants/backgrounds';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
 import { RACE_DETAILS } from '../constants/raceDetails';
+import { SUBRACES } from '../constants/subraces';
 import { RACE_FEATURES } from '../constants/raceFeatures';
 import { LANGUAGES } from '../constants/languages';
 import DiceRoller from '../components/DiceRoller';
@@ -63,6 +64,7 @@ const CreateCharacter: React.FC = () => {
         name: '',
         class: DND_CLASSES[0],
         race: DND_RACES[0],
+        subrace: '',
         background: DND_BACKGROUNDS[0].name,
         level: 1,
         hp: 10,
@@ -188,7 +190,7 @@ const CreateCharacter: React.FC = () => {
         setShowRollDistribution(false);
     };
 
-    // При изменении расы обновляем размер, creature type и сбрасываем выбранную фичу
+    // При изменении расы обновляем размер, creature type и сбрасываем подрасу
     useEffect(() => {
         const details = RACE_DETAILS[formData.race];
         if (details) {
@@ -198,7 +200,7 @@ const CreateCharacter: React.FC = () => {
             } else if (details.size.options) {
                 size = details.size.default || details.size.options[0] || 'Medium';
             }
-            setFormData(prev => ({ ...prev, size }));
+            setFormData(prev => ({ ...prev, size, subrace: '' }));
         }
         // Сбрасываем выбранные бонусы для расы
         const raceBonus = RACIAL_BONUSES[formData.race];
@@ -207,7 +209,7 @@ const CreateCharacter: React.FC = () => {
         } else {
             setSelectedBonusAttrs([]);
         }
-        // Сброс выбранной фичи при смене расы
+        // Сбрасываем выбранную фичу
         setSelectedFeature(null);
     }, [formData.race]);
 
@@ -218,7 +220,7 @@ const CreateCharacter: React.FC = () => {
         }
     }, [hpMethod]);
 
-    // Пересчёт HP в режиме "by rules"
+    // Пересчёт HP в режиме "by rules" при изменении класса, уровня, CON, метода или бросков
     useEffect(() => {
         if (isCreative) return;
 
@@ -323,6 +325,29 @@ const CreateCharacter: React.FC = () => {
             abilities: { ...prev.abilities, ...stats },
         }));
     };
+
+    const renderChevron = (isOpen: boolean) => (
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`chevron-icon ${isOpen ? 'open' : ''}`}
+        >
+            <g clipPath="url(#clip0_403_3483)">
+                <path
+                    d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
+                    fill="#374957"
+                />
+            </g>
+            <defs>
+                <clipPath id="clip0_403_3483">
+                    <rect width="24" height="24" fill="white" />
+                </clipPath>
+            </defs>
+        </svg>
+    );
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -442,31 +467,8 @@ const CreateCharacter: React.FC = () => {
     const raceBonuses = RACIAL_BONUSES[formData.race] || null;
     const raceDetails = RACE_DETAILS[formData.race] || null;
     const sizeOptions = raceDetails && typeof raceDetails.size === 'object' ? raceDetails.size.options : null;
-    const currentRaceFeatures = RACE_FEATURES[formData.race] || [];
-
-    // Функция для рендера шеврона
-    const renderChevron = (isOpen: boolean) => (
-        <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={`chevron-icon ${isOpen ? 'open' : ''}`}
-        >
-            <g clipPath="url(#clip0_403_3483)">
-                <path
-                    d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
-                    fill="#374957"
-                />
-            </g>
-            <defs>
-                <clipPath id="clip0_403_3483">
-                    <rect width="24" height="24" fill="white" />
-                </clipPath>
-            </defs>
-        </svg>
-    );
+    const subraceOptions = SUBRACES[formData.race] || [];
+    const raceFeatures = RACE_FEATURES[formData.race] || [];
 
     return (
         <div className="page create-character-page">
@@ -498,6 +500,22 @@ const CreateCharacter: React.FC = () => {
                         </select>
                     </div>
                 </div>
+
+                {subraceOptions.length > 0 && (
+                    <div className="form-group">
+                        <label>Subrace</label>
+                        <select
+                            value={formData.subrace}
+                            onChange={(e) => setFormData(prev => ({ ...prev, subrace: e.target.value }))}
+                            required
+                        >
+                            <option value="">Select subrace</option>
+                            {subraceOptions.map(sub => (
+                                <option key={sub} value={sub}>{sub}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
                 <div className="form-row">
                     <div className="form-group">
@@ -682,7 +700,7 @@ const CreateCharacter: React.FC = () => {
                     {isRaceFeaturesOpen && (
                         <>
                             <div className="race-features-list">
-                                {currentRaceFeatures.map((feature, idx) => (
+                                {raceFeatures.map((feature, idx) => (
                                     <span
                                         key={idx}
                                         className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
@@ -694,7 +712,7 @@ const CreateCharacter: React.FC = () => {
                             </div>
                             {selectedFeature && (
                                 <div className="race-feature-description">
-                                    {currentRaceFeatures.find(f => f.name === selectedFeature)?.description}
+                                    {raceFeatures.find(f => f.name === selectedFeature)?.description}
                                 </div>
                             )}
                         </>
