@@ -1,0 +1,15 @@
+export const CLASS_SAVING_THROWS: Record<string, string[]> = {
+    Barbarian: ['STR', 'CON'],
+    Bard: ['DEX', 'CHA'],
+    Cleric: ['WIS', 'CHA'],
+    Druid: ['INT', 'WIS'],
+    Fighter: ['STR', 'CON'],
+    Monk: ['STR', 'DEX'],
+    Paladin: ['WIS', 'CHA'],
+    Ranger: ['STR', 'DEX'],
+    Rogue: ['DEX', 'INT'],
+    Sorcerer: ['CON', 'CHA'],
+    Warlock: ['WIS', 'CHA'],
+    Wizard: ['INT', 'WIS'],
+    Artificer: ['CON', 'INT'],
+};

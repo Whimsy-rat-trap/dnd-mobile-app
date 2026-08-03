@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
-import { SUBRACE_DETAILS } from '../constants/subraceDetails';
+import { CLASS_SAVING_THROWS } from '../constants/classSavingThrows';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -12,13 +12,11 @@ const CharacterContainer: React.FC = () => {
     const { getCharacter, updateCharacter, setCurrentCharacterId } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
-    // Состояние для переключателя variant rule
+    // Состояние для переключателя variant
     const [useVariant, setUseVariant] = useState(false);
     // Состояние для раскрытия списка расовых фич
     const [isRaceFeaturesOpen, setIsRaceFeaturesOpen] = useState(true);
-    // Состояние для выбранной фичи (для отображения описания)
-    const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
-    // Бэкапы для восстановления атрибутов при выключении variant
+    // Бэкапы для восстановления при выключении variant
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
     const [backupToolAttributes, setBackupToolAttributes] = useState<{ name: string; attribute: string }[]>([]);
 
@@ -49,7 +47,7 @@ const CharacterContainer: React.FC = () => {
         return Math.floor((score - 10) / 2);
     };
 
-    // Вычисление итогового бонуса навыка с учётом proficiency
+    // Вычисление бонуса навыка
     const getSkillBonus = (skill: typeof character.skills[0]) => {
         const attrKey = skill.attribute.toLowerCase() as keyof typeof character.abilities;
         const mod = getModifier(attrKey);
@@ -62,6 +60,24 @@ const CharacterContainer: React.FC = () => {
         const mod = getModifier(attrKey);
         return tool.proficient ? mod + proficiencyBonus : mod;
     };
+
+    // Получение бонуса спасброска
+    const getSavingThrowBonus = (attr: keyof typeof character.abilities) => {
+        const mod = getModifier(attr);
+        const profs = CLASS_SAVING_THROWS[character.class] || [];
+        const isProficient = profs.includes(attr.toUpperCase());
+        return isProficient ? mod + proficiencyBonus : mod;
+    };
+
+    // Данные для спасбросков
+    const savingThrowsData = [
+        { name: 'STR', modifier: getModifier('str'), bonus: getSavingThrowBonus('str') },
+        { name: 'DEX', modifier: getModifier('dex'), bonus: getSavingThrowBonus('dex') },
+        { name: 'CON', modifier: getModifier('con'), bonus: getSavingThrowBonus('con') },
+        { name: 'INT', modifier: getModifier('int'), bonus: getSavingThrowBonus('int') },
+        { name: 'WIS', modifier: getModifier('wis'), bonus: getSavingThrowBonus('wis') },
+        { name: 'CHA', modifier: getModifier('cha'), bonus: getSavingThrowBonus('cha') },
+    ];
 
     // Переключение proficient для навыка
     const toggleSkillProficient = (index: number) => {
@@ -157,24 +173,6 @@ const CharacterContainer: React.FC = () => {
         : 'No class';
 
     const raceFeatures = RACE_FEATURES[character.race] || [];
-    const subraceDetail = character.subrace ? SUBRACE_DETAILS[character.subrace] : null;
-    const subraceFeatures = subraceDetail?.features || [];
-
-    // Объединяем фичи для отображения (с меткой, откуда они)
-    const allFeatures = [
-        ...raceFeatures.map(f => ({ ...f, source: 'race' as const })),
-        ...subraceFeatures.map(f => ({ ...f, source: 'subrace' as const })),
-    ];
-
-    const handleFeatureClick = (featureName: string) => {
-        setSelectedFeature(selectedFeature === featureName ? null : featureName);
-    };
-
-    const getSubraceAbilityBonuses = () => {
-        return subraceDetail?.abilityBonuses || {};
-    };
-
-    const subraceBonuses = getSubraceAbilityBonuses();
 
     return (
         <div className="character-page">
@@ -207,7 +205,6 @@ const CharacterContainer: React.FC = () => {
             </header>
 
             <div className="character-content">
-                {/* Character Details */}
                 <div className="section-info">
                     <div className="info-title">Character Details</div>
                     <div className="info-grid">
@@ -215,31 +212,23 @@ const CharacterContainer: React.FC = () => {
                             <span className="info-label">Level</span>
                             <span className="info-value">{character.level}</span>
                         </div>
-                        <div className="info-grid">
-                            <div className="info-item">
-                                <span className="info-label">Class</span>
-                                <span className="info-value">{classDisplay}</span>
-                            </div>
-                            {character.subclass && (
-                                <div className="info-item">
-                                    <span className="info-label">Subclass</span>
-                                    <span className="info-value">{character.subclass}</span>
-                                </div>
-                            )}
-                            <div className="info-item">
-                                <span className="info-label">Race</span>
-                                <span className="info-value">{character.race}</span>
-                            </div>
+                        <div className="info-item">
+                            <span className="info-label">Class</span>
+                            <span className="info-value">{classDisplay}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Race</span>
+                            <span className="info-value">{character.race}</span>
                         </div>
                     </div>
                     <div className="info-grid">
                         <div className="info-item">
-                            <span className="info-label">Subrace</span>
-                            <span className="info-value">{character.subrace || '—'}</span>
-                        </div>
-                        <div className="info-item">
                             <span className="info-label">Background</span>
                             <span className="info-value">{character.background}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Subrace</span>
+                            <span className="info-value">{character.subrace || '—'}</span>
                         </div>
                         <div className="info-item">
                             <span className="info-label">AC</span>
@@ -251,8 +240,6 @@ const CharacterContainer: React.FC = () => {
                             <span className="info-label">Speed</span>
                             <span className="info-value">{character.speed ? `${character.speed} ft` : '—'}</span>
                         </div>
-                    </div>
-                    <div className="info-grid">
                         <div className="info-item">
                             <span className="info-label">Size</span>
                             <span className="info-value">{character.size || 'Medium'}</span>
@@ -284,23 +271,35 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Abilities */}
                 <div className="section-abilities">
                     <div className="abilities-title">Abilities</div>
                     <div className="abilities-grid">
-                        {abilitiesData.map((ability) => {
-                            const attr = ability.name.toLowerCase() as keyof typeof character.abilities;
-                            const subraceBonus = subraceBonuses[attr];
+                        {abilitiesData.map((ability) => (
+                            <div className="ability-card" key={ability.name}>
+                                <span className="ability-name">{ability.name}</span>
+                                <span className="ability-score">{ability.score}</span>
+                                <span className="ability-modifier">
+                                    {ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Saving Throws */}
+                <div className="section-saving-throws">
+                    <div className="saving-throws-title">Saving Throws</div>
+                    <div className="saving-throws-grid">
+                        {savingThrowsData.map((st) => {
+                            const profs = CLASS_SAVING_THROWS[character.class] || [];
+                            const isProficient = profs.includes(st.name);
                             return (
-                                <div className="ability-card" key={ability.name}>
-                                    <span className="ability-name">{ability.name}</span>
-                                    <span className="ability-score">{ability.score}</span>
-                                    <span className="ability-modifier">
-                                        {ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}
-                                        {subraceBonus && (
-                                            <span className="ability-bonus subrace-bonus"> +{subraceBonus}</span>
-                                        )}
+                                <div className="saving-throw-card" key={st.name}>
+                                    <span className="saving-throw-name">{st.name}</span>
+                                    <span className="saving-throw-bonus">
+                                        {st.bonus >= 0 ? `+${st.bonus}` : `${st.bonus}`}
                                     </span>
+                                    {isProficient && <span className="proficiency-dot">●</span>}
                                 </div>
                             );
                         })}
@@ -318,35 +317,19 @@ const CharacterContainer: React.FC = () => {
                         {renderChevron(isRaceFeaturesOpen)}
                     </div>
                     {isRaceFeaturesOpen && (
-                        <>
-                            {allFeatures.length > 0 ? (
-                                <>
-                                    <div className="race-features-list">
-                                        {allFeatures.map((feature, idx) => (
-                                            <span
-                                                key={idx}
-                                                className={`race-feature-tag ${feature.source === 'subrace' ? 'subrace-feature' : ''} ${selectedFeature === feature.name ? 'active' : ''}`}
-                                                onClick={() => handleFeatureClick(feature.name)}
-                                            >
-                                                {feature.name}
-                                                {feature.source === 'subrace' && ' (Subrace)'}
-                                            </span>
-                                        ))}
-                                    </div>
-                                    {selectedFeature && (
-                                        <div className="race-feature-description">
-                                            {allFeatures.find(f => f.name === selectedFeature)?.description || 'No description available.'}
-                                        </div>
-                                    )}
-                                </>
+                        <div className="race-features-list">
+                            {raceFeatures.length > 0 ? (
+                                raceFeatures.map((feature, idx) => (
+                                    <span key={idx} className="race-feature-tag">{feature.name}</span>
+                                ))
                             ) : (
-                                <div className="race-features-empty">No features for this race</div>
+                                <span className="race-features-empty">No features for this race</span>
                             )}
-                        </>
+                        </div>
                     )}
                 </div>
 
-                {/* Variant toggle */}
+                {/* Переключатель variant */}
                 <div className="variant-toggle-container">
                     <label className="variant-toggle">
                         <span className="toggle-label">Use Skills with Different Abilities variant rule?</span>
