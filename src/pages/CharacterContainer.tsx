@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
+import DiceRoller from '../components/DiceRoller';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -18,6 +19,11 @@ const CharacterContainer: React.FC = () => {
     // Бэкапы для восстановления при выключении variant
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
     const [backupToolAttributes, setBackupToolAttributes] = useState<{ name: string; attribute: string }[]>([]);
+
+    // Roll mode
+    const [rollMode, setRollMode] = useState(false);
+    const [rollResultModal, setRollResultModal] = useState<{ type: 'saving' | 'skill'; name: string; modifier: number; result?: number } | null>(null);
+    const [isRolling, setIsRolling] = useState(false);
 
     if (!character) {
         return <div className="page">Character not found</div>;
@@ -80,6 +86,10 @@ const CharacterContainer: React.FC = () => {
 
     // Переключение владения спасброском
     const toggleSavingThrowProficiency = (attr: string) => {
+        if (rollMode) {
+            handleSavingThrowRoll(attr);
+            return;
+        }
         const profs = character.savingThrowProficiencies || [];
         const updated = profs.includes(attr)
             ? profs.filter(p => p !== attr)
@@ -87,8 +97,38 @@ const CharacterContainer: React.FC = () => {
         updateCharacter(character.id, { savingThrowProficiencies: updated });
     };
 
+    // Бросок спасброска
+    const handleSavingThrowRoll = (attr: string) => {
+        const bonus = getSavingThrowBonus(attr.toLowerCase() as keyof typeof character.abilities);
+        const roll = Math.floor(Math.random() * 20) + 1;
+        setRollResultModal({
+            type: 'saving',
+            name: `${attr} Saving Throw`,
+            modifier: bonus,
+            result: roll,
+        });
+        setIsRolling(true);
+    };
+
+    // Бросок навыка
+    const handleSkillRoll = (skill: typeof character.skills[0]) => {
+        const bonus = getSkillBonus(skill);
+        const roll = Math.floor(Math.random() * 20) + 1;
+        setRollResultModal({
+            type: 'skill',
+            name: skill.name,
+            modifier: bonus,
+            result: roll,
+        });
+        setIsRolling(true);
+    };
+
     // Переключение proficient для навыка
     const toggleSkillProficient = (index: number) => {
+        if (rollMode) {
+            handleSkillRoll(character.skills[index]);
+            return;
+        }
         const updatedSkills = character.skills.map((s, i) =>
             i === index ? { ...s, proficient: !s.proficient } : s
         );
@@ -181,6 +221,42 @@ const CharacterContainer: React.FC = () => {
         : 'No class';
 
     const raceFeatures = RACE_FEATURES[character.race] || [];
+
+    // Roll mode toggle
+    const toggleRollMode = () => setRollMode(!rollMode);
+
+    const closeRollModal = () => {
+        setRollResultModal(null);
+        setIsRolling(false);
+    };
+
+    // Вспомогательная функция для рендера результата броска
+    const renderRollResult = () => {
+        if (!rollResultModal) return null;
+        const total = rollResultModal.result !== undefined ? rollResultModal.result + rollResultModal.modifier : 0;
+        return (
+            <div className="roll-result-modal-overlay" onClick={closeRollModal}>
+                <div className="roll-result-modal-content" onClick={(e) => e.stopPropagation()}>
+                    <button className="roll-modal-close" onClick={closeRollModal}>✕</button>
+                    <h3 className="roll-modal-title">{rollResultModal.name}</h3>
+                    <div className="roll-modal-dice">
+                        <DiceRoller
+                            sides={20}
+                            initialResult={rollResultModal.result}
+                            autoRoll={true}
+                            displayOnly={true}
+                        />
+                    </div>
+                    <div className="roll-modal-modifier">
+                        Modifier: {rollResultModal.modifier >= 0 ? `+${rollResultModal.modifier}` : `${rollResultModal.modifier}`}
+                    </div>
+                    <div className="roll-modal-total">
+                        Total: <strong>{total}</strong>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="character-page">
@@ -296,16 +372,23 @@ const CharacterContainer: React.FC = () => {
 
                 {/* Saving Throws */}
                 <div className="section-saving-throws">
-                    <div className="saving-throws-title">Saving Throws</div>
+                    <div className="saving-throws-header">
+                        <span className="saving-throws-title">Saving Throws</span>
+                        <button
+                            className={`roll-mode-toggle ${rollMode ? 'active' : ''}`}
+                            onClick={toggleRollMode}
+                        >
+                            {rollMode ? 'Roll Mode ON' : 'Roll Mode OFF'}
+                        </button>
+                    </div>
                     <div className="saving-throws-grid">
                         {savingThrowsData.map((st) => {
                             const isProficient = (character.savingThrowProficiencies || []).includes(st.name);
                             return (
                                 <div
-                                    className={`saving-throw-card ${isProficient ? 'proficient' : ''}`}
+                                    className={`saving-throw-card ${isProficient ? 'proficient' : ''} ${rollMode ? 'rollable' : ''}`}
                                     key={st.name}
                                     onClick={() => toggleSavingThrowProficiency(st.name)}
-                                    style={{ cursor: 'pointer' }}
                                 >
                                     <span className="saving-throw-name">{st.name}</span>
                                     <span className="saving-throw-bonus">
@@ -322,7 +405,6 @@ const CharacterContainer: React.FC = () => {
                     <div
                         className="race-features-header"
                         onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
-                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                     >
                         <span className="race-features-title">Race Features</span>
                         {renderChevron(isRaceFeaturesOpen)}
@@ -355,14 +437,32 @@ const CharacterContainer: React.FC = () => {
 
                 {/* Skills & Proficiencies */}
                 <div className="section-skills">
-                    <div className="skills-title">Skills & Proficiencies</div>
+                    <div className="skills-header">
+                        <span className="skills-title">Skills & Proficiencies</span>
+                        {rollMode && <span className="roll-hint">Click a skill to roll</span>}
+                    </div>
                     <div className="skills-grid">
                         {character.skills.map((skill, index) => {
                             const bonus = getSkillBonus(skill);
                             return (
-                                <div className="skill-card" key={skill.name}>
+                                <div
+                                    className={`skill-card ${rollMode ? 'rollable' : ''}`}
+                                    key={skill.name}
+                                    onClick={() => {
+                                        if (rollMode) {
+                                            handleSkillRoll(skill);
+                                        } else {
+                                            toggleSkillProficient(index);
+                                        }
+                                    }}
+                                >
                                     <div className="skill-left">
-                                        <SkillCheck proficient={skill.proficient} onToggle={() => toggleSkillProficient(index)} />
+                                        {!rollMode && (
+                                            <SkillCheck
+                                                proficient={skill.proficient}
+                                                onToggle={() => toggleSkillProficient(index)}
+                                            />
+                                        )}
                                         <span className="skill-name">{skill.name} ({skill.attribute})</span>
                                     </div>
                                     <div className="skill-right">
@@ -435,6 +535,9 @@ const CharacterContainer: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            {/* Roll Result Modal */}
+            {rollResultModal && renderRollResult()}
         </div>
     );
 };

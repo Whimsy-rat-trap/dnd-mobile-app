@@ -674,3 +674,114 @@
 .saving-throw-card.proficient .saving-throw-bonus {
     color: #60a5fa;
 }
+
+/* Roll Mode Toggle */
+.saving-throws-header,
+.skills-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.roll-mode-toggle {
+    padding: 4px 12px;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.roll-mode-toggle.active {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+}
+
+.roll-hint {
+    font-size: 12px;
+    color: #fbbf24;
+    font-style: italic;
+}
+
+/* Rollable cards */
+.skill-card.rollable,
+.saving-throw-card.rollable {
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.2s;
+}
+
+.skill-card.rollable:hover,
+.saving-throw-card.rollable:hover {
+    transform: scale(1.02);
+    border-color: #fbbf24;
+}
+
+/* Roll Result Modal */
+.roll-result-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.roll-result-modal-content {
+    background: #1f2937;
+    border-radius: 16px;
+    padding: 24px;
+    min-width: 280px;
+    max-width: 400px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.roll-modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.roll-modal-title {
+    color: #fff;
+    font-size: 18px;
+    margin: 0;
+    text-align: center;
+}
+
+.roll-modal-dice {
+    margin: 8px 0;
+}
+
+.roll-modal-modifier {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.roll-modal-total {
+    color: #fff;
+    font-size: 20px;
+}
+
+.roll-modal-total strong {
+    color: #34d399;
+    font-size: 28px;
+}
