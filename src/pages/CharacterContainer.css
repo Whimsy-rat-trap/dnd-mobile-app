@@ -607,7 +607,7 @@
     color: #60a5fa;
     margin-top: 8px;
 }
-
+/* Saving Throws */
 .section-saving-throws {
     width: 353px;
     display: flex;
@@ -636,14 +636,25 @@
     border-radius: 10px;
     padding: 12px;
     width: 112px;
-    height: 80px;
+    height: 94px;
     background: #1f2937;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    position: relative;
+    gap: 6px;
+    transition: background 0.2s;
+    cursor: pointer;
+    user-select: none;
+}
+
+.saving-throw-card:hover {
+    background: #2d3748;
+}
+
+.saving-throw-card.proficient {
+    background: rgba(96, 165, 250, 0.15);
+    border: 1px solid rgba(96, 165, 250, 0.3);
 }
 
 .saving-throw-name {
@@ -660,11 +671,6 @@
     color: #60a5fa;
 }
 
-.proficiency-dot {
-    position: absolute;
-    top: 6px;
-    right: 10px;
-    font-size: 16px;
-    color: #34d399;
-    line-height: 1;
+.saving-throw-card.proficient .saving-throw-bonus {
+    color: #60a5fa;
 }

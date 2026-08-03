@@ -60,9 +60,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             return parsed.map((char: any) => {
                 const updated = { ...char };
 
-                // === МИГРАЦИЯ СТАРЫХ ПОЛЕЙ ===
-
-                // class -> classes (если был только один класс)
+                // миграция class -> classes
                 if (typeof updated.class === 'string' && !updated.classes) {
                     updated.classes = [updated.class];
                 } else if (!updated.classes) {
@@ -72,10 +70,18 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.class = updated.classes[0] || 'Fighter';
                 }
 
-                // skills
+                // заполняем skills, если их нет или они пустые
                 if (!updated.skills || updated.skills.length === 0) {
                     updated.skills = defaultSkills;
                 }
+
+                if (!updated.diceLogs) {
+                    updated.diceLogs = {};
+                }
+
+                if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
+                if (updated.deathFailures === undefined) updated.deathFailures = 0;
+                if (updated.isStable === undefined) updated.isStable = false;
 
                 // toolProficiencies: если массив строк, преобразуем в объекты
                 if (Array.isArray(updated.toolProficiencies) && updated.toolProficiencies.length > 0) {
@@ -96,29 +102,21 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 }
 
                 // languages
-                if (!updated.languages) updated.languages = [];
+                if (!updated.languages) {
+                    updated.languages = [];
+                }
 
-                // size, creatureType
+                // size и creatureType
                 if (!updated.size) updated.size = 'Medium';
                 if (!updated.creatureType) updated.creatureType = 'Humanoid';
 
-                // subrace, subclass
-                if (updated.subrace === undefined) updated.subrace = '';
-                if (updated.subclass === undefined) updated.subclass = '';
+                // subrace
+                if (!updated.subrace) updated.subrace = '';
 
-                // diceLogs
-                if (!updated.diceLogs) updated.diceLogs = {};
-
-                // death saves
-                if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
-                if (updated.deathFailures === undefined) updated.deathFailures = 0;
-                if (updated.isStable === undefined) updated.isStable = false;
-
-                // inventory, spells, quests, campaigns – если нет, инициализируем пустыми массивами
-                if (!updated.inventory) updated.inventory = [];
-                if (!updated.spells) updated.spells = [];
-                if (!updated.quests) updated.quests = [];
-                if (!updated.campaigns) updated.campaigns = [];
+                // savingThrowProficiencies
+                if (!updated.savingThrowProficiencies) {
+                    updated.savingThrowProficiencies = [];
+                }
 
                 return updated;
             });
@@ -143,20 +141,20 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             class: character.class || 'Fighter',
             classes: character.classes || [character.class || 'Fighter'],
             skills: (character.skills && character.skills.length > 0) ? character.skills : defaultSkills,
-            toolProficiencies: character.toolProficiencies || [],
-            languages: character.languages || [],
-            size: character.size || 'Medium',
-            creatureType: character.creatureType || 'Humanoid',
-            subrace: character.subrace || '',
-            subclass: character.subclass || '',
+            toolProficiencies: character.toolProficiencies?.map((tool: any) => ({
+                name: tool.name || tool,
+                attribute: tool.attribute || 'DEX',
+                proficient: tool.proficient !== undefined ? tool.proficient : true,
+            })) || [],
             diceLogs: character.diceLogs || {},
             deathSuccesses: character.deathSuccesses ?? 0,
             deathFailures: character.deathFailures ?? 0,
             isStable: character.isStable ?? false,
-            inventory: character.inventory || [],
-            spells: character.spells || [],
-            quests: character.quests || [],
-            campaigns: character.campaigns || [],
+            languages: character.languages || [],
+            size: character.size || 'Medium',
+            creatureType: character.creatureType || 'Humanoid',
+            subrace: character.subrace || '',
+            savingThrowProficiencies: character.savingThrowProficiencies || [],
         };
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);

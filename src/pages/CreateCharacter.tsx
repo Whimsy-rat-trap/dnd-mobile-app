@@ -6,6 +6,7 @@ import { SUBCLASSES } from '../constants/subclasses';
 import { DND_RACES } from '../constants/races';
 import { DND_BACKGROUNDS } from '../constants/backgrounds';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
+import { CLASS_SAVING_THROWS } from '../constants/classSavingThrows';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
 import { RACE_DETAILS } from '../constants/raceDetails';
 import { RACE_FEATURES } from '../constants/raceFeatures';
@@ -445,6 +446,7 @@ const CreateCharacter: React.FC = () => {
             languages: languages,
             creatureType: creatureType,
             size: size,
+            savingThrowProficiencies: CLASS_SAVING_THROWS[finalData.class] || [],
             status: 'active' as const,
             created: today,
             lastUsed: today,

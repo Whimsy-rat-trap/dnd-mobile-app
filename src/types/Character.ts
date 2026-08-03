@@ -28,6 +28,7 @@ export interface Character {
         cha: number;
     };
     skills: { name: string; attribute: string; proficient: boolean }[];
+    savingThrowProficiencies: string[];
     toolProficiencies: { name: string; attribute: string; proficient: boolean }[];
     size: string;
     creatureType: string;

@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
-import { CLASS_SAVING_THROWS } from '../constants/classSavingThrows';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -64,20 +63,29 @@ const CharacterContainer: React.FC = () => {
     // Получение бонуса спасброска
     const getSavingThrowBonus = (attr: keyof typeof character.abilities) => {
         const mod = getModifier(attr);
-        const profs = CLASS_SAVING_THROWS[character.class] || [];
+        const profs = character.savingThrowProficiencies || [];
         const isProficient = profs.includes(attr.toUpperCase());
         return isProficient ? mod + proficiencyBonus : mod;
     };
 
     // Данные для спасбросков
     const savingThrowsData = [
-        { name: 'STR', modifier: getModifier('str'), bonus: getSavingThrowBonus('str') },
-        { name: 'DEX', modifier: getModifier('dex'), bonus: getSavingThrowBonus('dex') },
-        { name: 'CON', modifier: getModifier('con'), bonus: getSavingThrowBonus('con') },
-        { name: 'INT', modifier: getModifier('int'), bonus: getSavingThrowBonus('int') },
-        { name: 'WIS', modifier: getModifier('wis'), bonus: getSavingThrowBonus('wis') },
-        { name: 'CHA', modifier: getModifier('cha'), bonus: getSavingThrowBonus('cha') },
+        { name: 'STR', bonus: getSavingThrowBonus('str') },
+        { name: 'DEX', bonus: getSavingThrowBonus('dex') },
+        { name: 'CON', bonus: getSavingThrowBonus('con') },
+        { name: 'INT', bonus: getSavingThrowBonus('int') },
+        { name: 'WIS', bonus: getSavingThrowBonus('wis') },
+        { name: 'CHA', bonus: getSavingThrowBonus('cha') },
     ];
+
+    // Переключение владения спасброском
+    const toggleSavingThrowProficiency = (attr: string) => {
+        const profs = character.savingThrowProficiencies || [];
+        const updated = profs.includes(attr)
+            ? profs.filter(p => p !== attr)
+            : [...profs, attr];
+        updateCharacter(character.id, { savingThrowProficiencies: updated });
+    };
 
     // Переключение proficient для навыка
     const toggleSkillProficient = (index: number) => {
@@ -291,15 +299,18 @@ const CharacterContainer: React.FC = () => {
                     <div className="saving-throws-title">Saving Throws</div>
                     <div className="saving-throws-grid">
                         {savingThrowsData.map((st) => {
-                            const profs = CLASS_SAVING_THROWS[character.class] || [];
-                            const isProficient = profs.includes(st.name);
+                            const isProficient = (character.savingThrowProficiencies || []).includes(st.name);
                             return (
-                                <div className="saving-throw-card" key={st.name}>
+                                <div
+                                    className={`saving-throw-card ${isProficient ? 'proficient' : ''}`}
+                                    key={st.name}
+                                    onClick={() => toggleSavingThrowProficiency(st.name)}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <span className="saving-throw-name">{st.name}</span>
                                     <span className="saving-throw-bonus">
                                         {st.bonus >= 0 ? `+${st.bonus}` : `${st.bonus}`}
                                     </span>
-                                    {isProficient && <span className="proficiency-dot">●</span>}
                                 </div>
                             );
                         })}
