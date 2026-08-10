@@ -5,6 +5,7 @@ export interface Character {
     classes: string[];
     subclass?: string;
     level: number;
+    classLevels: { className: string; level: number }[];
     race: string;
     subrace?: string;
     background: string;

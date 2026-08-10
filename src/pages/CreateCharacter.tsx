@@ -106,6 +106,67 @@ const CreateCharacter: React.FC = () => {
     const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
     const [selectedSubraceFeature, setSelectedSubraceFeature] = useState<string | null>(null);
 
+    // --- НОВОЕ: мультикласс ---
+    const [classLevels, setClassLevels] = useState<{ className: string; level: number }[]>([
+        { className: DND_CLASSES[0], level: 1 }
+    ]);
+
+    // При изменении основного класса синхронизируем с classLevels (первым элементом)
+    useEffect(() => {
+        setClassLevels(prev => {
+            const newList = [...prev];
+            if (newList.length > 0) {
+                newList[0].className = formData.class;
+            } else {
+                newList.push({ className: formData.class, level: formData.level || 1 });
+            }
+            return newList;
+        });
+    }, [formData.class]);
+
+    // При изменении уровня синхронизируем с classLevels (первым элементом)
+    useEffect(() => {
+        setClassLevels(prev => {
+            const newList = [...prev];
+            if (newList.length > 0) {
+                newList[0].level = formData.level;
+            } else {
+                newList.push({ className: formData.class, level: formData.level });
+            }
+            return newList;
+        });
+    }, [formData.level]);
+
+    // Обработчики для дополнительных классов
+    const addExtraClass = () => {
+        setClassLevels([...classLevels, { className: DND_CLASSES[0], level: 1 }]);
+        // Обновляем общий уровень
+        updateTotalLevel();
+    };
+
+    const removeExtraClass = (index: number) => {
+        if (index === 0) return; // не удаляем основной класс
+        const newList = classLevels.filter((_, i) => i !== index);
+        setClassLevels(newList);
+        updateTotalLevel();
+    };
+
+    const updateExtraClass = (index: number, field: 'className' | 'level', value: string | number) => {
+        const newList = [...classLevels];
+        if (field === 'className') {
+            newList[index].className = value as string;
+        } else {
+            newList[index].level = Math.max(1, Math.min(20, Number(value)));
+        }
+        setClassLevels(newList);
+        updateTotalLevel();
+    };
+
+    const updateTotalLevel = () => {
+        const total = classLevels.reduce((sum, cl) => sum + cl.level, 0);
+        setFormData(prev => ({ ...prev, level: total }));
+    };
+
     // Вычисляем оставшиеся очки для Point Buy
     const getRemainingPoints = (): number => {
         const totalCost = Object.values(pointBuyValues).reduce((sum, val) => sum + getPointBuyCost(val), 0);
@@ -235,8 +296,10 @@ const CreateCharacter: React.FC = () => {
     useEffect(() => {
         if (isCreative) return;
 
+        // Используем основной класс для расчёта HP (можно было бы суммировать по всем классам, но упростим)
+        const mainClass = classLevels[0]?.className || formData.class;
         const conMod = Math.floor((formData.abilities.con - 10) / 2);
-        const hitDie = CLASS_HIT_DICE[formData.class] || 6;
+        const hitDie = CLASS_HIT_DICE[mainClass] || 6;
         const level = formData.level;
 
         let totalHp = hitDie + conMod;
@@ -260,7 +323,7 @@ const CreateCharacter: React.FC = () => {
             maxHp: totalHp,
             hp: totalHp,
         }));
-    }, [formData.class, formData.level, formData.abilities.con, hpMethod, rolledHps, isCreative]);
+    }, [classLevels, formData.abilities.con, hpMethod, rolledHps, isCreative]);
 
     // При изменении DEX в режиме rules обновляем AC
     useEffect(() => {
@@ -302,7 +365,8 @@ const CreateCharacter: React.FC = () => {
 
     const handleRoll = (result: number) => {
         if (isCreative) return;
-        const hitDie = CLASS_HIT_DICE[formData.class] || 6;
+        const mainClass = classLevels[0]?.className || formData.class;
+        const hitDie = CLASS_HIT_DICE[mainClass] || 6;
         const additionalLevels = formData.level - 1;
 
         if (additionalLevels === 0) return;
@@ -320,7 +384,8 @@ const CreateCharacter: React.FC = () => {
 
     const handleRerollAll = () => {
         if (isCreative) return;
-        const hitDie = CLASS_HIT_DICE[formData.class] || 6;
+        const mainClass = classLevels[0]?.className || formData.class;
+        const hitDie = CLASS_HIT_DICE[mainClass] || 6;
         const additionalLevels = formData.level - 1;
         if (additionalLevels === 0) return;
         const newRolls = Array.from({ length: additionalLevels }, () =>
@@ -437,16 +502,29 @@ const CreateCharacter: React.FC = () => {
         const creatureType = raceDetails ? raceDetails.creatureType : 'Humanoid';
         const size = finalData.size || (typeof raceDetails?.size === 'string' ? raceDetails.size : 'Medium');
 
+        // Формируем classLevels для персонажа
+        const characterClassLevels = classLevels.map(cl => ({
+            className: cl.className,
+            level: cl.level
+        }));
+
+        // Основной класс и классы (для обратной совместимости)
+        const mainClass = classLevels[0]?.className || finalData.class;
+        const allClasses = classLevels.map(cl => cl.className);
+
         const newCharacter = {
             ...finalData,
-            classes: [finalData.class],
+            class: mainClass,
+            classes: allClasses,
+            level: finalData.level,
+            classLevels: characterClassLevels,
             subclass: finalData.subclass,
             skills: skillsWithProficiencies,
             toolProficiencies: toolProficiencies,
             languages: languages,
             creatureType: creatureType,
             size: size,
-            savingThrowProficiencies: CLASS_SAVING_THROWS[finalData.class] || [],
+            savingThrowProficiencies: CLASS_SAVING_THROWS[mainClass] || [],
             status: 'active' as const,
             created: today,
             lastUsed: today,
@@ -563,6 +641,38 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 )}
 
+                {/* --- НОВОЕ: мультикласс --- */}
+                <div className="multiclass-section">
+                    <label>Class Levels</label>
+                    {classLevels.map((cl, index) => (
+                        <div key={index} className="multiclass-row">
+                            <select
+                                value={cl.className}
+                                onChange={(e) => updateExtraClass(index, 'className', e.target.value)}
+                                disabled={index === 0} // основной класс нельзя изменить через этот селект, он синхронизируется с основным классом
+                            >
+                                {DND_CLASSES.map(cls => (
+                                    <option key={cls} value={cls}>{cls}</option>
+                                ))}
+                            </select>
+                            <input
+                                type="number"
+                                min="1"
+                                max="20"
+                                value={cl.level}
+                                onChange={(e) => updateExtraClass(index, 'level', Number(e.target.value))}
+                            />
+                            {index > 0 && (
+                                <button type="button" className="remove-class-btn" onClick={() => removeExtraClass(index)}>✕</button>
+                            )}
+                        </div>
+                    ))}
+                    <button type="button" className="add-class-btn" onClick={addExtraClass}>
+                        + Add Class
+                    </button>
+                    <div className="total-level-display">Total Level: {formData.level}</div>
+                </div>
+
                 {/* Фон и Уровень */}
                 <div className="form-row">
                     <div className="form-group">
@@ -573,10 +683,11 @@ const CreateCharacter: React.FC = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="form-group">
+                    {/* Уровень теперь отображается как сумма, но оставляем поле для ручного ввода (закомментируем) */}
+                    {/* <div className="form-group">
                         <label>Level *</label>
                         <input type="number" name="level" value={formData.level} onChange={handleChange} min="1" max="20" required />
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Размер (если выбор) */}
@@ -634,7 +745,7 @@ const CreateCharacter: React.FC = () => {
                             <div className="hp-roll-area">
                                 <div className="roll-controls">
                                     <DiceRoller
-                                        sides={CLASS_HIT_DICE[formData.class] || 6}
+                                        sides={CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6}
                                         onRoll={handleRoll}
                                         label="Roll HP"
                                     />
@@ -656,15 +767,15 @@ const CreateCharacter: React.FC = () => {
                             <span>Total HP: <strong>{formData.maxHp}</strong></span>
                             {formData.level > 1 && (
                                 <span className="formula-details">
-                                    ({CLASS_HIT_DICE[formData.class] || 6} + CON) + {formData.level > 1 && (
+                                    ({CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6} + CON) + {formData.level > 1 && (
                                     hpMethod === 'average'
-                                        ? `(${formData.level - 1} × (${Math.floor((CLASS_HIT_DICE[formData.class] || 6) / 2) + 1} + CON))`
+                                        ? `(${formData.level - 1} × (${Math.floor((CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6) / 2) + 1} + CON))`
                                         : `(${rolledHps.length} × (rolls + CON))`
                                 )}
                                 </span>
                             )}
                             {formData.level === 1 && (
-                                <span className="formula-details">(Level 1: {CLASS_HIT_DICE[formData.class] || 6} + CON modifier)</span>
+                                <span className="formula-details">(Level 1: {CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6} + CON modifier)</span>
                             )}
                         </div>
                     </div>

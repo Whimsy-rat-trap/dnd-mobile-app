@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
-import { getTotalSpellSlots, getMaxPreparedSpells } from '../constants/classSpellSlots';
+import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import './SpellbookContainer.css';
 
 type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
@@ -85,9 +85,10 @@ const SpellbookContainer: React.FC = () => {
     const handleBack = () => navigate(-1);
     const handleAddFromLibrary = () => navigate('/spells');
 
-    // Вычисления
-    const totalSlots = getTotalSpellSlots(character.class, character.level);
-    const maxPrepared = getMaxPreparedSpells(character);
+    // Вычисления с использованием новой системы заклинаний
+    const spellSlotsArray = getSpellSlots(character);
+    const totalSlots = spellSlotsArray.reduce((a, b) => a + b, 0);
+    const maxPrepared = getMaxPrepared(character);
     const preparedCount = character.spells.filter(s => s.prepared).length;
     const knownCount = character.spells.length;
 

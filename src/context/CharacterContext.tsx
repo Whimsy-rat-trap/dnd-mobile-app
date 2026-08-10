@@ -70,6 +70,21 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.class = updated.classes[0] || 'Fighter';
                 }
 
+                // миграция classLevels
+                if (!updated.classLevels || updated.classLevels.length === 0) {
+                    if (updated.classes && updated.level) {
+                        updated.classLevels = updated.classes.map((cls: string) => ({ className: cls, level: updated.level }));
+                    } else if (updated.class) {
+                        updated.classLevels = [{ className: updated.class, level: updated.level || 1 }];
+                    } else {
+                        updated.classLevels = [{ className: 'Fighter', level: 1 }];
+                    }
+                }
+                // Пересчитываем общий уровень для обратной совместимости
+                if (updated.classLevels.length > 0) {
+                    updated.level = updated.classLevels.reduce((sum: number, cl: any) => sum + cl.level, 0);
+                }
+
                 // заполняем skills, если их нет или они пустые
                 if (!updated.skills || updated.skills.length === 0) {
                     updated.skills = defaultSkills;
@@ -138,8 +153,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
-            class: character.class || 'Fighter',
-            classes: character.classes || [character.class || 'Fighter'],
+            class: character.class || character.classLevels?.[0]?.className || 'Fighter',
+            classes: character.classes || character.classLevels?.map(cl => cl.className) || ['Fighter'],
+            level: character.level || character.classLevels?.reduce((sum, cl) => sum + cl.level, 0) || 1,
+            classLevels: character.classLevels || [{ className: character.class || 'Fighter', level: character.level || 1 }],
             skills: (character.skills && character.skills.length > 0) ? character.skills : defaultSkills,
             toolProficiencies: character.toolProficiencies?.map((tool: any) => ({
                 name: tool.name || tool,
