@@ -125,10 +125,6 @@ const CharacterContainer: React.FC = () => {
 
     // Переключение proficient для навыка
     const toggleSkillProficient = (index: number) => {
-        if (rollMode) {
-            handleSkillRoll(character.skills[index]);
-            return;
-        }
         const updatedSkills = character.skills.map((s, i) =>
             i === index ? { ...s, proficient: !s.proficient } : s
         );
@@ -341,7 +337,6 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* HP */}
                 <div className="section-hp">
                     <div className="hp-title">Hit Points</div>
                     <div className="hp-display">
@@ -448,13 +443,7 @@ const CharacterContainer: React.FC = () => {
                                 <div
                                     className={`skill-card ${rollMode ? 'rollable' : ''}`}
                                     key={skill.name}
-                                    onClick={() => {
-                                        if (rollMode) {
-                                            handleSkillRoll(skill);
-                                        } else {
-                                            toggleSkillProficient(index);
-                                        }
-                                    }}
+                                    onClick={rollMode ? () => handleSkillRoll(skill) : undefined}
                                 >
                                     <div className="skill-left">
                                         {!rollMode && (
@@ -536,7 +525,6 @@ const CharacterContainer: React.FC = () => {
                 </div>
             </div>
 
-            {/* Roll Result Modal */}
             {rollResultModal && renderRollResult()}
         </div>
     );
