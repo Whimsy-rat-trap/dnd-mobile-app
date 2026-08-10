@@ -16,6 +16,8 @@ const CharacterContainer: React.FC = () => {
     const [useVariant, setUseVariant] = useState(false);
     // Состояние для раскрытия списка расовых фич
     const [isRaceFeaturesOpen, setIsRaceFeaturesOpen] = useState(true);
+    // Состояние для выбранной расовой фичи (для отображения описания)
+    const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
     // Бэкапы для восстановления при выключении variant
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
     const [backupToolAttributes, setBackupToolAttributes] = useState<{ name: string; attribute: string }[]>([]);
@@ -229,6 +231,15 @@ const CharacterContainer: React.FC = () => {
 
     const raceFeatures = RACE_FEATURES[character.race] || [];
 
+    // Функция для переключения выбранной фичи (toggle)
+    const toggleFeature = (featureName: string) => {
+        if (selectedFeature === featureName) {
+            setSelectedFeature(null);
+        } else {
+            setSelectedFeature(featureName);
+        }
+    };
+
     // Roll mode toggle
     const toggleRollMode = () => setRollMode(!rollMode);
 
@@ -416,15 +427,29 @@ const CharacterContainer: React.FC = () => {
                         {renderChevron(isRaceFeaturesOpen)}
                     </div>
                     {isRaceFeaturesOpen && (
-                        <div className="race-features-list">
-                            {raceFeatures.length > 0 ? (
-                                raceFeatures.map((feature, idx) => (
-                                    <span key={idx} className="race-feature-tag">{feature.name}</span>
-                                ))
-                            ) : (
-                                <span className="race-features-empty">No features for this race</span>
+                        <>
+                            <div className="race-features-list">
+                                {raceFeatures.length > 0 ? (
+                                    raceFeatures.map((feature, idx) => (
+                                        <span
+                                            key={idx}
+                                            className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
+                                            onClick={() => toggleFeature(feature.name)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            {feature.name}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className="race-features-empty">No features for this race</span>
+                                )}
+                            </div>
+                            {selectedFeature && (
+                                <div className="race-feature-description">
+                                    {raceFeatures.find(f => f.name === selectedFeature)?.description}
+                                </div>
                             )}
-                        </div>
+                        </>
                     )}
                 </div>
 
