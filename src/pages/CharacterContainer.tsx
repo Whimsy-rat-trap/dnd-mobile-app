@@ -123,7 +123,18 @@ const CharacterContainer: React.FC = () => {
         setIsRolling(true);
     };
 
-    // Переключение proficient для навыка
+    const handleToolRoll = (tool: typeof character.toolProficiencies[0]) => {
+        const bonus = getToolBonus(tool);
+        const roll = Math.floor(Math.random() * 20) + 1;
+        setRollResultModal({
+            type: 'skill',
+            name: tool.name,
+            modifier: bonus,
+            result: roll,
+        });
+        setIsRolling(true);
+    };
+
     const toggleSkillProficient = (index: number) => {
         const updatedSkills = character.skills.map((s, i) =>
             i === index ? { ...s, proficient: !s.proficient } : s
@@ -482,9 +493,18 @@ const CharacterContainer: React.FC = () => {
                             {character.toolProficiencies.map((tool, index) => {
                                 const bonus = getToolBonus(tool);
                                 return (
-                                    <div className="skill-card" key={tool.name}>
+                                    <div
+                                        className={`skill-card ${rollMode ? 'rollable' : ''}`}
+                                        key={tool.name}
+                                        onClick={rollMode ? () => handleToolRoll(tool) : undefined}
+                                    >
                                         <div className="skill-left">
-                                            <SkillCheck proficient={tool.proficient} onToggle={() => toggleToolProficient(index)} />
+                                            {!rollMode && (
+                                                <SkillCheck
+                                                    proficient={tool.proficient}
+                                                    onToggle={() => toggleToolProficient(index)}
+                                                />
+                                            )}
                                             <span className="skill-name">{tool.name} ({tool.attribute || 'DEX'})</span>
                                         </div>
                                         <div className="skill-right">
