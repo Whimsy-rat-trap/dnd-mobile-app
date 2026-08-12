@@ -235,7 +235,7 @@ const Hub: React.FC = () => {
                     <div className="section-header" onClick={toggleCharacters} style={{ cursor: 'pointer' }}>
                         <span className="section-title">Your Characters</span>
                         <div className="section-header-right">
-                            <Link to="/characters" className="view-all-link" onClick={(e) => e.stopPropagation()}>View all</Link>
+                            <Link to="/dashboard" className="view-all-link" onClick={(e) => e.stopPropagation()}>View all</Link>
                             {renderChevron(isCharactersOpen)}
                         </div>
                     </div>
