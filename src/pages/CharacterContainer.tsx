@@ -5,6 +5,7 @@ import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
 import DiceRoller from '../components/DiceRoller';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
+import Modal from '../components/Modal';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -279,34 +280,6 @@ const CharacterContainer: React.FC = () => {
         setIsRolling(false);
     };
 
-    // Вспомогательная функция для рендера результата броска
-    const renderRollResult = () => {
-        if (!rollResultModal) return null;
-        const total = rollResultModal.result !== undefined ? rollResultModal.result + rollResultModal.modifier : 0;
-        return (
-            <div className="roll-result-modal-overlay" onClick={closeRollModal}>
-                <div className="roll-result-modal-content" onClick={(e) => e.stopPropagation()}>
-                    <button className="roll-modal-close" onClick={closeRollModal}>✕</button>
-                    <h3 className="roll-modal-title">{rollResultModal.name}</h3>
-                    <div className="roll-modal-dice">
-                        <DiceRoller
-                            sides={20}
-                            initialResult={rollResultModal.result}
-                            autoRoll={true}
-                            displayOnly={true}
-                        />
-                    </div>
-                    <div className="roll-modal-modifier">
-                        Modifier: {rollResultModal.modifier >= 0 ? `+${rollResultModal.modifier}` : `${rollResultModal.modifier}`}
-                    </div>
-                    <div className="roll-modal-total">
-                        Total: <strong>{total}</strong>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
     // Закрытие попапа HP
     const closeHpPopup = () => {
         setHpPopupOpen(false);
@@ -439,7 +412,6 @@ const CharacterContainer: React.FC = () => {
                         ))}
                     </div>
                 </div>
-
 
                 {/* Spellcasting */}
                 {(character.classLevels?.some(cl =>
@@ -652,60 +624,75 @@ const CharacterContainer: React.FC = () => {
             </div>
 
             {/* Roll Result Modal */}
-            {rollResultModal && renderRollResult()}
+            <Modal isOpen={!!rollResultModal} onClose={closeRollModal}>
+                {rollResultModal && (
+                    <>
+                        <h3 className="roll-modal-title">{rollResultModal.name}</h3>
+                        <div className="roll-modal-dice">
+                            <DiceRoller
+                                sides={20}
+                                initialResult={rollResultModal.result}
+                                autoRoll={true}
+                                displayOnly={true}
+                            />
+                        </div>
+                        <div className="roll-modal-modifier">
+                            Modifier: {rollResultModal.modifier >= 0 ? `+${rollResultModal.modifier}` : `${rollResultModal.modifier}`}
+                        </div>
+                        <div className="roll-modal-total">
+                            Total: <strong>{rollResultModal.result !== undefined ? rollResultModal.result + rollResultModal.modifier : 0}</strong>
+                        </div>
+                    </>
+                )}
+            </Modal>
 
             {/* HP Edit Popup */}
-            {hpPopupOpen && (
-                <div className="popup-overlay" onClick={closeHpPopup}>
-                    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="popup-close" onClick={closeHpPopup}>✕</button>
-                        <div className="popup-body">
-                            <h3 className="popup-title">Edit HP</h3>
-                            <div className="popup-stat-block">
-                                <span className="stat-label">HP</span>
-                                <div className="stat-progress">
-                                    <div className="progress-track">
-                                        <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
-                                        {tempHp > 0 && <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>}
-                                    </div>
-                                </div>
-                                <span className="stat-value-dashboard stat-value-hp">
-                                    {hp} / {maxHp}
-                                    {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
-                                </span>
+            <Modal isOpen={hpPopupOpen} onClose={closeHpPopup}>
+                <div className="popup-body">
+                    <h3 className="popup-title">Edit HP</h3>
+                    <div className="popup-stat-block">
+                        <span className="stat-label">HP</span>
+                        <div className="stat-progress">
+                            <div className="progress-track">
+                                <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                                {tempHp > 0 && <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>}
                             </div>
-                            <div className="popup-controls">
-                                <div className="control-group">
-                                    <label>HP Adjustment</label>
-                                    <div className="input-group">
-                                        <input
-                                            type="number"
-                                            value={hpInputValue}
-                                            onChange={(e) => setHpInputValue(Number(e.target.value))}
-                                            min="0"
-                                        />
-                                        <button onClick={() => { addHp(hpInputValue); closeHpPopup(); }}>Add</button>
-                                        <button onClick={() => { subtractHp(hpInputValue); closeHpPopup(); }}>Subtract</button>
-                                    </div>
-                                </div>
-                                <div className="control-group">
-                                    <label>Temp HP Adjustment</label>
-                                    <div className="input-group">
-                                        <input
-                                            type="number"
-                                            value={tempInputValue}
-                                            onChange={(e) => setTempInputValue(Number(e.target.value))}
-                                            min="0"
-                                        />
-                                        <button onClick={() => { addTempHp(tempInputValue); closeHpPopup(); }}>Add Temp</button>
-                                        <button onClick={() => { subtractTempHp(tempInputValue); closeHpPopup(); }}>Subtract Temp</button>
-                                    </div>
-                                </div>
+                        </div>
+                        <span className="stat-value-dashboard stat-value-hp">
+                            {hp} / {maxHp}
+                            {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
+                        </span>
+                    </div>
+                    <div className="popup-controls">
+                        <div className="control-group">
+                            <label>HP Adjustment</label>
+                            <div className="input-group">
+                                <input
+                                    type="number"
+                                    value={hpInputValue}
+                                    onChange={(e) => setHpInputValue(Number(e.target.value))}
+                                    min="0"
+                                />
+                                <button onClick={() => { addHp(hpInputValue); closeHpPopup(); }}>Add</button>
+                                <button onClick={() => { subtractHp(hpInputValue); closeHpPopup(); }}>Subtract</button>
+                            </div>
+                        </div>
+                        <div className="control-group">
+                            <label>Temp HP Adjustment</label>
+                            <div className="input-group">
+                                <input
+                                    type="number"
+                                    value={tempInputValue}
+                                    onChange={(e) => setTempInputValue(Number(e.target.value))}
+                                    min="0"
+                                />
+                                <button onClick={() => { addTempHp(tempInputValue); closeHpPopup(); }}>Add Temp</button>
+                                <button onClick={() => { subtractTempHp(tempInputValue); closeHpPopup(); }}>Subtract Temp</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 };

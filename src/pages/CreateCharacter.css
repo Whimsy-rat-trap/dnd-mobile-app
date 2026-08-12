@@ -340,38 +340,23 @@ input[type=number] {
     background: #fbbf24;
 }
 
-/* Убираем дублирование .ability-bonus.bg-bonus (уже есть выше) */
-
-/* Модальные окна */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+.legend-color.subrace {
+    background: #60a5fa;
 }
 
-.modal-content {
-    background: #1f2937;
-    border-radius: 16px;
-    padding: 24px;
-    width: 90%;
-    max-width: 360px;
-    max-height: 90vh;
-    overflow-y: auto;
+.ability-bonus.subrace-bonus {
+    color: #60a5fa;
 }
 
-.modal-content h3 {
-    color: #fff;
-    margin-bottom: 16px;
-    text-align: center;
+.subrace-features-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    color: #60a5fa;
+    margin-top: 8px;
 }
 
+/* Point Buy */
 .pointbuy-points {
     text-align: center;
     color: #9ca3af;
@@ -445,6 +430,7 @@ input[type=number] {
     cursor: not-allowed;
 }
 
+/* Кнопки внутри модалок (действия) */
 .modal-actions {
     display: flex;
     gap: 12px;
@@ -479,7 +465,7 @@ input[type=number] {
     background: #059669;
 }
 
-/* Roll Distribution Modal */
+/* Roll Distribution */
 .roll-distribution {
     display: flex;
     flex-direction: column;
@@ -563,6 +549,7 @@ input[type=number] {
     color: #ef4444;
 }
 
+/* Race Features */
 .race-features-section {
     margin-top: 4px;
 }
@@ -623,22 +610,7 @@ input[type=number] {
     line-height: 1.5;
 }
 
-.legend-color.subrace {
-    background: #60a5fa;
-}
-
-.ability-bonus.subrace-bonus {
-    color: #60a5fa;
-}
-
-.subrace-features-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 14px;
-    color: #60a5fa;
-    margin-top: 8px;
-}
-
+/* Multiclass */
 .multiclass-section {
     margin: 8px 0;
     padding: 8px 0;

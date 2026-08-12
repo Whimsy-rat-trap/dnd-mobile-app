@@ -143,14 +143,13 @@
 /* HP Section */
 .section-hp {
     width: 353px;
-    height: 183px;
     padding: 20px;
     border-radius: 12px;
     background: linear-gradient(315deg, #dc2626 0%, #991b1b 100%);
     box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
+    cursor: pointer;
 }
 
 .hp-title {
@@ -193,29 +192,44 @@
     color: #fca5a5;
 }
 
-.hp-controls {
+.temp-hp-value {
+    font-weight: 600;
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+.stat-progress {
+    border-radius: 4px;
+    width: 100%;
+    height: 8px;
+    background: #333;
+    overflow: hidden;
+}
+
+.progress-track {
     display: flex;
-    justify-content: center;
-    gap: 8px;
+    height: 100%;
+    width: 100%;
 }
 
-.hp-button {
-    border-radius: 8px;
-    width: 152px;
-    height: 44px;
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 14px;
-    text-align: center;
-    color: #fff;
-    cursor: pointer;
-    transition: background 0.2s;
+.hp-fill {
+    height: 100%;
+    background: linear-gradient(0deg, #dc2626 0%, #ef4444 100%);
+    transition: width 0.3s ease;
+    flex-shrink: 0;
 }
 
-.hp-button:hover {
-    background: rgba(255, 255, 255, 0.25);
+.temp-fill {
+    height: 100%;
+    background: repeating-linear-gradient(
+            45deg,
+            #ef4444 0px,
+            #ef4444 4px,
+            #1a1a1a 4px,
+            #1a1a1a 8px
+    );
+    transition: width 0.3s ease;
+    flex-shrink: 0;
 }
 
 /* Abilities Section */
@@ -278,335 +292,6 @@
     color: #9ca3af;
 }
 
-/* Skills Section */
-.section-skills {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    flex-shrink: 0;
-    margin-bottom: 0;
-    padding-bottom: 8px;
-}
-
-.skills-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.skills-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-}
-
-.skill-card {
-    border-radius: 10px;
-    padding: 12px 16px;
-    width: 353px;
-    height: 44px;
-    background: #1f2937;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-sizing: border-box;
-}
-
-.skill-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.skill-name {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 14px;
-    color: #fff;
-}
-
-.skill-bonus {
-    font-family: var(--font-family);
-    font-weight: 700;
-    font-size: 16px;
-    color: #34d399;
-}
-
-/* Tool Proficiencies */
-.section-tools {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.tools-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.tools-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.tool-tag {
-    background: #1f2937;
-    border: 1px solid #374957;
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 13px;
-    color: #d1d5db;
-}
-
-.tools-empty {
-    color: #6b7280;
-    font-size: 14px;
-    font-style: italic;
-}
-
-.tool-attribute-selector {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.attr-select {
-    background: #1f2937;
-    border: 1px solid #374957;
-    border-radius: 4px;
-    color: #d1d5db;
-    font-size: 12px;
-    padding: 2px 4px;
-    height: 28px;
-    outline: none;
-}
-
-.attr-select:focus {
-    border-color: #34d399;
-}
-
-.skill-bonus {
-    min-width: 30px;
-    text-align: right;
-}
-
-/* Переключатель variant rule */
-.variant-toggle-container {
-    width: 353px;
-    display: flex;
-    justify-content: flex-start;
-    margin: 4px 0 8px 0;
-}
-
-.variant-toggle {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    font-family: var(--font-family);
-    font-size: 14px;
-    color: #d1d5db;
-    user-select: none;
-}
-
-.variant-toggle input {
-    display: none;
-}
-
-.toggle-slider {
-    position: relative;
-    width: 44px;
-    height: 24px;
-    background: #374151;
-    border-radius: 12px;
-    transition: background 0.3s;
-    flex-shrink: 0;
-}
-
-.toggle-slider::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: #fff;
-    border-radius: 50%;
-    transition: transform 0.3s;
-}
-
-.variant-toggle input:checked + .toggle-slider {
-    background: #34d399;
-}
-
-.variant-toggle input:checked + .toggle-slider::after {
-    transform: translateX(20px);
-}
-
-/* Атрибут-селектор для навыков и инструментов */
-.skill-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.attr-select {
-    background: #1f2937;
-    border: 1px solid #374957;
-    border-radius: 4px;
-    color: #d1d5db;
-    font-size: 12px;
-    padding: 2px 4px;
-    height: 28px;
-    outline: none;
-    min-width: 40px;
-}
-
-.attr-select:focus {
-    border-color: #34d399;
-}
-
-.skill-bonus {
-    min-width: 30px;
-    text-align: right;
-    font-family: var(--font-family);
-    font-weight: 700;
-    font-size: 16px;
-    color: #34d399;
-}
-
-.section-languages {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.languages-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.languages-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.language-tag {
-    background: #1f2937;
-    border: 1px solid #374957;
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 13px;
-    color: #d1d5db;
-}
-
-.languages-empty {
-    color: #6b7280;
-    font-size: 14px;
-    font-style: italic;
-}
-
-/* Race Features */
-.race-features-section {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 4px;
-}
-
-.race-features-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #374957;
-    user-select: none;
-}
-
-.race-features-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.race-features-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px 0;
-}
-
-.race-feature-tag {
-    background: #1f2937;
-    border: 1px solid #374957;
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 13px;
-    color: #d1d5db;
-}
-
-.race-features-empty {
-    color: #6b7280;
-    font-size: 14px;
-    font-style: italic;
-}
-
-.chevron-icon {
-    transition: transform 0.3s ease;
-}
-
-.chevron-icon.open {
-    transform: rotate(180deg);
-}
-
-.race-feature-tag.active {
-    border-color: #34d399;
-    background: rgba(52, 211, 153, 0.1);
-}
-
-.race-feature-description {
-    margin-top: 8px;
-    padding: 12px;
-    background: #1f2937;
-    border-radius: 6px;
-    border-left: 3px solid #34d399;
-    color: #d1d5db;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.legend-color.subrace {
-    background: #60a5fa;
-}
-
-.ability-bonus.subrace-bonus {
-    color: #60a5fa;
-}
-
-.subrace-features-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 14px;
-    color: #60a5fa;
-    margin-top: 8px;
-}
 /* Saving Throws */
 .section-saving-throws {
     width: 353px;
@@ -721,49 +406,11 @@
     border-color: #fbbf24;
 }
 
-/* Roll Result Modal */
-.roll-result-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.roll-result-modal-content {
-    background: #1f2937;
-    border-radius: 16px;
-    padding: 24px;
-    min-width: 280px;
-    max-width: 400px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-}
-
-.roll-modal-close {
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    background: transparent;
-    border: none;
-    color: #9ca3af;
-    font-size: 20px;
-    cursor: pointer;
-}
-
+/* Roll Result Modal - содержимое (без оверлея и кнопки закрытия) */
 .roll-modal-title {
     color: #fff;
     font-size: 18px;
-    margin: 0;
+    margin: 0 0 12px 0;
     text-align: center;
 }
 
@@ -786,6 +433,7 @@
     font-size: 28px;
 }
 
+/* Spellcasting Section */
 .section-spellcasting {
     width: 353px;
     display: flex;
@@ -836,139 +484,310 @@
     color: #34d399;
 }
 
-/* HP Section */
-.section-hp {
+/* Race Features */
+.race-features-section {
     width: 353px;
-    padding: 20px;
-    border-radius: 12px;
-    background: linear-gradient(315deg, #dc2626 0%, #991b1b 100%);
-    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    cursor: pointer;
-    transition: transform 0.1s;
+    margin-top: 4px;
 }
 
-.hp-title {
+.race-features-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #374957;
+    user-select: none;
+}
+
+.race-features-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.race-features-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.race-feature-tag {
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.race-feature-tag:hover {
+    border-color: #6b7280;
+}
+
+.race-feature-tag.active {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.1);
+}
+
+.race-features-empty {
+    color: #6b7280;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.chevron-icon {
+    transition: transform 0.3s ease;
+}
+
+.chevron-icon.open {
+    transform: rotate(180deg);
+}
+
+.race-feature-description {
+    margin-top: 8px;
+    padding: 12px;
+    background: #1f2937;
+    border-radius: 6px;
+    border-left: 3px solid #34d399;
+    color: #d1d5db;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Subrace */
+.legend-color.subrace {
+    background: #60a5fa;
+}
+
+.ability-bonus.subrace-bonus {
+    color: #60a5fa;
+}
+
+.subrace-features-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    color: #60a5fa;
+    margin-top: 8px;
+}
+
+/* Skills & Proficiencies */
+.section-skills {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+    padding-bottom: 8px;
+}
+
+.skills-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.skill-card {
+    border-radius: 10px;
+    padding: 12px 16px;
+    width: 353px;
+    height: 44px;
+    background: #1f2937;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.skill-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.skill-name {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
     color: #fff;
-    margin-bottom: 12px;
 }
 
-.hp-display {
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.hp-current {
+.skill-bonus {
     font-family: var(--font-family);
     font-weight: 700;
-    font-size: 48px;
-    text-align: center;
+    font-size: 16px;
+    color: #34d399;
+}
+
+/* Variant toggle */
+.variant-toggle-container {
+    width: 353px;
+    display: flex;
+    justify-content: flex-start;
+    margin: 4px 0 8px 0;
+}
+
+.variant-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 14px;
+    color: #d1d5db;
+    user-select: none;
+}
+
+.variant-toggle input {
+    display: none;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #374151;
+    border-radius: 12px;
+    transition: background 0.3s;
+    flex-shrink: 0;
+}
+
+.toggle-slider::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.variant-toggle input:checked + .toggle-slider {
+    background: #34d399;
+}
+
+.variant-toggle input:checked + .toggle-slider::after {
+    transform: translateX(20px);
+}
+
+/* Skill and Tool attribute selector */
+.skill-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.attr-select {
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    color: #d1d5db;
+    font-size: 12px;
+    padding: 2px 4px;
+    height: 28px;
+    outline: none;
+    min-width: 40px;
+}
+
+.attr-select:focus {
+    border-color: #34d399;
+}
+
+/* Tool Proficiencies */
+.section-tools {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.tools-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
     color: #fff;
 }
 
-.hp-separator {
-    font-family: var(--font-family);
-    font-weight: 400;
-    font-size: 32px;
-    text-align: center;
-    color: #fca5a5;
+.tools-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.hp-max {
+.tool-tag {
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: #d1d5db;
+}
+
+.tools-empty {
+    color: #6b7280;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* Languages */
+.section-languages {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.languages-title {
     font-family: var(--font-family);
     font-weight: 500;
-    font-size: 32px;
-    text-align: center;
-    color: #fca5a5;
+    font-size: 16px;
+    color: #fff;
 }
 
-.temp-hp-value {
-    font-weight: 600;
-    color: #ef4444;
-    margin-left: 4px;
-}
-
-.stat-progress {
-    border-radius: 4px;
-    width: 100%;
-    height: 8px;
-    background: #333;
-    overflow: hidden;
-}
-
-.progress-track {
+.languages-grid {
     display: flex;
-    height: 100%;
-    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.hp-fill {
-    height: 100%;
-    background: linear-gradient(0deg, #dc2626 0%, #ef4444 100%);
-    transition: width 0.3s ease;
-    flex-shrink: 0;
-}
-
-.temp-fill {
-    height: 100%;
-    background: repeating-linear-gradient(
-            45deg,
-            #ef4444 0px,
-            #ef4444 4px,
-            #1a1a1a 4px,
-            #1a1a1a 8px
-    );
-    transition: width 0.3s ease;
-    flex-shrink: 0;
-}
-
-/* Popup стили */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.popup-content {
+.language-tag {
     background: #1f2937;
-    border-radius: 16px;
-    padding: 24px;
-    min-width: 300px;
-    max-width: 90%;
-    position: relative;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: #d1d5db;
 }
 
-.popup-close {
-    position: absolute;
-    top: -16px;
-    right: -16px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #34d399;
-    border: none;
-    color: #0f0f0f;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.languages-empty {
+    color: #6b7280;
+    font-size: 14px;
+    font-style: italic;
 }
 
+/* Popup content styles (без оверлея и кнопки закрытия) */
 .popup-body {
     color: #fff;
     text-align: center;

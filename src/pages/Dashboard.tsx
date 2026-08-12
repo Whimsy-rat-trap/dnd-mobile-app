@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import CreateModePopup from '../components/CreateModePopup';
 import DiceRoller from '../components/DiceRoller';
+import Modal from '../components/Modal';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -249,9 +250,6 @@ const Dashboard: React.FC = () => {
     const closePopup = () => {
         if (popupType === 'exp') levelUpIfNeeded();
         setPopupType(null);
-    };
-    const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (e.target === e.currentTarget) closePopup();
     };
 
     // Dice roller
@@ -601,127 +599,115 @@ const Dashboard: React.FC = () => {
 
             {/* Попапы */}
             {popupType === 'hp' && (
-                <div className="popup-overlay" onClick={handleOverlayClick}>
-                    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="popup-close" onClick={closePopup}>✕</button>
-                        <div className="popup-body">
-                            <h3 className="popup-title">Edit HP</h3>
-                            <div className="popup-stat-block">
-                                <span className="stat-label">HP</span>
-                                <div className="stat-progress">
-                                    <div className="progress-track">
-                                        <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
-                                        {tempHp > 0 && (
-                                            <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>
-                                        )}
-                                    </div>
-                                </div>
-                                <span className="stat-value-dashboard stat-value-hp">
-                                    {hp} / {maxHp}
-                                    {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
-                                </span>
-                            </div>
-                            <div className="popup-controls">
-                                <div className="control-group">
-                                    <label>HP Adjustment</label>
-                                    <div className="input-group">
-                                        <input
-                                            type="number"
-                                            value={inputValue}
-                                            onChange={(e) => setInputValue(Number(e.target.value))}
-                                            min="0"
-                                        />
-                                        <button onClick={() => addHp(inputValue)}>Add</button>
-                                        <button onClick={() => subtractHp(inputValue)}>Subtract</button>
-                                    </div>
-                                </div>
-                                <div className="control-group">
-                                    <label>Temp HP Adjustment</label>
-                                    <div className="input-group">
-                                        <input
-                                            type="number"
-                                            value={tempInputValue}
-                                            onChange={(e) => setTempInputValue(Number(e.target.value))}
-                                            min="0"
-                                        />
-                                        <button onClick={() => addTempHp(tempInputValue)}>Add Temp</button>
-                                        <button onClick={() => subtractTempHp(tempInputValue)}>Subtract Temp</button>
-                                    </div>
+                <Modal isOpen={true} onClose={closePopup}>
+                    <div className="popup-body">
+                        <h3 className="popup-title">Edit HP</h3>
+                        <div className="popup-stat-block">
+                            <span className="stat-label">HP</span>
+                            <div className="stat-progress">
+                                <div className="progress-track">
+                                    <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                                    {tempHp > 0 && (
+                                        <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>
+                                    )}
                                 </div>
                             </div>
-                            {isZeroHp && (
-                                <div className="death-warning popup-death-warning">
-                                    You need to make a death saving throw
-                                </div>
-                            )}
+                            <span className="stat-value-dashboard stat-value-hp">
+                                {hp} / {maxHp}
+                                {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
+                            </span>
                         </div>
+                        <div className="popup-controls">
+                            <div className="control-group">
+                                <label>HP Adjustment</label>
+                                <div className="input-group">
+                                    <input
+                                        type="number"
+                                        value={inputValue}
+                                        onChange={(e) => setInputValue(Number(e.target.value))}
+                                        min="0"
+                                    />
+                                    <button onClick={() => addHp(inputValue)}>Add</button>
+                                    <button onClick={() => subtractHp(inputValue)}>Subtract</button>
+                                </div>
+                            </div>
+                            <div className="control-group">
+                                <label>Temp HP Adjustment</label>
+                                <div className="input-group">
+                                    <input
+                                        type="number"
+                                        value={tempInputValue}
+                                        onChange={(e) => setTempInputValue(Number(e.target.value))}
+                                        min="0"
+                                    />
+                                    <button onClick={() => addTempHp(tempInputValue)}>Add Temp</button>
+                                    <button onClick={() => subtractTempHp(tempInputValue)}>Subtract Temp</button>
+                                </div>
+                            </div>
+                        </div>
+                        {isZeroHp && (
+                            <div className="death-warning popup-death-warning">
+                                You need to make a death saving throw
+                            </div>
+                        )}
                     </div>
-                </div>
+                </Modal>
             )}
 
             {popupType === 'exp' && (
-                <div className="popup-overlay" onClick={handleOverlayClick}>
-                    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="popup-close" onClick={closePopup}>✕</button>
-                        <div className="popup-body">
-                            <h3 className="popup-title">Edit EXP</h3>
-                            <div className="popup-stat-block">
-                                <span className="stat-label">EXP</span>
-                                <div className="stat-progress">
-                                    <div className="progress-track">
-                                        <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
-                                        {overlevelPercent > 0 && (
-                                            <div className="overlevel-fill" style={{ width: `${overlevelPercent}%` }}></div>
-                                        )}
-                                    </div>
+                <Modal isOpen={true} onClose={closePopup}>
+                    <div className="popup-body">
+                        <h3 className="popup-title">Edit EXP</h3>
+                        <div className="popup-stat-block">
+                            <span className="stat-label">EXP</span>
+                            <div className="stat-progress">
+                                <div className="progress-track">
+                                    <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                                    {overlevelPercent > 0 && (
+                                        <div className="overlevel-fill" style={{ width: `${overlevelPercent}%` }}></div>
+                                    )}
                                 </div>
-                                <span className="stat-value-dashboard stat-value-exp">
-                                    {exp.toLocaleString()} / {maxExp.toLocaleString()}
-                                    {exp > maxExp && <span className="overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
-                                </span>
                             </div>
-                            <div className="popup-controls">
-                                <div className="control-group">
-                                    <label>EXP Adjustment</label>
-                                    <div className="input-group">
-                                        <input
-                                            type="number"
-                                            value={expInputValue}
-                                            onChange={(e) => setExpInputValue(Number(e.target.value))}
-                                            min="0"
-                                        />
-                                        <button onClick={() => addExp(expInputValue)}>Add</button>
-                                        <button onClick={() => subtractExp(expInputValue)}>Subtract</button>
-                                    </div>
+                            <span className="stat-value-dashboard stat-value-exp">
+                                {exp.toLocaleString()} / {maxExp.toLocaleString()}
+                                {exp > maxExp && <span className="overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
+                            </span>
+                        </div>
+                        <div className="popup-controls">
+                            <div className="control-group">
+                                <label>EXP Adjustment</label>
+                                <div className="input-group">
+                                    <input
+                                        type="number"
+                                        value={expInputValue}
+                                        onChange={(e) => setExpInputValue(Number(e.target.value))}
+                                        min="0"
+                                    />
+                                    <button onClick={() => addExp(expInputValue)}>Add</button>
+                                    <button onClick={() => subtractExp(expInputValue)}>Subtract</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </Modal>
             )}
 
             {popupType === 'settings' && (
-                <div className="popup-overlay" onClick={handleOverlayClick}>
-                    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="popup-close" onClick={closePopup}>✕</button>
-                        <div className="popup-body">
-                            <h3 className="popup-title">Settings</h3>
-                            <p>Empty popup</p>
-                        </div>
+                <Modal isOpen={true} onClose={closePopup}>
+                    <div className="popup-body">
+                        <h3 className="popup-title">Settings</h3>
+                        <p>Empty popup</p>
                     </div>
-                </div>
+                </Modal>
             )}
 
             {popupType === 'profile' && (
-                <div className="popup-overlay" onClick={handleOverlayClick}>
-                    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="popup-close" onClick={closePopup}>✕</button>
-                        <div className="popup-body">
-                            <h3 className="popup-title">Character Profile</h3>
-                            <p>Empty popup</p>
-                        </div>
+                <Modal isOpen={true} onClose={closePopup}>
+                    <div className="popup-body">
+                        <h3 className="popup-title">Character Profile</h3>
+                        <p>Empty popup</p>
                     </div>
-                </div>
+                </Modal>
             )}
         </div>
     );

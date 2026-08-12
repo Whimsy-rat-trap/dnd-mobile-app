@@ -14,6 +14,7 @@ import { SUBRACES } from '../constants/subraces';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { LANGUAGES } from '../constants/languages';
 import DiceRoller from '../components/DiceRoller';
+import Modal from '../components/Modal';
 import './CreateCharacter.css';
 
 // Вспомогательная функция для получения бонусов background-а к характеристикам
@@ -1043,101 +1044,93 @@ const CreateCharacter: React.FC = () => {
             </form>
 
             {/* Point Buy Modal */}
-            {showPointBuy && (
-                <div className="modal-overlay" onClick={() => setShowPointBuy(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h3>Point Buy</h3>
-                        <div className="pointbuy-points">Points remaining: <strong>{getRemainingPoints()}</strong></div>
-                        <div className="pointbuy-grid">
-                            {Object.entries(pointBuyValues).map(([stat, value]) => (
-                                <div key={stat} className="pointbuy-stat">
-                                    <span className="pointbuy-stat-label">{stat.toUpperCase()}</span>
-                                    <div className="pointbuy-controls">
-                                        <button
-                                            type="button"
-                                            className="pointbuy-btn"
-                                            onClick={() => handlePointBuyChange(stat as keyof typeof pointBuyValues, -1)}
-                                            disabled={!canDecrease(stat as keyof typeof pointBuyValues)}
-                                        >
-                                            −
-                                        </button>
-                                        <span className="pointbuy-stat-value">{value}</span>
-                                        <button
-                                            type="button"
-                                            className="pointbuy-btn"
-                                            onClick={() => handlePointBuyChange(stat as keyof typeof pointBuyValues, 1)}
-                                            disabled={!canIncrease(stat as keyof typeof pointBuyValues)}
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+            <Modal isOpen={showPointBuy} onClose={() => setShowPointBuy(false)}>
+                <h3>Point Buy</h3>
+                <div className="pointbuy-points">Points remaining: <strong>{getRemainingPoints()}</strong></div>
+                <div className="pointbuy-grid">
+                    {Object.entries(pointBuyValues).map(([stat, value]) => (
+                        <div key={stat} className="pointbuy-stat">
+                            <span className="pointbuy-stat-label">{stat.toUpperCase()}</span>
+                            <div className="pointbuy-controls">
+                                <button
+                                    type="button"
+                                    className="pointbuy-btn"
+                                    onClick={() => handlePointBuyChange(stat as keyof typeof pointBuyValues, -1)}
+                                    disabled={!canDecrease(stat as keyof typeof pointBuyValues)}
+                                >
+                                    −
+                                </button>
+                                <span className="pointbuy-stat-value">{value}</span>
+                                <button
+                                    type="button"
+                                    className="pointbuy-btn"
+                                    onClick={() => handlePointBuyChange(stat as keyof typeof pointBuyValues, 1)}
+                                    disabled={!canIncrease(stat as keyof typeof pointBuyValues)}
+                                >
+                                    +
+                                </button>
+                            </div>
                         </div>
-                        <div className="modal-actions">
-                            <button type="button" className="modal-btn cancel" onClick={() => setShowPointBuy(false)}>
-                                Cancel
-                            </button>
-                            <button type="button" className="modal-btn apply" onClick={applyPointBuy}>
-                                Apply
-                            </button>
-                        </div>
-                    </div>
+                    ))}
                 </div>
-            )}
+                <div className="modal-actions">
+                    <button type="button" className="modal-btn cancel" onClick={() => setShowPointBuy(false)}>
+                        Cancel
+                    </button>
+                    <button type="button" className="modal-btn apply" onClick={applyPointBuy}>
+                        Apply
+                    </button>
+                </div>
+            </Modal>
 
             {/* Roll Distribution Modal */}
-            {showRollDistribution && (
-                <div className="modal-overlay" onClick={() => setShowRollDistribution(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h3>Assign Rolled Stats</h3>
-                        <div className="roll-distribution">
-                            <div className="roll-values">
-                                {rollValues.map((value, idx) => (
-                                    <DiceRoller
-                                        key={idx}
-                                        sides={6}
-                                        initialResult={value}
-                                        autoRoll={true}
-                                        displayOnly={true}
-                                    />
-                                ))}
-                            </div>
-                            <div className="stat-assignment-grid">
-                                {Object.entries(statAssignments).map(([stat, assignedIndex]) => {
-                                    const usedIndices = Object.values(statAssignments).filter(v => v !== null) as number[];
-                                    const availableIndices = rollValues.map((_, idx) => idx).filter(idx => !usedIndices.includes(idx) || idx === assignedIndex);
-                                    return (
-                                        <div key={stat} className="assign-row">
-                                            <span className="assign-stat-label">{stat.toUpperCase()}</span>
-                                            <select
-                                                value={assignedIndex !== null ? assignedIndex : ''}
-                                                onChange={(e) => {
-                                                    const idx = Number(e.target.value);
-                                                    if (!isNaN(idx)) assignRollToStat(stat as keyof typeof statAssignments, idx);
-                                                }}
-                                                className="assign-select"
-                                            >
-                                                <option value="">—</option>
-                                                {availableIndices.map(idx => (
-                                                    <option key={idx} value={idx}>{rollValues[idx]}</option>
-                                                ))}
-                                            </select>
-                                            {assignedIndex !== null && (
-                                                <button type="button" className="unassign-btn" onClick={() => unassignRoll(stat as keyof typeof statAssignments)}>✕</button>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            <div className="modal-actions">
-                                <button type="button" className="modal-btn cancel" onClick={() => setShowRollDistribution(false)}>Cancel</button>
-                                <button type="button" className="modal-btn apply" onClick={applyRollDistribution}>Apply</button>
-                            </div>
-                        </div>
+            <Modal isOpen={showRollDistribution} onClose={() => setShowRollDistribution(false)}>
+                <h3>Assign Rolled Stats</h3>
+                <div className="roll-distribution">
+                    <div className="roll-values">
+                        {rollValues.map((value, idx) => (
+                            <DiceRoller
+                                key={idx}
+                                sides={6}
+                                initialResult={value}
+                                autoRoll={true}
+                                displayOnly={true}
+                            />
+                        ))}
+                    </div>
+                    <div className="stat-assignment-grid">
+                        {Object.entries(statAssignments).map(([stat, assignedIndex]) => {
+                            const usedIndices = Object.values(statAssignments).filter(v => v !== null) as number[];
+                            const availableIndices = rollValues.map((_, idx) => idx).filter(idx => !usedIndices.includes(idx) || idx === assignedIndex);
+                            return (
+                                <div key={stat} className="assign-row">
+                                    <span className="assign-stat-label">{stat.toUpperCase()}</span>
+                                    <select
+                                        value={assignedIndex !== null ? assignedIndex : ''}
+                                        onChange={(e) => {
+                                            const idx = Number(e.target.value);
+                                            if (!isNaN(idx)) assignRollToStat(stat as keyof typeof statAssignments, idx);
+                                        }}
+                                        className="assign-select"
+                                    >
+                                        <option value="">—</option>
+                                        {availableIndices.map(idx => (
+                                            <option key={idx} value={idx}>{rollValues[idx]}</option>
+                                        ))}
+                                    </select>
+                                    {assignedIndex !== null && (
+                                        <button type="button" className="unassign-btn" onClick={() => unassignRoll(stat as keyof typeof statAssignments)}>✕</button>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="modal-actions">
+                        <button type="button" className="modal-btn cancel" onClick={() => setShowRollDistribution(false)}>Cancel</button>
+                        <button type="button" className="modal-btn apply" onClick={applyRollDistribution}>Apply</button>
                     </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 };
