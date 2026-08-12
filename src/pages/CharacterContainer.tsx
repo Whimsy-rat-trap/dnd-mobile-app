@@ -4,7 +4,7 @@ import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
 import DiceRoller from '../components/DiceRoller';
-import { getSpellSlots, getMaxPrepared } from "../utils/spellcasting"
+import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -27,6 +27,11 @@ const CharacterContainer: React.FC = () => {
     const [rollMode, setRollMode] = useState(false);
     const [rollResultModal, setRollResultModal] = useState<{ type: 'saving' | 'skill'; name: string; modifier: number; result?: number } | null>(null);
     const [isRolling, setIsRolling] = useState(false);
+
+    // Состояния для попапа HP
+    const [hpPopupOpen, setHpPopupOpen] = useState(false);
+    const [hpInputValue, setHpInputValue] = useState(0);
+    const [tempInputValue, setTempInputValue] = useState(0);
 
     if (!character) {
         return <div className="page">Character not found</div>;
@@ -192,6 +197,31 @@ const CharacterContainer: React.FC = () => {
         setUseVariant(!useVariant);
     };
 
+    // --- Функции для управления HP ---
+    const addHp = (amount: number) => {
+        if (amount <= 0) return;
+        const newHp = Math.min(character.hp + amount, character.maxHp);
+        updateCharacter(character.id, { hp: newHp });
+    };
+
+    const subtractHp = (amount: number) => {
+        if (amount <= 0) return;
+        const newHp = Math.max(character.hp - amount, 0);
+        updateCharacter(character.id, { hp: newHp });
+    };
+
+    const addTempHp = (amount: number) => {
+        if (amount <= 0) return;
+        const newTemp = (character.tempHp || 0) + amount;
+        updateCharacter(character.id, { tempHp: newTemp });
+    };
+
+    const subtractTempHp = (amount: number) => {
+        if (amount <= 0) return;
+        const newTemp = Math.max((character.tempHp || 0) - amount, 0);
+        updateCharacter(character.id, { tempHp: newTemp });
+    };
+
     // Функция для рендера шеврона
     const renderChevron = (isOpen: boolean) => (
         <svg
@@ -229,15 +259,6 @@ const CharacterContainer: React.FC = () => {
     const classDisplay = character.classes && character.classes.length > 0
         ? character.classes.join(' / ')
         : 'No class';
-
-    // Данные для заклинаний
-    const spellSlots = getSpellSlots(character);
-    const maxPrepared = getMaxPrepared(character);
-    const preparedCount = character.spells.filter(s => s.prepared).length;
-    const knownCount = character.spells.length;
-    const isCaster = character.classLevels && character.classLevels.some(cl =>
-        ['Bard','Cleric','Druid','Sorcerer','Wizard','Paladin','Ranger','Artificer','Warlock'].includes(cl.className)
-    );
 
     const raceFeatures = RACE_FEATURES[character.race] || [];
 
@@ -285,6 +306,24 @@ const CharacterContainer: React.FC = () => {
             </div>
         );
     };
+
+    // Закрытие попапа HP
+    const closeHpPopup = () => {
+        setHpPopupOpen(false);
+        setHpInputValue(0);
+        setTempInputValue(0);
+    };
+
+    // HP и temp HP для отображения
+    const hp = character.hp;
+    const maxHp = character.maxHp;
+    const tempHp = character.tempHp || 0;
+    const hpPercent = (hp / maxHp) * 100;
+    const tempPercent = (tempHp / maxHp) * 100;
+
+    // Получение слотов заклинаний (если есть)
+    const spellSlots = getSpellSlots(character);
+    const maxPrepared = getMaxPrepared(character);
 
     return (
         <div className="character-page">
@@ -369,16 +408,20 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="section-hp">
+                {/* HP Section */}
+                <div className="section-hp" onClick={() => setHpPopupOpen(true)} style={{ cursor: 'pointer' }}>
                     <div className="hp-title">Hit Points</div>
                     <div className="hp-display">
-                        <span className="hp-current">{character.hp}</span>
+                        <span className="hp-current">{hp}</span>
                         <span className="hp-separator">/</span>
-                        <span className="hp-max">{character.maxHp}</span>
+                        <span className="hp-max">{maxHp}</span>
+                        {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
                     </div>
-                    <div className="hp-controls">
-                        <button className="hp-button">Take Damage</button>
-                        <button className="hp-button">Heal</button>
+                    <div className="stat-progress">
+                        <div className="progress-track">
+                            <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                            {tempHp > 0 && <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>}
+                        </div>
                     </div>
                 </div>
 
@@ -397,26 +440,29 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
+
                 {/* Spellcasting */}
-                {isCaster && (
+                {(character.classLevels?.some(cl =>
+                    ['Bard','Cleric','Druid','Sorcerer','Wizard','Paladin','Ranger','Artificer','Warlock'].includes(cl.className)
+                ) || character.spells.length > 0) && (
                     <div className="section-spellcasting">
                         <div className="spellcasting-title">Spellcasting</div>
                         <div className="spellcasting-details">
                             <div className="spellcasting-item">
                                 <span className="spellcasting-label">Spell Slots</span>
                                 <span className="spellcasting-value">
-                                    {spellSlots.map((count, idx) =>
+                                    {spellSlots.map((count: number, idx: number) =>
                                         count > 0 ? <span key={idx}>Lv.{idx+1}: {count}</span> : null
                                     )}
                                 </span>
                             </div>
                             <div className="spellcasting-item">
                                 <span className="spellcasting-label">Prepared</span>
-                                <span className="spellcasting-value">{preparedCount} / {maxPrepared}</span>
+                                <span className="spellcasting-value">{character.spells.filter(s => s.prepared).length} / {maxPrepared}</span>
                             </div>
                             <div className="spellcasting-item">
                                 <span className="spellcasting-label">Known</span>
-                                <span className="spellcasting-value">{knownCount}</span>
+                                <span className="spellcasting-value">{character.spells.length}</span>
                             </div>
                         </div>
                     </div>
@@ -605,7 +651,61 @@ const CharacterContainer: React.FC = () => {
                 </div>
             </div>
 
+            {/* Roll Result Modal */}
             {rollResultModal && renderRollResult()}
+
+            {/* HP Edit Popup */}
+            {hpPopupOpen && (
+                <div className="popup-overlay" onClick={closeHpPopup}>
+                    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+                        <button className="popup-close" onClick={closeHpPopup}>✕</button>
+                        <div className="popup-body">
+                            <h3 className="popup-title">Edit HP</h3>
+                            <div className="popup-stat-block">
+                                <span className="stat-label">HP</span>
+                                <div className="stat-progress">
+                                    <div className="progress-track">
+                                        <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                                        {tempHp > 0 && <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>}
+                                    </div>
+                                </div>
+                                <span className="stat-value-dashboard stat-value-hp">
+                                    {hp} / {maxHp}
+                                    {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
+                                </span>
+                            </div>
+                            <div className="popup-controls">
+                                <div className="control-group">
+                                    <label>HP Adjustment</label>
+                                    <div className="input-group">
+                                        <input
+                                            type="number"
+                                            value={hpInputValue}
+                                            onChange={(e) => setHpInputValue(Number(e.target.value))}
+                                            min="0"
+                                        />
+                                        <button onClick={() => { addHp(hpInputValue); closeHpPopup(); }}>Add</button>
+                                        <button onClick={() => { subtractHp(hpInputValue); closeHpPopup(); }}>Subtract</button>
+                                    </div>
+                                </div>
+                                <div className="control-group">
+                                    <label>Temp HP Adjustment</label>
+                                    <div className="input-group">
+                                        <input
+                                            type="number"
+                                            value={tempInputValue}
+                                            onChange={(e) => setTempInputValue(Number(e.target.value))}
+                                            min="0"
+                                        />
+                                        <button onClick={() => { addTempHp(tempInputValue); closeHpPopup(); }}>Add Temp</button>
+                                        <button onClick={() => { subtractTempHp(tempInputValue); closeHpPopup(); }}>Subtract Temp</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

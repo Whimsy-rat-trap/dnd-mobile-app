@@ -835,3 +835,228 @@
     margin-right: 8px;
     color: #34d399;
 }
+
+/* HP Section */
+.section-hp {
+    width: 353px;
+    padding: 20px;
+    border-radius: 12px;
+    background: linear-gradient(315deg, #dc2626 0%, #991b1b 100%);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.hp-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.hp-display {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.hp-current {
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 48px;
+    text-align: center;
+    color: #fff;
+}
+
+.hp-separator {
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 32px;
+    text-align: center;
+    color: #fca5a5;
+}
+
+.hp-max {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 32px;
+    text-align: center;
+    color: #fca5a5;
+}
+
+.temp-hp-value {
+    font-weight: 600;
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+.stat-progress {
+    border-radius: 4px;
+    width: 100%;
+    height: 8px;
+    background: #333;
+    overflow: hidden;
+}
+
+.progress-track {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.hp-fill {
+    height: 100%;
+    background: linear-gradient(0deg, #dc2626 0%, #ef4444 100%);
+    transition: width 0.3s ease;
+    flex-shrink: 0;
+}
+
+.temp-fill {
+    height: 100%;
+    background: repeating-linear-gradient(
+            45deg,
+            #ef4444 0px,
+            #ef4444 4px,
+            #1a1a1a 4px,
+            #1a1a1a 8px
+    );
+    transition: width 0.3s ease;
+    flex-shrink: 0;
+}
+
+/* Popup стили */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: #1f2937;
+    border-radius: 16px;
+    padding: 24px;
+    min-width: 300px;
+    max-width: 90%;
+    position: relative;
+}
+
+.popup-close {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #34d399;
+    border: none;
+    color: #0f0f0f;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-body {
+    color: #fff;
+    text-align: center;
+}
+
+.popup-title {
+    color: #fff;
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.popup-stat-block {
+    background: #1f2937;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.popup-stat-block .stat-label {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.popup-stat-block .stat-progress {
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.popup-stat-block .stat-value-dashboard {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.stat-value-hp {
+    color: #ef4444;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.control-group label {
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.input-group {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-group input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #374151;
+    background: #1f2937;
+    color: #fff;
+    width: 80px;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #34d399;
+}
+
+.input-group button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #34d399;
+    color: #0f0f0f;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.input-group button:hover {
+    background: #059669;
+}
