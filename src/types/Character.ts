@@ -81,4 +81,5 @@ export interface Campaign {
     dm?: string;
     players?: number;
     sessions?: number;
+    lastPlayed?: string;
 }

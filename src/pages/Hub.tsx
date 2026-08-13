@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import CreateModePopup from '../components/CreateModePopup';
+import SearchBar from '../components/SearchBar';
 import './Hub.css';
 
 const Hub: React.FC = () => {
@@ -13,12 +14,16 @@ const Hub: React.FC = () => {
     const [isItemsOpen, setIsItemsOpen] = useState(true);
     const [isSpellsOpen, setIsSpellsOpen] = useState(true);
     const [showCreatePopup, setShowCreatePopup] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Локальные данные (заглушки) для кампаний, предметов и заклинаний
     const campaigns = [
         { id: 1, name: 'Curse of Strahd', status: 'active', description: 'Ravenloft', playedWith: ['Alice', 'Bob', 'Charlie'], lastPlayed: '2026-07-01' },
         { id: 2, name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin', playedWith: ['Dave', 'Eve'], lastPlayed: '2026-06-28' },
         { id: 3, name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep', playedWith: ['Frank', 'Grace'], archivedDate: '2026-05-15' },
+        { id: 4, name: 'Tomb of Annihilation', status: 'inactive', description: 'Chult', playedWith: ['Henry', 'Ivy'], archivedDate: '2026-04-10' },
+        { id: 5, name: 'Storm King\'s Thunder', status: 'active', description: 'The North', playedWith: ['Jack', 'Kate'], lastPlayed: '2026-07-05' },
+        { id: 6, name: 'Descent into Avernus', status: 'active', description: 'Baldur\'s Gate', playedWith: ['Liam', 'Mia'], lastPlayed: '2026-07-08' },
     ];
 
     const items = [
@@ -27,6 +32,7 @@ const Hub: React.FC = () => {
         { id: 3, name: 'Antidote', description: 'Cures poison and disease.', charges: { current: 1, max: 1 }, diceRoll: null, healing: false },
         { id: 4, name: 'Potion of Invisibility', description: 'Become invisible for 1 hour.', charges: { current: 1, max: 1 }, diceRoll: null, healing: false },
         { id: 5, name: 'Scroll of Protection', description: 'Creates a protective barrier.', charges: { current: 1, max: 1 }, diceRoll: null, healing: false },
+        { id: 6, name: 'Potion of Speed', description: 'Grants haste effect for 1 minute.', charges: { current: 1, max: 1 }, diceRoll: null, healing: false },
     ];
 
     const spells = [
@@ -52,6 +58,27 @@ const Hub: React.FC = () => {
         poison: '#84cc16',
         healing: '#22c55e',
     };
+
+    // Фильтрация по поисковому запросу
+    const filteredCharacters = characters.filter(char =>
+        char.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const filteredCampaigns = campaigns.filter(camp =>
+        camp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        camp.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const filteredItems = items.filter(item =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const filteredSpells = spells.filter(spell =>
+        spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        spell.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        spell.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const toggleCharacters = () => setIsCharactersOpen(!isCharactersOpen);
     const toggleCampaigns = () => setIsCampaignsOpen(!isCampaignsOpen);
@@ -229,6 +256,14 @@ const Hub: React.FC = () => {
                 </div>
             </div>
 
+            <div className="hub-search">
+                <SearchBar
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder="Search characters, campaigns, items, spells..."
+                />
+            </div>
+
             <div className="hub-content">
                 {/* Секция персонажей */}
                 <div className="hub-section">
@@ -241,7 +276,7 @@ const Hub: React.FC = () => {
                     </div>
                     {isCharactersOpen && (
                         <div className="character-grid">
-                            {characters.slice(0, 5).map((char) => {
+                            {filteredCharacters.slice(0, 5).map((char) => {
                                 const needsDeathSave = char.hp === 0 && char.status !== 'dead' && !char.isStable;
                                 return (
                                     <Link to={`/characters/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
@@ -276,7 +311,7 @@ const Hub: React.FC = () => {
                     </div>
                     {isCampaignsOpen && (
                         <div className="campaigns-grid">
-                            {campaigns.slice(0, 5).map((camp) => (
+                            {filteredCampaigns.slice(0, 5).map((camp) => (
                                 <Link to={`/campaign/${camp.id}`} key={camp.id} className="campaign-card-link" style={{ textDecoration: 'none' }}>
                                     <div className={`campaign-card-hub ${camp.status !== 'active' ? 'inactive' : ''}`}>
                                         <div className="campaign-info-only">
@@ -307,7 +342,7 @@ const Hub: React.FC = () => {
                     </div>
                     {isItemsOpen && (
                         <div className="items-grid">
-                            {items.slice(0, 5).map((item) => (
+                            {filteredItems.slice(0, 5).map((item) => (
                                 <Link to={`/item/${item.id}`} key={item.id} className="item-card-link" style={{ textDecoration: 'none' }}>
                                     <div className="item-card-hub">
                                         <div className="item-info-only">
@@ -346,7 +381,7 @@ const Hub: React.FC = () => {
                     </div>
                     {isSpellsOpen && (
                         <div className="spells-grid">
-                            {spells.slice(0, 5).map((spell) => (
+                            {filteredSpells.slice(0, 5).map((spell) => (
                                 <Link to={`/spell/${spell.id}`} key={spell.id} className="spell-card-link" style={{ textDecoration: 'none' }}>
                                     <div className="spell-card-hub">
                                         <div className="spell-info-only">
@@ -372,7 +407,7 @@ const Hub: React.FC = () => {
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
+                                   s </div>
                                 </Link>
                             ))}
                             {renderAddSpellCard()}

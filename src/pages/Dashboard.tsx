@@ -5,6 +5,7 @@ import CreateModePopup from '../components/CreateModePopup';
 import DiceRoller from '../components/DiceRoller';
 import Modal from '../components/Modal';
 import SearchBar from '../components/SearchBar';
+import FilterModal, { FilterField } from '../components/FilterModal';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBRACES } from '../constants/subraces';
@@ -40,8 +41,7 @@ const Dashboard: React.FC = () => {
         subclass: '',
         race: '',
         subrace: '',
-        levelMin: 1,
-        levelMax: 20,
+        level: { min: 1, max: 20 },
         alive: 'all' as 'all' | 'alive' | 'dead',
         createdAfter: '',
         createdBefore: '',
@@ -72,6 +72,70 @@ const Dashboard: React.FC = () => {
         return 6;
     };
 
+    // Обработчик изменения фильтров для FilterModal
+    const handleFilterChange = (newFilters: Record<string, any>) => {
+        setFilters(newFilters as any);
+    };
+
+    // Поля для фильтрации персонажей
+    const filterFields: FilterField[] = [
+        {
+            key: 'class',
+            label: 'Class',
+            type: 'select',
+            options: [{ value: '', label: 'All' }, ...DND_CLASSES.map(c => ({ value: c, label: c }))],
+        },
+        {
+            key: 'subclass',
+            label: 'Subclass',
+            type: 'select',
+            options: [
+                { value: '', label: 'All' },
+                ...Array.from(new Set(characters.flatMap(c => c.subclass ? [c.subclass] : []))).map(s => ({ value: s, label: s })),
+            ],
+        },
+        {
+            key: 'race',
+            label: 'Race',
+            type: 'select',
+            options: [{ value: '', label: 'All' }, ...DND_RACES.map(r => ({ value: r, label: r }))],
+        },
+        {
+            key: 'subrace',
+            label: 'Subrace',
+            type: 'select',
+            options: [
+                { value: '', label: 'All' },
+                ...Array.from(new Set(characters.flatMap(c => c.subrace ? [c.subrace] : []))).map(s => ({ value: s, label: s })),
+            ],
+        },
+        { key: 'level', label: 'Level Range', type: 'range', min: 1, max: 20 },
+        {
+            key: 'alive',
+            label: 'Alive',
+            type: 'select',
+            options: [
+                { value: 'all', label: 'All' },
+                { value: 'alive', label: 'Alive' },
+                { value: 'dead', label: 'Dead' },
+            ],
+        },
+        { key: 'createdAfter', label: 'Created After', type: 'date' },
+        { key: 'createdBefore', label: 'Created Before', type: 'date' },
+        { key: 'lastUsedAfter', label: 'Last Used After', type: 'date' },
+        { key: 'lastUsedBefore', label: 'Last Used Before', type: 'date' },
+        {
+            key: 'status',
+            label: 'Status',
+            type: 'select',
+            options: [
+                { value: 'all', label: 'All' },
+                { value: 'active', label: 'Active' },
+                { value: 'archived', label: 'Archived' },
+            ],
+        },
+    ];
+
     // Фильтрация персонажей для экрана выбора
     const filteredCharacters = characters.filter(char => {
         const matchesSearch = char.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -79,7 +143,7 @@ const Dashboard: React.FC = () => {
         const matchesSubclass = !filters.subclass || char.subclass === filters.subclass;
         const matchesRace = !filters.race || char.race === filters.race;
         const matchesSubrace = !filters.subrace || char.subrace === filters.subrace;
-        const matchesLevel = char.level >= filters.levelMin && char.level <= filters.levelMax;
+        const matchesLevel = char.level >= (filters.level?.min || 1) && char.level <= (filters.level?.max || 20);
         const matchesAlive = filters.alive === 'all' || (filters.alive === 'alive' && char.status !== 'dead') || (filters.alive === 'dead' && char.status === 'dead');
         const matchesCreatedAfter = !filters.createdAfter || new Date(char.created) >= new Date(filters.createdAfter);
         const matchesCreatedBefore = !filters.createdBefore || new Date(char.created) <= new Date(filters.createdBefore);
@@ -153,177 +217,34 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Модалка фильтрации */}
-                {showFilterModal && (
-                    <Modal isOpen={showFilterModal} onClose={() => setShowFilterModal(false)}>
-                        <h3>Filter Characters</h3>
-                        <div className="filter-group">
-                            <label>Class</label>
-                            <select
-                                value={filters.class}
-                                onChange={(e) => setFilters({ ...filters, class: e.target.value })}
-                            >
-                                <option value="">All</option>
-                                {DND_CLASSES.map(cls => (
-                                    <option key={cls} value={cls}>{cls}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="filter-group">
-                            <label>Subclass</label>
-                            <select
-                                value={filters.subclass}
-                                onChange={(e) => setFilters({ ...filters, subclass: e.target.value })}
-                            >
-                                <option value="">All</option>
-                                {Array.from(
-                                    new Set(characters.flatMap(c => c.subclass ? [c.subclass] : []))
-                                ).map(sub => (
-                                    <option key={sub} value={sub}>{sub}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="filter-group">
-                            <label>Race</label>
-                            <select
-                                value={filters.race}
-                                onChange={(e) => {
-                                    setFilters({ ...filters, race: e.target.value, subrace: '' });
-                                }}
-                            >
-                                <option value="">All</option>
-                                {DND_RACES.map(race => (
-                                    <option key={race} value={race}>{race}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="filter-group">
-                            <label>Subrace</label>
-                            <select
-                                value={filters.subrace}
-                                onChange={(e) => setFilters({ ...filters, subrace: e.target.value })}
-                            >
-                                <option value="">All</option>
-                                {filters.race && SUBRACES[filters.race] ? (
-                                    SUBRACES[filters.race].map(sub => (
-                                        <option key={sub} value={sub}>{sub}</option>
-                                    ))
-                                ) : (
-                                    Array.from(
-                                        new Set(characters.flatMap(c => c.subrace ? [c.subrace] : []))
-                                    ).map(sub => (
-                                        <option key={sub} value={sub}>{sub}</option>
-                                    ))
-                                )}
-                            </select>
-                        </div>
-                        <div className="filter-group">
-                            <label>Level Range</label>
-                            <div className="range-inputs">
-                                <input
-                                    type="number"
-                                    value={filters.levelMin}
-                                    onChange={(e) => setFilters({ ...filters, levelMin: Number(e.target.value) })}
-                                    min="1"
-                                    max="20"
-                                />
-                                <span>to</span>
-                                <input
-                                    type="number"
-                                    value={filters.levelMax}
-                                    onChange={(e) => setFilters({ ...filters, levelMax: Number(e.target.value) })}
-                                    min="1"
-                                    max="20"
-                                />
-                            </div>
-                        </div>
-                        <div className="filter-group">
-                            <label>Alive</label>
-                            <select
-                                value={filters.alive}
-                                onChange={(e) => setFilters({ ...filters, alive: e.target.value as any })}
-                            >
-                                <option value="all">All</option>
-                                <option value="alive">Alive</option>
-                                <option value="dead">Dead</option>
-                            </select>
-                        </div>
-                        <div className="filter-group">
-                            <label>Created After</label>
-                            <input
-                                type="date"
-                                value={filters.createdAfter}
-                                onChange={(e) => setFilters({ ...filters, createdAfter: e.target.value })}
-                            />
-                        </div>
-                        <div className="filter-group">
-                            <label>Created Before</label>
-                            <input
-                                type="date"
-                                value={filters.createdBefore}
-                                onChange={(e) => setFilters({ ...filters, createdBefore: e.target.value })}
-                            />
-                        </div>
-                        <div className="filter-group">
-                            <label>Last Used After</label>
-                            <input
-                                type="date"
-                                value={filters.lastUsedAfter}
-                                onChange={(e) => setFilters({ ...filters, lastUsedAfter: e.target.value })}
-                            />
-                        </div>
-                        <div className="filter-group">
-                            <label>Last Used Before</label>
-                            <input
-                                type="date"
-                                value={filters.lastUsedBefore}
-                                onChange={(e) => setFilters({ ...filters, lastUsedBefore: e.target.value })}
-                            />
-                        </div>
-                        <div className="filter-group">
-                            <label>Status</label>
-                            <select
-                                value={filters.status}
-                                onChange={(e) => setFilters({ ...filters, status: e.target.value as any })}
-                            >
-                                <option value="all">All</option>
-                                <option value="active">Active</option>
-                                <option value="archived">Archived</option>
-                            </select>
-                        </div>
-                        <div className="modal-actions">
-                            <button
-                                className="modal-btn cancel"
-                                onClick={() => {
-                                    setFilters({
-                                        class: '',
-                                        subclass: '',
-                                        race: '',
-                                        subrace: '',
-                                        levelMin: 1,
-                                        levelMax: 20,
-                                        alive: 'all',
-                                        createdAfter: '',
-                                        createdBefore: '',
-                                        lastUsedAfter: '',
-                                        lastUsedBefore: '',
-                                        status: 'all',
-                                    });
-                                    setShowFilterModal(false);
-                                }}
-                            >
-                                Reset
-                            </button>
-                            <button className="modal-btn apply" onClick={() => setShowFilterModal(false)}>
-                                Apply
-                            </button>
-                        </div>
-                    </Modal>
-                )}
+                <FilterModal
+                    isOpen={showFilterModal}
+                    onClose={() => setShowFilterModal(false)}
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
+                    fields={filterFields}
+                    onReset={() =>
+                        setFilters({
+                            class: '',
+                            subclass: '',
+                            race: '',
+                            subrace: '',
+                            level: { min: 1, max: 20 },
+                            alive: 'all',
+                            createdAfter: '',
+                            createdBefore: '',
+                            lastUsedAfter: '',
+                            lastUsedBefore: '',
+                            status: 'all',
+                        })
+                    }
+                    title="Filter Characters"
+                />
             </div>
         );
     }
 
-    // Функции для работы с HP и EXP
+    // --- Функции для работы с HP и EXP ---
     const updateChar = (updates: Partial<typeof character>) => {
         updateCharacter(character.id, updates);
     };

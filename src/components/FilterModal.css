@@ -1,0 +1,53 @@
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.filter-group label {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.filter-group select,
+.filter-group input[type="text"],
+.filter-group input[type="number"],
+.filter-group input[type="date"] {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #374957;
+    background: #0f0f0f;
+    color: #fff;
+    font-size: 14px;
+}
+
+.range-inputs {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.range-inputs input {
+    width: 60px;
+    text-align: center;
+}
+
+.range-inputs span {
+    color: #9ca3af;
+}
+
+.boolean-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #d1d5db;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.boolean-filter input[type="checkbox"] {
+    accent-color: #34d399;
+    width: 16px;
+    height: 16px;
+}

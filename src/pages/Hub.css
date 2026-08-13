@@ -624,3 +624,21 @@
     color: #6b7280;
     margin: 0 2px;
 }
+
+.hub-search {
+    padding: 0 20px 12px 20px;
+    width: 100%;
+}
+
+.campaign-controls {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px 12px 20px;
+    width: 100%;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.campaign-controls .search-bar {
+    flex: 1;
+}

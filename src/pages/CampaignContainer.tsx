@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCampaigns } from '../context/CampaignContext';
 import SearchBar from '../components/SearchBar';
+import FilterModal, { FilterField } from '../components/FilterModal';
 import './CampaignContainer.css';
 
 const CampaignContainer: React.FC = () => {
@@ -9,6 +10,16 @@ const CampaignContainer: React.FC = () => {
     const { campaigns, addCampaign, updateCampaign } = useCampaigns();
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [showFilterModal, setShowFilterModal] = useState(false);
+    const [filters, setFilters] = useState({
+        dm: '',
+        players: { min: 0, max: 10 },
+        sessions: { min: 0, max: 20 },
+        lastPlayedAfter: '',
+        lastPlayedBefore: '',
+        status: '',
+    });
+
     const [isCreating, setIsCreating] = useState(false);
     const [newCampaign, setNewCampaign] = useState({
         name: '',
@@ -17,6 +28,7 @@ const CampaignContainer: React.FC = () => {
         dm: '',
         players: 4,
         sessions: 0,
+        lastPlayed: '',
     });
 
     const handleBack = () => navigate(-1);
@@ -45,15 +57,47 @@ const CampaignContainer: React.FC = () => {
             dm: newCampaign.dm || 'Dungeon Master',
             players: newCampaign.players || 4,
             sessions: newCampaign.sessions || 0,
+            lastPlayed: newCampaign.lastPlayed || new Date().toISOString().split('T')[0],
         });
-        setNewCampaign({ name: '', description: '', status: 'active', dm: '', players: 4, sessions: 0 });
+        setNewCampaign({
+            name: '',
+            description: '',
+            status: 'active',
+            dm: '',
+            players: 4,
+            sessions: 0,
+            lastPlayed: '',
+        });
         setIsCreating(false);
     };
 
-    const filteredCampaigns = campaigns.filter(c =>
-        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Обработчик изменения фильтров для FilterModal
+    const handleFilterChange = (newFilters: Record<string, any>) => {
+        setFilters(newFilters as any);
+    };
+
+    // Поля для фильтрации кампаний
+    const filterFields: FilterField[] = [
+        { key: 'dm', label: 'DM', type: 'text', placeholder: 'Enter DM name...' },
+        { key: 'players', label: 'Players', type: 'range', min: 0, max: 10 },
+        { key: 'sessions', label: 'Sessions', type: 'range', min: 0, max: 20 },
+        { key: 'lastPlayedAfter', label: 'Last Played After', type: 'date' },
+        { key: 'lastPlayedBefore', label: 'Last Played Before', type: 'date' },
+        { key: 'status', label: 'Status', type: 'select', options: [{ value: '', label: 'All' }, { value: 'active', label: 'Active' }, { value: 'paused', label: 'Paused' }, { value: 'ended', label: 'Ended' }] },
+    ];
+
+    // Фильтрация кампаний
+    const filteredCampaigns = campaigns.filter(camp => {
+        const matchesSearch = camp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (camp.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesDm = !filters.dm || (camp.dm || '').toLowerCase().includes(filters.dm.toLowerCase());
+        const matchesPlayers = (camp.players || 0) >= (filters.players?.min || 0) && (camp.players || 0) <= (filters.players?.max || 10);
+        const matchesSessions = (camp.sessions || 0) >= (filters.sessions?.min || 0) && (camp.sessions || 0) <= (filters.sessions?.max || 20);
+        const matchesLastPlayed = (!filters.lastPlayedAfter || new Date(camp.lastPlayed || '') >= new Date(filters.lastPlayedAfter)) &&
+            (!filters.lastPlayedBefore || new Date(camp.lastPlayed || '') <= new Date(filters.lastPlayedBefore));
+        const matchesStatus = !filters.status || camp.status === filters.status;
+        return matchesSearch && matchesDm && matchesPlayers && matchesSessions && matchesLastPlayed && matchesStatus;
+    });
 
     return (
         <div className="campaign-page">
@@ -74,14 +118,18 @@ const CampaignContainer: React.FC = () => {
                         </svg>
                     </div>
                 </div>
-                <SearchBar
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder="Search Campaigns..."
-                />
+                <div className="campaign-controls">
+                    <SearchBar
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        placeholder="Search campaigns..."
+                        onFilterClick={() => setShowFilterModal(true)}
+                    />
+                </div>
             </header>
 
             <div className="campaign-content">
+                {/* Create Campaign Card */}
                 <div className="create-campaign-card">
                     <div className="create-icon-wrapper" onClick={() => setIsCreating(true)} style={{ cursor: 'pointer' }}>
                         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -102,7 +150,7 @@ const CampaignContainer: React.FC = () => {
                     </div>
                     <div className="cards-list">
                         {filteredCampaigns.map((campaign) => {
-                            const lastPlayed = Math.floor(Math.random() * 14) + 1;
+                            const lastPlayed = campaign.lastPlayed ? Math.floor((Date.now() - new Date(campaign.lastPlayed).getTime()) / (1000 * 60 * 60 * 24)) : Math.floor(Math.random() * 14) + 1;
                             return (
                                 <div key={campaign.id} className="campaign-card">
                                     <div className="campaign-header-inner">
@@ -143,6 +191,7 @@ const CampaignContainer: React.FC = () => {
                 </section>
             </div>
 
+            {/* Create Campaign Popup */}
             {isCreating && (
                 <div className="popup-overlay" onClick={() => setIsCreating(false)}>
                     <div className="popup-content" onClick={(e) => e.stopPropagation()}>
@@ -177,6 +226,12 @@ const CampaignContainer: React.FC = () => {
                             value={newCampaign.sessions}
                             onChange={(e) => setNewCampaign({ ...newCampaign, sessions: Number(e.target.value) })}
                         />
+                        <input
+                            type="date"
+                            placeholder="Last Played"
+                            value={newCampaign.lastPlayed}
+                            onChange={(e) => setNewCampaign({ ...newCampaign, lastPlayed: e.target.value })}
+                        />
                         <select
                             value={newCampaign.status}
                             onChange={(e) => setNewCampaign({ ...newCampaign, status: e.target.value as 'active' | 'paused' | 'ended' })}
@@ -191,6 +246,26 @@ const CampaignContainer: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Filter Modal */}
+            {showFilterModal && (
+                <FilterModal
+                    isOpen={showFilterModal}
+                    onClose={() => setShowFilterModal(false)}
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
+                    fields={filterFields}
+                    onReset={() => setFilters({
+                        dm: '',
+                        players: { min: 0, max: 10 },
+                        sessions: { min: 0, max: 20 },
+                        lastPlayedAfter: '',
+                        lastPlayedBefore: '',
+                        status: '',
+                    })}
+                    title="Filter Campaigns"
+                />
             )}
         </div>
     );
