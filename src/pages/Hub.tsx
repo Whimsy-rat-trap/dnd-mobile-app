@@ -241,7 +241,7 @@ const Hub: React.FC = () => {
                     </div>
                     {isCharactersOpen && (
                         <div className="character-grid">
-                            {characters.map((char) => {
+                            {characters.slice(0, 5).map((char) => {
                                 const needsDeathSave = char.hp === 0 && char.status !== 'dead' && !char.isStable;
                                 return (
                                     <Link to={`/characters/${char.id}`} key={char.id} className="character-card-link" style={{ textDecoration: 'none' }}>
@@ -276,7 +276,7 @@ const Hub: React.FC = () => {
                     </div>
                     {isCampaignsOpen && (
                         <div className="campaigns-grid">
-                            {campaigns.map((camp) => (
+                            {campaigns.slice(0, 5).map((camp) => (
                                 <Link to={`/campaign/${camp.id}`} key={camp.id} className="campaign-card-link" style={{ textDecoration: 'none' }}>
                                     <div className={`campaign-card-hub ${camp.status !== 'active' ? 'inactive' : ''}`}>
                                         <div className="campaign-info-only">
@@ -307,7 +307,7 @@ const Hub: React.FC = () => {
                     </div>
                     {isItemsOpen && (
                         <div className="items-grid">
-                            {items.map((item) => (
+                            {items.slice(0, 5).map((item) => (
                                 <Link to={`/item/${item.id}`} key={item.id} className="item-card-link" style={{ textDecoration: 'none' }}>
                                     <div className="item-card-hub">
                                         <div className="item-info-only">
@@ -346,7 +346,7 @@ const Hub: React.FC = () => {
                     </div>
                     {isSpellsOpen && (
                         <div className="spells-grid">
-                            {spells.map((spell) => (
+                            {spells.slice(0, 5).map((spell) => (
                                 <Link to={`/spell/${spell.id}`} key={spell.id} className="spell-card-link" style={{ textDecoration: 'none' }}>
                                     <div className="spell-card-hub">
                                         <div className="spell-info-only">
