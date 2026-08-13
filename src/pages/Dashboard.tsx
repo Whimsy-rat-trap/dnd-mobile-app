@@ -4,6 +4,7 @@ import { useCharacters } from '../context/CharacterContext';
 import CreateModePopup from '../components/CreateModePopup';
 import DiceRoller from '../components/DiceRoller';
 import Modal from '../components/Modal';
+import SearchBar from '../components/SearchBar';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -28,6 +29,9 @@ const Dashboard: React.FC = () => {
     // Состояние для попапа выбора режима создания персонажа
     const [showCreatePopup, setShowCreatePopup] = useState(false);
 
+    // Поиск персонажей
+    const [searchQuery, setSearchQuery] = useState('');
+
     // Dice roller состояния
     const diceTypes = [4, 6, 8, 10, 12, 20];
     const [diceResults, setDiceResults] = useState<(number | null)[]>(Array(6).fill(null));
@@ -50,6 +54,11 @@ const Dashboard: React.FC = () => {
         return 6;
     };
 
+    // Фильтрация персонажей для экрана выбора
+    const filteredCharacters = characters.filter(char =>
+        char.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     // Если персонаж не выбран – показываем экран выбора
     if (!character) {
         return (
@@ -61,8 +70,13 @@ const Dashboard: React.FC = () => {
                     <div className="header-subtitle">Select a character to begin</div>
                 </div>
                 <div className="dashboard-content">
+                    <SearchBar
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        placeholder="Search characters..."
+                    />
                     <div className="character-select-grid">
-                        {characters.map((char) => {
+                        {filteredCharacters.map((char) => {
                             const needsDeathSave = char.hp === 0 && char.status !== 'dead' && !char.isStable;
                             return (
                                 <div
@@ -351,7 +365,7 @@ const Dashboard: React.FC = () => {
                         <div className="levelup-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clipPath="url(#clip0_403_3729)">
-                                    <path d="M22.5861 18.1479L12.7071 8.26894C12.517 8.08645 12.2636 7.98455 12.0001 7.98455C11.7366 7.98455 11.4832 8.08645 11.2931 8.26894L1.4201 18.1419L0.00610352 16.7279L9.8791 6.85494C10.4507 6.30947 11.2105 6.00513 12.0006 6.00513C12.7907 6.00513 13.5505 6.30947 14.1221 6.85494L24.0001 16.7339L22.5861 18.1479Z" fill="#374957" />
+                                    <path d="M22.5861 18.1479L12.7071 8.26894C12.517 8.08645 12.2636 7.98455 12.0001 7.98455C11.7365 7.98455 11.4832 8.08645 11.2931 8.26894L1.4201 18.1419L0.00610352 16.7279L9.8791 6.85494C10.4507 6.30947 11.2105 6.00513 12.0006 6.00513C12.7907 6.00513 13.5505 6.30947 14.1221 6.85494L24.0001 16.7339L22.5861 18.1479Z" fill="#374957" />
                                 </g>
                                 <defs>
                                     <clipPath id="clip0_403_3729">

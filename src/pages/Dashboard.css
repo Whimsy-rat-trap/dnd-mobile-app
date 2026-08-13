@@ -806,3 +806,102 @@
     color: #fca5a5;
     margin-top: 4px;
 }
+
+/* Экран выбора персонажа */
+.dashboard-content {
+    flex: 1;
+    padding: 20px 20px 16px 20px;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.dashboard-content::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.character-select-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.character-select-card {
+    background: #1f2937;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 80px;
+}
+
+.character-select-card:hover {
+    transform: scale(1.02);
+}
+
+.character-select-card.needs-death-save {
+    border: 2px solid #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.character-select-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.character-select-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+}
+
+.character-select-class {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.character-select-card.add-card {
+    background: transparent !important;
+    border: 2px dashed #374957;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.character-select-card.add-card:hover {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.05) !important;
+}
+
+.character-select-card .add-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.character-select-card .add-card-content svg {
+    width: 32px;
+    height: 32px;
+}
+
+.character-select-card .add-card-label {
+    font-weight: 500;
+    font-size: 13px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.death-saves-indicator {
+    font-size: 11px;
+    color: #fca5a5;
+    margin-top: 4px;
+}
