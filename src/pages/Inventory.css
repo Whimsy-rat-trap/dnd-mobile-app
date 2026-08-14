@@ -1,20 +1,66 @@
 .inventory-page {
-    align-items: stretch;
-    justify-content: flex-start;
-    text-align: left;
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    background: #0f0f0f;
 }
 
 .inventory-header {
-    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
     background: #0f0f0f;
     padding: 0 20px;
+    border-bottom: 1px solid #2c3e50;
+    flex-shrink: 0;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .header-title-inventory {
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 24px;
+    color: #34d399;
+}
+
+.header-subtitle-inventory {
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.back-to-character-btn {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    color: #9ca3af;
+    background: transparent;
+    border: 1px solid #374957;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.back-to-character-btn:hover {
+    border-color: #34d399;
     color: #34d399;
 }
 
@@ -37,61 +83,25 @@
     color: #0f0f0f;
 }
 
-/* Фильтры */
-.inventory-filters {
-    display: flex;
-    gap: 16px;
-    padding: 16px 20px;
-    background: #1a1a1a;
-    border-radius: 12px;
-    margin: 0 20px 16px 20px;
-    flex-wrap: wrap;
-}
-
-.filter-group {
+.inventory-content {
+    flex: 1;
+    padding: 16px 20px 20px 20px;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 12px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-.filter-group label {
-    font-size: 12px;
-    color: #9ca3af;
-    font-weight: 500;
+.inventory-content::-webkit-scrollbar {
+    display: none;
 }
 
-.filter-group select,
-.filter-group input {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #374957;
-    background: #1f2937;
-    color: #fff;
-    font-size: 14px;
-    min-width: 120px;
-}
-
-.filter-group select:focus,
-.filter-group input:focus {
-    outline: none;
-    border-color: #34d399;
-}
-
-.filter-group input::placeholder {
-    color: #6b7280;
-}
-
-.search-group {
-    flex: 1;
-}
-
-/* Список предметов */
 .inventory-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 0 20px;
-    flex: 1;
 }
 
 .inventory-item {
@@ -177,15 +187,6 @@
     transform: scale(0.95);
 }
 
-.use-btn {
-    background: #3b82f6;
-    color: #fff;
-}
-
-.use-btn:hover {
-    background: #2563eb;
-}
-
 .equip-btn {
     background: #f59e0b;
     color: #0f0f0f;
@@ -204,7 +205,6 @@
     background: #dc2626;
 }
 
-/* Пустое состояние */
 .empty-state {
     text-align: center;
     color: #9ca3af;
@@ -214,7 +214,7 @@
 
 /* Кнопка добавления */
 .add-item-container {
-    padding: 16px 20px;
+    padding: 8px 0;
     display: flex;
     justify-content: center;
 }
@@ -238,4 +238,36 @@
 .add-item-btn:hover {
     border-color: #34d399;
     background: rgba(52, 211, 153, 0.05);
+}
+
+.inventory-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 16px;
+    padding: 20px;
+    text-align: center;
+}
+
+.inventory-empty-state p {
+    color: #9ca3af;
+    font-size: 16px;
+}
+
+.btn-primary {
+    padding: 10px 24px;
+    background: #34d399;
+    border: none;
+    border-radius: 8px;
+    color: #0f0f0f;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #059669;
 }
