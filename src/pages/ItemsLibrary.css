@@ -1,14 +1,22 @@
-.library-page {
-    align-items: stretch;
-    justify-content: flex-start;
-    text-align: left;
+.items-library-page {
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    background: #0f0f0f;
 }
 
-.library-header {
-    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
+.items-library-header {
     background: #0f0f0f;
     padding: 0 20px;
+    border-bottom: 1px solid #2c3e50;
+    flex-shrink: 0;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
 }
 
 .header-title-library {
@@ -37,22 +45,33 @@
     color: #34d399;
 }
 
-.library-filters {
-    display: flex;
-    gap: 16px;
-    padding: 16px 20px;
-    background: #1a1a1a;
-    border-radius: 12px;
-    margin: 0 20px 16px 20px;
-    flex-wrap: wrap;
+.header-subtitle {
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 14px;
+    color: #9ca3af;
+    padding-bottom: 16px;
 }
 
-.library-list {
+.items-library-content {
+    flex: 1;
+    padding: 16px 20px 20px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE и Edge */
+}
+
+.items-library-content::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.items-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 0 20px;
-    flex: 1;
 }
 
 .library-item {
@@ -68,6 +87,47 @@
 
 .library-item:hover {
     border-left-color: #34d399;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.item-name {
+    font-weight: 700;
+    color: #fff;
+    font-size: 16px;
+}
+
+.item-type {
+    font-size: 12px;
+    color: #9ca3af;
+    text-transform: capitalize;
+}
+
+.item-rarity {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.item-attunement {
+    font-size: 11px;
+    color: #6b7280;
+    background: rgba(255,255,255,0.05);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.item-description {
+    font-size: 13px;
+    color: #9ca3af;
+    flex-basis: 100%;
+    margin-top: 4px;
 }
 
 .add-to-inventory-btn {
@@ -90,40 +150,6 @@
 
 .add-to-inventory-btn:active {
     transform: scale(0.95);
-}
-
-/* Переиспользуем стили из Inventory.css для элементов */
-.library-item .item-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    flex: 1;
-}
-
-.library-item .item-name {
-    font-weight: 700;
-    color: #fff;
-    font-size: 16px;
-}
-
-.library-item .item-type {
-    font-size: 12px;
-    color: #9ca3af;
-    text-transform: capitalize;
-}
-
-.library-item .item-rarity {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-.library-item .item-description {
-    font-size: 13px;
-    color: #9ca3af;
-    flex-basis: 100%;
-    margin-top: 4px;
 }
 
 .empty-state {
