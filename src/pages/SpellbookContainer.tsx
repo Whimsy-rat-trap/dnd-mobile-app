@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
+import FilterModal, { FilterField } from '../components/FilterModal';
+import { getElementFromSpell, SCHOOLS, ELEMENTS } from '../utils/spellUtils';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import './SpellbookContainer.css';
 
@@ -17,6 +19,9 @@ const SpellbookContainer: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabKey>('cantrips');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState<FilterType>('all');
+    const [schoolFilter, setSchoolFilter] = useState('');
+    const [elementFilter, setElementFilter] = useState('');
+    const [showFilterModal, setShowFilterModal] = useState(false);
 
     const tabs: { id: TabKey; label: string }[] = [
         { id: 'cantrips', label: 'Cantrips' },
@@ -52,7 +57,6 @@ const SpellbookContainer: React.FC = () => {
         level3,
     };
 
-    // Фильтрация по статусу подготовки
     const applyFilter = (spells: typeof character.spells) => {
         if (filterType === 'all') return spells;
         if (filterType === 'prepared') return spells.filter(s => s.prepared);
@@ -60,18 +64,26 @@ const SpellbookContainer: React.FC = () => {
         return spells;
     };
 
-    // Поиск
-    const applySearch = (spells: typeof character.spells) => {
-        if (!searchQuery.trim()) return spells;
-        const query = searchQuery.toLowerCase();
-        return spells.filter(s =>
-            s.name.toLowerCase().includes(query) ||
-            s.school.toLowerCase().includes(query) ||
-            s.description.toLowerCase().includes(query)
-        );
+    const applySearchAndFilters = (spells: typeof character.spells) => {
+        let result = spells;
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(s =>
+                s.name.toLowerCase().includes(query) ||
+                s.school.toLowerCase().includes(query) ||
+                s.description.toLowerCase().includes(query)
+            );
+        }
+        if (schoolFilter) {
+            result = result.filter(s => s.school === schoolFilter);
+        }
+        if (elementFilter) {
+            result = result.filter(s => getElementFromSpell(s) === elementFilter);
+        }
+        return result;
     };
 
-    const currentSpells = applySearch(applyFilter(spellsData[activeTab]));
+    const currentSpells = applySearchAndFilters(applyFilter(spellsData[activeTab]));
 
     const title = `${activeTab === 'cantrips' ? 'Cantrips' : `Level ${activeTab.replace('level', '')}`} (${currentSpells.length})`;
 
@@ -87,10 +99,31 @@ const SpellbookContainer: React.FC = () => {
 
     // Вычисления с использованием новой системы заклинаний
     const spellSlotsArray = getSpellSlots(character);
-    const totalSlots = spellSlotsArray.reduce((a, b) => a + b, 0);
+    const totalSlots = spellSlotsArray.reduce((a: number, b: number) => a + b, 0);
     const maxPrepared = getMaxPrepared(character);
     const preparedCount = character.spells.filter(s => s.prepared).length;
     const knownCount = character.spells.length;
+
+    // Поля для фильтрации (школа и элемент)
+    const filterFields: FilterField[] = [
+        {
+            key: 'school',
+            label: 'School',
+            type: 'select',
+            options: [{ value: '', label: 'All' }, ...SCHOOLS.map((s: string) => ({ value: s, label: s }))]
+        },
+        {
+            key: 'element',
+            label: 'Element',
+            type: 'select',
+            options: [{ value: '', label: 'All' }, ...ELEMENTS.map((e: string) => ({ value: e, label: e.charAt(0).toUpperCase() + e.slice(1) }))]
+        },
+    ];
+
+    const handleFilterChange = (newFilters: Record<string, any>) => {
+        setSchoolFilter(newFilters.school || '');
+        setElementFilter(newFilters.element || '');
+    };
 
     return (
         <div className="spellbook-page">
@@ -142,6 +175,7 @@ const SpellbookContainer: React.FC = () => {
                         value={searchQuery}
                         onChange={setSearchQuery}
                         placeholder="Search spells..."
+                        onFilterClick={() => setShowFilterModal(true)}
                     />
                     <div className="filter-buttons">
                         <button
@@ -186,6 +220,22 @@ const SpellbookContainer: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* Модалка фильтрации */}
+            {showFilterModal && (
+                <FilterModal
+                    isOpen={showFilterModal}
+                    onClose={() => setShowFilterModal(false)}
+                    filters={{ school: schoolFilter, element: elementFilter }}
+                    onFilterChange={handleFilterChange}
+                    fields={filterFields}
+                    onReset={() => {
+                        setSchoolFilter('');
+                        setElementFilter('');
+                    }}
+                    title="Filter Spells"
+                />
+            )}
         </div>
     );
 };

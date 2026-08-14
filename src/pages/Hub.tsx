@@ -407,7 +407,7 @@ const Hub: React.FC = () => {
                                                 )}
                                             </div>
                                         </div>
-                                   s </div>
+                                   </div>
                                 </Link>
                             ))}
                             {renderAddSpellCard()}

@@ -4,6 +4,8 @@ import { useCharacters } from '../context/CharacterContext';
 import { ALL_SPELLS } from '../constants/spells';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
+import FilterModal, { FilterField } from '../components/FilterModal';
+import { getElementFromSpell, SCHOOLS, ELEMENTS } from '../utils/spellUtils';
 import './SpellsLibrary.css';
 
 const SpellsLibrary: React.FC = () => {
@@ -12,6 +14,41 @@ const SpellsLibrary: React.FC = () => {
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
     const [searchQuery, setSearchQuery] = useState('');
+    const [showFilterModal, setShowFilterModal] = useState(false);
+    const [filters, setFilters] = useState({
+        level: '',
+        school: '',
+        element: '',
+    });
+
+    const handleFilterChange = (newFilters: Record<string, any>) => {
+        setFilters(newFilters as any);
+    };
+
+    const filterFields: FilterField[] = [
+        {
+            key: 'level',
+            label: 'Level',
+            type: 'select',
+            options: [
+                { value: '', label: 'All' },
+                { value: '0', label: 'Cantrip' },
+                ...Array.from({ length: 9 }, (_, i) => ({ value: String(i + 1), label: `Level ${i + 1}` })),
+            ],
+        },
+        {
+            key: 'school',
+            label: 'School',
+            type: 'select',
+            options: [{ value: '', label: 'All' }, ...SCHOOLS.map(s => ({ value: s, label: s }))],
+        },
+        {
+            key: 'element',
+            label: 'Element',
+            type: 'select',
+            options: [{ value: '', label: 'All' }, ...ELEMENTS.map(e => ({ value: e, label: e.charAt(0).toUpperCase() + e.slice(1) }))],
+        },
+    ];
 
     const handleAddSpell = (spellData: typeof ALL_SPELLS[0]) => {
         if (!character) return;
@@ -35,11 +72,16 @@ const SpellsLibrary: React.FC = () => {
 
     const handleBack = () => navigate(-1);
 
-    const filteredSpells = ALL_SPELLS.filter(spell =>
-        spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        spell.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        spell.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Фильтрация
+    const filteredSpells = ALL_SPELLS.filter(spell => {
+        const matchesSearch = spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            spell.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            spell.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesLevel = !filters.level || spell.level === Number(filters.level);
+        const matchesSchool = !filters.school || spell.school === filters.school;
+        const matchesElement = !filters.element || getElementFromSpell(spell) === filters.element;
+        return matchesSearch && matchesLevel && matchesSchool && matchesElement;
+    });
 
     return (
         <div className="page spells-library-page">
@@ -62,6 +104,7 @@ const SpellsLibrary: React.FC = () => {
                     value={searchQuery}
                     onChange={setSearchQuery}
                     placeholder="Search spells..."
+                    onFilterClick={() => setShowFilterModal(true)}
                 />
                 <div className="spell-list">
                     {filteredSpells.map((spell, index) => {
@@ -79,6 +122,18 @@ const SpellsLibrary: React.FC = () => {
                     })}
                 </div>
             </div>
+
+            {showFilterModal && (
+                <FilterModal
+                    isOpen={showFilterModal}
+                    onClose={() => setShowFilterModal(false)}
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
+                    fields={filterFields}
+                    onReset={() => setFilters({ level: '', school: '', element: '' })}
+                    title="Filter Spells"
+                />
+            )}
         </div>
     );
 };
