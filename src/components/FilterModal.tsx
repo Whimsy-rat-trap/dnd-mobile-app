@@ -70,7 +70,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
                             value={filters[field.key] || ''}
                             onChange={(e) => handleChange(field.key, e.target.value)}
                         >
-                            <option value="">All</option>
                             {field.options?.map(opt => (
                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
                             ))}
