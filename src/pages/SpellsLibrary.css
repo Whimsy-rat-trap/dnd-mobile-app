@@ -127,3 +127,74 @@
     outline: none;
     border-color: #34d399;
 }
+
+.component-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.component-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 32px;
+    padding: 4px;
+    background: #0f0f0f;
+    border-radius: 6px;
+    border: 1px solid #374957;
+}
+
+.component-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #1f2937;
+    border: 1px solid #34d399;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 13px;
+    color: #34d399;
+}
+
+.component-remove {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.component-remove:hover {
+    color: #ef4444;
+}
+
+.component-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.component-option-btn {
+    padding: 4px 12px;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.component-option-btn:hover {
+    border-color: #6b7280;
+    color: #fff;
+}
+
+.component-option-btn.active {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+}

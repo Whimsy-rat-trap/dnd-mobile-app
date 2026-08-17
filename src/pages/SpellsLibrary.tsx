@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import { useSpells } from '../context/SpellContext';
 import { ALL_SPELLS } from '../constants/spells';
-import { CASTING_TIMES, COMPONENTS, RANGES, ELEMENTS } from '../constants/spellOptions';
+import { CASTING_TIMES, COMPONENT_OPTIONS, RANGES, ELEMENTS } from '../constants/spellOptions';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import { getElementFromSpell, SCHOOLS } from '../utils/spellUtils';
-import { Spell } from '../types/Character';
 import './SpellsLibrary.css';
 
 const SpellsLibrary: React.FC = () => {
@@ -34,10 +33,28 @@ const SpellsLibrary: React.FC = () => {
         school: SCHOOLS[0] || 'Abjuration',
         castingTime: CASTING_TIMES[0],
         range: RANGES[0],
-        components: COMPONENTS[0],
+        components: [] as string[],
         description: '',
         element: ELEMENTS[0],
     });
+
+    const toggleComponent = (comp: string) => {
+        setNewSpell(prev => {
+            const current = prev.components;
+            if (current.includes(comp)) {
+                return { ...prev, components: current.filter(c => c !== comp) };
+            } else {
+                return { ...prev, components: [...current, comp] };
+            }
+        });
+    };
+
+    const removeComponent = (comp: string) => {
+        setNewSpell(prev => ({
+            ...prev,
+            components: prev.components.filter(c => c !== comp),
+        }));
+    };
 
     const handleFilterChange = (newFilters: Record<string, any>) => {
         setFilters(newFilters as any);
@@ -78,21 +95,10 @@ const SpellsLibrary: React.FC = () => {
         },
     ];
 
-    // Объединяем стандартные и пользовательские заклинания, приводя к типу Spell
-    const allSpells: Spell[] = [
-        ...ALL_SPELLS.map((s, index) => ({
-            ...s,
-            id: `standard-${index}`,
-            prepared: false,
-            isCustom: false,
-            element: (s as any).element || getElementFromSpell(s),
-        })),
-        ...customSpells.map(s => ({
-            ...s,
-            id: s.id || `custom-${Date.now()}-${Math.random()}`,
-            prepared: s.prepared || false,
-            isCustom: true,
-        })),
+    // Объединяем стандартные и пользовательские заклинания
+    const allSpells = [
+        ...ALL_SPELLS.map((s, index) => ({ ...s, id: `std-${index}`, isCustom: false, prepared: false })),
+        ...customSpells,
     ];
 
     const filteredSpells = allSpells.filter(spell => {
@@ -101,14 +107,14 @@ const SpellsLibrary: React.FC = () => {
             spell.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesLevel = !filters.level || spell.level === Number(filters.level);
         const matchesSchool = !filters.school || spell.school === filters.school;
-        const matchesElement = !filters.element || (spell.element || '') === filters.element;
+        const matchesElement = !filters.element || (spell.element || getElementFromSpell(spell) || '') === filters.element;
         const matchesType = !filters.type ||
             (filters.type === 'custom' && spell.isCustom) ||
             (filters.type === 'standard' && !spell.isCustom);
         return matchesSearch && matchesLevel && matchesSchool && matchesElement && matchesType;
     });
 
-    const handleAddSpell = (spellData: Spell) => {
+    const handleAddSpell = (spellData: any) => {
         if (!character) return;
         const exists = character.spells.some(s => s.name === spellData.name);
         if (exists) return;
@@ -141,13 +147,15 @@ const SpellsLibrary: React.FC = () => {
             alert('Please enter a spell name.');
             return;
         }
+        const componentsStr = newSpell.components.length > 0 ? newSpell.components.join(', ') : '';
+
         addCustomSpell({
             name: newSpell.name,
             level: newSpell.level,
             school: newSpell.school,
             castingTime: newSpell.castingTime,
             range: newSpell.range,
-            components: newSpell.components,
+            components: componentsStr,
             description: newSpell.description,
             element: newSpell.element === 'None' ? undefined : newSpell.element,
             isCustom: true,
@@ -160,7 +168,7 @@ const SpellsLibrary: React.FC = () => {
             school: SCHOOLS[0] || 'Abjuration',
             castingTime: CASTING_TIMES[0],
             range: RANGES[0],
-            components: COMPONENTS[0],
+            components: [],
             description: '',
             element: ELEMENTS[0],
         });
@@ -279,14 +287,34 @@ const SpellsLibrary: React.FC = () => {
                     </div>
                     <div className="form-group">
                         <label>Components</label>
-                        <select
-                            value={newSpell.components}
-                            onChange={(e) => setNewSpell({ ...newSpell, components: e.target.value })}
-                        >
-                            {COMPONENTS.map(c => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
+                        <div className="component-selector">
+                            <div className="component-tags">
+                                {newSpell.components.map(comp => (
+                                    <span key={comp} className="component-tag">
+                                        {comp}
+                                        <button
+                                            type="button"
+                                            className="component-remove"
+                                            onClick={() => removeComponent(comp)}
+                                        >
+                                            ✕
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="component-options">
+                                {COMPONENT_OPTIONS.map(comp => (
+                                    <button
+                                        key={comp}
+                                        type="button"
+                                        className={`component-option-btn ${newSpell.components.includes(comp) ? 'active' : ''}`}
+                                        onClick={() => toggleComponent(comp)}
+                                    >
+                                        {comp}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                     <div className="form-group">
                         <label>Element</label>

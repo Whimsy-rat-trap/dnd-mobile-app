@@ -9,16 +9,7 @@ export const CASTING_TIMES = [
     '24 hours'
 ];
 
-export const COMPONENTS = [
-    'V',
-    'S',
-    'M',
-    'V, S',
-    'V, S, M',
-    'V, M',
-    'S, M',
-    'M (requires material component)'
-];
+export const COMPONENT_OPTIONS = ['V', 'S', 'M'];
 
 export const RANGES = [
     'Self',
