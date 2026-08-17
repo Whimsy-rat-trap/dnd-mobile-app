@@ -65,6 +65,7 @@ export interface Spell {
     description: string;
     prepared: boolean;
     isCustom?: boolean;
+    element?: string;
 }
 
 export interface Quest {

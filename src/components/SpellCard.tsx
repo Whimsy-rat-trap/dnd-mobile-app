@@ -1,5 +1,6 @@
 import React from 'react';
 import { Spell } from '../types/Character';
+import { getElementFromSpell } from '../utils/spellUtils';
 import './SpellCard.css';
 
 interface SpellCardProps {
@@ -37,21 +38,12 @@ const SpellCard: React.FC<SpellCardProps> = ({
         healing: '#22c55e',
     };
 
-    // Определяем элемент для цвета (если есть в названии или школе)
+    // Определяем элемент заклинания: сначала из явного поля, затем из названия
     const getElement = (spell: Spell): string | undefined => {
-        const name = spell.name.toLowerCase();
-        if (name.includes('fire')) return 'fire';
-        if (name.includes('acid')) return 'acid';
-        if (name.includes('cold') || name.includes('frost')) return 'cold';
-        if (name.includes('lightning') || name.includes('shock')) return 'lightning';
-        if (name.includes('poison')) return 'poison';
-        if (name.includes('force')) return 'force';
-        if (name.includes('necrotic') || name.includes('chill touch')) return 'necrotic';
-        if (name.includes('radiant')) return 'radiant';
-        if (name.includes('thunder') || name.includes('sonic')) return 'thunder';
-        if (name.includes('psychic')) return 'psychic';
-        if (name.includes('cure') || name.includes('heal')) return 'healing';
-        return undefined;
+        if (spell.element && spell.element !== 'None') {
+            return spell.element.toLowerCase();
+        }
+        return getElementFromSpell(spell);
     };
 
     const element = getElement(spell);
@@ -117,13 +109,13 @@ const SpellCard: React.FC<SpellCardProps> = ({
                         {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
                     </span>
                     <span className="spell-tag-school">{spell.school}</span>
-                    {element && (
-                        <span className="spell-tag-element" style={{ color: elementColor }}>
-                            {element}
-                        </span>
-                    )}
                     {spell.isCustom && (
                         <span className="spell-tag-custom">Custom</span>
+                    )}
+                    {element && (
+                        <span className="spell-tag-element" style={{ color: elementColor }}>
+                            {element.charAt(0).toUpperCase() + element.slice(1)}
+                        </span>
                     )}
                 </div>
                 <div className="spell-card-description">{spell.description}</div>
