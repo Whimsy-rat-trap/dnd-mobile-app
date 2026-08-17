@@ -13,31 +13,34 @@ import SpellsLibrary from './pages/SpellsLibrary';
 import CreateCharacter from './pages/CreateCharacter';
 import { CharacterProvider } from './context/CharacterContext';
 import { CampaignProvider } from './context/CampaignContext';
+import { SpellProvider } from './context/SpellContext';
 
 const App: React.FC = () => {
     return (
         <CharacterProvider>
             <CampaignProvider>
-                <BrowserRouter>
-                    <div className="app-container">
-                        <div className="page-content">
-                            <Routes>
-                                <Route path="/" element={<Login />} />
-                                <Route path="/dashboard" element={<Dashboard />} />
-                                <Route path="/characters/new" element={<CreateCharacter />} />
-                                <Route path="/characters/:id" element={<CharacterContainer />} />
-                                <Route path="/spellbook" element={<SpellbookContainer />} />
-                                <Route path="/campaigns" element={<CampaignContainer />} />
-                                <Route path="/campaign/:id" element={<CampaignContainer />} />
-                                <Route path="/hub" element={<Hub />} />
-                                <Route path="/quests" element={<Quest />} />
-                                <Route path="/inventory" element={<Inventory />} />
-                                <Route path="/items" element={<ItemsLibrary />} />
-                                <Route path="/spells" element={<SpellsLibrary />} />
-                            </Routes>
+                <SpellProvider>
+                    <BrowserRouter>
+                        <div className="app-container">
+                            <div className="page-content">
+                                <Routes>
+                                    <Route path="/" element={<Login />} />
+                                    <Route path="/dashboard" element={<Dashboard />} />
+                                    <Route path="/characters/new" element={<CreateCharacter />} />
+                                    <Route path="/characters/:id" element={<CharacterContainer />} />
+                                    <Route path="/spellbook" element={<SpellbookContainer />} />
+                                    <Route path="/campaigns" element={<CampaignContainer />} />
+                                    <Route path="/campaign/:id" element={<CampaignContainer />} />
+                                    <Route path="/hub" element={<Hub />} />
+                                    <Route path="/quests" element={<Quest />} />
+                                    <Route path="/inventory" element={<Inventory />} />
+                                    <Route path="/items" element={<ItemsLibrary />} />
+                                    <Route path="/spells" element={<SpellsLibrary />} />
+                                </Routes>
+                            </div>
                         </div>
-                    </div>
-                </BrowserRouter>
+                    </BrowserRouter>
+                </SpellProvider>
             </CampaignProvider>
         </CharacterProvider>
     );

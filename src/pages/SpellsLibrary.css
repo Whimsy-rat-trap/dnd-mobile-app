@@ -11,6 +11,7 @@
     padding: 16px 20px;
     background: #0f0f0f;
     border-bottom: 1px solid #2c3e50;
+    flex-shrink: 0;
 }
 
 .spell-back-btn {
@@ -47,6 +48,22 @@
     color: #9ca3af;
 }
 
+.btn-create-spell {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #fbbf24;
+    color: #0f0f0f;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-create-spell:hover {
+    background: #f59e0b;
+}
+
 .spells-library-content {
     flex: 1;
     padding: 16px 20px;
@@ -54,10 +71,59 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.spells-library-content::-webkit-scrollbar {
+    display: none;
 }
 
 .spell-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+/* Create Spell Form */
+.create-spell-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.create-spell-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.create-spell-form .form-group label {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.create-spell-form .form-group input,
+.create-spell-form .form-group select,
+.create-spell-form .form-group textarea {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #374957;
+    background: #0f0f0f;
+    color: #fff;
+    font-size: 14px;
+    font-family: var(--font-family);
+}
+
+.create-spell-form .form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.create-spell-form .form-group input:focus,
+.create-spell-form .form-group select:focus,
+.create-spell-form .form-group textarea:focus {
+    outline: none;
+    border-color: #34d399;
 }

@@ -122,6 +122,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             {element}
                         </span>
                     )}
+                    {spell.isCustom && (
+                        <span className="spell-tag-custom">Custom</span>
+                    )}
                 </div>
                 <div className="spell-card-description">{spell.description}</div>
             </div>

@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
+import { useSpells } from '../context/SpellContext';
 import { ALL_SPELLS } from '../constants/spells';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
+import Modal from '../components/Modal';
 import { getElementFromSpell, SCHOOLS, ELEMENTS } from '../utils/spellUtils';
 import './SpellsLibrary.css';
 
 const SpellsLibrary: React.FC = () => {
     const navigate = useNavigate();
     const { currentCharacterId, getCharacter, addSpellToCharacter, removeSpellFromCharacter } = useCharacters();
+    const { customSpells, addCustomSpell } = useSpells();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -19,6 +22,19 @@ const SpellsLibrary: React.FC = () => {
         level: '',
         school: '',
         element: '',
+        type: '', // 'all' | 'custom'
+    });
+
+    // Состояния для модалки создания заклинания
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [newSpell, setNewSpell] = useState({
+        name: '',
+        level: 0,
+        school: SCHOOLS[0] || 'Abjuration',
+        castingTime: '1 action',
+        range: 'Self',
+        components: 'V, S',
+        description: '',
     });
 
     const handleFilterChange = (newFilters: Record<string, any>) => {
@@ -48,13 +64,46 @@ const SpellsLibrary: React.FC = () => {
             type: 'select',
             options: [{ value: '', label: 'All' }, ...ELEMENTS.map(e => ({ value: e, label: e.charAt(0).toUpperCase() + e.slice(1) }))],
         },
+        {
+            key: 'type',
+            label: 'Type',
+            type: 'select',
+            options: [
+                { value: '', label: 'All' },
+                { value: 'standard', label: 'Standard' },
+                { value: 'custom', label: 'Custom' },
+            ],
+        },
     ];
 
-    const handleAddSpell = (spellData: typeof ALL_SPELLS[0]) => {
+    // Объединяем стандартные и пользовательские заклинания
+    const allSpells = [
+        ...ALL_SPELLS.map(s => ({ ...s, isCustom: false } as any)),
+        ...customSpells,
+    ];
+
+    const filteredSpells = allSpells.filter(spell => {
+        const matchesSearch = spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            spell.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            spell.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesLevel = !filters.level || spell.level === Number(filters.level);
+        const matchesSchool = !filters.school || spell.school === filters.school;
+        const matchesElement = !filters.element || getElementFromSpell(spell) === filters.element;
+        const matchesType = !filters.type ||
+            (filters.type === 'custom' && spell.isCustom) ||
+            (filters.type === 'standard' && !spell.isCustom);
+        return matchesSearch && matchesLevel && matchesSchool && matchesElement && matchesType;
+    });
+
+    const handleAddSpell = (spellData: typeof ALL_SPELLS[0] & { isCustom?: boolean }) => {
         if (!character) return;
         const exists = character.spells.some(s => s.name === spellData.name);
         if (exists) return;
-        addSpellToCharacter(character.id, { ...spellData, prepared: false });
+        addSpellToCharacter(character.id, {
+            ...spellData,
+            prepared: false,
+            isCustom: spellData.isCustom || false,
+        });
     };
 
     const handleRemoveSpell = (spellName: string) => {
@@ -72,16 +121,27 @@ const SpellsLibrary: React.FC = () => {
 
     const handleBack = () => navigate(-1);
 
-    // Фильтрация
-    const filteredSpells = ALL_SPELLS.filter(spell => {
-        const matchesSearch = spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            spell.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            spell.description.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesLevel = !filters.level || spell.level === Number(filters.level);
-        const matchesSchool = !filters.school || spell.school === filters.school;
-        const matchesElement = !filters.element || getElementFromSpell(spell) === filters.element;
-        return matchesSearch && matchesLevel && matchesSchool && matchesElement;
-    });
+    // Создание заклинания
+    const handleCreateSpell = () => {
+        if (!newSpell.name.trim()) {
+            alert('Please enter a spell name.');
+            return;
+        }
+        addCustomSpell({
+            ...newSpell,
+            prepared: false,
+        });
+        setShowCreateModal(false);
+        setNewSpell({
+            name: '',
+            level: 0,
+            school: SCHOOLS[0] || 'Abjuration',
+            castingTime: '1 action',
+            range: 'Self',
+            components: 'V, S',
+            description: '',
+        });
+    };
 
     return (
         <div className="page spells-library-page">
@@ -97,6 +157,9 @@ const SpellsLibrary: React.FC = () => {
                         {character ? `Adding to ${character.name}` : 'Select a character to add spells'}
                     </div>
                 </div>
+                <button className="btn-create-spell" onClick={() => setShowCreateModal(true)}>
+                    + Create Spell
+                </button>
             </header>
 
             <div className="spells-library-content">
@@ -111,8 +174,8 @@ const SpellsLibrary: React.FC = () => {
                         const inBook = isSpellInBook(spell.name);
                         return (
                             <SpellCard
-                                key={index}
-                                spell={{ ...spell, id: `library-${index}`, prepared: false }}
+                                key={spell.id || `lib-${index}`}
+                                spell={spell}
                                 showAddButton={!!character && !inBook}
                                 onAdd={() => handleAddSpell(spell)}
                                 showRemoveButton={!!character && inBook}
@@ -130,10 +193,87 @@ const SpellsLibrary: React.FC = () => {
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
-                    onReset={() => setFilters({ level: '', school: '', element: '' })}
+                    onReset={() => setFilters({ level: '', school: '', element: '', type: '' })}
                     title="Filter Spells"
                 />
             )}
+
+            {/* Модалка создания заклинания */}
+            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
+                <h3>Create Custom Spell</h3>
+                <div className="create-spell-form">
+                    <div className="form-group">
+                        <label>Spell Name *</label>
+                        <input
+                            type="text"
+                            value={newSpell.name}
+                            onChange={(e) => setNewSpell({ ...newSpell, name: e.target.value })}
+                            placeholder="Enter spell name"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Level</label>
+                        <input
+                            type="number"
+                            value={newSpell.level}
+                            onChange={(e) => setNewSpell({ ...newSpell, level: Number(e.target.value) })}
+                            min="0"
+                            max="9"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>School</label>
+                        <select
+                            value={newSpell.school}
+                            onChange={(e) => setNewSpell({ ...newSpell, school: e.target.value })}
+                        >
+                            {SCHOOLS.map(s => (
+                                <option key={s} value={s}>{s}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Casting Time</label>
+                        <input
+                            type="text"
+                            value={newSpell.castingTime}
+                            onChange={(e) => setNewSpell({ ...newSpell, castingTime: e.target.value })}
+                            placeholder="e.g. 1 action"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Range</label>
+                        <input
+                            type="text"
+                            value={newSpell.range}
+                            onChange={(e) => setNewSpell({ ...newSpell, range: e.target.value })}
+                            placeholder="e.g. 60 ft"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Components</label>
+                        <input
+                            type="text"
+                            value={newSpell.components}
+                            onChange={(e) => setNewSpell({ ...newSpell, components: e.target.value })}
+                            placeholder="e.g. V, S, M"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Description</label>
+                        <textarea
+                            value={newSpell.description}
+                            onChange={(e) => setNewSpell({ ...newSpell, description: e.target.value })}
+                            placeholder="Enter spell description"
+                            rows={3}
+                        />
+                    </div>
+                </div>
+                <div className="modal-actions">
+                    <button className="modal-btn cancel" onClick={() => setShowCreateModal(false)}>Cancel</button>
+                    <button className="modal-btn apply" onClick={handleCreateSpell}>Create</button>
+                </div>
+            </Modal>
         </div>
     );
 };

@@ -39,7 +39,7 @@ export interface Character {
     quests: Quest[];
     campaigns: Campaign[];
     diceLogs: Record<number, { result: number; timestamp: number }[]>;
-    // --- Death Saving Throws ---
+    // Death Saving Throws
     deathSuccesses: number;
     deathFailures: number;
     isStable: boolean;
@@ -64,6 +64,7 @@ export interface Spell {
     components: string;
     description: string;
     prepared: boolean;
+    isCustom?: boolean;
 }
 
 export interface Quest {
