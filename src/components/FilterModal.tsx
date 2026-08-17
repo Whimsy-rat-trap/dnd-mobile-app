@@ -5,7 +5,7 @@ import './FilterModal.css';
 export interface FilterField {
     key: string;
     label: string;
-    type: 'text' | 'select' | 'number' | 'range' | 'date' | 'boolean';
+    type: 'text' | 'select' | 'number' | 'range' | 'date' | 'boolean' | 'tags';
     options?: { value: string; label: string }[];
     min?: number;
     max?: number;
@@ -39,6 +39,19 @@ const FilterModal: React.FC<FilterModalProps> = ({
         onFilterChange({ ...filters, [key]: value });
     };
 
+    const toggleTag = (key: string, tag: string) => {
+        const current = filters[key] || [];
+        const newValue = current.includes(tag)
+            ? current.filter((t: string) => t !== tag)
+            : [...current, tag];
+        handleChange(key, newValue);
+    };
+
+    const removeTag = (key: string, tag: string) => {
+        const current = filters[key] || [];
+        handleChange(key, current.filter((t: string) => t !== tag));
+    };
+
     const handleReset = () => {
         if (onReset) {
             onReset();
@@ -51,6 +64,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
                     resetValues[field.key] = false;
                 } else if (field.type === 'select') {
                     resetValues[field.key] = '';
+                } else if (field.type === 'tags') {
+                    resetValues[field.key] = [];
                 } else {
                     resetValues[field.key] = '';
                 }
@@ -123,6 +138,36 @@ const FilterModal: React.FC<FilterModalProps> = ({
                             />
                             {field.label}
                         </label>
+                    )}
+                    {field.type === 'tags' && (
+                        <div className="filter-tags">
+                            <div className="filter-tags-list">
+                                {(filters[field.key] || []).map((tag: string) => (
+                                    <span key={tag} className="filter-tag">
+                                        {tag}
+                                        <button
+                                            type="button"
+                                            className="filter-tag-remove"
+                                            onClick={() => removeTag(field.key, tag)}
+                                        >
+                                            ✕
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="filter-tags-options">
+                                {field.options?.map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        className={`filter-tag-btn ${(filters[field.key] || []).includes(opt.value) ? 'active' : ''}`}
+                                        onClick={() => toggleTag(field.key, opt.value)}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     )}
                 </div>
             ))}

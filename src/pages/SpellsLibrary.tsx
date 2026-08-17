@@ -24,6 +24,7 @@ const SpellsLibrary: React.FC = () => {
         school: '',
         element: '',
         type: '',
+        components: [] as string[],
     });
 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -38,6 +39,7 @@ const SpellsLibrary: React.FC = () => {
         element: ELEMENTS[0],
     });
 
+    // Функции для управления компонентами при создании
     const toggleComponent = (comp: string) => {
         setNewSpell(prev => {
             const current = prev.components;
@@ -93,6 +95,12 @@ const SpellsLibrary: React.FC = () => {
                 { value: 'custom', label: 'Custom' },
             ],
         },
+        {
+            key: 'components',
+            label: 'Components',
+            type: 'tags',
+            options: COMPONENT_OPTIONS.map(c => ({ value: c, label: c })),
+        },
     ];
 
     // Объединяем стандартные и пользовательские заклинания
@@ -111,7 +119,9 @@ const SpellsLibrary: React.FC = () => {
         const matchesType = !filters.type ||
             (filters.type === 'custom' && spell.isCustom) ||
             (filters.type === 'standard' && !spell.isCustom);
-        return matchesSearch && matchesLevel && matchesSchool && matchesElement && matchesType;
+        const matchesComponents = filters.components.length === 0 ||
+            filters.components.every(comp => spell.components.includes(comp));
+        return matchesSearch && matchesLevel && matchesSchool && matchesElement && matchesType && matchesComponents;
     });
 
     const handleAddSpell = (spellData: any) => {
@@ -224,7 +234,7 @@ const SpellsLibrary: React.FC = () => {
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
-                    onReset={() => setFilters({ level: '', school: '', element: '', type: '' })}
+                    onReset={() => setFilters({ level: '', school: '', element: '', type: '', components: [] })}
                     title="Filter Spells"
                 />
             )}
