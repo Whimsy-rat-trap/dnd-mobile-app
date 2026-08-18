@@ -246,38 +246,15 @@ const SpellbookContainer: React.FC = () => {
                 ) : (
                     <div className="spell-cards">
                         {currentSpells.map((spell) => (
-                            <div key={spell.id} className="spell-card">
-                                <div className="spell-card-header">
-                                    <div className="spell-card-left">
-                                        <div className="spell-card-icon" />
-                                        <div className="spell-card-info">
-                                            <div className="spell-card-name">{spell.name}</div>
-                                            <div className="spell-card-school">{spell.school}</div>
-                                        </div>
-                                    </div>
-                                    <SkillCheck
-                                        proficient={spell.prepared}
-                                        onToggle={() => togglePrepared(spell.id)}
-                                    />
-                                </div>
-                                <div className="spell-card-details">
-                                    <div className="spell-card-row">
-                                        <div className="spell-detail-item">
-                                            <span className="spell-detail-label">Casting</span>
-                                            <span className="spell-detail-value">{spell.castingTime}</span>
-                                        </div>
-                                        <div className="spell-detail-item">
-                                            <span className="spell-detail-label">Range</span>
-                                            <span className="spell-detail-value">{spell.range}</span>
-                                        </div>
-                                        <div className="spell-detail-item">
-                                            <span className="spell-detail-label">Components</span>
-                                            <span className="spell-detail-value">{spell.components}</span>
-                                        </div>
-                                    </div>
-                                    <div className="spell-card-description">{spell.description}</div>
-                                </div>
-                            </div>
+                            <SpellCard
+                                key={spell.id}
+                                spell={spell}
+                                isPrepared={spell.prepared}
+                                onTogglePrepared={() => togglePrepared(spell.id)}
+                                renderPreparedToggle={({ prepared, onToggle }) => (
+                                    <SkillCheck proficient={prepared} onToggle={onToggle} />
+                                )}
+                            />
                         ))}
                     </div>
                 )}
