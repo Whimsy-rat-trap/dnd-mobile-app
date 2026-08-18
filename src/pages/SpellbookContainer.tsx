@@ -7,6 +7,7 @@ import SkillCheck from '../components/SkillCheck';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import { SCHOOLS, getElementFromSpell } from '../utils/spellUtils';
+import { COMPONENT_OPTIONS } from '../constants/spellOptions';
 import './SpellbookContainer.css';
 
 type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
@@ -20,9 +21,11 @@ const SpellbookContainer: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabKey>('cantrips');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState<FilterType>('all');
+    const [showFilterModal, setShowFilterModal] = useState(false);
     const [schoolFilter, setSchoolFilter] = useState('');
     const [elementFilter, setElementFilter] = useState('');
-    const [showFilterModal, setShowFilterModal] = useState(false);
+    const [typeFilter, setTypeFilter] = useState('');
+    const [componentsFilter, setComponentsFilter] = useState<string[]>([]);
 
     const tabs: { id: TabKey; label: string }[] = [
         { id: 'cantrips', label: 'Cantrips' },
@@ -66,7 +69,7 @@ const SpellbookContainer: React.FC = () => {
         return spells;
     };
 
-    // Поиск и фильтр по школе / элементу
+    // Поиск и расширенные фильтры (школа, элемент, тип, компоненты)
     const applySearchAndFilters = (spells: typeof character.spells) => {
         let result = spells;
         if (searchQuery.trim()) {
@@ -82,6 +85,16 @@ const SpellbookContainer: React.FC = () => {
         }
         if (elementFilter) {
             result = result.filter(s => (s.element || getElementFromSpell(s) || '') === elementFilter);
+        }
+        if (typeFilter) {
+            if (typeFilter === 'standard') {
+                result = result.filter(s => !s.isCustom);
+            } else if (typeFilter === 'custom') {
+                result = result.filter(s => s.isCustom);
+            }
+        }
+        if (componentsFilter.length > 0) {
+            result = result.filter(s => componentsFilter.every(comp => s.components.includes(comp)));
         }
         return result;
     };
@@ -124,11 +137,29 @@ const SpellbookContainer: React.FC = () => {
                 ...['fire', 'cold', 'lightning', 'acid', 'poison', 'force', 'necrotic', 'radiant', 'psychic', 'healing'].map(e => ({ value: e, label: e.charAt(0).toUpperCase() + e.slice(1) })),
             ],
         },
+        {
+            key: 'type',
+            label: 'Type',
+            type: 'select',
+            options: [
+                { value: '', label: 'All' },
+                { value: 'standard', label: 'Standard' },
+                { value: 'custom', label: 'Custom' },
+            ],
+        },
+        {
+            key: 'components',
+            label: 'Components',
+            type: 'tags',
+            options: COMPONENT_OPTIONS.map(c => ({ value: c, label: c })),
+        },
     ];
 
     const handleFilterChange = (newFilters: Record<string, any>) => {
         setSchoolFilter(newFilters.school || '');
         setElementFilter(newFilters.element || '');
+        setTypeFilter(newFilters.type || '');
+        setComponentsFilter(newFilters.components || []);
     };
 
     return (
@@ -256,12 +287,14 @@ const SpellbookContainer: React.FC = () => {
                 <FilterModal
                     isOpen={showFilterModal}
                     onClose={() => setShowFilterModal(false)}
-                    filters={{ school: schoolFilter, element: elementFilter }}
+                    filters={{ school: schoolFilter, element: elementFilter, type: typeFilter, components: componentsFilter }}
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
                     onReset={() => {
                         setSchoolFilter('');
                         setElementFilter('');
+                        setTypeFilter('');
+                        setComponentsFilter([]);
                     }}
                     title="Filter Spells"
                 />
