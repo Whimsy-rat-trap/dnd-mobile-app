@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
-import FilterModal, { FilterField } from '../components/FilterModal';
-import { getElementFromSpell, SCHOOLS, ELEMENTS } from '../utils/spellUtils';
+import SkillCheck from '../components/SkillCheck';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
+import FilterModal, { FilterField } from '../components/FilterModal';
+import { SCHOOLS, getElementFromSpell } from '../utils/spellUtils';
 import './SpellbookContainer.css';
 
 type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
@@ -57,6 +58,7 @@ const SpellbookContainer: React.FC = () => {
         level3,
     };
 
+    // Применение фильтрации по статусу подготовки
     const applyFilter = (spells: typeof character.spells) => {
         if (filterType === 'all') return spells;
         if (filterType === 'prepared') return spells.filter(s => s.prepared);
@@ -64,6 +66,7 @@ const SpellbookContainer: React.FC = () => {
         return spells;
     };
 
+    // Поиск и фильтр по школе / элементу
     const applySearchAndFilters = (spells: typeof character.spells) => {
         let result = spells;
         if (searchQuery.trim()) {
@@ -78,7 +81,7 @@ const SpellbookContainer: React.FC = () => {
             result = result.filter(s => s.school === schoolFilter);
         }
         if (elementFilter) {
-            result = result.filter(s => getElementFromSpell(s) === elementFilter);
+            result = result.filter(s => (s.element || getElementFromSpell(s) || '') === elementFilter);
         }
         return result;
     };
@@ -97,26 +100,29 @@ const SpellbookContainer: React.FC = () => {
     const handleBack = () => navigate(-1);
     const handleAddFromLibrary = () => navigate('/spells');
 
-    // Вычисления с использованием новой системы заклинаний
+    // Вычисления для статистики
     const spellSlotsArray = getSpellSlots(character);
     const totalSlots = spellSlotsArray.reduce((a: number, b: number) => a + b, 0);
     const maxPrepared = getMaxPrepared(character);
     const preparedCount = character.spells.filter(s => s.prepared).length;
     const knownCount = character.spells.length;
 
-    // Поля для фильтрации (школа и элемент)
+    // Фильтры для модалки
     const filterFields: FilterField[] = [
         {
             key: 'school',
             label: 'School',
             type: 'select',
-            options: [{ value: '', label: 'All' }, ...SCHOOLS.map((s: string) => ({ value: s, label: s }))]
+            options: [{ value: '', label: 'All' }, ...SCHOOLS.map(s => ({ value: s, label: s }))],
         },
         {
             key: 'element',
             label: 'Element',
             type: 'select',
-            options: [{ value: '', label: 'All' }, ...ELEMENTS.map((e: string) => ({ value: e, label: e.charAt(0).toUpperCase() + e.slice(1) }))]
+            options: [
+                { value: '', label: 'All' },
+                ...['fire', 'cold', 'lightning', 'acid', 'poison', 'force', 'necrotic', 'radiant', 'psychic', 'healing'].map(e => ({ value: e, label: e.charAt(0).toUpperCase() + e.slice(1) })),
+            ],
         },
     ];
 
@@ -209,19 +215,43 @@ const SpellbookContainer: React.FC = () => {
                 ) : (
                     <div className="spell-cards">
                         {currentSpells.map((spell) => (
-                            <SpellCard
-                                key={spell.id}
-                                spell={spell}
-                                showPreparedToggle
-                                onTogglePrepared={() => togglePrepared(spell.id)}
-                                isPrepared={spell.prepared}
-                            />
+                            <div key={spell.id} className="spell-card">
+                                <div className="spell-card-header">
+                                    <div className="spell-card-left">
+                                        <div className="spell-card-icon" />
+                                        <div className="spell-card-info">
+                                            <div className="spell-card-name">{spell.name}</div>
+                                            <div className="spell-card-school">{spell.school}</div>
+                                        </div>
+                                    </div>
+                                    <SkillCheck
+                                        proficient={spell.prepared}
+                                        onToggle={() => togglePrepared(spell.id)}
+                                    />
+                                </div>
+                                <div className="spell-card-details">
+                                    <div className="spell-card-row">
+                                        <div className="spell-detail-item">
+                                            <span className="spell-detail-label">Casting</span>
+                                            <span className="spell-detail-value">{spell.castingTime}</span>
+                                        </div>
+                                        <div className="spell-detail-item">
+                                            <span className="spell-detail-label">Range</span>
+                                            <span className="spell-detail-value">{spell.range}</span>
+                                        </div>
+                                        <div className="spell-detail-item">
+                                            <span className="spell-detail-label">Components</span>
+                                            <span className="spell-detail-value">{spell.components}</span>
+                                        </div>
+                                    </div>
+                                    <div className="spell-card-description">{spell.description}</div>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 )}
             </div>
 
-            {/* Модалка фильтрации */}
             {showFilterModal && (
                 <FilterModal
                     isOpen={showFilterModal}

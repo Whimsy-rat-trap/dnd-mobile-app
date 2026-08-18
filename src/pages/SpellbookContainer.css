@@ -234,17 +234,6 @@
     text-align: left;
 }
 
-.spell-card-prepared {
-    border-radius: 6px;
-    width: 24px;
-    height: 24px;
-    background: #34d399;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
 /* Details */
 .spell-card-details {
     display: flex;
