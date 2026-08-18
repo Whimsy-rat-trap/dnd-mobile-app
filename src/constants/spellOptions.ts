@@ -39,5 +39,6 @@ export const ELEMENTS = [
     'Necrotic',
     'Radiant',
     'Psychic',
-    'Healing'
+    'Healing',
+    'Thunder',
 ];

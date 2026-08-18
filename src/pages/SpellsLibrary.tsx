@@ -115,7 +115,8 @@ const SpellsLibrary: React.FC = () => {
             spell.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesLevel = !filters.level || spell.level === Number(filters.level);
         const matchesSchool = !filters.school || spell.school === filters.school;
-        const matchesElement = !filters.element || (spell.element || getElementFromSpell(spell) || '') === filters.element;
+        const matchesElement = !filters.element ||
+            (spell.element || getElementFromSpell(spell) || '').toLowerCase() === filters.element.toLowerCase();
         const matchesType = !filters.type ||
             (filters.type === 'custom' && spell.isCustom) ||
             (filters.type === 'standard' && !spell.isCustom);

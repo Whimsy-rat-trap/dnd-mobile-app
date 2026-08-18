@@ -5,7 +5,8 @@ export const getElementFromSpell = (spell: Spell | { name: string }): string | u
     const name = spell.name.toLowerCase();
     if (name.includes('fire') || name.includes('flame') || name.includes('burn') || name.includes('burning')) return 'fire';
     if (name.includes('cold') || name.includes('frost') || name.includes('ice') || name.includes('freeze')) return 'cold';
-    if (name.includes('lightning') || name.includes('shock') || name.includes('thunder') || name.includes('storm')) return 'lightning';
+    if (name.includes('lightning') || name.includes('shock') || name.includes('storm')) return 'lightning'; // убрали 'thunder'
+    if (name.includes('thunder')) return 'thunder'; // отдельный элемент
     if (name.includes('acid')) return 'acid';
     if (name.includes('poison') || name.includes('venom')) return 'poison';
     if (name.includes('force') || name.includes('magic missile')) return 'force';
@@ -17,4 +18,4 @@ export const getElementFromSpell = (spell: Spell | { name: string }): string | u
 };
 
 export const SCHOOLS = Array.from(new Set(ALL_SPELLS.map(s => s.school)));
-export const ELEMENTS = ['fire', 'cold', 'lightning', 'acid', 'poison', 'force', 'necrotic', 'radiant', 'psychic', 'healing'];
+export const ELEMENTS = ['fire', 'cold', 'lightning', 'acid', 'poison', 'force', 'necrotic', 'radiant', 'psychic', 'healing', 'thunder'];
