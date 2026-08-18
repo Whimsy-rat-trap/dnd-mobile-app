@@ -879,3 +879,75 @@
 .input-group button:hover {
     background: #059669;
 }
+
+/* Spellcasting */
+.section-spellcasting {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex-shrink: 0;
+    padding: 12px;
+    background: #1f2937;
+    border-radius: 12px;
+}
+
+.spellcasting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.spellcasting-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.view-full-spellbook {
+    font-family: var(--font-family);
+    font-size: 13px;
+    color: #34d399;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.view-full-spellbook:hover {
+    opacity: 0.8;
+}
+
+.spell-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.stat-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.stat-label {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 18px;
+    color: #3b82f6;
+    margin-top: 2px;
+}

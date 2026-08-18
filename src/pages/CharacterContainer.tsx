@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
@@ -297,6 +297,9 @@ const CharacterContainer: React.FC = () => {
     // Получение слотов заклинаний (если есть)
     const spellSlots = getSpellSlots(character);
     const maxPrepared = getMaxPrepared(character);
+    const totalSlots = spellSlots.reduce((a: number, b: number) => a + b, 0);
+    const preparedCount = character.spells.filter(s => s.prepared).length;
+    const knownCount = character.spells.length;
 
     return (
         <div className="character-page">
@@ -418,23 +421,22 @@ const CharacterContainer: React.FC = () => {
                     ['Bard','Cleric','Druid','Sorcerer','Wizard','Paladin','Ranger','Artificer','Warlock'].includes(cl.className)
                 ) || character.spells.length > 0) && (
                     <div className="section-spellcasting">
-                        <div className="spellcasting-title">Spellcasting</div>
-                        <div className="spellcasting-details">
-                            <div className="spellcasting-item">
-                                <span className="spellcasting-label">Spell Slots</span>
-                                <span className="spellcasting-value">
-                                    {spellSlots.map((count: number, idx: number) =>
-                                        count > 0 ? <span key={idx}>Lv.{idx+1}: {count}</span> : null
-                                    )}
-                                </span>
+                        <div className="spellcasting-header">
+                            <span className="spellcasting-title">Spellcasting</span>
+                            <Link to="/spellbook" className="view-full-spellbook">View Full Spellbook</Link>
+                        </div>
+                        <div className="spell-stats">
+                            <div className="stat-item">
+                                <span className="stat-label">Spell Slots</span>
+                                <span className="stat-value">{totalSlots}</span>
                             </div>
-                            <div className="spellcasting-item">
-                                <span className="spellcasting-label">Prepared</span>
-                                <span className="spellcasting-value">{character.spells.filter(s => s.prepared).length} / {maxPrepared}</span>
+                            <div className="stat-item">
+                                <span className="stat-label">Prepared</span>
+                                <span className="stat-value">{preparedCount} / {maxPrepared}</span>
                             </div>
-                            <div className="spellcasting-item">
-                                <span className="spellcasting-label">Known</span>
-                                <span className="spellcasting-value">{character.spells.length}</span>
+                            <div className="stat-item">
+                                <span className="stat-label">Known</span>
+                                <span className="stat-value">{knownCount}</span>
                             </div>
                         </div>
                     </div>
