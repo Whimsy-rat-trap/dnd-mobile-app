@@ -1,4 +1,4 @@
-.page.create-character-page {
+.cr-page {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -10,13 +10,13 @@
     scrollbar-width: none;
 }
 
-.create-character-header {
+.cr-header {
     display: flex;
     align-items: center;
     margin-bottom: 16px;
 }
 
-.back-btn {
+.cr-back-btn {
     background: none;
     border: none;
     color: #9ca3af;
@@ -25,13 +25,13 @@
     margin-right: 12px;
 }
 
-.create-character-header h1 {
+.cr-header h1 {
     font-size: 1.3rem;
     font-weight: 600;
     color: #fff;
 }
 
-.create-character-form {
+.cr-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -39,19 +39,19 @@
     min-height: 0;
 }
 
-.form-group {
+.cr-form-group {
     display: flex;
     flex-direction: column;
     gap: 3px;
 }
 
-.form-group label {
+.cr-form-group label {
     font-size: 0.8rem;
     color: #9ca3af;
 }
 
-.form-group input,
-.form-group select {
+.cr-form-group input,
+.cr-form-group select {
     padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid #374957;
@@ -61,19 +61,19 @@
     height: 36px;
 }
 
-.form-row {
+.cr-form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.ability-grid {
+.cr-ability-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 6px;
 }
 
-.ability-input {
+.cr-ability-input {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -82,12 +82,12 @@
     border-radius: 6px;
 }
 
-.ability-input label {
+.cr-ability-input label {
     font-size: 0.7rem;
     color: #9ca3af;
 }
 
-.ability-input input {
+.cr-ability-input input {
     width: 50px;
     text-align: center;
     background: transparent;
@@ -98,7 +98,7 @@
     height: 30px;
 }
 
-.submit-btn {
+.cr-submit-btn {
     background: var(--gradient-green);
     border: none;
     padding: 10px;
@@ -110,7 +110,7 @@
     margin-top: 8px;
 }
 
-.info-text {
+.cr-info-text {
     font-size: 12px;
     color: #9ca3af;
     padding: 4px 0;
@@ -126,7 +126,7 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-.ability-input-wrapper {
+.cr-ability-input-wrapper {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -134,7 +134,7 @@ input[type=number] {
     width: 100%;
 }
 
-.ability-bonus {
+.cr-ability-bonus {
     color: #34d399;
     font-size: 14px;
     font-weight: 600;
@@ -142,14 +142,14 @@ input[type=number] {
     text-align: left;
 }
 
-.bonus-selectors {
+.cr-bonus-selectors {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
     margin-top: 4px;
 }
 
-.bonus-select {
+.cr-bonus-select {
     flex: 1;
     min-width: 80px;
     padding: 4px 6px;
@@ -161,19 +161,19 @@ input[type=number] {
     height: 30px;
 }
 
-.bonus-select:focus {
+.cr-bonus-select:focus {
     outline: none;
     border-color: #34d399;
 }
 
-.background-skills-display {
+.cr-background-skills-display {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     margin-top: 4px;
 }
 
-.bg-skill-tag {
+.cr-bg-skill-tag {
     background: #34d399;
     color: #0f0f0f;
     padding: 2px 10px;
@@ -182,40 +182,31 @@ input[type=number] {
     font-weight: 500;
 }
 
-.ability-bonus.bg-bonus {
+.cr-ability-bonus.cr-bg-bonus {
     color: #fbbf24;
     font-weight: 600;
 }
 
-.bg-tool-tag {
-    background: #6b7280;
-    color: #fff;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.bg-tool-none {
+.cr-tools-empty {
     color: #6b7280;
     font-size: 13px;
     padding: 4px 0;
 }
 
-.hp-calculator {
+.cr-hp-calculator {
     background: #1f2937;
     border-radius: 8px;
     padding: 12px;
     margin: 8px 0;
 }
 
-.hp-method-selector {
+.cr-hp-method-selector {
     display: flex;
     gap: 8px;
     margin: 8px 0;
 }
 
-.method-btn {
+.cr-method-btn {
     padding: 4px 12px;
     border: 1px solid #374957;
     border-radius: 4px;
@@ -225,24 +216,24 @@ input[type=number] {
     transition: all 0.2s;
 }
 
-.method-btn.active {
+.cr-method-btn.cr-active {
     background: #34d399;
     border-color: #34d399;
     color: #0f0f0f;
 }
 
-.hp-roll-area {
+.cr-hp-roll-area {
     margin: 8px 0;
 }
 
-.roll-controls {
+.cr-roll-controls {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
 }
 
-.reroll-btn {
+.cr-reroll-btn {
     padding: 4px 12px;
     border: 1px solid #3b82f6;
     border-radius: 4px;
@@ -253,18 +244,18 @@ input[type=number] {
     transition: all 0.2s;
 }
 
-.reroll-btn:hover {
+.cr-reroll-btn:hover {
     background: #3b82f6;
     color: #fff;
 }
 
-.roll-results {
+.cr-roll-results {
     margin-top: 4px;
     font-size: 13px;
     color: #d1d5db;
 }
 
-.hp-formula {
+.cr-hp-formula {
     margin-top: 8px;
     padding-top: 8px;
     border-top: 1px solid #374957;
@@ -273,27 +264,27 @@ input[type=number] {
     gap: 4px;
 }
 
-.hp-formula strong {
+.cr-hp-formula strong {
     color: #34d399;
     font-size: 18px;
 }
 
-.formula-details {
+.cr-formula-details {
     font-size: 12px;
     color: #9ca3af;
 }
 
-.stat-generation {
+.cr-stat-generation {
     margin-top: 8px;
 }
 
-.stat-buttons {
+.cr-stat-buttons {
     display: flex;
     gap: 8px;
     margin-top: 4px;
 }
 
-.stat-btn {
+.cr-stat-btn {
     padding: 6px 16px;
     border: 1px solid #374957;
     border-radius: 4px;
@@ -304,17 +295,17 @@ input[type=number] {
     transition: all 0.2s;
 }
 
-.stat-btn:hover {
+.cr-stat-btn:hover {
     border-color: #34d399;
     color: #fff;
 }
 
-.stat-btn:active {
+.cr-stat-btn:active {
     background: #34d399;
     color: #0f0f0f;
 }
 
-.ability-scores-legend {
+.cr-ability-scores-legend {
     display: flex;
     gap: 16px;
     font-size: 12px;
@@ -323,7 +314,7 @@ input[type=number] {
     flex-wrap: wrap;
 }
 
-.legend-color {
+.cr-legend-color {
     display: inline-block;
     width: 12px;
     height: 12px;
@@ -332,23 +323,23 @@ input[type=number] {
     vertical-align: middle;
 }
 
-.legend-color.racial {
+.cr-legend-color.cr-racial {
     background: #34d399;
 }
 
-.legend-color.background {
+.cr-legend-color.cr-background {
     background: #fbbf24;
 }
 
-.legend-color.subrace {
+.cr-legend-color.cr-subrace {
     background: #60a5fa;
 }
 
-.ability-bonus.subrace-bonus {
+.cr-ability-bonus.cr-subrace-bonus {
     color: #60a5fa;
 }
 
-.subrace-features-title {
+.cr-subrace-features-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
@@ -357,25 +348,25 @@ input[type=number] {
 }
 
 /* Point Buy */
-.pointbuy-points {
+.cr-pointbuy-points {
     text-align: center;
     color: #9ca3af;
     margin-bottom: 16px;
     font-size: 16px;
 }
 
-.pointbuy-points strong {
+.cr-pointbuy-points strong {
     color: #34d399;
     font-size: 20px;
 }
 
-.pointbuy-grid {
+.cr-pointbuy-grid {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.pointbuy-stat {
+.cr-pointbuy-stat {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -384,20 +375,20 @@ input[type=number] {
     padding: 8px 12px;
 }
 
-.pointbuy-stat-label {
+.cr-pointbuy-stat-label {
     color: #d1d5db;
     font-weight: 600;
     font-size: 14px;
     min-width: 40px;
 }
 
-.pointbuy-controls {
+.cr-pointbuy-controls {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.pointbuy-stat-value {
+.cr-pointbuy-stat-value {
     color: #fff;
     font-size: 18px;
     font-weight: 700;
@@ -405,7 +396,7 @@ input[type=number] {
     text-align: center;
 }
 
-.pointbuy-btn {
+.cr-pointbuy-btn {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -420,24 +411,23 @@ input[type=number] {
     transition: all 0.2s;
 }
 
-.pointbuy-btn:hover:not(:disabled) {
+.cr-pointbuy-btn:hover:not(:disabled) {
     border-color: #34d399;
     color: #fff;
 }
 
-.pointbuy-btn:disabled {
+.cr-pointbuy-btn:disabled {
     opacity: 0.3;
     cursor: not-allowed;
 }
 
-/* Кнопки внутри модалок (действия) */
-.modal-actions {
+.cr-modal-actions {
     display: flex;
     gap: 12px;
     margin-top: 20px;
 }
 
-.modal-btn {
+.cr-modal-btn {
     flex: 1;
     padding: 10px;
     border: none;
@@ -447,81 +437,80 @@ input[type=number] {
     transition: background 0.2s;
 }
 
-.modal-btn.cancel {
+.cr-modal-btn.cr-cancel {
     background: #374151;
     color: #9ca3af;
 }
 
-.modal-btn.cancel:hover {
+.cr-modal-btn.cr-cancel:hover {
     background: #4b5563;
 }
 
-.modal-btn.apply {
+.cr-modal-btn.cr-apply {
     background: #34d399;
     color: #0f0f0f;
 }
 
-.modal-btn.apply:hover {
+.cr-modal-btn.cr-apply:hover {
     background: #059669;
 }
 
 /* Roll Distribution */
-.roll-distribution {
+.cr-roll-distribution {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.roll-values {
+.cr-roll-values {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
 }
 
-/* Стили для дайсов в модалке распределения */
-.roll-values .dice-roller-component .dice-btn {
+.cr-roll-values .dice-roller-component .dice-btn {
     width: 40px;
     height: 40px;
     font-size: 12px;
     background: linear-gradient(315deg, #3b82f6 0%, #1e40af 100%);
 }
 
-.roll-values .dice-roller-component .dice-btn:disabled {
+.cr-roll-values .dice-roller-component .dice-btn:disabled {
     opacity: 0.7;
     cursor: default;
 }
 
-.roll-values .dice-roller-component {
+.cr-roll-values .dice-roller-component {
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
-.roll-values .dice-roller-component .dice-label {
+.cr-roll-values .dice-roller-component .dice-label {
     display: none;
 }
 
-.stat-assignment-grid {
+.cr-stat-assignment-grid {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.assign-row {
+.cr-assign-row {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.assign-stat-label {
+.cr-assign-stat-label {
     min-width: 50px;
     color: #d1d5db;
     font-weight: 600;
     font-size: 14px;
 }
 
-.assign-select {
+.cr-assign-select {
     flex: 1;
     padding: 6px 8px;
     border-radius: 4px;
@@ -532,11 +521,11 @@ input[type=number] {
     outline: none;
 }
 
-.assign-select:focus {
+.cr-assign-select:focus {
     border-color: #34d399;
 }
 
-.unassign-btn {
+.cr-unassign-btn {
     background: transparent;
     border: none;
     color: #6b7280;
@@ -545,16 +534,16 @@ input[type=number] {
     padding: 0 4px;
 }
 
-.unassign-btn:hover {
+.cr-unassign-btn:hover {
     color: #ef4444;
 }
 
 /* Race Features */
-.race-features-section {
+.cr-race-features-section {
     margin-top: 4px;
 }
 
-.race-features-header {
+.cr-race-features-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -563,21 +552,21 @@ input[type=number] {
     user-select: none;
 }
 
-.race-features-title {
+.cr-race-features-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 16px;
     color: #fff;
 }
 
-.race-features-list {
+.cr-race-features-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     padding: 8px 0;
 }
 
-.race-feature-tag {
+.cr-race-feature-tag {
     background: #1f2937;
     border: 1px solid #374957;
     border-radius: 6px;
@@ -586,20 +575,20 @@ input[type=number] {
     color: #d1d5db;
 }
 
-.chevron-icon {
+.cr-chevron-icon {
     transition: transform 0.3s ease;
 }
 
-.chevron-icon.open {
+.cr-chevron-icon.cr-open {
     transform: rotate(180deg);
 }
 
-.race-feature-tag.active {
+.cr-race-feature-tag.cr-active {
     border-color: #34d399;
     background: rgba(52, 211, 153, 0.1);
 }
 
-.race-feature-description {
+.cr-race-feature-description {
     margin-top: 8px;
     padding: 12px;
     background: #1f2937;
@@ -611,20 +600,20 @@ input[type=number] {
 }
 
 /* Multiclass */
-.multiclass-section {
+.cr-multiclass-section {
     margin: 8px 0;
     padding: 8px 0;
     border-top: 1px solid #374957;
 }
 
-.multiclass-row {
+.cr-multiclass-row {
     display: flex;
     gap: 8px;
     align-items: center;
     margin: 4px 0;
 }
 
-.multiclass-row select {
+.cr-multiclass-row select {
     flex: 2;
     padding: 4px 6px;
     border-radius: 4px;
@@ -633,7 +622,7 @@ input[type=number] {
     color: #fff;
 }
 
-.multiclass-row input {
+.cr-multiclass-row input {
     flex: 1;
     width: 50px;
     padding: 4px 6px;
@@ -644,7 +633,7 @@ input[type=number] {
     text-align: center;
 }
 
-.remove-class-btn {
+.cr-remove-class-btn {
     background: transparent;
     border: none;
     color: #ef4444;
@@ -653,7 +642,7 @@ input[type=number] {
     padding: 0 4px;
 }
 
-.add-class-btn {
+.cr-add-class-btn {
     margin-top: 4px;
     padding: 4px 12px;
     border: 1px solid #34d399;
@@ -664,11 +653,11 @@ input[type=number] {
     font-size: 14px;
 }
 
-.add-class-btn:hover {
+.cr-add-class-btn:hover {
     background: rgba(52, 211, 153, 0.1);
 }
 
-.total-level-display {
+.cr-total-level-display {
     margin-top: 6px;
     font-size: 14px;
     color: #9ca3af;

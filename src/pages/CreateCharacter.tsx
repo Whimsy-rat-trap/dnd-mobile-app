@@ -561,7 +561,7 @@ const CreateCharacter: React.FC = () => {
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className={`chevron-icon ${isOpen ? 'open' : ''}`}
+            className={`cr-chevron-icon ${isOpen ? 'cr-open' : ''}`}
         >
             <g clipPath="url(#clip0_403_3483)">
                 <path
@@ -578,21 +578,21 @@ const CreateCharacter: React.FC = () => {
     );
 
     return (
-        <div className="page create-character-page">
-            <div className="create-character-header">
-                <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+        <div className="page cr-page">
+            <div className="cr-header">
+                <button className="cr-back-btn" onClick={() => navigate(-1)}>← Back</button>
                 <h1>Create Character</h1>
             </div>
-            <form onSubmit={handleSubmit} className="create-character-form">
+            <form onSubmit={handleSubmit} className="cr-form">
                 {/* Имя */}
-                <div className="form-group">
+                <div className="cr-form-group">
                     <label>Name *</label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} required />
                 </div>
 
                 {/* Класс и Раса */}
-                <div className="form-row">
-                    <div className="form-group">
+                <div className="cr-form-row">
+                    <div className="cr-form-group">
                         <label>Class *</label>
                         <select name="class" value={formData.class} onChange={handleChange} required>
                             {DND_CLASSES.map(cls => (
@@ -600,7 +600,7 @@ const CreateCharacter: React.FC = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="form-group">
+                    <div className="cr-form-group">
                         <label>Race *</label>
                         <select name="race" value={formData.race} onChange={handleChange} required>
                             {DND_RACES.map(race => (
@@ -612,7 +612,7 @@ const CreateCharacter: React.FC = () => {
 
                 {/* Subclass (если есть) */}
                 {SUBCLASSES[formData.class] && SUBCLASSES[formData.class].length > 0 && (
-                    <div className="form-group">
+                    <div className="cr-form-group">
                         <label>Subclass</label>
                         <select
                             value={formData.subclass}
@@ -628,7 +628,7 @@ const CreateCharacter: React.FC = () => {
 
                 {/* Subrace (если есть) */}
                 {SUBRACES[formData.race] && SUBRACES[formData.race].length > 0 && (
-                    <div className="form-group">
+                    <div className="cr-form-group">
                         <label>Subrace</label>
                         <select
                             value={formData.subrace}
@@ -642,15 +642,15 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 )}
 
-                {/* --- НОВОЕ: мультикласс --- */}
-                <div className="multiclass-section">
+                {/* Мультикласс */}
+                <div className="cr-multiclass-section">
                     <label>Class Levels</label>
                     {classLevels.map((cl, index) => (
-                        <div key={index} className="multiclass-row">
+                        <div key={index} className="cr-multiclass-row">
                             <select
                                 value={cl.className}
                                 onChange={(e) => updateExtraClass(index, 'className', e.target.value)}
-                                disabled={index === 0} // основной класс нельзя изменить через этот селект, он синхронизируется с основным классом
+                                disabled={index === 0}
                             >
                                 {DND_CLASSES.map(cls => (
                                     <option key={cls} value={cls}>{cls}</option>
@@ -664,19 +664,19 @@ const CreateCharacter: React.FC = () => {
                                 onChange={(e) => updateExtraClass(index, 'level', Number(e.target.value))}
                             />
                             {index > 0 && (
-                                <button type="button" className="remove-class-btn" onClick={() => removeExtraClass(index)}>✕</button>
+                                <button type="button" className="cr-remove-class-btn" onClick={() => removeExtraClass(index)}>✕</button>
                             )}
                         </div>
                     ))}
-                    <button type="button" className="add-class-btn" onClick={addExtraClass}>
+                    <button type="button" className="cr-add-class-btn" onClick={addExtraClass}>
                         + Add Class
                     </button>
-                    <div className="total-level-display">Total Level: {formData.level}</div>
+                    <div className="cr-total-level-display">Total Level: {formData.level}</div>
                 </div>
 
                 {/* Фон и Уровень */}
-                <div className="form-row">
-                    <div className="form-group">
+                <div className="cr-form-row">
+                    <div className="cr-form-group">
                         <label>Background *</label>
                         <select name="background" value={formData.background} onChange={handleChange} required>
                             {DND_BACKGROUNDS.map(bg => (
@@ -684,8 +684,8 @@ const CreateCharacter: React.FC = () => {
                             ))}
                         </select>
                     </div>
-                    {/* Уровень теперь отображается как сумма, но оставляем поле для ручного ввода (закомментируем) */}
-                    {/* <div className="form-group">
+                    {/* Уровень теперь отображается как сумма, но оставляем поле для ручного ввода (закомментировано) */}
+                    {/* <div className="cr-form-group">
                         <label>Level *</label>
                         <input type="number" name="level" value={formData.level} onChange={handleChange} min="1" max="20" required />
                     </div> */}
@@ -693,7 +693,7 @@ const CreateCharacter: React.FC = () => {
 
                 {/* Размер (если выбор) */}
                 {sizeOptions && (
-                    <div className="form-group">
+                    <div className="cr-form-group">
                         <label>Size</label>
                         <select
                             value={formData.size}
@@ -708,32 +708,32 @@ const CreateCharacter: React.FC = () => {
 
                 {/* HP */}
                 {isCreative ? (
-                    <div className="form-row">
-                        <div className="form-group">
+                    <div className="cr-form-row">
+                        <div className="cr-form-group">
                             <label>HP *</label>
                             <input type="number" name="hp" value={formData.hp} onChange={handleChange} min="0" required />
                         </div>
-                        <div className="form-group">
+                        <div className="cr-form-group">
                             <label>Max HP *</label>
                             <input type="number" name="maxHp" value={formData.maxHp} onChange={handleChange} min="0" required />
                         </div>
                     </div>
                 ) : (
-                    <div className="hp-calculator">
-                        <div className="form-group">
+                    <div className="cr-hp-calculator">
+                        <div className="cr-form-group">
                             <label>Hit Points</label>
                             {formData.level > 1 && (
-                                <div className="hp-method-selector">
+                                <div className="cr-hp-method-selector">
                                     <button
                                         type="button"
-                                        className={`method-btn ${hpMethod === 'average' ? 'active' : ''}`}
+                                        className={`cr-method-btn ${hpMethod === 'average' ? 'cr-active' : ''}`}
                                         onClick={() => setHpMethod('average')}
                                     >
                                         Average
                                     </button>
                                     <button
                                         type="button"
-                                        className={`method-btn ${hpMethod === 'roll' ? 'active' : ''}`}
+                                        className={`cr-method-btn ${hpMethod === 'roll' ? 'cr-active' : ''}`}
                                         onClick={() => setHpMethod('roll')}
                                     >
                                         Roll
@@ -743,31 +743,31 @@ const CreateCharacter: React.FC = () => {
                         </div>
 
                         {hpMethod === 'roll' && formData.level > 1 && (
-                            <div className="hp-roll-area">
-                                <div className="roll-controls">
+                            <div className="cr-hp-roll-area">
+                                <div className="cr-roll-controls">
                                     <DiceRoller
                                         sides={CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6}
                                         onRoll={handleRoll}
                                         label="Roll HP"
                                     />
                                     {rolledHps.length === formData.level - 1 && (
-                                        <button type="button" className="reroll-btn" onClick={handleRerollAll}>
+                                        <button type="button" className="cr-reroll-btn" onClick={handleRerollAll}>
                                             Reroll All
                                         </button>
                                     )}
                                 </div>
                                 {rolledHps.length > 0 && (
-                                    <div className="roll-results">
+                                    <div className="cr-roll-results">
                                         <span>Rolls: {rolledHps.join(', ')} ({rolledHps.length}/{formData.level - 1})</span>
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        <div className="hp-formula">
+                        <div className="cr-hp-formula">
                             <span>Total HP: <strong>{formData.maxHp}</strong></span>
                             {formData.level > 1 && (
-                                <span className="formula-details">
+                                <span className="cr-formula-details">
                                     ({CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6} + CON) + {formData.level > 1 && (
                                     hpMethod === 'average'
                                         ? `(${formData.level - 1} × (${Math.floor((CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6) / 2) + 1} + CON))`
@@ -776,7 +776,7 @@ const CreateCharacter: React.FC = () => {
                                 </span>
                             )}
                             {formData.level === 1 && (
-                                <span className="formula-details">(Level 1: {CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6} + CON modifier)</span>
+                                <span className="cr-formula-details">(Level 1: {CLASS_HIT_DICE[classLevels[0]?.className || formData.class] || 6} + CON modifier)</span>
                             )}
                         </div>
                     </div>
@@ -784,16 +784,16 @@ const CreateCharacter: React.FC = () => {
 
                 {/* AC и Speed (creative) или инфо (rules) */}
                 {!isCreative && (
-                    <div className="info-text">AC and Speed are calculated automatically based on your class, race and abilities.</div>
+                    <div className="cr-info-text">AC and Speed are calculated automatically based on your class, race and abilities.</div>
                 )}
 
                 {isCreative && (
-                    <div className="form-row">
-                        <div className="form-group">
+                    <div className="cr-form-row">
+                        <div className="cr-form-group">
                             <label>AC</label>
                             <input type="number" name="ac" value={formData.ac} onChange={handleChange} min="0" />
                         </div>
-                        <div className="form-group">
+                        <div className="cr-form-group">
                             <label>Speed (ft)</label>
                             <input type="number" name="speed" value={formData.speed} onChange={handleChange} min="0" />
                         </div>
@@ -801,49 +801,49 @@ const CreateCharacter: React.FC = () => {
                 )}
 
                 {/* Background Proficiencies */}
-                <div className="form-group">
+                <div className="cr-form-group">
                     <label>Background Skill Proficiencies</label>
                     {(() => {
                         const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
                         if (!bg) return null;
                         return (
-                            <div className="background-skills-display">
+                            <div className="cr-background-skills-display">
                                 {bg.skillProficiencies.map(skill => (
-                                    <span key={skill} className="bg-skill-tag">{skill}</span>
+                                    <span key={skill} className="cr-bg-skill-tag">{skill}</span>
                                 ))}
                             </div>
                         );
                     })()}
                 </div>
 
-                <div className="form-group">
+                <div className="cr-form-group">
                     <label>Background Tool Proficiencies</label>
                     {(() => {
                         const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
                         if (!bg || !bg.toolProficiencies || bg.toolProficiencies.length === 0) {
-                            return <div className="tools-empty">No tool proficiencies</div>;
+                            return <div className="cr-tools-empty">No tool proficiencies</div>;
                         }
                         return (
-                            <div className="background-skills-display">
+                            <div className="cr-background-skills-display">
                                 {bg.toolProficiencies.map(tool => (
-                                    <span key={tool.name} className="bg-skill-tag">{tool.name}</span>
+                                    <span key={tool.name} className="cr-bg-skill-tag">{tool.name}</span>
                                 ))}
                             </div>
                         );
                     })()}
                 </div>
 
-                <div className="form-group">
+                <div className="cr-form-group">
                     <label>Background Languages</label>
                     {(() => {
                         const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
                         if (!bg || !bg.languages || bg.languages.length === 0) {
-                            return <div className="tools-empty">No languages</div>;
+                            return <div className="cr-tools-empty">No languages</div>;
                         }
                         return (
-                            <div className="background-skills-display">
+                            <div className="cr-background-skills-display">
                                 {bg.languages.map(lang => (
-                                    <span key={lang} className="bg-skill-tag">{lang}</span>
+                                    <span key={lang} className="cr-bg-skill-tag">{lang}</span>
                                 ))}
                             </div>
                         );
@@ -852,16 +852,16 @@ const CreateCharacter: React.FC = () => {
 
                 {/* Stat Generation (только в rules) */}
                 {!isCreative && (
-                    <div className="form-group stat-generation">
+                    <div className="cr-stat-generation">
                         <label>Stat Generation Methods</label>
-                        <div className="stat-buttons">
-                            <button type="button" className="stat-btn" onClick={handleStandardArray}>
+                        <div className="cr-stat-buttons">
+                            <button type="button" className="cr-stat-btn" onClick={handleStandardArray}>
                                 Standard Array
                             </button>
-                            <button type="button" className="stat-btn" onClick={handleRollStats}>
+                            <button type="button" className="cr-stat-btn" onClick={handleRollStats}>
                                 Roll 4d6
                             </button>
-                            <button type="button" className="stat-btn" onClick={() => {
+                            <button type="button" className="cr-stat-btn" onClick={() => {
                                 setPointBuyValues({ str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 });
                                 setShowPointBuy(true);
                             }}>
@@ -872,9 +872,9 @@ const CreateCharacter: React.FC = () => {
                 )}
 
                 {/* Ability Scores */}
-                <div className="form-group">
+                <div className="cr-form-group">
                     <label>Ability Scores</label>
-                    <div className="ability-grid">
+                    <div className="cr-ability-grid">
                         {Object.entries(formData.abilities).map(([key, value]) => {
                             const attr = key as keyof typeof formData.abilities;
                             let bonusDisplay = null;
@@ -882,10 +882,10 @@ const CreateCharacter: React.FC = () => {
                             if (raceBonuses) {
                                 if (raceBonuses.fixed && raceBonuses.fixed[attr]) {
                                     const bonus = raceBonuses.fixed[attr];
-                                    bonusDisplay = <span className="ability-bonus">+{bonus}</span>;
+                                    bonusDisplay = <span className="cr-ability-bonus">+{bonus}</span>;
                                 } else if (raceBonuses.choose && selectedBonusAttrs.includes(attr)) {
                                     const bonus = raceBonuses.choose.bonus;
-                                    bonusDisplay = <span className="ability-bonus">+{bonus}</span>;
+                                    bonusDisplay = <span className="cr-ability-bonus">+{bonus}</span>;
                                 }
                             }
                             // Бонусы подрасы (синим)
@@ -895,11 +895,11 @@ const CreateCharacter: React.FC = () => {
                                     bonusDisplay = (
                                         <>
                                             {bonusDisplay}
-                                            <span className="ability-bonus subrace-bonus">+{bonus}</span>
+                                            <span className="cr-ability-bonus cr-subrace-bonus">+{bonus}</span>
                                         </>
                                     );
                                 } else {
-                                    bonusDisplay = <span className="ability-bonus subrace-bonus">+{bonus}</span>;
+                                    bonusDisplay = <span className="cr-ability-bonus cr-subrace-bonus">+{bonus}</span>;
                                 }
                             }
                             // Бонусы от background-а
@@ -910,17 +910,17 @@ const CreateCharacter: React.FC = () => {
                                     bonusDisplay = (
                                         <>
                                             {bonusDisplay}
-                                            <span className="ability-bonus bg-bonus">+{bgBonus}</span>
+                                            <span className="cr-ability-bonus cr-bg-bonus">+{bgBonus}</span>
                                         </>
                                     );
                                 } else {
-                                    bonusDisplay = <span className="ability-bonus bg-bonus">+{bgBonus}</span>;
+                                    bonusDisplay = <span className="cr-ability-bonus cr-bg-bonus">+{bgBonus}</span>;
                                 }
                             }
                             return (
-                                <div key={key} className="ability-input">
+                                <div key={key} className="cr-ability-input">
                                     <label>{key.toUpperCase()}</label>
-                                    <div className="ability-input-wrapper">
+                                    <div className="cr-ability-input-wrapper">
                                         <input
                                             type="number"
                                             value={value}
@@ -936,27 +936,27 @@ const CreateCharacter: React.FC = () => {
                             );
                         })}
                     </div>
-                    <div className="ability-scores-legend">
-                        <span><span className="legend-color racial"></span> Racial bonus</span>
+                    <div className="cr-ability-scores-legend">
+                        <span><span className="cr-legend-color cr-racial"></span> Racial bonus</span>
                         {subraceBonus && Object.keys(subraceBonus).length > 0 && (
-                            <span><span className="legend-color subrace"></span> Subrace bonus</span>
+                            <span><span className="cr-legend-color cr-subrace"></span> Subrace bonus</span>
                         )}
-                        <span><span className="legend-color background"></span> Background bonus</span>
+                        <span><span className="cr-legend-color cr-background"></span> Background bonus</span>
                     </div>
                 </div>
 
                 {raceBonuses && raceBonuses.choose && (() => {
                     const choose = raceBonuses.choose;
                     return (
-                        <div className="form-group">
+                        <div className="cr-form-group">
                             <label>Assign racial bonuses (choose {choose.count} attributes)</label>
-                            <div className="bonus-selectors">
+                            <div className="cr-bonus-selectors">
                                 {selectedBonusAttrs.map((selectedAttr, index) => (
                                     <select
                                         key={index}
                                         value={selectedAttr || ''}
                                         onChange={(e) => handleBonusSelect(index, e.target.value)}
-                                        className="bonus-select"
+                                        className="cr-bonus-select"
                                     >
                                         <option value="">Select attribute</option>
                                         {choose.options.map(opt => {
@@ -975,22 +975,21 @@ const CreateCharacter: React.FC = () => {
                 })()}
 
                 {/* Race Features */}
-                <div className="race-features-section">
+                <div className="cr-race-features-section">
                     <div
-                        className="race-features-header"
+                        className="cr-race-features-header"
                         onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
-                        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                     >
-                        <span className="race-features-title">Race Features</span>
+                        <span className="cr-race-features-title">Race Features</span>
                         {renderChevron(isRaceFeaturesOpen)}
                     </div>
                     {isRaceFeaturesOpen && (
-                        <div className="race-features-content">
-                            <div className="race-features-list">
+                        <div className="cr-race-features-content">
+                            <div className="cr-race-features-list">
                                 {raceFeatures.map((feature, idx) => (
                                     <span
                                         key={idx}
-                                        className={`race-feature-tag ${selectedFeature === feature.name ? 'active' : ''}`}
+                                        className={`cr-race-feature-tag ${selectedFeature === feature.name ? 'cr-active' : ''}`}
                                         onClick={() => setSelectedFeature(selectedFeature === feature.name ? null : feature.name)}
                                     >
                                         {feature.name}
@@ -998,7 +997,7 @@ const CreateCharacter: React.FC = () => {
                                 ))}
                             </div>
                             {selectedFeature && (
-                                <div className="race-feature-description">
+                                <div className="cr-race-feature-description">
                                     {raceFeatures.find(f => f.name === selectedFeature)?.description}
                                 </div>
                             )}
@@ -1008,22 +1007,21 @@ const CreateCharacter: React.FC = () => {
 
                 {/* Subrace Features (если есть) */}
                 {formData.subrace && subraceFeatures.length > 0 && (
-                    <div className="race-features-section subrace-features">
+                    <div className="cr-race-features-section cr-subrace-features">
                         <div
-                            className="race-features-header"
+                            className="cr-race-features-header"
                             onClick={() => setIsSubraceFeaturesOpen(!isSubraceFeaturesOpen)}
-                            style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                         >
-                            <span className="race-features-title subrace-features-title">Subrace Features</span>
+                            <span className="cr-race-features-title cr-subrace-features-title">Subrace Features</span>
                             {renderChevron(isSubraceFeaturesOpen)}
                         </div>
                         {isSubraceFeaturesOpen && (
-                            <div className="race-features-content">
-                                <div className="race-features-list">
+                            <div className="cr-race-features-content">
+                                <div className="cr-race-features-list">
                                     {subraceFeatures.map((feature, idx) => (
                                         <span
                                             key={idx}
-                                            className={`race-feature-tag ${selectedSubraceFeature === feature.name ? 'active' : ''}`}
+                                            className={`cr-race-feature-tag ${selectedSubraceFeature === feature.name ? 'cr-active' : ''}`}
                                             onClick={() => setSelectedSubraceFeature(selectedSubraceFeature === feature.name ? null : feature.name)}
                                         >
                                             {feature.name}
@@ -1031,7 +1029,7 @@ const CreateCharacter: React.FC = () => {
                                     ))}
                                 </div>
                                 {selectedSubraceFeature && (
-                                    <div className="race-feature-description subrace-feature-description">
+                                    <div className="cr-race-feature-description cr-subrace-feature-description">
                                         {subraceFeatures.find(f => f.name === selectedSubraceFeature)?.description}
                                     </div>
                                 )}
@@ -1040,30 +1038,30 @@ const CreateCharacter: React.FC = () => {
                     </div>
                 )}
 
-                <button type="submit" className="submit-btn">Create Character</button>
+                <button type="submit" className="cr-submit-btn">Create Character</button>
             </form>
 
             {/* Point Buy Modal */}
             <Modal isOpen={showPointBuy} onClose={() => setShowPointBuy(false)}>
                 <h3>Point Buy</h3>
-                <div className="pointbuy-points">Points remaining: <strong>{getRemainingPoints()}</strong></div>
-                <div className="pointbuy-grid">
+                <div className="cr-pointbuy-points">Points remaining: <strong>{getRemainingPoints()}</strong></div>
+                <div className="cr-pointbuy-grid">
                     {Object.entries(pointBuyValues).map(([stat, value]) => (
-                        <div key={stat} className="pointbuy-stat">
-                            <span className="pointbuy-stat-label">{stat.toUpperCase()}</span>
-                            <div className="pointbuy-controls">
+                        <div key={stat} className="cr-pointbuy-stat">
+                            <span className="cr-pointbuy-stat-label">{stat.toUpperCase()}</span>
+                            <div className="cr-pointbuy-controls">
                                 <button
                                     type="button"
-                                    className="pointbuy-btn"
+                                    className="cr-pointbuy-btn"
                                     onClick={() => handlePointBuyChange(stat as keyof typeof pointBuyValues, -1)}
                                     disabled={!canDecrease(stat as keyof typeof pointBuyValues)}
                                 >
                                     −
                                 </button>
-                                <span className="pointbuy-stat-value">{value}</span>
+                                <span className="cr-pointbuy-stat-value">{value}</span>
                                 <button
                                     type="button"
-                                    className="pointbuy-btn"
+                                    className="cr-pointbuy-btn"
                                     onClick={() => handlePointBuyChange(stat as keyof typeof pointBuyValues, 1)}
                                     disabled={!canIncrease(stat as keyof typeof pointBuyValues)}
                                 >
@@ -1073,11 +1071,11 @@ const CreateCharacter: React.FC = () => {
                         </div>
                     ))}
                 </div>
-                <div className="modal-actions">
-                    <button type="button" className="modal-btn cancel" onClick={() => setShowPointBuy(false)}>
+                <div className="cr-modal-actions">
+                    <button type="button" className="cr-modal-btn cr-cancel" onClick={() => setShowPointBuy(false)}>
                         Cancel
                     </button>
-                    <button type="button" className="modal-btn apply" onClick={applyPointBuy}>
+                    <button type="button" className="cr-modal-btn cr-apply" onClick={applyPointBuy}>
                         Apply
                     </button>
                 </div>
@@ -1086,8 +1084,8 @@ const CreateCharacter: React.FC = () => {
             {/* Roll Distribution Modal */}
             <Modal isOpen={showRollDistribution} onClose={() => setShowRollDistribution(false)}>
                 <h3>Assign Rolled Stats</h3>
-                <div className="roll-distribution">
-                    <div className="roll-values">
+                <div className="cr-roll-distribution">
+                    <div className="cr-roll-values">
                         {rollValues.map((value, idx) => (
                             <DiceRoller
                                 key={idx}
@@ -1098,20 +1096,20 @@ const CreateCharacter: React.FC = () => {
                             />
                         ))}
                     </div>
-                    <div className="stat-assignment-grid">
+                    <div className="cr-stat-assignment-grid">
                         {Object.entries(statAssignments).map(([stat, assignedIndex]) => {
                             const usedIndices = Object.values(statAssignments).filter(v => v !== null) as number[];
                             const availableIndices = rollValues.map((_, idx) => idx).filter(idx => !usedIndices.includes(idx) || idx === assignedIndex);
                             return (
-                                <div key={stat} className="assign-row">
-                                    <span className="assign-stat-label">{stat.toUpperCase()}</span>
+                                <div key={stat} className="cr-assign-row">
+                                    <span className="cr-assign-stat-label">{stat.toUpperCase()}</span>
                                     <select
                                         value={assignedIndex !== null ? assignedIndex : ''}
                                         onChange={(e) => {
                                             const idx = Number(e.target.value);
                                             if (!isNaN(idx)) assignRollToStat(stat as keyof typeof statAssignments, idx);
                                         }}
-                                        className="assign-select"
+                                        className="cr-assign-select"
                                     >
                                         <option value="">—</option>
                                         {availableIndices.map(idx => (
@@ -1119,15 +1117,15 @@ const CreateCharacter: React.FC = () => {
                                         ))}
                                     </select>
                                     {assignedIndex !== null && (
-                                        <button type="button" className="unassign-btn" onClick={() => unassignRoll(stat as keyof typeof statAssignments)}>✕</button>
+                                        <button type="button" className="cr-unassign-btn" onClick={() => unassignRoll(stat as keyof typeof statAssignments)}>✕</button>
                                     )}
                                 </div>
                             );
                         })}
                     </div>
-                    <div className="modal-actions">
-                        <button type="button" className="modal-btn cancel" onClick={() => setShowRollDistribution(false)}>Cancel</button>
-                        <button type="button" className="modal-btn apply" onClick={applyRollDistribution}>Apply</button>
+                    <div className="cr-modal-actions">
+                        <button type="button" className="cr-modal-btn cr-cancel" onClick={() => setShowRollDistribution(false)}>Cancel</button>
+                        <button type="button" className="cr-modal-btn cr-apply" onClick={applyRollDistribution}>Apply</button>
                     </div>
                 </div>
             </Modal>
