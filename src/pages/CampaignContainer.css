@@ -1,4 +1,4 @@
-.campaign-page {
+.cg-page {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -7,12 +7,12 @@
 }
 
 /* Header */
-.campaign-header {
+.cg-header {
     display: flex;
     flex-direction: column;
 }
 
-.header-top {
+.cg-header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -20,8 +20,7 @@
     gap: 12px;
 }
 
-/* Кнопка назад */
-.campaign-back-btn {
+.cg-back-btn {
     width: 36px;
     height: 36px;
     border-radius: 8px;
@@ -35,19 +34,18 @@
     transition: background 0.2s;
     padding: 0;
 }
-
-.campaign-back-btn:hover {
+.cg-back-btn:hover {
     background: #374151;
 }
 
-.header-left {
+.cg-header-left {
     display: flex;
     flex-direction: column;
     gap: 4px;
     flex: 1;
 }
 
-.welcome-text {
+.cg-welcome-text {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 400;
     font-size: 14px;
@@ -55,7 +53,7 @@
     margin: 0;
 }
 
-.campaign-title {
+.cg-title {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 700;
     font-size: 24px;
@@ -63,7 +61,7 @@
     margin: 0;
 }
 
-.profile-icon {
+.cg-profile-icon {
     border-radius: 12px;
     width: 44px;
     height: 44px;
@@ -76,48 +74,21 @@
     margin: 3px 0;
 }
 
-.search-bar {
-    border-radius: 10px;
-    padding: 0 16px;
-    width: 100%;
-    height: 44px;
-    background: #1f2937;
+.cg-controls {
     display: flex;
-    align-items: center;
     gap: 12px;
-    box-sizing: border-box;
+    padding: 0 0 12px 0;
+    width: 100%;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
-.search-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    margin: 12px 0;
-}
-
-.search-input {
+.cg-controls .search-bar {
     flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-    font-weight: 400;
-    font-size: 14px;
-    color: #fff;
-    padding: 13.5px 0;
-    line-height: 1;
-}
-
-.search-input::placeholder {
-    color: #6b7280;
-}
-
-.search-input:focus {
-    outline: none;
 }
 
 /* Content */
-.campaign-content {
+.cg-content {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -126,7 +97,7 @@
 }
 
 /* Create Campaign Card */
-.create-campaign-card {
+.cg-create-card {
     border-radius: 16px;
     padding: 24px;
     width: 353px;
@@ -142,7 +113,7 @@
     box-sizing: border-box;
 }
 
-.create-icon-wrapper {
+.cg-create-icon {
     border-radius: 14px;
     width: 56px;
     height: 56px;
@@ -153,12 +124,11 @@
     flex-shrink: 0;
     transition: opacity 0.2s;
 }
-
-.create-icon-wrapper:hover {
+.cg-create-icon:hover {
     opacity: 0.8;
 }
 
-.create-title {
+.cg-create-title {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 700;
     font-size: 18px;
@@ -167,7 +137,7 @@
     margin: 0;
 }
 
-.create-subtitle {
+.cg-create-subtitle {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 400;
     font-size: 13px;
@@ -176,7 +146,7 @@
     margin: 0;
 }
 
-.create-button {
+.cg-create-button {
     border-radius: 10px;
     width: 287px;
     max-width: 287px;
@@ -196,17 +166,15 @@
     -webkit-appearance: none;
     transition: opacity 0.2s;
 }
-
-.create-button:hover {
+.cg-create-button:hover {
     opacity: 0.9;
 }
-
-.create-button:active {
+.cg-create-button:active {
     opacity: 0.7;
 }
 
 /* Campaign Section */
-.campaign-section {
+.cg-section {
     width: 100%;
     margin-top: 20px;
     display: flex;
@@ -214,14 +182,14 @@
     gap: 16px;
 }
 
-.section-header {
+.cg-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
 }
 
-.section-title-campaign {
+.cg-section-title {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 700;
     font-size: 18px;
@@ -229,7 +197,7 @@
     margin: 0;
 }
 
-.view-all {
+.cg-view-all {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 500;
     font-size: 13px;
@@ -237,12 +205,11 @@
     cursor: pointer;
     transition: opacity 0.2s;
 }
-
-.view-all:hover {
+.cg-view-all:hover {
     opacity: 0.8;
 }
 
-.cards-list {
+.cg-cards-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -250,7 +217,7 @@
 }
 
 /* Campaign Card */
-.campaign-card {
+.cg-card {
     border-radius: 14px;
     padding: 16px;
     width: 353px;
@@ -262,15 +229,14 @@
     flex-direction: column;
 }
 
-/* Campaign Header внутри карточки */
-.campaign-header-inner {
+.cg-card-header {
     display: flex;
     gap: 12px;
     padding: 0;
     margin-bottom: 12px;
 }
 
-.campaign-thumbnail {
+.cg-card-thumbnail {
     border-radius: 12px;
     width: 72px;
     height: 72px;
@@ -278,14 +244,14 @@
     flex-shrink: 0;
 }
 
-.campaign-info {
+.cg-card-info {
     display: flex;
     flex-direction: column;
     gap: 6px;
     flex: 1;
 }
 
-.campaign-name {
+.cg-card-name {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 700;
     font-size: 16px;
@@ -293,7 +259,7 @@
     margin: 0;
 }
 
-.campaign-dm {
+.cg-card-dm {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 400;
     font-size: 12px;
@@ -301,27 +267,26 @@
     margin: 0;
 }
 
-.campaign-stats {
+.cg-card-stats {
     display: flex;
     gap: 16px;
     margin-top: 2px;
 }
 
-.stats-group {
+.cg-stats-group {
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
-.stats-text {
+.cg-stats-text {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 500;
     font-size: 12px;
     color: #9ca3af;
 }
 
-/* Campaign Footer */
-.campaign-footer {
+.cg-card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -329,14 +294,14 @@
     padding-bottom: 0;
 }
 
-.campaign-date {
+.cg-card-date {
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 400;
     font-size: 11px;
     color: #6b7280;
 }
 
-.campaign-status {
+.cg-card-status {
     border-radius: 6px;
     padding: 6px 12px;
     width: 64px;
@@ -353,35 +318,14 @@
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
-
-.campaign-status:hover {
+.cg-card-status:hover {
     opacity: 0.8;
 }
-
-.campaign-status.active {
+.cg-card-status.active {
     background: #34d399;
     color: #064e3b;
 }
-
-.campaign-status.paused {
+.cg-card-status.paused {
     background: #374151;
     color: #9ca3af;
-}
-
-.hub-search {
-    padding: 0 20px 12px 20px;
-    width: 100%;
-}
-
-.campaign-controls {
-    display: flex;
-    gap: 12px;
-    padding: 0 20px 12px 20px;
-    width: 100%;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.campaign-controls .search-bar {
-    flex: 1;
 }
