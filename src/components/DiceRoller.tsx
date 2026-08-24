@@ -24,17 +24,16 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
     const [spinning, setSpinning] = useState(false);
 
     useEffect(() => {
-        if (autoRoll && initialResult !== undefined && !spinning) {
+        if (autoRoll && !spinning && !result) {
             const timer = setTimeout(() => {
                 roll();
             }, 100);
             return () => clearTimeout(timer);
         }
-    }, [autoRoll, initialResult]);
+    }, [autoRoll]);
 
     const roll = () => {
-        if (spinning) return;
-        if (disabled && !autoRoll) return;
+        if (spinning || disabled) return;
         setSpinning(true);
         setResult(null);
         setTimeout(() => {
@@ -45,21 +44,22 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
         }, 800);
     };
 
+    const displayText = result !== null ? result : (sides === 20 ? '20' : `D${sides}`);
+
     return (
         <div className="dice-roller-component">
             {label && <span className="dice-label">{label}</span>}
-            {!displayOnly && (
+            {!displayOnly ? (
                 <button
-                    className={`dice-btn ${spinning ? 'spinning' : ''}`}
+                    className={`dice-btn dice-${sides} ${spinning ? 'spinning' : ''}`}
                     onClick={roll}
                     disabled={spinning || disabled}
                 >
-                    {result !== null ? result : `D${sides}`}
+                    <span>{displayText}</span>
                 </button>
-            )}
-            {displayOnly && (
-                <div className={`dice-btn ${spinning ? 'spinning' : ''}`} style={{ cursor: 'default' }}>
-                    {result !== null ? result : `D${sides}`}
+            ) : (
+                <div className={`dice-btn dice-${sides} ${spinning ? 'spinning' : ''}`} style={{ cursor: 'default' }}>
+                    <span>{displayText}</span>
                 </div>
             )}
         </div>
