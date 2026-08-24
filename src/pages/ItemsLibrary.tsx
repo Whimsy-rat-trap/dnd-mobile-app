@@ -75,43 +75,43 @@ const ItemsLibrary: React.FC = () => {
     };
 
     return (
-        <div className="page items-library-page">
-            <div className="items-library-header">
-                <div className="header-top">
-                    <span className="header-title-library">Items Library</span>
-                    <Link to="/inventory" className="back-to-inventory-btn">← Back to Inventory</Link>
+        <div className="il-page">
+            <div className="il-header">
+                <div className="il-header-top">
+                    <span className="il-title">Items Library</span>
+                    <Link to="/inventory" className="il-back-btn">← Back to Inventory</Link>
                 </div>
-                <div className="header-subtitle">Browse all available D&D items</div>
+                <div className="il-subtitle">Browse all available D&D items</div>
             </div>
 
-            <div className="items-library-content">
+            <div className="il-content">
                 <SearchBar
                     value={searchQuery}
                     onChange={setSearchQuery}
                     placeholder="Search items..."
                     onFilterClick={() => setShowFilterModal(true)}
                 />
-                <div className="items-list">
+                <div className="il-list">
                     {filteredItems.length === 0 ? (
-                        <div className="empty-state">No items match your filters.</div>
+                        <div className="il-empty">No items match your filters.</div>
                     ) : (
                         filteredItems.map(item => (
-                            <div key={item.id} className="library-item">
-                                <div className="item-info">
-                                    <span className="item-name">{item.name}</span>
-                                    <span className="item-type">{item.type}</span>
-                                    <span className="item-rarity" style={{ color: getRarityColor(item.rarity) }}>
+                            <div key={item.id} className="il-item">
+                                <div className="il-item-info">
+                                    <span className="il-item-name">{item.name}</span>
+                                    <span className="il-item-type">{item.type}</span>
+                                    <span className="il-item-rarity" style={{ color: getRarityColor(item.rarity) }}>
                                         {item.rarity}
                                     </span>
                                     {item.attunement !== undefined && (
-                                        <span className="item-attunement">
+                                        <span className="il-item-attunement">
                                             {item.attunement ? 'Requires Attunement' : 'No Attunement'}
                                         </span>
                                     )}
-                                    <span className="item-description">{item.description}</span>
+                                    <span className="il-item-description">{item.description}</span>
                                 </div>
                                 <button
-                                    className="add-to-inventory-btn"
+                                    className="il-add-btn"
                                     onClick={() => handleAddToInventory(item)}
                                 >
                                     Add to Inventory
