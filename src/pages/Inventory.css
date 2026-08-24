@@ -1,51 +1,51 @@
-.inventory-page {
+.inv-page {
     display: flex;
     flex-direction: column;
     height: 100%;
     background: #0f0f0f;
 }
 
-.inventory-header {
+.inv-header {
     background: #0f0f0f;
     padding: 0 20px;
     border-bottom: 1px solid #2c3e50;
     flex-shrink: 0;
 }
 
-.header-top {
+.inv-header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 0;
 }
 
-.header-left {
+.inv-header-left {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.header-title-inventory {
+.inv-title {
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 24px;
     color: #34d399;
 }
 
-.header-subtitle-inventory {
+.inv-subtitle {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 14px;
     color: #9ca3af;
 }
 
-.header-actions {
+.inv-header-actions {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.back-to-character-btn {
+.inv-back-btn {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
@@ -59,12 +59,12 @@
     transition: border-color 0.2s, color 0.2s;
 }
 
-.back-to-character-btn:hover {
+.inv-back-btn:hover {
     border-color: #34d399;
     color: #34d399;
 }
 
-.browse-items-btn {
+.inv-browse-btn {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
@@ -78,12 +78,12 @@
     transition: background 0.2s, color 0.2s;
 }
 
-.browse-items-btn:hover {
+.inv-browse-btn:hover {
     background: #34d399;
     color: #0f0f0f;
 }
 
-.inventory-content {
+.inv-content {
     flex: 1;
     padding: 16px 20px 20px 20px;
     overflow-y: auto;
@@ -94,17 +94,17 @@
     -ms-overflow-style: none;
 }
 
-.inventory-content::-webkit-scrollbar {
+.inv-content::-webkit-scrollbar {
     display: none;
 }
 
-.inventory-list {
+.inv-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.inventory-item {
+.inv-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -115,12 +115,12 @@
     transition: border-color 0.2s, background 0.2s;
 }
 
-.inventory-item.equipped {
+.inv-item.inv-equipped {
     border-left-color: #34d399;
     background: #1e2a3a;
 }
 
-.item-info {
+.inv-item-info {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -128,39 +128,39 @@
     flex: 1;
 }
 
-.item-name {
+.inv-item-name {
     font-weight: 700;
     color: #fff;
     font-size: 16px;
 }
 
-.item-type {
+.inv-item-type {
     font-size: 12px;
     color: #9ca3af;
     text-transform: capitalize;
 }
 
-.item-rarity {
+.inv-item-rarity {
     font-size: 12px;
     font-weight: 600;
     text-transform: capitalize;
 }
 
-.item-description {
+.inv-item-description {
     font-size: 13px;
     color: #9ca3af;
     flex-basis: 100%;
     margin-top: 4px;
 }
 
-.item-actions {
+.inv-item-actions {
     display: flex;
     gap: 8px;
     align-items: center;
     flex-shrink: 0;
 }
 
-.equipped-badge {
+.inv-equipped-badge {
     background: #34d399;
     color: #0f0f0f;
     font-size: 11px;
@@ -169,7 +169,7 @@
     border-radius: 4px;
 }
 
-.action-btn {
+.inv-action-btn {
     padding: 4px 12px;
     border: none;
     border-radius: 6px;
@@ -179,47 +179,46 @@
     transition: background 0.2s, transform 0.1s;
 }
 
-.action-btn:hover {
+.inv-action-btn:hover {
     transform: scale(1.05);
 }
 
-.action-btn:active {
+.inv-action-btn:active {
     transform: scale(0.95);
 }
 
-.equip-btn {
+.inv-equip-btn {
     background: #f59e0b;
     color: #0f0f0f;
 }
 
-.equip-btn:hover {
+.inv-equip-btn:hover {
     background: #d97706;
 }
 
-.remove-btn {
+.inv-remove-btn {
     background: #ef4444;
     color: #fff;
 }
 
-.remove-btn:hover {
+.inv-remove-btn:hover {
     background: #dc2626;
 }
 
-.empty-state {
+.inv-empty {
     text-align: center;
     color: #9ca3af;
     padding: 40px 0;
     font-size: 16px;
 }
 
-/* Кнопка добавления */
-.add-item-container {
+.inv-add-container {
     padding: 8px 0;
     display: flex;
     justify-content: center;
 }
 
-.add-item-btn {
+.inv-add-btn {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -235,12 +234,12 @@
     transition: border-color 0.2s, background 0.2s;
 }
 
-.add-item-btn:hover {
+.inv-add-btn:hover {
     border-color: #34d399;
     background: rgba(52, 211, 153, 0.05);
 }
 
-.inventory-empty-state {
+.inv-empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -251,12 +250,12 @@
     text-align: center;
 }
 
-.inventory-empty-state p {
+.inv-empty-state p {
     color: #9ca3af;
     font-size: 16px;
 }
 
-.btn-primary {
+.inv-btn-primary {
     padding: 10px 24px;
     background: #34d399;
     border: none;
@@ -268,6 +267,6 @@
     transition: background 0.2s;
 }
 
-.btn-primary:hover {
+.inv-btn-primary:hover {
     background: #059669;
 }
