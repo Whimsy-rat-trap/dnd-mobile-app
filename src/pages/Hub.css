@@ -1,4 +1,4 @@
-.hub-page {
+.hb-page {
     background: #0f0f0f;
     display: flex;
     flex-direction: column;
@@ -10,7 +10,7 @@
 }
 
 /* Хэдер */
-.hub-header {
+.hb-header {
     background: #0f0f0f;
     padding: 16px 0 12px 0;
     border-bottom: 1px solid #2c3e50;
@@ -18,7 +18,7 @@
     width: 100%;
 }
 
-.hub-header-content {
+.hb-header-content {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -26,14 +26,14 @@
     width: 100%;
 }
 
-.header-left {
+.hb-header-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
 }
 
-.header-title-hub {
+.hb-title {
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 24px;
@@ -42,7 +42,7 @@
     line-height: 1.2;
 }
 
-.hub-header-subtitle {
+.hb-subtitle {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 14px;
@@ -52,7 +52,7 @@
     padding-bottom: 16px;
 }
 
-.header-icon {
+.hb-header-icon {
     border-radius: 8px;
     width: 32px;
     height: 32px;
@@ -64,7 +64,12 @@
     margin-top: 4px;
 }
 
-.hub-content {
+.hb-search {
+    padding: 0 20px 12px 20px;
+    width: 100%;
+}
+
+.hb-content {
     flex: 1;
     padding: 20px 20px 16px 20px;
     display: flex;
@@ -74,22 +79,21 @@
     scrollbar-width: none;
 }
 
-.hub-content::-webkit-scrollbar {
+.hb-content::-webkit-scrollbar {
     display: none;
 }
 
-.hub-section {
+.hb-section {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* Отступ снизу для последней секции */
-.hub-section:last-child {
+.hb-section:last-child {
     margin-bottom: 20px;
 }
 
-.section-header {
+.hb-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -97,20 +101,20 @@
     user-select: none;
 }
 
-.section-header-right {
+.hb-section-header-right {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.section-title {
+.hb-section-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 18px;
     color: #fff;
 }
 
-.view-all-link {
+.hb-view-all-link {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
@@ -121,28 +125,28 @@
     text-decoration: none;
 }
 
-.chevron-icon {
+.hb-chevron-icon {
     transition: transform 0.3s ease;
     transform: rotate(0deg);
 }
 
-.chevron-icon.open {
+.hb-chevron-icon.hb-open {
     transform: rotate(180deg);
 }
 
 /* Карточки персонажей */
-.character-grid {
+.hb-character-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.character-card-link {
+.hb-character-card-link {
     display: block;
     text-decoration: none;
 }
 
-.character-card-hub {
+.hb-character-card {
     background: #1f2937;
     border-radius: 10px;
     padding: 10px;
@@ -155,28 +159,28 @@
     justify-content: space-between;
 }
 
-.character-card-hub:hover {
+.hb-character-card:hover {
     transform: scale(1.02);
 }
 
-.character-card-hub.inactive {
+.hb-character-card.hb-inactive {
     background: #2d3748;
     opacity: 0.7;
 }
 
-.character-card-hub.inactive .character-name-hub,
-.character-card-hub.inactive .character-class-hub {
+.hb-character-card.hb-inactive .hb-character-name,
+.hb-character-card.hb-inactive .hb-character-class {
     color: #9ca3af;
 }
 
-.character-info-only {
+.hb-character-info {
     display: flex;
     flex-direction: column;
     gap: 2px;
     overflow: hidden;
 }
 
-.character-name-hub {
+.hb-character-name {
     font-family: var(--font-family);
     font-weight: 600;
     font-size: 14px;
@@ -188,7 +192,7 @@
     padding: 0;
 }
 
-.character-class-hub {
+.hb-character-class {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 12px;
@@ -198,26 +202,26 @@
     padding: 0;
 }
 
-.character-status-hub {
+.hb-character-status {
     font-size: 11px;
     font-weight: 500;
     margin-top: 4px;
     margin-bottom: 0;
 }
 
-.character-status-hub.active {
+.hb-character-status.active {
     color: #34d399;
 }
 
-.character-status-hub.dead {
+.hb-character-status.dead {
     color: #ef4444;
 }
 
-.character-status-hub.archived {
+.hb-character-status.archived {
     color: #34d399;
 }
 
-.character-created-hub {
+.hb-character-created {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
@@ -228,7 +232,7 @@
     text-overflow: ellipsis;
 }
 
-.character-date-hub {
+.hb-character-date {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
@@ -240,18 +244,18 @@
 }
 
 /* Карточки кампаний */
-.campaigns-grid {
+.hb-campaign-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.campaign-card-link {
+.hb-campaign-card-link {
     display: block;
     text-decoration: none;
 }
 
-.campaign-card-hub {
+.hb-campaign-card {
     background: #1f2937;
     border-radius: 10px;
     padding: 10px;
@@ -264,19 +268,19 @@
     transition: opacity 0.2s;
 }
 
-.campaign-card-hub.inactive {
+.hb-campaign-card.hb-inactive {
     opacity: 0.5;
     filter: grayscale(0.6);
 }
 
-.campaign-info-only {
+.hb-campaign-info {
     display: flex;
     flex-direction: column;
     gap: 2px;
     overflow: hidden;
 }
 
-.campaign-name-hub {
+.hb-campaign-name {
     font-family: var(--font-family);
     font-weight: 600;
     font-size: 14px;
@@ -288,7 +292,7 @@
     padding: 0;
 }
 
-.campaign-description-hub {
+.hb-campaign-description {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 12px;
@@ -298,7 +302,7 @@
     padding: 0;
 }
 
-.campaign-status-hub {
+.hb-campaign-status {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 11px;
@@ -309,11 +313,11 @@
     margin-top: 4px;
 }
 
-.campaign-card-hub.inactive .campaign-status-hub {
+.hb-campaign-card.hb-inactive .hb-campaign-status {
     color: #6b7280;
 }
 
-.campaign-players-hub {
+.hb-campaign-players {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
@@ -324,7 +328,7 @@
     text-overflow: ellipsis;
 }
 
-.campaign-date-hub {
+.hb-campaign-date {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
@@ -336,18 +340,18 @@
 }
 
 /* Карточки предметов */
-.items-grid {
+.hb-items-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.item-card-link {
+.hb-item-card-link {
     display: block;
     text-decoration: none;
 }
 
-.item-card-hub {
+.hb-item-card {
     background: #1f2937;
     border-radius: 10px;
     padding: 10px;
@@ -360,11 +364,11 @@
     justify-content: space-between;
 }
 
-.item-card-hub:hover {
+.hb-item-card:hover {
     transform: scale(1.02);
 }
 
-.item-info-only {
+.hb-item-info {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -372,7 +376,7 @@
     height: 100%;
 }
 
-.item-name-hub {
+.hb-item-name {
     font-family: var(--font-family);
     font-weight: 600;
     font-size: 14px;
@@ -384,7 +388,7 @@
     padding: 0;
 }
 
-.item-description-hub {
+.hb-item-description {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 11px;
@@ -399,7 +403,7 @@
     text-overflow: ellipsis;
 }
 
-.item-details-hub {
+.hb-item-details {
     display: flex;
     justify-content: flex-start;
     gap: 8px;
@@ -411,8 +415,7 @@
     flex-wrap: wrap;
 }
 
-/* Тэг Healing для предметов */
-.item-tag-healing {
+.hb-item-tag-healing {
     background: rgba(255, 255, 255, 0.05);
     color: #22c55e;
     padding: 0 6px;
@@ -421,8 +424,8 @@
     white-space: nowrap;
 }
 
-.item-charges,
-.item-dice {
+.hb-item-charges,
+.hb-item-dice {
     background: rgba(255, 255, 255, 0.05);
     padding: 0 6px;
     border-radius: 4px;
@@ -431,18 +434,18 @@
 }
 
 /* Карточки заклинаний */
-.spells-grid {
+.hb-spells-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.spell-card-link {
+.hb-spell-card-link {
     display: block;
     text-decoration: none;
 }
 
-.spell-card-hub {
+.hb-spell-card {
     background: #1f2937;
     border-radius: 10px;
     padding: 10px;
@@ -455,11 +458,11 @@
     justify-content: space-between;
 }
 
-.spell-card-hub:hover {
+.hb-spell-card:hover {
     transform: scale(1.02);
 }
 
-.spell-info-only {
+.hb-spell-info {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -467,7 +470,7 @@
     height: 100%;
 }
 
-.spell-name-hub {
+.hb-spell-name {
     font-family: var(--font-family);
     font-weight: 600;
     font-size: 14px;
@@ -479,7 +482,7 @@
     padding: 0;
 }
 
-.spell-description-hub {
+.hb-spell-description {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 11px;
@@ -494,7 +497,7 @@
     text-overflow: ellipsis;
 }
 
-.spell-details-hub {
+.hb-spell-details {
     display: flex;
     gap: 8px;
     font-family: var(--font-family);
@@ -505,10 +508,10 @@
     flex-wrap: wrap;
 }
 
-.spell-level,
-.spell-school,
-.spell-element,
-.spell-dice {
+.hb-spell-level,
+.hb-spell-school,
+.hb-spell-element,
+.hb-spell-dice {
     background: rgba(255, 255, 255, 0.05);
     padding: 0 6px;
     border-radius: 4px;
@@ -516,15 +519,16 @@
     white-space: nowrap;
 }
 
-.spell-element {
+.hb-spell-element {
     text-transform: capitalize;
 }
-.spell-dice {
+
+.hb-spell-dice {
     font-weight: 600;
 }
 
 /* Карточка добавления */
-.add-card {
+.hb-add-card {
     background: transparent !important;
     border: 2px dashed #374957;
     display: flex;
@@ -534,25 +538,25 @@
     transition: border-color 0.2s, background 0.2s;
 }
 
-.add-card:hover {
+.hb-add-card:hover {
     border-color: #34d399;
     background: rgba(52, 211, 153, 0.05) !important;
     transform: scale(1.02);
 }
 
-.add-card-content {
+.hb-add-card-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
 }
 
-.add-card-content svg {
+.hb-add-card-content svg {
     width: 32px;
     height: 32px;
 }
 
-.add-card-label {
+.hb-add-card-label {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 13px;
@@ -563,18 +567,18 @@
 }
 
 /* Для отображения иконки Add Spell */
-.spell-card-hub .add-card-content svg {
+.hb-spell-card .hb-add-card-content svg {
     width: 32px;
     height: 32px;
 }
 
 /* Death Saves Indicator */
-.character-card-hub.needs-death-save {
+.hb-character-card.hb-needs-death-save {
     border: 2px solid #ef4444;
     background: rgba(239, 68, 68, 0.1);
 }
 
-.death-saves-indicator {
+.hb-death-saves-indicator {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -585,19 +589,19 @@
     font-size: 10px;
 }
 
-.death-saves-label {
+.hb-death-saves-label {
     color: #fca5a5;
     font-weight: 500;
     margin-right: 4px;
 }
 
-.death-saves-dots {
+.hb-death-saves-dots {
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
-.death-saves-dots .dot {
+.hb-dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
@@ -605,40 +609,22 @@
     display: inline-block;
 }
 
-.death-saves-dots .dot.success {
+.hb-dot.hb-success {
     background: #34d399;
     border-color: #34d399;
 }
 
-.death-saves-dots .dot.failure {
+.hb-dot.hb-failure {
     background: #ef4444;
     border-color: #ef4444;
 }
 
-.death-saves-dots .dot.empty {
+.hb-dot.hb-empty {
     background: transparent;
     border-color: #4b5563;
 }
 
-.death-saves-dots .separator {
+.hb-separator {
     color: #6b7280;
     margin: 0 2px;
-}
-
-.hub-search {
-    padding: 0 20px 12px 20px;
-    width: 100%;
-}
-
-.campaign-controls {
-    display: flex;
-    gap: 12px;
-    padding: 0 20px 12px 20px;
-    width: 100%;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.campaign-controls .search-bar {
-    flex: 1;
 }
