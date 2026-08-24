@@ -1,25 +1,25 @@
 /* Общий контейнер для хедера */
-.dashboard-header {
+.db-header {
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
     background: #0f0f0f;
     padding: 0 20px;
 }
 
-.header-top {
+.db-header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-top: 20px;
 }
 
-.header-title-dashboard {
+.db-title {
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 24px;
     color: #34d399;
 }
 
-.header-icon {
+.db-header-icon {
     border-radius: 8px;
     width: 32px;
     height: 32px;
@@ -29,7 +29,7 @@
     justify-content: center;
 }
 
-.header-subtitle {
+.db-subtitle {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 14px;
@@ -38,14 +38,14 @@
     margin-top: 12px;
 }
 
-.dashboard-page {
+.db-page {
     align-items: stretch;
     justify-content: flex-start;
     text-align: left;
     height: 100%;
 }
 
-.content-wrapper {
+.db-content-wrapper {
     flex: 1;
     padding-bottom: 125px;
     display: flex;
@@ -54,7 +54,7 @@
 }
 
 /* Character Card */
-.character-card {
+.db-character-card {
     border-radius: 16px;
     padding: 20px;
     width: 100%;
@@ -66,13 +66,13 @@
     box-sizing: border-box;
 }
 
-.character-header-dashboard {
+.db-character-header {
     display: flex;
     align-items: center;
     background: transparent;
 }
 
-.avatar {
+.db-avatar {
     margin-right: 16px;
     border-radius: 12px;
     width: 64px;
@@ -85,52 +85,52 @@
     flex-shrink: 0;
 }
 
-.avatar svg {
+.db-avatar svg {
     width: 36px;
     height: 36px;
 }
 
-.character-info {
+.db-character-info {
     display: flex;
     flex-direction: column;
     gap: 4px;
     flex: 1;
 }
 
-.character-name {
+.db-character-name {
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 20px;
     color: #fff;
 }
 
-.character-class {
+.db-character-class {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
     color: #34d399;
 }
 
-.character-level {
+.db-character-level {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
     color: #9ca3af;
 }
 
-.level-separator {
+.db-level-separator {
     margin: 0 2px;
 }
 
 /* Stats Row */
-.stats-row {
+.db-stats-row {
     display: flex;
     gap: 8px;
     margin-top: 16px;
 }
 
 /* Базовый stat-block */
-.stat-block {
+.db-stat-block {
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -141,7 +141,7 @@
     transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
-.stat-label {
+.db-stat-label {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 11px;
@@ -149,16 +149,16 @@
 }
 
 /* Цвета для значений HP и EXP */
-.stat-value-hp {
+.db-stat-value-hp {
     color: #ef4444;
 }
 
-.stat-value-exp {
+.db-stat-value-exp {
     color: #60a5fa;
 }
 
 /* Контейнер прогресс-бара */
-.stat-progress {
+.db-stat-progress {
     border-radius: 4px;
     width: 100%;
     height: 8px;
@@ -167,14 +167,14 @@
 }
 
 /* Внутренний трек для заполнений */
-.progress-track {
+.db-progress-track {
     display: flex;
     height: 100%;
     width: 100%;
 }
 
 /* Заполнение для HP */
-.hp-fill {
+.db-hp-fill {
     height: 100%;
     background: linear-gradient(0deg, #dc2626 0%, #ef4444 100%);
     transition: width 0.3s ease;
@@ -182,7 +182,7 @@
 }
 
 /* Заполнение для temp HP */
-.temp-fill {
+.db-temp-fill {
     height: 100%;
     background: repeating-linear-gradient(
             45deg,
@@ -196,31 +196,31 @@
 }
 
 /* Заполнение для EXP */
-.exp-fill {
+.db-exp-fill {
     height: 100%;
     border-radius: 4px;
     background: linear-gradient(0deg, #3b82f6 0%, #60a5fa 100%);
     transition: width 0.3s ease;
 }
 
-.stat-value-dashboard {
+.db-stat-value {
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 18px;
 }
 
-.temp-hp-value {
+.db-temp-hp-value {
     font-weight: 600;
     color: #ef4444;
     margin-left: 4px;
 }
 
 /* Quick Actions */
-.quick-actions {
+.db-quick-actions {
     background: transparent;
 }
 
-.quick-actions-title {
+.db-quick-actions-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 16px;
@@ -229,19 +229,19 @@
     margin-bottom: 12px;
 }
 
-.action-grid {
+.db-action-grid {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.action-row {
+.db-action-row {
     display: flex;
     gap: 12px;
     padding: 0 20px;
 }
 
-.action-item {
+.db-action-item {
     border-radius: 12px;
     padding: 16px;
     width: 170px;
@@ -252,7 +252,7 @@
     flex-shrink: 0;
 }
 
-.action-content {
+.db-action-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -260,7 +260,7 @@
     width: 100%;
 }
 
-.action-icon {
+.db-action-icon {
     border-radius: 10px;
     width: 40px;
     height: 40px;
@@ -271,19 +271,19 @@
     flex-shrink: 0;
 }
 
-.action-icon svg {
+.db-action-icon svg {
     width: 24px;
     height: 24px;
 }
 
-.action-title {
+.db-action-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
     color: #fff;
 }
 
-.action-subtitle {
+.db-action-subtitle {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 12px;
@@ -291,26 +291,26 @@
 }
 
 /* Campaigns */
-.campaigns-container {
+.db-campaigns-container {
     padding: 0 20px;
     margin-top: 4px;
 }
 
-.campaigns-header {
+.db-campaigns-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
 }
 
-.campaigns-title {
+.db-campaigns-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 16px;
     color: #fff;
 }
 
-.view-all-btn {
+.db-view-all-btn {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 13px;
@@ -321,7 +321,7 @@
     text-decoration: none;
 }
 
-.campaigns-scroll {
+.db-campaigns-scroll {
     display: flex;
     gap: 12px;
     overflow-x: auto;
@@ -330,11 +330,11 @@
     -ms-overflow-style: none; /* IE and Edge */
 }
 
-.campaigns-scroll::-webkit-scrollbar {
+.db-campaigns-scroll::-webkit-scrollbar {
     display: none;
 }
 
-.campaign-card {
+.db-campaign-card {
     flex: 0 0 140px;
     background: #1f2937;
     border-radius: 12px;
@@ -346,38 +346,38 @@
     transition: opacity 0.2s;
 }
 
-.campaign-card.inactive {
+.db-campaign-card.db-inactive {
     opacity: 0.5;
     filter: grayscale(0.6);
 }
 
-.campaign-name {
+.db-campaign-name {
     font-weight: 600;
     font-size: 14px;
     color: #fff;
 }
 
-.campaign-description {
+.db-campaign-description {
     font-size: 12px;
     color: #9ca3af;
 }
 
-.campaign-status-label {
+.db-campaign-status-label {
     font-size: 11px;
     color: #34d399;
     text-transform: capitalize;
 }
 
-.campaign-card.inactive .campaign-status-label {
+.db-campaign-card.db-inactive .db-campaign-status-label {
     color: #6b7280;
 }
 
 /* Dice Roller */
-.dice-roller {
+.db-dice-roller {
     padding: 0 20px;
 }
 
-.dice-title {
+.db-dice-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 16px;
@@ -385,13 +385,13 @@
     margin-bottom: 12px;
 }
 
-.dice-grid {
+.db-dice-grid {
     display: flex;
     gap: 8px;
     margin-bottom: 20px;
 }
 
-.dice-btn {
+.db-dice-btn {
     border-radius: 10px;
     width: 48px;
     height: 48px;
@@ -408,30 +408,30 @@
 }
 
 /* Кликабельные stat-block */
-.stat-block.clickable {
+.db-stat-block.db-clickable {
     cursor: pointer;
     transition: opacity 0.2s;
     border: dashed;
 }
 
-.stat-block.clickable:hover {
+.db-stat-block.db-clickable:hover {
     transform: scale(1.02);
 }
 
 /* Цвета для HP */
-.stat-hp:hover {
+.db-stat-hp:hover {
     border-color: #ef4444;
     background: rgba(239, 68, 68, 0.05);
 }
 
 /* Цвета для EXP */
-.stat-exp:hover {
+.db-stat-exp:hover {
     border-color: #60a5fa;
     background: rgba(96, 165, 250, 0.05);
 }
 
 /* Сообщение о смерти (на странице) */
-.death-warning {
+.db-death-warning {
     font-size: 12px;
     color: #ef4444;
     background: rgba(239, 68, 68, 0.1);
@@ -442,7 +442,7 @@
 }
 
 /* Иконка levelup */
-.levelup-icon {
+.db-levelup-icon {
     border-radius: 12px;
     width: 64px;
     height: 64px;
@@ -454,13 +454,13 @@
     margin-left: auto;
 }
 
-.levelup-icon svg {
+.db-levelup-icon svg {
     width: 36px;
     height: 36px;
 }
 
 /* Зелёная полоса переполнения опыта */
-.overlevel-fill {
+.db-overlevel-fill {
     height: 100%;
     background: repeating-linear-gradient(
             45deg,
@@ -474,14 +474,14 @@
 }
 
 /* Текст переполнения */
-.overlevel-exp-value {
+.db-overlevel-exp-value {
     font-weight: 600;
     color: #34d399;
     margin-left: 4px;
 }
 
 /* Карточка добавления кампании */
-.campaign-card.add-campaign {
+.db-campaign-card.db-add-campaign {
     background: transparent !important;
     border: 2px dashed #374957;
     display: flex;
@@ -493,33 +493,33 @@
     min-height: 84px;
 }
 
-.campaign-card.add-campaign:hover {
+.db-campaign-card.db-add-campaign:hover {
     border-color: #34d399;
     background: rgba(52, 211, 153, 0.05) !important;
 }
 
 /* Анимация вращения костей */
-@keyframes spin {
+@keyframes db-spin {
     0% { transform: rotate(0deg) scale(1); }
     100% { transform: rotate(360deg) scale(1.1); }
 }
 
-.dice-btn.spinning {
-    animation: spin 1s ease-in-out;
+.db-dice-btn.db-spinning {
+    animation: db-spin 1s ease-in-out;
 }
 
-.dice-btn:disabled {
+.db-dice-btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
 }
 
 /* Стили для секции логов внутри dice-roller */
-.dice-logs-section {
+.db-dice-logs-section {
     margin-top: 16px;
     padding: 0;
 }
 
-.dice-logs-header {
+.db-dice-logs-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -528,18 +528,18 @@
     margin-bottom: 8px;
 }
 
-.dice-logs-title {
+.db-dice-logs-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 16px;
     color: #fff;
 }
 
-.dice-log-group {
+.db-dice-log-group {
     margin-bottom: 8px;
 }
 
-.dice-log-group-header {
+.db-dice-log-group-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -548,22 +548,21 @@
     border-bottom: 1px solid #2a3747;
 }
 
-.dice-log-type {
+.db-dice-log-type {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
     color: #9ca3af;
 }
 
-.chevron-icon {
+.db-chevron-icon {
     transition: transform 0.3s ease;
 }
-
-.chevron-icon.open {
+.db-chevron-icon.db-open {
     transform: rotate(180deg);
 }
 
-.dice-logs-body {
+.db-dice-logs-body {
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -572,7 +571,7 @@
     overflow-y: auto;
 }
 
-.log-entry {
+.db-log-entry {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -582,36 +581,36 @@
     font-size: 14px;
 }
 
-.log-dice {
+.db-log-dice {
     color: #9ca3af;
     font-weight: 500;
 }
 
-.log-result {
+.db-log-result {
     font-weight: 700;
 }
 
-.log-time {
+.db-log-time {
     color: #6b7280;
     font-size: 12px;
 }
 
 /* Стили скролла для логов */
-.dice-logs-body::-webkit-scrollbar {
+.db-dice-logs-body::-webkit-scrollbar {
     width: 4px;
 }
 
-.dice-logs-body::-webkit-scrollbar-track {
+.db-dice-logs-body::-webkit-scrollbar-track {
     background: #1f2937;
 }
 
-.dice-logs-body::-webkit-scrollbar-thumb {
+.db-dice-logs-body::-webkit-scrollbar-thumb {
     background: #374957;
     border-radius: 2px;
 }
 
 /* Death Saving Throws */
-.death-saves-container {
+.db-death-saves-container {
     margin-top: 12px;
     padding: 12px 16px;
     background: rgba(239, 68, 68, 0.1);
@@ -619,7 +618,7 @@
     border: 1px solid #ef4444;
 }
 
-.death-saves-title {
+.db-death-saves-title {
     font-family: var(--font-family);
     font-weight: 600;
     font-size: 14px;
@@ -627,32 +626,32 @@
     margin-bottom: 8px;
 }
 
-.death-saves-status {
+.db-death-saves-status {
     display: flex;
     gap: 24px;
     align-items: center;
     flex-wrap: wrap;
 }
 
-.death-saves-group {
+.db-death-saves-group {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.death-saves-label {
+.db-death-saves-label {
     font-family: var(--font-family);
     font-size: 12px;
     color: #9ca3af;
     font-weight: 500;
 }
 
-.death-saves-dots {
+.db-death-saves-dots {
     display: flex;
     gap: 6px;
 }
 
-.dot {
+.db-dot {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -660,22 +659,22 @@
     transition: background 0.2s;
 }
 
-.dot.filled.success {
+.db-dot.db-filled.db-success {
     background: #34d399;
     border-color: #34d399;
 }
 
-.dot.filled.failure {
+.db-dot.db-filled.db-failure {
     background: #ef4444;
     border-color: #ef4444;
 }
 
-.dot.empty {
+.db-dot.db-empty {
     background: transparent;
     border-color: #4b5563;
 }
 
-.stable-text {
+.db-stable-text {
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 16px;
@@ -683,7 +682,7 @@
     letter-spacing: 0.5px;
 }
 
-.roll-death-save-btn {
+.db-roll-death-save-btn {
     margin-top: 10px;
     padding: 8px 16px;
     background: #ef4444;
@@ -696,119 +695,28 @@
     font-size: 14px;
 }
 
-.roll-death-save-btn:hover {
+.db-roll-death-save-btn:hover {
     background: #dc2626;
 }
 
-.roll-death-save-btn:active {
+.db-roll-death-save-btn:active {
     transform: scale(0.96);
 }
 
-.roll-death-save-btn:disabled {
+.db-roll-death-save-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.stable-message {
+.db-stable-message {
     margin-top: 8px;
     font-size: 14px;
     color: #34d399;
     font-weight: 500;
 }
 
-.dashboard-content {
-    flex: 1;
-    padding: 20px 20px 16px 20px;
-    overflow-y: auto;
-}
-
-.character-select-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.character-select-card {
-    background: #1f2937;
-    border-radius: 10px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.1s ease;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 80px;
-}
-
-.character-select-card:hover {
-    transform: scale(1.02);
-}
-
-.character-select-card.needs-death-save {
-    border: 2px solid #ef4444;
-    background: rgba(239, 68, 68, 0.1);
-}
-
-.character-select-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.character-select-name {
-    font-weight: 600;
-    font-size: 14px;
-    color: #fff;
-}
-
-.character-select-class {
-    font-size: 12px;
-    color: #9ca3af;
-}
-
-.character-select-card.add-card {
-    background: transparent !important;
-    border: 2px dashed #374957;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-}
-
-.character-select-card.add-card:hover {
-    border-color: #34d399;
-    background: rgba(52, 211, 153, 0.05) !important;
-}
-
-.character-select-card .add-card-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.character-select-card .add-card-content svg {
-    width: 32px;
-    height: 32px;
-}
-
-.character-select-card .add-card-label {
-    font-weight: 500;
-    font-size: 13px;
-    color: #9ca3af;
-    text-align: center;
-}
-
-.death-saves-indicator {
-    font-size: 11px;
-    color: #fca5a5;
-    margin-top: 4px;
-}
-
 /* Экран выбора персонажа */
-.dashboard-content {
+.db-dashboard-content {
     flex: 1;
     padding: 20px 20px 16px 20px;
     overflow-y: auto;
@@ -816,18 +724,18 @@
     -ms-overflow-style: none; /* IE and Edge */
 }
 
-.dashboard-content::-webkit-scrollbar {
+.db-dashboard-content::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
 }
 
-.character-select-grid {
+.db-character-select-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin-top: 12px;
 }
 
-.character-select-card {
+.db-character-select-card {
     background: #1f2937;
     border-radius: 10px;
     padding: 12px;
@@ -840,73 +748,33 @@
     min-height: 80px;
 }
 
-.character-select-card:hover {
+.db-character-select-card:hover {
     transform: scale(1.02);
 }
 
-.character-select-card.needs-death-save {
+.db-character-select-card.db-needs-death-save {
     border: 2px solid #ef4444;
     background: rgba(239, 68, 68, 0.1);
 }
 
-.character-select-info {
+.db-character-select-info {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.character-select-name {
+.db-character-select-name {
     font-weight: 600;
     font-size: 14px;
     color: #fff;
 }
 
-.character-select-class {
+.db-character-select-class {
     font-size: 12px;
     color: #9ca3af;
 }
 
-.character-select-card.add-card {
-    background: transparent !important;
-    border: 2px dashed #374957;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-}
-
-.character-select-card.add-card:hover {
-    border-color: #34d399;
-    background: rgba(52, 211, 153, 0.05) !important;
-}
-
-.character-select-card .add-card-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.character-select-card .add-card-content svg {
-    width: 32px;
-    height: 32px;
-}
-
-.character-select-card .add-card-label {
-    font-weight: 500;
-    font-size: 13px;
-    color: #9ca3af;
-    text-align: center;
-}
-
-.death-saves-indicator {
-    font-size: 11px;
-    color: #fca5a5;
-    margin-top: 4px;
-}
-
-.character-select-details {
+.db-character-select-details {
     display: flex;
     gap: 8px;
     font-size: 11px;
@@ -915,58 +783,193 @@
     flex-wrap: wrap;
 }
 
-.character-select-status {
+.db-character-select-status {
     font-size: 11px;
     font-weight: 500;
     margin-top: 2px;
 }
 
-.character-select-status.active {
+.db-character-select-status.active {
     color: #34d399;
 }
 
-.character-select-status.dead {
+.db-character-select-status.dead {
     color: #ef4444;
 }
 
-.character-select-status.archived {
+.db-character-select-status.archived {
     color: #6b7280;
 }
 
-/* Filter modal styles */
-.filter-group {
+.db-character-select-card.db-add-card {
+    background: transparent !important;
+    border: 2px dashed #374957;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.db-character-select-card.db-add-card:hover {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.05) !important;
+}
+
+.db-add-card-content {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
+    align-items: center;
+    gap: 8px;
 }
 
-.filter-group label {
+.db-add-card-content svg {
+    width: 32px;
+    height: 32px;
+}
+
+.db-add-card-label {
+    font-weight: 500;
     font-size: 13px;
     color: #9ca3af;
-}
-
-.filter-group select,
-.filter-group input {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #374957;
-    background: #0f0f0f;
-    color: #fff;
-    font-size: 14px;
-}
-
-.range-inputs {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.range-inputs input {
-    width: 60px;
     text-align: center;
 }
 
-.range-inputs span {
+.db-death-saves-indicator {
+    font-size: 11px;
+    color: #fca5a5;
+    margin-top: 4px;
+}
+
+.db-character-select-subrace {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.db-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.db-switch-char-btn {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 13px;
+    color: #34d399;
+    background: transparent;
+    border: 1px solid #34d399;
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.db-switch-char-btn:hover {
+    background: #34d399;
+    color: #0f0f0f;
+}
+
+/* Стили для содержимого попапов */
+.db-popup-body {
+    color: #fff;
+    text-align: center;
+}
+
+.db-popup-title {
+    color: #fff;
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.db-popup-stat-block {
+    background: #1f2937;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.db-popup-stat-block .db-stat-label {
+    font-size: 11px;
     color: #9ca3af;
+}
+
+.db-popup-stat-block .db-stat-progress {
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.db-popup-stat-block .db-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.db-popup-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.db-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.db-control-group label {
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.db-input-group {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.db-input-group input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #374151;
+    background: #1f2937;
+    color: #fff;
+    width: 80px;
+    font-size: 14px;
+}
+
+.db-input-group input:focus {
+    outline: none;
+    border-color: #34d399;
+}
+
+.db-input-group button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #34d399;
+    color: #0f0f0f;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.db-input-group button:hover {
+    background: #059669;
+}
+
+.db-popup-death-warning {
+    margin-top: 16px;
+    padding: 10px;
+    background: rgba(239, 68, 68, 0.15);
+    border-left: 4px solid #ef4444;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #fca5a5;
 }

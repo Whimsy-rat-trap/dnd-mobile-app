@@ -1,3 +1,4 @@
+// Dashboard.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
@@ -156,47 +157,47 @@ const Dashboard: React.FC = () => {
     // Если персонаж не выбран – показываем экран выбора
     if (!character) {
         return (
-            <div className="page dashboard-page">
-                <div className="dashboard-header">
-                    <div className="header-top">
-                        <span className="header-title-dashboard">Arcane Realms</span>
+            <div className="db-page">
+                <div className="db-header">
+                    <div className="db-header-top">
+                        <span className="db-title">Arcane Realms</span>
                     </div>
-                    <div className="header-subtitle">Select a character to begin</div>
+                    <div className="db-subtitle">Select a character to begin</div>
                 </div>
-                <div className="dashboard-content">
+                <div className="db-dashboard-content">
                     <SearchBar
                         value={searchQuery}
                         onChange={setSearchQuery}
                         placeholder="Search characters..."
                         onFilterClick={() => setShowFilterModal(true)}
                     />
-                    <div className="character-select-grid">
+                    <div className="db-character-select-grid">
                         {filteredCharacters.map((char) => {
                             const needsDeathSave = char.hp === 0 && char.status !== 'dead' && !char.isStable;
                             return (
                                 <div
                                     key={char.id}
-                                    className={`character-select-card ${needsDeathSave ? 'needs-death-save' : ''}`}
+                                    className={`db-character-select-card ${needsDeathSave ? 'db-needs-death-save' : ''}`}
                                     onClick={() => {
                                         setCurrentCharacterId(char.id);
                                     }}
                                     style={{ cursor: 'pointer' }}
                                 >
-                                    <div className="character-select-info">
-                                        <div className="character-select-name">{char.name}</div>
-                                        <div className="character-select-class">
+                                    <div className="db-character-select-info">
+                                        <div className="db-character-select-name">{char.name}</div>
+                                        <div className="db-character-select-class">
                                             {char.classes.join(' / ')} • Level {char.level}
-                                            {char.subrace && <span className="character-select-subrace"> ({char.subrace})</span>}
+                                            {char.subrace && <span className="db-character-select-subrace"> ({char.subrace})</span>}
                                         </div>
-                                        <div className="character-select-details">
+                                        <div className="db-character-select-details">
                                             <span>Created: {char.created || 'N/A'}</span>
                                             <span>Last used: {char.lastUsed || 'N/A'}</span>
                                         </div>
-                                        <div className={`character-select-status ${char.status || 'active'}`}>
+                                        <div className={`db-character-select-status ${char.status || 'active'}`}>
                                             {char.status === 'active' ? 'Active' : char.status === 'dead' ? 'Deceased' : 'Archived'}
                                         </div>
                                         {needsDeathSave && (
-                                            <div className="death-saves-indicator">
+                                            <div className="db-death-saves-indicator">
                                                 <span>Death Saves: </span>
                                                 <span>{(char.deathSuccesses || 0)}/3 successes, {(char.deathFailures || 0)}/3 failures</span>
                                             </div>
@@ -205,12 +206,12 @@ const Dashboard: React.FC = () => {
                                 </div>
                             );
                         })}
-                        <Link to="/characters/new" className="character-select-card add-card">
-                            <div className="add-card-content">
+                        <Link to="/characters/new" className="db-character-select-card db-add-card">
+                            <div className="db-add-card-content">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
                                 </svg>
-                                <span className="add-card-label">Create New Character</span>
+                                <span className="db-add-card-label">Create New Character</span>
                             </div>
                         </Link>
                     </div>
@@ -244,7 +245,7 @@ const Dashboard: React.FC = () => {
         );
     }
 
-    // --- Функции для работы с HP и EXP ---
+    // Функции для работы с HP и EXP
     const updateChar = (updates: Partial<typeof character>) => {
         updateCharacter(character.id, updates);
     };
@@ -457,42 +458,42 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <div className="page dashboard-page">
+        <div className="db-page">
             {/* Header */}
-            <div className="dashboard-header">
-                <div className="header-top">
-                    <span className="header-title-dashboard">Arcane Realms</span>
-                    <div className="header-actions">
-                        <button className="switch-char-btn" onClick={switchCharacter}>
+            <div className="db-header">
+                <div className="db-header-top">
+                    <span className="db-title">Arcane Realms</span>
+                    <div className="db-header-actions">
+                        <button className="db-switch-char-btn" onClick={switchCharacter}>
                             Switch
                         </button>
-                        <div className="header-icon" style={{ cursor: 'pointer' }} onClick={() => openPopup('settings')}>
+                        <div className="db-header-icon" style={{ cursor: 'pointer' }} onClick={() => openPopup('settings')}>
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10 6.25C9.25833 6.25 8.5333 6.46994 7.91662 6.88199C7.29993 7.29405 6.81929 7.87972 6.53546 8.56494C6.25163 9.25016 6.17737 10.0042 6.32206 10.7316C6.46676 11.459 6.82391 12.1272 7.34835 12.6517C7.8728 13.1761 8.54099 13.5333 9.26842 13.6779C9.99585 13.8226 10.7498 13.7484 11.4351 13.4646C12.1203 13.1807 12.706 12.7001 13.118 12.0834C13.5301 11.4667 13.75 10.7417 13.75 10C13.749 9.00576 13.3536 8.05253 12.6505 7.34949C11.9475 6.64646 10.9942 6.25104 10 6.25ZM10 12.5C9.50555 12.5 9.0222 12.3534 8.61108 12.0787C8.19996 11.804 7.87953 11.4135 7.69031 10.9567C7.50109 10.4999 7.45158 9.99723 7.54804 9.51228C7.64451 9.02732 7.88261 8.58187 8.23224 8.23223C8.58187 7.8826 9.02733 7.6445 9.51228 7.54804C9.99723 7.45157 10.4999 7.50108 10.9567 7.6903C11.4135 7.87952 11.804 8.19995 12.0787 8.61108C12.3534 9.0222 12.5 9.50555 12.5 10C12.5 10.663 12.2366 11.2989 11.7678 11.7678C11.2989 12.2366 10.663 12.5 10 12.5ZM16.875 10.1688C16.8781 10.0563 16.8781 9.94375 16.875 9.83125L18.0406 8.375C18.1017 8.29854 18.1441 8.2088 18.1641 8.11299C18.1842 8.01719 18.1815 7.91801 18.1563 7.82344C17.9652 7.10516 17.6793 6.41551 17.3063 5.77266C17.2574 5.68853 17.1896 5.61697 17.1082 5.56367C17.0268 5.51036 16.9341 5.47679 16.8375 5.46563L14.9844 5.25938C14.9073 5.17813 14.8292 5.1 14.75 5.025L14.5313 3.16719C14.52 3.07048 14.4863 2.97774 14.4329 2.89635C14.3794 2.81497 14.3077 2.7472 14.2234 2.69844C13.5803 2.32605 12.8908 2.0405 12.1727 1.84922C12.078 1.82406 11.9788 1.82149 11.883 1.84171C11.7872 1.86193 11.6975 1.90437 11.6211 1.96563L10.1688 3.125C10.0563 3.125 9.94376 3.125 9.83125 3.125L8.375 1.96172C8.29855 1.9006 8.2088 1.8583 8.113 1.83821C8.01719 1.81813 7.91801 1.82083 7.82344 1.8461C7.10528 2.03752 6.41567 2.32335 5.77266 2.69609C5.68853 2.74494 5.61697 2.81276 5.56367 2.89413C5.51037 2.97551 5.4768 3.06821 5.46563 3.16484L5.25938 5.02109C5.17813 5.0987 5.10001 5.17682 5.02501 5.25547L3.16719 5.46875C3.07048 5.48 2.97774 5.51369 2.89636 5.56713C2.81497 5.62058 2.7472 5.69229 2.69844 5.77656C2.32606 6.41966 2.0405 7.10925 1.84922 7.82735C1.82407 7.92197 1.82149 8.02119 1.84171 8.117C1.86193 8.2128 1.90438 8.30252 1.96563 8.37891L3.12501 9.83125C3.12501 9.94375 3.12501 10.0563 3.12501 10.1688L1.96172 11.625C1.90061 11.7015 1.8583 11.7912 1.83822 11.887C1.81813 11.9828 1.82083 12.082 1.8461 12.1766C2.03718 12.8948 2.32303 13.5845 2.6961 14.2273C2.74495 14.3115 2.81276 14.383 2.89414 14.4363C2.97551 14.4896 3.06821 14.5232 3.16485 14.5344L5.01797 14.7406C5.09558 14.8219 5.1737 14.9 5.25235 14.975L5.46876 16.8328C5.48001 16.9295 5.5137 17.0223 5.56714 17.1036C5.62058 17.185 5.6923 17.2528 5.77657 17.3016C6.41966 17.674 7.10926 17.9595 7.82735 18.1508C7.92198 18.1759 8.02119 18.1785 8.117 18.1583C8.2128 18.1381 8.30252 18.0956 8.37891 18.0344L9.83125 16.875C9.94376 16.8781 10.0563 16.8781 10.1688 16.875L11.625 18.0406C11.7015 18.1017 11.7912 18.1441 11.887 18.1641C11.9828 18.1842 12.082 18.1815 12.1766 18.1562C12.8948 17.9652 13.5845 17.6793 14.2273 17.3063C14.3115 17.2574 14.383 17.1896 14.4363 17.1082C14.4896 17.0268 14.5232 16.9341 14.5344 16.8375L14.7406 14.9844C14.8219 14.9073 14.9 14.8292 14.975 14.75L16.8328 14.5313C16.9295 14.52 17.0223 14.4863 17.1037 14.4329C17.185 14.3794 17.2528 14.3077 17.3016 14.2234C17.674 13.5803 17.9595 12.8908 18.1508 12.1727C18.1759 12.078 18.1785 11.9788 18.1583 11.883C18.1381 11.7872 18.0956 11.6975 18.0344 11.6211L16.875 10.1688ZM15.6172 9.66094C15.6305 9.88679 15.6305 10.1132 15.6172 10.3391C15.6079 10.4937 15.6563 10.6463 15.7531 10.7672L16.8617 12.1523C16.7345 12.5566 16.5716 12.9488 16.375 13.3242L14.6094 13.5242C14.4556 13.5413 14.3137 13.6148 14.2109 13.7305C14.0606 13.8996 13.9004 14.0598 13.7313 14.2102C13.6156 14.3129 13.5421 14.4548 13.525 14.6086L13.3289 16.3727C12.9535 16.5694 12.5613 16.7323 12.157 16.8594L10.7711 15.7508C10.6602 15.6622 10.5224 15.614 10.3805 15.6141H10.343C10.1171 15.6273 9.8907 15.6273 9.66485 15.6141C9.51023 15.6048 9.35766 15.6532 9.23672 15.75L7.84766 16.8594C7.44339 16.7322 7.05122 16.5693 6.67579 16.3727L6.47579 14.6094C6.45872 14.4556 6.38523 14.3136 6.26954 14.2109C6.1004 14.0606 5.94023 13.9004 5.78985 13.7313C5.68714 13.6156 5.54517 13.5421 5.39141 13.525L3.62735 13.3281C3.43062 12.9527 3.26774 12.5606 3.14063 12.1563L4.24922 10.7703C4.34602 10.6494 4.39447 10.4968 4.38516 10.3422C4.37188 10.1163 4.37188 9.88991 4.38516 9.66406C4.39447 9.50944 4.34602 9.35687 4.24922 9.23594L3.14063 7.84766C3.26784 7.44339 3.43072 7.05122 3.62735 6.67578L5.39063 6.47578C5.54439 6.45871 5.68636 6.38523 5.78907 6.26953C5.93945 6.1004 6.09962 5.94023 6.26875 5.78985C6.38491 5.68707 6.4587 5.54478 6.47579 5.39063L6.67188 3.62735C7.04727 3.43062 7.43945 3.26774 7.84376 3.14063L9.22969 4.24922C9.35062 4.34602 9.50319 4.39447 9.65782 4.38516C9.88366 4.37188 10.1101 4.37188 10.3359 4.38516C10.4906 4.39447 10.6431 4.34602 10.7641 4.24922L12.1523 3.14063C12.5566 3.26783 12.9488 3.43071 13.3242 3.62735L13.5242 5.39063C13.5413 5.54439 13.6148 5.68636 13.7305 5.78906C13.8996 5.93945 14.0598 6.09962 14.2102 6.26875C14.3129 6.38444 14.4548 6.45793 14.6086 6.475L16.3727 6.67109C16.5694 7.04649 16.7323 7.43866 16.8594 7.84297L15.7508 9.22891C15.6531 9.35086 15.6046 9.505 15.6148 9.66094H15.6172Z" fill="#34D399" />
                             </svg>
                         </div>
                     </div>
                 </div>
-                <div className="header-subtitle">Your adventure awaits, traveler</div>
+                <div className="db-subtitle">Your adventure awaits, traveler</div>
             </div>
 
-            <div className="content-wrapper">
+            <div className="db-content-wrapper">
                 {/* Character Card */}
-                <div className="character-card">
-                    <div className="character-header-dashboard">
-                        <div className="avatar" style={{ cursor: 'pointer' }} onClick={() => openPopup('profile')}>
+                <div className="db-character-card">
+                    <div className="db-character-header">
+                        <div className="db-avatar" style={{ cursor: 'pointer' }} onClick={() => openPopup('profile')}>
                             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M24.1875 16.875C24.1875 18.0988 23.8246 19.2951 23.1447 20.3126C22.4648 21.3301 21.4985 22.1232 20.3679 22.5915C19.2372 23.0598 17.9931 23.1824 16.7929 22.9436C15.5926 22.7049 14.4901 22.1156 13.6248 21.2502C12.7594 20.3849 12.1701 19.2824 11.9314 18.0821C11.6926 16.8819 11.8152 15.6378 12.2835 14.5071C12.7518 13.3765 13.5449 12.4102 14.5624 11.7303C15.5799 11.0504 16.7762 10.6875 18 10.6875C19.6405 10.6894 21.2132 11.3419 22.3732 12.5018C23.5331 13.6618 24.1856 15.2345 24.1875 16.875ZM32.625 18C32.625 20.8926 31.7673 23.7201 30.1602 26.1252C28.5532 28.5303 26.2691 30.4048 23.5967 31.5117C20.9244 32.6187 17.9838 32.9083 15.1468 32.344C12.3098 31.7797 9.70391 30.3868 7.65856 28.3414C5.61322 26.2961 4.22032 23.6902 3.65601 20.8532C3.09171 18.0162 3.38133 15.0756 4.48826 12.4033C5.59519 9.73089 7.46972 7.44677 9.87478 5.83976C12.2799 4.23274 15.1074 3.375 18 3.375C21.8775 3.37909 25.5951 4.92125 28.3369 7.66309C31.0787 10.4049 32.6209 14.1225 32.625 18ZM30.375 18C30.3732 16.3343 30.0355 14.6862 29.3821 13.154C28.7287 11.6219 27.773 10.2372 26.5722 9.08288C25.3714 7.92854 23.9502 7.02823 22.3934 6.43579C20.8367 5.84334 19.1765 5.57093 17.512 5.63484C10.8886 5.89078 5.60672 11.4075 5.625 18.0352C5.63135 21.0523 6.74412 23.9623 8.7525 26.2139C9.57041 25.0276 10.6094 24.0101 11.8125 23.2172C11.9151 23.1494 12.037 23.1172 12.1597 23.1253C12.2824 23.1334 12.399 23.1815 12.4917 23.2622C14.0206 24.5846 15.9744 25.3123 17.9958 25.3123C20.0172 25.3123 21.971 24.5846 23.4998 23.2622C23.5926 23.1815 23.7092 23.1334 23.8319 23.1253C23.9545 23.1172 24.0765 23.1494 24.1791 23.2172C25.3837 24.0097 26.4241 25.0272 27.2433 26.2139C29.2616 23.9541 30.3765 21.0299 30.375 18Z" fill="white" />
                             </svg>
                         </div>
-                        <div className="character-info">
-                            <div className="character-name">{character.name}</div>
-                            <div className="character-class">{character.classes?.join(' / ') || 'Unknown'}</div>
-                            <div className="character-level">
-                                Level {level} <span className="level-separator">•</span> {character.background || 'No Background'}
+                        <div className="db-character-info">
+                            <div className="db-character-name">{character.name}</div>
+                            <div className="db-character-class">{character.classes?.join(' / ') || 'Unknown'}</div>
+                            <div className="db-character-level">
+                                Level {level} <span className="db-level-separator">•</span> {character.background || 'No Background'}
                             </div>
                         </div>
-                        <div className="levelup-icon">
+                        <div className="db-levelup-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clipPath="url(#clip0_403_3729)">
                                     <path d="M22.5861 18.1479L12.7071 8.26894C12.517 8.08645 12.2636 7.98455 12.0001 7.98455C11.7365 7.98455 11.4832 8.08645 11.2931 8.26894L1.4201 18.1419L0.00610352 16.7279L9.8791 6.85494C10.4507 6.30947 11.2105 6.00513 12.0006 6.00513C12.7907 6.00513 13.5505 6.30947 14.1221 6.85494L24.0001 16.7339L22.5861 18.1479Z" fill="#374957" />
@@ -506,69 +507,69 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="stats-row">
-                        <div className="stat-block clickable stat-hp" onClick={() => openPopup('hp')}>
-                            <span className="stat-label">HP</span>
-                            <div className="stat-progress">
-                                <div className="progress-track">
-                                    <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                    <div className="db-stats-row">
+                        <div className="db-stat-block db-clickable db-stat-hp" onClick={() => openPopup('hp')}>
+                            <span className="db-stat-label">HP</span>
+                            <div className="db-stat-progress">
+                                <div className="db-progress-track">
+                                    <div className="db-hp-fill" style={{ width: `${hpPercent}%` }}></div>
                                     {tempHp > 0 && (
-                                        <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>
+                                        <div className="db-temp-fill" style={{ width: `${tempPercent}%` }}></div>
                                     )}
                                 </div>
                             </div>
-                            <span className="stat-value-dashboard stat-value-hp">
+                            <span className="db-stat-value db-stat-value-hp">
                                 {hp} / {maxHp}
-                                {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
+                                {tempHp > 0 && <span className="db-temp-hp-value"> +{tempHp} temp</span>}
                             </span>
                             {isZeroHp && (
-                                <div className="death-warning">You need to make a death saving throw</div>
+                                <div className="db-death-warning">You need to make a death saving throw</div>
                             )}
                         </div>
-                        <div className="stat-block clickable stat-exp" onClick={() => openPopup('exp')}>
-                            <span className="stat-label">EXP</span>
-                            <div className="stat-progress">
-                                <div className="progress-track">
-                                    <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                        <div className="db-stat-block db-clickable db-stat-exp" onClick={() => openPopup('exp')}>
+                            <span className="db-stat-label">EXP</span>
+                            <div className="db-stat-progress">
+                                <div className="db-progress-track">
+                                    <div className="db-exp-fill" style={{ width: `${expPercent}%` }}></div>
                                     {overlevelPercent > 0 && (
-                                        <div className="overlevel-fill" style={{ width: `${overlevelPercent}%` }}></div>
+                                        <div className="db-overlevel-fill" style={{ width: `${overlevelPercent}%` }}></div>
                                     )}
                                 </div>
                             </div>
-                            <span className="stat-value-dashboard stat-value-exp">
+                            <span className="db-stat-value db-stat-value-exp">
                                 {exp.toLocaleString()} / {maxExp.toLocaleString()}
-                                {exp > maxExp && <span className="overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
+                                {exp > maxExp && <span className="db-overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
                             </span>
                         </div>
                     </div>
 
                     {/* Proficiency bonus */}
-                    <div className="character-level" style={{ marginTop: '8px' }}>
+                    <div className="db-character-level" style={{ marginTop: '8px' }}>
                         Proficiency +{getProficiencyBonus(character.level)}
                     </div>
 
                     {/* Death Saving Throws – показываем только если HP === 0 и персонаж не мёртв */}
                     {hp === 0 && character.status !== 'dead' && (
-                        <div className="death-saves-container">
-                            <div className="death-saves-title">Death Saving Throws</div>
-                            <div className="death-saves-status">
+                        <div className="db-death-saves-container">
+                            <div className="db-death-saves-title">Death Saving Throws</div>
+                            <div className="db-death-saves-status">
                                 {character.isStable ? (
-                                    <span className="stable-text">✦ Stable</span>
+                                    <span className="db-stable-text">✦ Stable</span>
                                 ) : (
                                     <>
-                                        <div className="death-saves-group">
-                                            <span className="death-saves-label">Successes</span>
-                                            <div className="death-saves-dots">
+                                        <div className="db-death-saves-group">
+                                            <span className="db-death-saves-label">Successes</span>
+                                            <div className="db-death-saves-dots">
                                                 {[0, 1, 2].map(i => (
-                                                    <div key={i} className={`dot ${i < (character.deathSuccesses || 0) ? 'filled success' : 'empty'}`} />
+                                                    <div key={i} className={`db-dot ${i < (character.deathSuccesses || 0) ? 'db-filled db-success' : 'db-empty'}`} />
                                                 ))}
                                             </div>
                                         </div>
-                                        <div className="death-saves-group">
-                                            <span className="death-saves-label">Failures</span>
-                                            <div className="death-saves-dots">
+                                        <div className="db-death-saves-group">
+                                            <span className="db-death-saves-label">Failures</span>
+                                            <div className="db-death-saves-dots">
                                                 {[0, 1, 2].map(i => (
-                                                    <div key={i} className={`dot ${i < (character.deathFailures || 0) ? 'filled failure' : 'empty'}`} />
+                                                    <div key={i} className={`db-dot ${i < (character.deathFailures || 0) ? 'db-filled db-failure' : 'db-empty'}`} />
                                                 ))}
                                             </div>
                                         </div>
@@ -576,66 +577,66 @@ const Dashboard: React.FC = () => {
                                 )}
                             </div>
                             {!character.isStable && (
-                                <button className="roll-death-save-btn" onClick={rollDeathSave}>
+                                <button className="db-roll-death-save-btn" onClick={rollDeathSave}>
                                     Roll Death Save (d20)
                                 </button>
                             )}
                             {character.isStable && (
-                                <div className="stable-message">Character is stable. Heal to regain consciousness.</div>
+                                <div className="db-stable-message">Character is stable. Heal to regain consciousness.</div>
                             )}
                         </div>
                     )}
                 </div>
 
                 {/* Quick Actions */}
-                <div className="quick-actions">
-                    <div className="quick-actions-title">Quick Actions</div>
-                    <div className="action-grid">
-                        <div className="action-row">
-                            <Link to={`/characters/${character.id}`} className="action-item" style={{ textDecoration: 'none' }}>
-                                <div className="action-content">
-                                    <div className="action-icon">
+                <div className="db-quick-actions">
+                    <div className="db-quick-actions-title">Quick Actions</div>
+                    <div className="db-action-grid">
+                        <div className="db-action-row">
+                            <Link to={`/characters/${character.id}`} className="db-action-item" style={{ textDecoration: 'none' }}>
+                                <div className="db-action-content">
+                                    <div className="db-action-icon">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M9 9.75C9 9.55109 9.07902 9.36032 9.21967 9.21967C9.36032 9.07902 9.55109 9 9.75 9H15.75C15.9489 9 16.1397 9.07902 16.2803 9.21967C16.421 9.36032 16.5 9.55109 16.5 9.75C16.5 9.94891 16.421 10.1397 16.2803 10.2803C16.1397 10.421 15.9489 10.5 15.75 10.5H9.75C9.55109 10.5 9.36032 10.421 9.21967 10.2803C9.07902 10.1397 9 9.94891 9 9.75ZM9.75 13.5H15.75C15.9489 13.5 16.1397 13.421 16.2803 13.2803C16.421 13.1397 16.5 12.9489 16.5 12.75C16.5 12.5511 16.421 12.3603 16.2803 12.2197C16.1397 12.079 15.9489 12 15.75 12H9.75C9.55109 12 9.36032 12.079 9.21967 12.2197C9.07902 12.3603 9 12.5511 9 12.75C9 12.9489 9.07902 13.1397 9.21967 13.2803C9.36032 13.421 9.55109 13.5 9.75 13.5ZM21.75 18C21.75 18.7956 21.4339 19.5587 20.8713 20.1213C20.3087 20.6839 19.5456 21 18.75 21H8.25C7.45435 21 6.69129 20.6839 6.12868 20.1213C5.56607 19.5587 5.25 18.7956 5.25 18V6C5.25 5.60218 5.09196 5.22064 4.81066 4.93934C4.52936 4.65804 4.14782 4.5 3.75 4.5C3.35218 4.5 2.97064 4.65804 2.68934 4.93934C2.40804 5.22064 2.25 5.60218 2.25 6C2.25 6.53813 2.70281 6.90188 2.7075 6.90563C2.83163 7.00115 2.92273 7.13313 2.96804 7.28306C3.01334 7.43299 3.01057 7.59335 2.96011 7.74162C2.90965 7.8899 2.81404 8.01866 2.68668 8.10983C2.55933 8.201 2.40663 8.25002 2.25 8.25C2.08781 8.25028 1.93003 8.19725 1.80094 8.09906C1.69219 8.01937 0.75 7.27594 0.75 6C0.75 5.20435 1.06607 4.44129 1.62868 3.87868C2.19129 3.31607 2.95435 3 3.75 3H16.5C17.2956 3 18.0587 3.31607 18.6213 3.87868C19.1839 4.44129 19.5 5.20435 19.5 6V15.75H20.25C20.4123 15.75 20.5702 15.8026 20.7 15.9C20.8125 15.9806 21.75 16.7241 21.75 18ZM9.02437 16.2638C9.07562 16.1125 9.17342 15.9813 9.30376 15.889C9.4341 15.7968 9.59031 15.7481 9.75 15.75H18V6C18 5.60218 17.842 5.22064 17.5607 4.93934C17.2794 4.65804 16.8978 4.5 16.5 4.5H6.34594C6.61119 4.95535 6.75064 5.47302 6.75 6V18C6.75 18.3978 6.90804 18.7794 7.18934 19.0607C7.47064 19.342 7.85218 19.5 8.25 19.5C8.64782 19.5 9.02936 19.342 9.31066 19.0607C9.59196 18.7794 9.75 18.3978 9.75 18C9.75 17.4619 9.29719 17.0981 9.2925 17.0944C9.16469 17.0029 9.06963 16.8729 9.02136 16.7233C8.97308 16.5738 8.97414 16.4127 9.02437 16.2638ZM20.25 18C20.2406 17.7221 20.1334 17.4565 19.9472 17.25H11.1347C11.2101 17.4929 11.2483 17.7457 11.2481 18C11.2488 18.5267 11.1101 19.0443 10.8459 19.5H18.75C19.1478 19.5 19.5294 19.342 19.8107 19.0607C20.092 18.7794 20.25 18.3978 20.25 18Z" fill="white" />
                                         </svg>
                                     </div>
-                                    <div className="action-title">Character</div>
-                                    <div className="action-subtitle">Stats & Skills</div>
+                                    <div className="db-action-title">Character</div>
+                                    <div className="db-action-subtitle">Stats & Skills</div>
                                 </div>
                             </Link>
-                            <Link to="/spellbook" className="action-item" style={{ textDecoration: 'none' }}>
-                                <div className="action-content">
-                                    <div className="action-icon">
+                            <Link to="/spellbook" className="db-action-item" style={{ textDecoration: 'none' }}>
+                                <div className="db-action-content">
+                                    <div className="db-action-icon">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M18.5231 12.0994L13.6847 10.3181L11.9034 5.47594C11.798 5.18937 11.6071 4.94206 11.3567 4.76736C11.1062 4.59267 10.8082 4.499 10.5028 4.499C10.1974 4.499 9.89943 4.59267 9.64898 4.76736C9.39852 4.94206 9.20767 5.18937 9.10219 5.47594L7.31906 10.3125L2.47688 12.0938C2.19031 12.1992 1.94299 12.3901 1.7683 12.6405C1.59361 12.891 1.49994 13.189 1.49994 13.4944C1.49994 13.7997 1.59361 14.0978 1.7683 14.3482C1.94299 14.5987 2.19031 14.7895 2.47688 14.895L7.3125 16.6875L9.09375 21.5269C9.19923 21.8134 9.39008 22.0608 9.64054 22.2355C9.891 22.4101 10.189 22.5038 10.4944 22.5038C10.7997 22.5038 11.0978 22.4101 11.3482 22.2355C11.5987 22.0608 11.7895 21.8134 11.895 21.5269L13.6763 16.6884L18.5184 14.9072C18.805 14.8017 19.0523 14.6109 19.227 14.3604C19.4017 14.1099 19.4954 13.8119 19.4954 13.5066C19.4954 13.2012 19.4017 12.9032 19.227 12.6527C19.0523 12.4023 18.805 12.2114 18.5184 12.1059L18.5231 12.0994ZM13.1616 15.2812C12.9589 15.3556 12.7748 15.4732 12.6222 15.6259C12.4695 15.7786 12.3519 15.9626 12.2775 16.1653L10.4963 20.9897L8.71875 16.1616C8.6443 15.96 8.52706 15.7769 8.3751 15.6249C8.22313 15.4729 8.04005 15.3557 7.83844 15.2812L3.01406 13.5L7.83844 11.7188C8.04005 11.6443 8.22313 11.5271 8.3751 11.3751C8.52706 11.2231 8.6443 11.04 8.71875 10.8384L10.5 6.01406L12.2812 10.8384C12.3556 11.0411 12.4732 11.2252 12.6259 11.3778C12.7786 11.5305 12.9626 11.6481 13.1653 11.7225L17.9897 13.5037L13.1616 15.2812ZM13.5 3.75C13.5 3.55109 13.579 3.36032 13.7197 3.21967C13.8603 3.07902 14.0511 3 14.25 3H15.75V1.5C15.75 1.30109 15.829 1.11032 15.9697 0.96967C16.1103 0.829018 16.3011 0.75 16.5 0.75C16.6989 0.75 16.8897 0.829018 17.0303 0.96967C17.171 1.11032 17.25 1.30109 17.25 1.5V3H18.75C18.9489 3 19.1397 3.07902 19.2803 3.21967C19.421 3.36032 19.5 3.55109 19.5 3.75C19.5 3.94891 19.421 4.13968 19.2803 4.28033C19.1397 4.42098 18.9489 4.5 18.75 4.5H17.25V6C17.25 6.19891 17.171 6.38968 17.0303 6.53033C16.8897 6.67098 16.6989 6.75 16.5 6.75C16.3011 6.75 16.1103 6.67098 15.9697 6.53033C15.829 6.38968 15.75 6.19891 15.75 6V4.5H14.25C14.0511 4.5 13.8603 4.42098 13.7197 4.28033C13.579 4.13968 13.5 3.94891 13.5 3.75ZM23.25 8.25C23.25 8.44891 23.171 8.63968 23.0303 8.78033C22.8897 8.92098 22.6989 9 22.5 9H21.75V9.75C21.75 9.94891 21.671 10.1397 21.5303 10.2803C21.3897 10.421 21.1989 10.5 21 10.5C20.8011 10.5 20.6103 10.421 20.4697 10.2803C20.329 10.1397 20.25 9.94891 20.25 9.75V9H19.5C19.3011 9 19.1103 8.92098 18.9697 8.78033C18.829 8.63968 18.75 8.44891 18.75 8.25C18.75 8.05109 18.829 7.86032 18.9697 7.71967C19.1103 7.57902 19.3011 7.5 19.5 7.5H20.25V6.75C20.25 6.55109 20.329 6.36032 20.4697 6.21967C20.6103 6.07902 20.8011 6 21 6C21.1989 6 21.3897 6.07902 21.5303 6.21967C21.671 6.36032 21.75 6.55109 21.75 6.75V7.5H22.5C22.6989 7.5 22.8897 7.57902 23.0303 7.71967C23.171 7.86032 23.25 8.05109 23.25 8.25Z" fill="white" />
                                         </svg>
                                     </div>
-                                    <div className="action-title">Spellbook</div>
-                                    <div className="action-subtitle">{character.spells?.length || 0} Prepared</div>
+                                    <div className="db-action-title">Spellbook</div>
+                                    <div className="db-action-subtitle">{character.spells?.length || 0} Prepared</div>
                                 </div>
                             </Link>
                         </div>
-                        <div className="action-row">
-                            <Link to="/inventory" className="action-item" style={{ textDecoration: 'none' }}>
-                                <div className="action-content">
-                                    <div className="action-icon">
+                        <div className="db-action-row">
+                            <Link to="/inventory" className="db-action-item" style={{ textDecoration: 'none' }}>
+                                <div className="db-action-content">
+                                    <div className="db-action-icon">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M15.75 3.80438V3C15.75 2.40326 15.5129 1.83097 15.091 1.40901C14.669 0.987053 14.0967 0.75 13.5 0.75H10.5C9.90326 0.75 9.33097 0.987053 8.90901 1.40901C8.48705 1.83097 8.25 2.40326 8.25 3V3.80438C7.00133 3.98638 5.85973 4.61133 5.0336 5.56518C4.20746 6.51902 3.75188 7.73813 3.75 9V20.25C3.75 20.6478 3.90804 21.0294 4.18934 21.3107C4.47064 21.592 4.85218 21.75 5.25 21.75H18.75C19.1478 21.75 19.5294 21.592 19.8107 21.3107C20.092 21.0294 20.25 20.6478 20.25 20.25V9C20.2481 7.73813 19.7925 6.51902 18.9664 5.56518C18.1403 4.61133 16.9987 3.98638 15.75 3.80438ZM10.5 2.25H13.5C13.6989 2.25 13.8897 2.32902 14.0303 2.46967C14.171 2.61032 14.25 2.80109 14.25 3V3.75H9.75V3C9.75 2.80109 9.82902 2.61032 9.96967 2.46967C10.1103 2.32902 10.3011 2.25 10.5 2.25ZM15.75 15H8.25V14.25C8.25 14.0511 8.32902 13.8603 8.46967 13.7197C8.61032 13.579 8.80109 13.5 9 13.5H15C15.1989 13.5 15.3897 13.579 15.5303 13.7197C15.671 13.8603 15.75 14.0511 15.75 14.25V15ZM8.25 16.5H12.75V17.25C12.75 17.4489 12.829 17.6397 12.9697 17.7803C13.1103 17.921 13.3011 18 13.5 18C13.6989 18 13.8897 17.921 14.0303 17.7803C14.171 17.6397 14.25 17.4489 14.25 17.25V16.5H15.75V20.25H8.25V16.5ZM18.75 20.25H17.25V14.25C17.25 13.6533 17.0129 13.081 16.591 12.659C16.169 12.2371 15.5967 12 15 12H9C8.40326 12 7.83097 12.2371 7.40901 12.659C6.98705 13.081 6.75 13.6533 6.75 14.25V20.25H5.25V9C5.25 8.00544 5.64509 7.05161 6.34835 6.34835C7.05161 5.64509 8.00544 5.25 9 5.25H15C15.9946 5.25 16.9484 5.64509 17.6517 6.34835C18.3549 7.05161 18.75 8.00544 18.75 9V20.25ZM14.25 8.25C14.25 8.44891 14.171 8.63968 14.0303 8.78033C13.8897 8.92098 13.6989 9 13.5 9H10.5C10.3011 9 10.1103 8.92098 9.96967 8.78033C9.82902 8.63968 9.75 8.44891 9.75 8.25C9.75 8.05109 9.82902 7.86032 9.96967 7.71967C10.1103 7.57902 10.3011 7.5 10.5 7.5H13.5C13.6989 7.5 13.8897 7.57902 14.0303 7.71967C14.171 7.86032 14.25 8.05109 14.25 8.25Z" fill="white" />
                                         </svg>
                                     </div>
-                                    <div className="action-title">Inventory</div>
-                                    <div className="action-subtitle">{character.inventory?.length || 0} Items</div>
+                                    <div className="db-action-title">Inventory</div>
+                                    <div className="db-action-subtitle">{character.inventory?.length || 0} Items</div>
                                 </div>
                             </Link>
-                            <Link to="/quests" className="action-item" style={{ textDecoration: 'none' }}>
-                                <div className="action-content">
-                                    <div className="action-icon">
+                            <Link to="/quests" className="db-action-item" style={{ textDecoration: 'none' }}>
+                                <div className="db-action-content">
+                                    <div className="db-action-icon">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M21.4613 4.65845C21.3714 4.58845 21.2668 4.53982 21.1554 4.51627C21.0439 4.49272 20.9286 4.49485 20.8181 4.52251L15.0872 5.95501L9.33563 3.07876C9.17537 2.99883 8.99181 2.97888 8.81812 3.02251L2.81812 4.52251C2.65587 4.56307 2.51183 4.6567 2.40889 4.78851C2.30595 4.92033 2.25003 5.08277 2.25 5.25001V18.75C2.25002 18.864 2.27601 18.9764 2.32599 19.0789C2.37598 19.1813 2.44864 19.271 2.53847 19.3411C2.62831 19.4112 2.73294 19.4599 2.84442 19.4836C2.95591 19.5072 3.07131 19.5051 3.18187 19.4775L8.91281 18.045L14.6644 20.9213C14.7688 20.9727 14.8836 20.9997 15 21C15.0613 21 15.1224 20.9924 15.1819 20.9775L21.1819 19.4775C21.3441 19.437 21.4882 19.3433 21.5911 19.2115C21.694 19.0797 21.75 18.9173 21.75 18.75V5.25001C21.75 5.13594 21.724 5.02337 21.674 4.92086C21.624 4.81835 21.5512 4.7286 21.4613 4.65845ZM9.75 4.96314L14.25 7.21314V19.0369L9.75 16.7869V4.96314ZM3.75 5.83595L8.25 4.71095V16.6641L3.75 17.7891V5.83595ZM20.25 18.1641L15.75 19.2891V7.33595L20.25 6.21095V18.1641Z" fill="white" />
                                         </svg>
                                     </div>
-                                    <div className="action-title">Quests</div>
-                                    <div className="action-subtitle">{character.quests?.filter(q => q.status === 'active').length || 0} Active</div>
+                                    <div className="db-action-title">Quests</div>
+                                    <div className="db-action-subtitle">{character.quests?.filter(q => q.status === 'active').length || 0} Active</div>
                                 </div>
                             </Link>
                         </div>
@@ -643,25 +644,25 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Campaigns */}
-                <div className="campaigns-container">
-                    <div className="campaigns-header">
-                        <span className="campaigns-title">Active campaigns</span>
-                        <Link to="/campaigns" className="view-all-btn">View all</Link>
+                <div className="db-campaigns-container">
+                    <div className="db-campaigns-header">
+                        <span className="db-campaigns-title">Active campaigns</span>
+                        <Link to="/campaigns" className="db-view-all-btn">View all</Link>
                     </div>
-                    <div className="campaigns-scroll">
+                    <div className="db-campaigns-scroll">
                         {campaigns.map(campaign => (
                             <Link
                                 key={campaign.id}
                                 to="/campaigns"
-                                className={`campaign-card ${campaign.status !== 'active' ? 'inactive' : ''}`}
+                                className={`db-campaign-card ${campaign.status !== 'active' ? 'db-inactive' : ''}`}
                                 style={{ textDecoration: 'none' }}
                             >
-                                <div className="campaign-name">{campaign.name}</div>
-                                <div className="campaign-description">{campaign.description}</div>
-                                <div className="campaign-status-label">{campaign.status}</div>
+                                <div className="db-campaign-name">{campaign.name}</div>
+                                <div className="db-campaign-description">{campaign.description}</div>
+                                <div className="db-campaign-status-label">{campaign.status}</div>
                             </Link>
                         ))}
-                        <Link to="/campaigns" className="campaign-card add-campaign" style={{ textDecoration: 'none' }}>
+                        <Link to="/campaigns" className="db-campaign-card db-add-campaign" style={{ textDecoration: 'none' }}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
                             </svg>
@@ -670,9 +671,9 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {/* Dice Roller */}
-                <div className="dice-roller">
-                    <div className="dice-title">Dice Roller</div>
-                    <div className="dice-grid">
+                <div className="db-dice-roller">
+                    <div className="db-dice-title">Dice Roller</div>
+                    <div className="db-dice-grid">
                         {diceTypes.map((sides, index) => (
                             <DiceRoller
                                 key={sides}
@@ -682,27 +683,27 @@ const Dashboard: React.FC = () => {
                         ))}
                     </div>
 
-                    <div className="dice-logs-section">
+                    <div className="db-dice-logs-section">
                         {diceTypes.some(type => (logs[type] || []).length > 0) && (
                             <>
-                                <div className="dice-logs-header">
-                                    <span className="dice-logs-title">Dice Roller Logs</span>
+                                <div className="db-dice-logs-header">
+                                    <span className="db-dice-logs-title">Dice Roller Logs</span>
                                 </div>
                                 {diceTypes.map(sides => (
                                     (logs[sides] || []).length > 0 && (
-                                        <div key={sides} className="dice-log-group">
+                                        <div key={sides} className="db-dice-log-group">
                                             <div
-                                                className="dice-log-group-header"
+                                                className="db-dice-log-group-header"
                                                 onClick={() => toggleSection(sides)}
                                             >
-                                                <span className="dice-log-type">D{sides}</span>
+                                                <span className="db-dice-log-type">D{sides}</span>
                                                 <svg
                                                     width="24"
                                                     height="24"
                                                     viewBox="0 0 24 24"
                                                     fill="none"
                                                     xmlns="http://www.w3.org/2000/svg"
-                                                    className={`chevron-icon ${openSections[sides] ? 'open' : ''}`}
+                                                    className={`db-chevron-icon ${openSections[sides] ? 'db-open' : ''}`}
                                                 >
                                                     <g clipPath="url(#clip0_403_3483)">
                                                         <path
@@ -718,14 +719,14 @@ const Dashboard: React.FC = () => {
                                                 </svg>
                                             </div>
                                             {openSections[sides] && (
-                                                <div className="dice-logs-body">
+                                                <div className="db-dice-logs-body">
                                                     {logs[sides].map((log, idx) => (
-                                                        <div key={idx} className="log-entry">
-                                                            <span className="log-dice">D{sides}</span>
-                                                            <span className="log-result" style={{ color: getResultColor(sides, log.result) }}>
+                                                        <div key={idx} className="db-log-entry">
+                                                            <span className="db-log-dice">D{sides}</span>
+                                                            <span className="db-log-result" style={{ color: getResultColor(sides, log.result) }}>
                                                                 {log.result}
                                                             </span>
-                                                            <span className="log-time">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                                                            <span className="db-log-time">{new Date(log.timestamp).toLocaleTimeString()}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -742,27 +743,27 @@ const Dashboard: React.FC = () => {
             {/* Попапы */}
             {popupType === 'hp' && (
                 <Modal isOpen={true} onClose={closePopup}>
-                    <div className="popup-body">
-                        <h3 className="popup-title">Edit HP</h3>
-                        <div className="popup-stat-block">
-                            <span className="stat-label">HP</span>
-                            <div className="stat-progress">
-                                <div className="progress-track">
-                                    <div className="hp-fill" style={{ width: `${hpPercent}%` }}></div>
+                    <div className="db-popup-body">
+                        <h3 className="db-popup-title">Edit HP</h3>
+                        <div className="db-popup-stat-block">
+                            <span className="db-stat-label">HP</span>
+                            <div className="db-stat-progress">
+                                <div className="db-progress-track">
+                                    <div className="db-hp-fill" style={{ width: `${hpPercent}%` }}></div>
                                     {tempHp > 0 && (
-                                        <div className="temp-fill" style={{ width: `${tempPercent}%` }}></div>
+                                        <div className="db-temp-fill" style={{ width: `${tempPercent}%` }}></div>
                                     )}
                                 </div>
                             </div>
-                            <span className="stat-value-dashboard stat-value-hp">
+                            <span className="db-stat-value db-stat-value-hp">
                                 {hp} / {maxHp}
-                                {tempHp > 0 && <span className="temp-hp-value"> +{tempHp} temp</span>}
+                                {tempHp > 0 && <span className="db-temp-hp-value"> +{tempHp} temp</span>}
                             </span>
                         </div>
-                        <div className="popup-controls">
-                            <div className="control-group">
+                        <div className="db-popup-controls">
+                            <div className="db-control-group">
                                 <label>HP Adjustment</label>
-                                <div className="input-group">
+                                <div className="db-input-group">
                                     <input
                                         type="number"
                                         value={inputValue}
@@ -773,9 +774,9 @@ const Dashboard: React.FC = () => {
                                     <button onClick={() => subtractHp(inputValue)}>Subtract</button>
                                 </div>
                             </div>
-                            <div className="control-group">
+                            <div className="db-control-group">
                                 <label>Temp HP Adjustment</label>
-                                <div className="input-group">
+                                <div className="db-input-group">
                                     <input
                                         type="number"
                                         value={tempInputValue}
@@ -788,7 +789,7 @@ const Dashboard: React.FC = () => {
                             </div>
                         </div>
                         {isZeroHp && (
-                            <div className="death-warning popup-death-warning">
+                            <div className="db-popup-death-warning">
                                 You need to make a death saving throw
                             </div>
                         )}
@@ -798,27 +799,27 @@ const Dashboard: React.FC = () => {
 
             {popupType === 'exp' && (
                 <Modal isOpen={true} onClose={closePopup}>
-                    <div className="popup-body">
-                        <h3 className="popup-title">Edit EXP</h3>
-                        <div className="popup-stat-block">
-                            <span className="stat-label">EXP</span>
-                            <div className="stat-progress">
-                                <div className="progress-track">
-                                    <div className="exp-fill" style={{ width: `${expPercent}%` }}></div>
+                    <div className="db-popup-body">
+                        <h3 className="db-popup-title">Edit EXP</h3>
+                        <div className="db-popup-stat-block">
+                            <span className="db-stat-label">EXP</span>
+                            <div className="db-stat-progress">
+                                <div className="db-progress-track">
+                                    <div className="db-exp-fill" style={{ width: `${expPercent}%` }}></div>
                                     {overlevelPercent > 0 && (
-                                        <div className="overlevel-fill" style={{ width: `${overlevelPercent}%` }}></div>
+                                        <div className="db-overlevel-fill" style={{ width: `${overlevelPercent}%` }}></div>
                                     )}
                                 </div>
                             </div>
-                            <span className="stat-value-dashboard stat-value-exp">
+                            <span className="db-stat-value db-stat-value-exp">
                                 {exp.toLocaleString()} / {maxExp.toLocaleString()}
-                                {exp > maxExp && <span className="overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
+                                {exp > maxExp && <span className="db-overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
                             </span>
                         </div>
-                        <div className="popup-controls">
-                            <div className="control-group">
+                        <div className="db-popup-controls">
+                            <div className="db-control-group">
                                 <label>EXP Adjustment</label>
-                                <div className="input-group">
+                                <div className="db-input-group">
                                     <input
                                         type="number"
                                         value={expInputValue}
@@ -836,8 +837,8 @@ const Dashboard: React.FC = () => {
 
             {popupType === 'settings' && (
                 <Modal isOpen={true} onClose={closePopup}>
-                    <div className="popup-body">
-                        <h3 className="popup-title">Settings</h3>
+                    <div className="db-popup-body">
+                        <h3 className="db-popup-title">Settings</h3>
                         <p>Empty popup</p>
                     </div>
                 </Modal>
@@ -845,8 +846,8 @@ const Dashboard: React.FC = () => {
 
             {popupType === 'profile' && (
                 <Modal isOpen={true} onClose={closePopup}>
-                    <div className="popup-body">
-                        <h3 className="popup-title">Character Profile</h3>
+                    <div className="db-popup-body">
+                        <h3 className="db-popup-title">Character Profile</h3>
                         <p>Empty popup</p>
                     </div>
                 </Modal>
