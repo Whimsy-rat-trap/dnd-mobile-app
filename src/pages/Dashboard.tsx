@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react'; // <-- ИЗМЕНЕНИЕ: добавили useMemo
 import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import CreateModePopup from '../components/CreateModePopup';
@@ -12,6 +12,7 @@ import DiceRollerSection from '../components/dashboard/DiceRollerSection';
 import QuickActions from '../components/dashboard/QuickActions';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
+import { SUBCLASSES } from '../constants/subclasses'; // <-- ИЗМЕНЕНИЕ: новый импорт
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -66,67 +67,79 @@ const Dashboard: React.FC = () => {
 
     // Обработчик изменения фильтров для FilterModal
     const handleFilterChange = (newFilters: Record<string, any>) => {
+        // если изменился класс – сбрасываем сабкласс
+        if (newFilters.class !== filters.class) {
+            newFilters.subclass = '';
+        }
         setFilters(newFilters as any);
     };
 
-    // Поля для фильтрации персонажей
-    const filterFields: FilterField[] = [
-        {
-            key: 'class',
-            label: 'Class',
-            type: 'select',
-            options: [{ value: '', label: 'All' }, ...DND_CLASSES.map(c => ({ value: c, label: c }))],
-        },
-        {
-            key: 'subclass',
-            label: 'Subclass',
-            type: 'select',
-            options: [
-                { value: '', label: 'All' },
-                ...Array.from(new Set(characters.flatMap(c => c.subclass ? [c.subclass] : []))).map(s => ({ value: s, label: s })),
-            ],
-        },
-        {
-            key: 'race',
-            label: 'Race',
-            type: 'select',
-            options: [{ value: '', label: 'All' }, ...DND_RACES.map(r => ({ value: r, label: r }))],
-        },
-        {
-            key: 'subrace',
-            label: 'Subrace',
-            type: 'select',
-            options: [
-                { value: '', label: 'All' },
-                ...Array.from(new Set(characters.flatMap(c => c.subrace ? [c.subrace] : []))).map(s => ({ value: s, label: s })),
-            ],
-        },
-        { key: 'level', label: 'Level Range', type: 'range', min: 1, max: 20 },
-        {
-            key: 'alive',
-            label: 'Alive',
-            type: 'select',
-            options: [
-                { value: 'all', label: 'All' },
-                { value: 'alive', label: 'Alive' },
-                { value: 'dead', label: 'Dead' },
-            ],
-        },
-        { key: 'createdAfter', label: 'Created After', type: 'date' },
-        { key: 'createdBefore', label: 'Created Before', type: 'date' },
-        { key: 'lastUsedAfter', label: 'Last Used After', type: 'date' },
-        { key: 'lastUsedBefore', label: 'Last Used Before', type: 'date' },
-        {
-            key: 'status',
-            label: 'Status',
-            type: 'select',
-            options: [
-                { value: 'all', label: 'All' },
-                { value: 'active', label: 'Active' },
-                { value: 'archived', label: 'Archived' },
-            ],
-        },
-    ];
+    // Поля для фильтрации персонажей (вычисляются динамически)
+    const filterFields: FilterField[] = useMemo(() => {
+        // Для поля subclass строим опции в зависимости от выбранного класса
+        let subclassOptions: { value: string; label: string }[] = [{ value: '', label: 'All' }];
+        if (filters.class && SUBCLASSES[filters.class]) {
+            subclassOptions = [
+                ...subclassOptions,
+                ...SUBCLASSES[filters.class].map(s => ({ value: s, label: s })),
+            ];
+        }
+
+        return [
+            {
+                key: 'class',
+                label: 'Class',
+                type: 'select',
+                options: [{ value: '', label: 'All' }, ...DND_CLASSES.map(c => ({ value: c, label: c }))],
+            },
+            {
+                key: 'subclass',
+                label: 'Subclass',
+                type: 'select',
+                options: subclassOptions,
+            },
+            {
+                key: 'race',
+                label: 'Race',
+                type: 'select',
+                options: [{ value: '', label: 'All' }, ...DND_RACES.map(r => ({ value: r, label: r }))],
+            },
+            {
+                key: 'subrace',
+                label: 'Subrace',
+                type: 'select',
+                options: [
+                    { value: '', label: 'All' },
+                    ...Array.from(new Set(characters.flatMap(c => c.subrace ? [c.subrace] : []))).map(s => ({ value: s, label: s })),
+                ],
+            },
+            { key: 'level', label: 'Level Range', type: 'range', min: 1, max: 20 },
+            {
+                key: 'alive',
+                label: 'Alive',
+                type: 'select',
+                options: [
+                    { value: 'all', label: 'All' },
+                    { value: 'alive', label: 'Alive' },
+                    { value: 'dead', label: 'Dead' },
+                ],
+            },
+            { key: 'createdAfter', label: 'Created After', type: 'date' },
+            { key: 'createdBefore', label: 'Created Before', type: 'date' },
+            { key: 'lastUsedAfter', label: 'Last Used After', type: 'date' },
+            { key: 'lastUsedBefore', label: 'Last Used Before', type: 'date' },
+            {
+                key: 'status',
+                label: 'Status',
+                type: 'select',
+                options: [
+                    { value: 'all', label: 'All' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'archived', label: 'Archived' },
+                ],
+            },
+        ];
+    }, [filters.class, characters]); // <-- зависимости
 
     // Фильтрация персонажей для экрана выбора
     const filteredCharacters = characters.filter(char => {
