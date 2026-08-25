@@ -122,3 +122,32 @@
     background: rgba(52, 211, 153, 0.15);
     color: #34d399;
 }
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+.modal-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.modal-btn.cancel {
+    background: #374151;
+    color: #9ca3af;
+}
+.modal-btn.cancel:hover {
+    background: #4b5563;
+}
+.modal-btn.apply {
+    background: #34d399;
+    color: #0f0f0f;
+}
+.modal-btn.apply:hover {
+    background: #059669;
+}
