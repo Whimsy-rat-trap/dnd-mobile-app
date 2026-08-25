@@ -17,6 +17,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 0;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .il-title {
@@ -24,6 +26,26 @@
     font-weight: 700;
     font-size: 24px;
     color: #34d399;
+}
+
+.il-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.il-create-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #fbbf24;
+    color: #0f0f0f;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.il-create-btn:hover {
+    background: #f59e0b;
 }
 
 .il-back-btn {
@@ -39,7 +61,6 @@
     text-decoration: none;
     transition: border-color 0.2s, color 0.2s;
 }
-
 .il-back-btn:hover {
     border-color: #34d399;
     color: #34d399;
@@ -63,7 +84,6 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
-
 .il-content::-webkit-scrollbar {
     display: none;
 }
@@ -84,7 +104,6 @@
     border-left: 4px solid transparent;
     transition: border-color 0.2s;
 }
-
 .il-item:hover {
     border-left-color: #34d399;
 }
@@ -96,25 +115,21 @@
     flex-wrap: wrap;
     flex: 1;
 }
-
 .il-item-name {
     font-weight: 700;
     color: #fff;
     font-size: 16px;
 }
-
 .il-item-type {
     font-size: 12px;
     color: #9ca3af;
     text-transform: capitalize;
 }
-
 .il-item-rarity {
     font-size: 12px;
     font-weight: 600;
     text-transform: capitalize;
 }
-
 .il-item-attunement {
     font-size: 11px;
     color: #6b7280;
@@ -122,7 +137,15 @@
     padding: 2px 8px;
     border-radius: 4px;
 }
-
+.il-item-custom-tag {
+    font-size: 11px;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid #fbbf24;
+    padding: 0 8px;
+    border-radius: 4px;
+    line-height: 18px;
+}
 .il-item-description {
     font-size: 13px;
     color: #9ca3af;
@@ -142,12 +165,10 @@
     transition: background 0.2s, transform 0.1s;
     flex-shrink: 0;
 }
-
 .il-add-btn:hover {
     background: #059669;
     transform: scale(1.05);
 }
-
 .il-add-btn:active {
     transform: scale(0.95);
 }
@@ -157,4 +178,71 @@
     color: #9ca3af;
     padding: 40px 0;
     font-size: 16px;
+}
+
+/* Create Item Modal */
+.il-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.il-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.il-form-group label {
+    font-size: 13px;
+    color: #9ca3af;
+}
+.il-form-group input,
+.il-form-group select,
+.il-form-group textarea {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #374957;
+    background: #0f0f0f;
+    color: #fff;
+    font-size: 14px;
+    font-family: var(--font-family);
+}
+.il-form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+.il-form-group input:focus,
+.il-form-group select:focus,
+.il-form-group textarea:focus {
+    outline: none;
+    border-color: #34d399;
+}
+
+.il-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+.il-modal-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.il-modal-btn.il-cancel {
+    background: #374151;
+    color: #9ca3af;
+}
+.il-modal-btn.il-cancel:hover {
+    background: #4b5563;
+}
+.il-modal-btn.il-apply {
+    background: #34d399;
+    color: #0f0f0f;
+}
+.il-modal-btn.il-apply:hover {
+    background: #059669;
 }
