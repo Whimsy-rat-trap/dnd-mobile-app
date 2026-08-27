@@ -113,45 +113,33 @@
     margin-top: 2px;
 }
 
-/* Tabs */
-.sb-tabs {
-    padding: 16px 20px;
-    height: 72px;
-    background: #0f0f0f;
+/* Выпадающий список для выбора уровня */
+.sb-level-selector {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 0;
+    gap: 10px;
+    padding: 12px 20px;
+    background: #0f0f0f;
     width: 100%;
     box-sizing: border-box;
 }
-
-.sb-tab-btn {
-    border-radius: 8px;
-    width: 78px;
-    height: 40px;
-    padding: 0;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 13px;
-    text-align: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-}
-.sb-tab-btn:not(.sb-active) {
-    background: #1f2937;
+.sb-level-selector label {
     color: #9ca3af;
+    font-size: 14px;
+    font-weight: 500;
 }
-.sb-tab-btn:not(.sb-active):hover {
-    background: #374151;
-    color: #e5e7eb;
-}
-.sb-tab-btn.sb-active {
-    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
-    background: linear-gradient(315deg, #3b82f6 0%, #1e40af 100%);
+.sb-level-selector select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #374957;
+    background: #1f2937;
     color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+}
+.sb-level-selector select:focus {
+    border-color: #3b82f6;
 }
 
 /* Content */

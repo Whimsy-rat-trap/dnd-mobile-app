@@ -10,7 +10,6 @@ import { SCHOOLS, getElementFromSpell } from '../utils/spellUtils';
 import { COMPONENT_OPTIONS } from '../constants/spellOptions';
 import './SpellbookContainer.css';
 
-type TabKey = 'cantrips' | 'level1' | 'level2' | 'level3';
 type FilterType = 'all' | 'prepared' | 'notPrepared';
 
 const SpellbookContainer: React.FC = () => {
@@ -18,7 +17,8 @@ const SpellbookContainer: React.FC = () => {
     const { currentCharacterId, getCharacter, updateSpell } = useCharacters();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
-    const [activeTab, setActiveTab] = useState<TabKey>('cantrips');
+    // Текущий выбранный уровень (0 = cantrips, 1-9)
+    const [currentLevel, setCurrentLevel] = useState<number>(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState<FilterType>('all');
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -26,13 +26,6 @@ const SpellbookContainer: React.FC = () => {
     const [elementFilter, setElementFilter] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
     const [componentsFilter, setComponentsFilter] = useState<string[]>([]);
-
-    const tabs: { id: TabKey; label: string }[] = [
-        { id: 'cantrips', label: 'Cantrips' },
-        { id: 'level1', label: 'Level 1' },
-        { id: 'level2', label: 'Level 2' },
-        { id: 'level3', label: 'Level 3' },
-    ];
 
     if (!character) {
         return (
@@ -45,20 +38,9 @@ const SpellbookContainer: React.FC = () => {
         );
     }
 
+    // Получение заклинаний по уровню
     const getSpellsByLevel = (level: number) => {
         return character.spells.filter(spell => spell.level === level);
-    };
-
-    const cantrips = getSpellsByLevel(0);
-    const level1 = getSpellsByLevel(1);
-    const level2 = getSpellsByLevel(2);
-    const level3 = getSpellsByLevel(3);
-
-    const spellsData: Record<TabKey, typeof character.spells> = {
-        cantrips,
-        level1,
-        level2,
-        level3,
     };
 
     // Применение фильтрации по статусу подготовки
@@ -99,15 +81,25 @@ const SpellbookContainer: React.FC = () => {
         return result;
     };
 
-    const currentSpells = applySearchAndFilters(applyFilter(spellsData[activeTab]));
+    // Текущие заклинания для выбранного уровня с применением всех фильтров
+    const levelSpells = getSpellsByLevel(currentLevel);
+    const currentSpells = applySearchAndFilters(applyFilter(levelSpells));
 
-    const title = `${activeTab === 'cantrips' ? 'Cantrips' : `Level ${activeTab.replace('level', '')}`} (${currentSpells.length})`;
+    // Формирование заголовка вкладки
+    const getTabLabel = (level: number) => {
+        if (level === 0) return 'Cantrips';
+        return `Level ${level}`;
+    };
+
+    // Подсчёт количества заклинаний для каждого уровня (для отображения в скобках)
+    const getLevelCount = (level: number) => {
+        return character.spells.filter(s => s.level === level).length;
+    };
 
     const togglePrepared = (spellId: string) => {
         const spell = character.spells.find(s => s.id === spellId);
         if (!spell) return;
 
-        // Если пытаемся подготовить (стало true)
         if (!spell.prepared) {
             const maxPrepared = getMaxPrepared(character);
             const currentPrepared = character.spells.filter(s => s.prepared).length;
@@ -204,16 +196,20 @@ const SpellbookContainer: React.FC = () => {
                 </div>
             </div>
 
-            <div className="sb-tabs">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        className={`sb-tab-btn ${activeTab === tab.id ? 'sb-active' : ''}`}
-                        onClick={() => setActiveTab(tab.id)}
-                    >
-                        {tab.label}
-                    </button>
-                ))}
+            {/* Выпадающий список уровней */}
+            <div className="sb-level-selector">
+                <label htmlFor="level-select">Spell level:</label>
+                <select
+                    id="level-select"
+                    value={currentLevel}
+                    onChange={(e) => setCurrentLevel(Number(e.target.value))}
+                >
+                    {Array.from({ length: 10 }, (_, i) => i).map(level => (
+                        <option key={level} value={level}>
+                            {level === 0 ? 'Cantrips' : `Level ${level}`} ({getLevelCount(level)})
+                        </option>
+                    ))}
+                </select>
             </div>
 
             <div className="sb-content">
@@ -245,7 +241,9 @@ const SpellbookContainer: React.FC = () => {
                         </button>
                     </div>
                 </div>
-                <div className="sb-list-title">{title}</div>
+                <div className="sb-list-title">
+                    {getTabLabel(currentLevel)} ({currentSpells.length})
+                </div>
                 {currentSpells.length === 0 ? (
                     <div className="sb-empty-message">
                         <p>No spells match your filters.</p>
