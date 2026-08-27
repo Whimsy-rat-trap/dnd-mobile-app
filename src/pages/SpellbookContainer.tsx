@@ -105,9 +105,19 @@ const SpellbookContainer: React.FC = () => {
 
     const togglePrepared = (spellId: string) => {
         const spell = character.spells.find(s => s.id === spellId);
-        if (spell) {
-            updateSpell(character.id, spellId, { prepared: !spell.prepared });
+        if (!spell) return;
+
+        // Если пытаемся подготовить (стало true)
+        if (!spell.prepared) {
+            const maxPrepared = getMaxPrepared(character);
+            const currentPrepared = character.spells.filter(s => s.prepared).length;
+            if (currentPrepared >= maxPrepared) {
+                alert(`You can only prepare ${maxPrepared} spells.`);
+                return;
+            }
         }
+
+        updateSpell(character.id, spellId, { prepared: !spell.prepared });
     };
 
     const handleBack = () => navigate(-1);
@@ -254,6 +264,7 @@ const SpellbookContainer: React.FC = () => {
                                 renderPreparedToggle={({ prepared, onToggle }) => (
                                     <SkillCheck proficient={prepared} onToggle={onToggle} />
                                 )}
+                                isCustom={spell.isCustom || false}
                             />
                         ))}
                     </div>

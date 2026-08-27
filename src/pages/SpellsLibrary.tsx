@@ -15,7 +15,7 @@ const SpellsLibrary: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { currentCharacterId, getCharacter, addSpellToCharacter, removeSpellFromCharacter } = useCharacters();
-    const { customSpells, addCustomSpell } = useSpells();
+    const { customSpells, addCustomSpell, updateCustomSpell } = useSpells();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -29,6 +29,7 @@ const SpellsLibrary: React.FC = () => {
     });
 
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpell, setNewSpell] = useState({
         name: '',
         level: 0,
@@ -48,6 +49,39 @@ const SpellsLibrary: React.FC = () => {
             navigate('/spells', { replace: true });
         }
     }, [location, navigate]);
+
+    // Функция сброса формы
+    const resetForm = () => {
+        setNewSpell({
+            name: '',
+            level: 0,
+            school: SCHOOLS[0] || 'Abjuration',
+            castingTime: CASTING_TIMES[0],
+            range: RANGES[0],
+            components: [],
+            description: '',
+            element: ELEMENTS[0],
+        });
+        setEditingSpellId(null);
+    };
+
+    // Открытие модалки для редактирования
+    const handleEditSpell = (spellId: string) => {
+        const spell = customSpells.find(s => s.id === spellId);
+        if (!spell) return;
+        setEditingSpellId(spellId);
+        setNewSpell({
+            name: spell.name,
+            level: spell.level,
+            school: spell.school,
+            castingTime: spell.castingTime,
+            range: spell.range,
+            components: spell.components.split(', ').filter(c => c.trim() !== ''),
+            description: spell.description,
+            element: spell.element || ELEMENTS[0],
+        });
+        setShowCreateModal(true);
+    };
 
     // Функции для управления компонентами при создании
     const toggleComponent = (comp: string) => {
@@ -162,16 +196,33 @@ const SpellsLibrary: React.FC = () => {
 
     const handleBack = () => navigate(-1);
 
-    // Создание заклинания
-    const handleCreateSpell = () => {
-        if (!newSpell.name.trim()) {
+    // Сохранение заклинания (создание или обновление)
+    const handleSaveSpell = () => {
+        const nameTrimmed = newSpell.name.trim();
+        if (!nameTrimmed) {
             alert('Please enter a spell name.');
             return;
         }
+        if (!newSpell.description.trim()) {
+            alert('Please enter a spell description.');
+            return;
+        }
+
+        // Проверка уникальности имени
+        const isEditing = editingSpellId !== null;
+        const allSpellNames = [
+            ...ALL_SPELLS.map(s => s.name.toLowerCase()),
+            ...customSpells.filter(s => s.id !== editingSpellId).map(s => s.name.toLowerCase()),
+        ];
+        if (allSpellNames.includes(nameTrimmed.toLowerCase())) {
+            alert('A spell with this name already exists.');
+            return;
+        }
+
         const componentsStr = newSpell.components.length > 0 ? newSpell.components.join(', ') : '';
 
-        addCustomSpell({
-            name: newSpell.name,
+        const spellData = {
+            name: nameTrimmed,
             level: newSpell.level,
             school: newSpell.school,
             castingTime: newSpell.castingTime,
@@ -181,18 +232,19 @@ const SpellsLibrary: React.FC = () => {
             element: newSpell.element === 'None' ? undefined : newSpell.element,
             isCustom: true,
             prepared: false,
-        });
+        };
+
+        if (isEditing) {
+            // Обновление
+            const { isCustom, prepared, ...updateData } = spellData; // убираем лишние поля
+            updateCustomSpell(editingSpellId, updateData);
+        } else {
+            // Создание
+            addCustomSpell(spellData);
+        }
+
         setShowCreateModal(false);
-        setNewSpell({
-            name: '',
-            level: 0,
-            school: SCHOOLS[0] || 'Abjuration',
-            castingTime: CASTING_TIMES[0],
-            range: RANGES[0],
-            components: [],
-            description: '',
-            element: ELEMENTS[0],
-        });
+        resetForm();
     };
 
     return (
@@ -209,7 +261,10 @@ const SpellsLibrary: React.FC = () => {
                         {character ? `Adding to ${character.name}` : 'Select a character to add spells'}
                     </div>
                 </div>
-                <button className="sl-btn-create-spell" onClick={() => setShowCreateModal(true)}>
+                <button className="sl-btn-create-spell" onClick={() => {
+                    resetForm();
+                    setShowCreateModal(true);
+                }}>
                     + Create Spell
                 </button>
             </header>
@@ -224,6 +279,7 @@ const SpellsLibrary: React.FC = () => {
                 <div className="sl-list">
                     {filteredSpells.map((spell) => {
                         const inBook = isSpellInBook(spell.name);
+                        const isCustom = spell.isCustom || false;
                         return (
                             <SpellCard
                                 key={spell.id}
@@ -232,6 +288,9 @@ const SpellsLibrary: React.FC = () => {
                                 onAdd={() => handleAddSpell(spell)}
                                 showRemoveButton={!!character && inBook}
                                 onRemove={() => handleRemoveSpell(spell.name)}
+                                isCustom={isCustom}
+                                showEdit={isCustom}
+                                onEdit={() => handleEditSpell(spell.id)}
                             />
                         );
                     })}
@@ -250,8 +309,11 @@ const SpellsLibrary: React.FC = () => {
                 />
             )}
 
-            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
-                <h3>Create Custom Spell</h3>
+            <Modal isOpen={showCreateModal} onClose={() => {
+                setShowCreateModal(false);
+                resetForm();
+            }}>
+                <h3>{editingSpellId ? 'Edit Custom Spell' : 'Create Custom Spell'}</h3>
                 <div className="sl-create-form">
                     <div className="sl-form-group">
                         <label>Spell Name *</label>
@@ -349,7 +411,7 @@ const SpellsLibrary: React.FC = () => {
                         </select>
                     </div>
                     <div className="sl-form-group">
-                        <label>Description</label>
+                        <label>Description *</label>
                         <textarea
                             value={newSpell.description}
                             onChange={(e) => setNewSpell({ ...newSpell, description: e.target.value })}
@@ -359,8 +421,13 @@ const SpellsLibrary: React.FC = () => {
                     </div>
                 </div>
                 <div className="modal-actions">
-                    <button className="modal-btn cancel" onClick={() => setShowCreateModal(false)}>Cancel</button>
-                    <button className="modal-btn apply" onClick={handleCreateSpell}>Create</button>
+                    <button className="modal-btn cancel" onClick={() => {
+                        setShowCreateModal(false);
+                        resetForm();
+                    }}>Cancel</button>
+                    <button className="modal-btn apply" onClick={handleSaveSpell}>
+                        {editingSpellId ? 'Update' : 'Create'}
+                    </button>
                 </div>
             </Modal>
         </div>

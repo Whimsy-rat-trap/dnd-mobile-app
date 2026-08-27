@@ -4,6 +4,7 @@ import { Spell } from '../types/Character';
 interface SpellContextType {
     customSpells: Spell[];
     addCustomSpell: (spell: Omit<Spell, 'id'>) => void;
+    updateCustomSpell: (id: string, spell: Omit<Spell, 'id' | 'isCustom' | 'prepared'>) => void;
     removeCustomSpell: (id: string) => void;
     getCustomSpells: () => Spell[];
 }
@@ -32,6 +33,12 @@ export const SpellProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setCustomSpells(prev => [...prev, newSpell]);
     };
 
+    const updateCustomSpell = (id: string, spellData: Omit<Spell, 'id' | 'isCustom' | 'prepared'>) => {
+        setCustomSpells(prev => prev.map(s =>
+            s.id === id ? { ...s, ...spellData } : s
+        ));
+    };
+
     const removeCustomSpell = (id: string) => {
         setCustomSpells(prev => prev.filter(s => s.id !== id));
     };
@@ -39,7 +46,7 @@ export const SpellProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const getCustomSpells = () => customSpells;
 
     return (
-        <SpellContext.Provider value={{ customSpells, addCustomSpell, removeCustomSpell, getCustomSpells }}>
+        <SpellContext.Provider value={{ customSpells, addCustomSpell, updateCustomSpell, removeCustomSpell, getCustomSpells }}>
             {children}
         </SpellContext.Provider>
     );

@@ -13,6 +13,9 @@ interface SpellCardProps {
     onTogglePrepared?: () => void;
     isPrepared?: boolean;
     renderPreparedToggle?: (props: { prepared: boolean; onToggle: () => void }) => ReactNode;
+    isCustom?: boolean;
+    showEdit?: boolean;
+    onEdit?: () => void;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -25,6 +28,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  onTogglePrepared,
                                                  isPrepared,
                                                  renderPreparedToggle,
+                                                 isCustom,
+                                                 showEdit,
+                                                 onEdit,
                                              }) => {
     const elementColors: Record<string, string> = {
         fire: '#ef4444',
@@ -49,7 +55,12 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 <div className="spell-card-left">
                     <div className="spell-card-icon" />
                     <div className="spell-card-info">
-                        <div className="spell-card-name">{spell.name}</div>
+                        <div className="spell-card-name-wrapper">
+                            <span className="spell-card-name">{spell.name}</span>
+                            {isCustom && (
+                                <span className="spell-custom-badge" title="Custom spell">✨</span>
+                            )}
+                        </div>
                         <div className="spell-card-school">{spell.school}</div>
                     </div>
                 </div>
@@ -75,13 +86,16 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                     )}
                                 </div>
                             )}
-                            {showAddButton && (
-                                <button className="btn-add-spell" onClick={onAdd}>Add</button>
-                            )}
-                            {showRemoveButton && (
-                                <button className="btn-remove-spell" onClick={onRemove}>Remove</button>
-                            )}
                         </>
+                    )}
+                    {showAddButton && (
+                        <button className="btn-add-spell" onClick={onAdd}>Add</button>
+                    )}
+                    {showRemoveButton && (
+                        <button className="btn-remove-spell" onClick={onRemove}>Remove</button>
+                    )}
+                    {showEdit && onEdit && (
+                        <button className="spell-edit-btn" onClick={onEdit}>Edit</button>
                     )}
                 </div>
             </div>
