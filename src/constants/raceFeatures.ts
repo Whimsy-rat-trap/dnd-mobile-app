@@ -1,8 +1,8 @@
-// src/constants/raceFeatures.ts
-
 export interface Feature {
     name: string;
     description: string;
+    resistance?: string;
+    immunity?: string;
 }
 
 export const RACE_FEATURES: Record<string, Feature[]> = {
@@ -27,7 +27,8 @@ export const RACE_FEATURES: Record<string, Feature[]> = {
         },
         {
             name: 'Dwarven Resilience',
-            description: 'You have advantage on saving throws against poison, and you have resistance against poison damage.'
+            description: 'You have advantage on saving throws against poison, and you have resistance against poison damage.',
+            resistance: 'poison'
         },
         {
             name: 'Dwarven Combat Training',
@@ -145,7 +146,8 @@ export const RACE_FEATURES: Record<string, Feature[]> = {
         },
         {
             name: 'Hellish Resistance',
-            description: 'You have resistance to fire damage.'
+            description: 'You have resistance to fire damage.',
+            resistance: 'fire'
         },
         {
             name: 'Legacy of Malbolge',
@@ -173,7 +175,8 @@ export const RACE_FEATURES: Record<string, Feature[]> = {
         },
         {
             name: 'Celestial Resistance',
-            description: 'You have resistance to necrotic damage and radiant damage.'
+            description: 'You have resistance to necrotic damage and radiant damage.',
+            resistance: 'necrotic, radiant'
         },
         {
             name: 'Healing Hands',
@@ -221,7 +224,8 @@ export const RACE_FEATURES: Record<string, Feature[]> = {
         },
         {
             name: 'Mountain Born',
-            description: 'You have resistance to cold damage. You\'re also acclimated to high altitude, including elevations above 20,000 feet.'
+            description: 'You have resistance to cold damage. You\'re also acclimated to high altitude, including elevations above 20,000 feet.',
+            resistance: 'cold'
         }
     ],
     Kenku: [

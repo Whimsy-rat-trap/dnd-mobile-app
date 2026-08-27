@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
+import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import DiceRoller from '../components/DiceRoller';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import Modal from '../components/Modal';
@@ -261,7 +262,19 @@ const CharacterContainer: React.FC = () => {
         ? character.classes.join(' / ')
         : 'No class';
 
+    // Получение фич расы и подрасы
     const raceFeatures = RACE_FEATURES[character.race] || [];
+    const subraceDetails = character.subrace ? SUBRACE_DETAILS[character.subrace] : null;
+    const subraceFeatures = subraceDetails?.features || [];
+
+    // Объединение фич (уникальные по имени)
+    const allFeaturesMap = new Map<string, typeof raceFeatures[0]>();
+    [...raceFeatures, ...subraceFeatures].forEach(f => {
+        if (!allFeaturesMap.has(f.name)) {
+            allFeaturesMap.set(f.name, f);
+        }
+    });
+    const allFeatures = Array.from(allFeaturesMap.values());
 
     // Функция для переключения выбранной фичи (toggle)
     const toggleFeature = (featureName: string) => {
@@ -484,8 +497,8 @@ const CharacterContainer: React.FC = () => {
                     {isRaceFeaturesOpen && (
                         <>
                             <div className="cc-race-features-list">
-                                {raceFeatures.length > 0 ? (
-                                    raceFeatures.map((feature, idx) => (
+                                {allFeatures.length > 0 ? (
+                                    allFeatures.map((feature, idx) => (
                                         <span
                                             key={idx}
                                             className={`cc-race-feature-tag ${selectedFeature === feature.name ? 'cc-active' : ''}`}
@@ -493,6 +506,8 @@ const CharacterContainer: React.FC = () => {
                                             style={{ cursor: 'pointer' }}
                                         >
                                             {feature.name}
+                                            {feature.resistance && ` (Resist: ${feature.resistance})`}
+                                            {feature.immunity && ` (Immune: ${feature.immunity})`}
                                         </span>
                                     ))
                                 ) : (
@@ -501,7 +516,7 @@ const CharacterContainer: React.FC = () => {
                             </div>
                             {selectedFeature && (
                                 <div className="cc-race-feature-description">
-                                    {raceFeatures.find(f => f.name === selectedFeature)?.description}
+                                    {allFeatures.find(f => f.name === selectedFeature)?.description}
                                 </div>
                             )}
                         </>
