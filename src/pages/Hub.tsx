@@ -179,7 +179,7 @@ const Hub: React.FC = () => {
     const renderAddSpellCard = () => (
         <div
             className="hb-spell-card hb-add-card"
-            onClick={() => navigate('/spells')}
+            onClick={() => navigate('/spells?create=true')}
             style={{ cursor: 'pointer' }}
         >
             <div className="hb-add-card-content">

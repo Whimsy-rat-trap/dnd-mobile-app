@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import { useSpells } from '../context/SpellContext';
 import { ALL_SPELLS } from '../constants/spells';
@@ -13,6 +13,7 @@ import './SpellsLibrary.css';
 
 const SpellsLibrary: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { currentCharacterId, getCharacter, addSpellToCharacter, removeSpellFromCharacter } = useCharacters();
     const { customSpells, addCustomSpell } = useSpells();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
@@ -38,6 +39,15 @@ const SpellsLibrary: React.FC = () => {
         description: '',
         element: ELEMENTS[0],
     });
+
+    // Автоматическое открытие модалки при переходе с параметром ?create=true
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get('create') === 'true') {
+            setShowCreateModal(true);
+            navigate('/spells', { replace: true });
+        }
+    }, [location, navigate]);
 
     // Функции для управления компонентами при создании
     const toggleComponent = (comp: string) => {
