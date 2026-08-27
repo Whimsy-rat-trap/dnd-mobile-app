@@ -155,7 +155,7 @@ const Hub: React.FC = () => {
     const renderAddItemCard = () => (
         <div
             className="hb-item-card hb-add-card"
-            onClick={() => navigate('/items')}
+            onClick={() => navigate('/items?create=true')}
             style={{ cursor: 'pointer' }}
         >
             <div className="hb-add-card-content">

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ALL_ITEMS, LibraryItem } from '../constants/items';
 import { useItems } from '../context/ItemContext';
 import SearchBar from '../components/SearchBar';
@@ -12,6 +12,8 @@ const TYPES = Array.from(new Set(ALL_ITEMS.map(i => i.type)));
 const RARITIES = Array.from(new Set(ALL_ITEMS.map(i => i.rarity)));
 
 const ItemsLibrary: React.FC = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
     const { customItems, addCustomItem } = useItems();
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -30,6 +32,15 @@ const ItemsLibrary: React.FC = () => {
         description: '',
         attunement: false,
     });
+
+    // Автоматическое открытие модалки при переходе с ?create=true
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get('create') === 'true') {
+            setShowCreateModal(true);
+            navigate('/items', { replace: true });
+        }
+    }, [location, navigate]);
 
     const handleFilterChange = (newFilters: Record<string, any>) => {
         setFilters(newFilters as any);
