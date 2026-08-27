@@ -27,6 +27,10 @@ const SpellbookContainer: React.FC = () => {
     const [typeFilter, setTypeFilter] = useState('');
     const [componentsFilter, setComponentsFilter] = useState<string[]>([]);
 
+    // Состояние для предупреждения о превышении количества подготовленных
+    const [isPreparedWarning, setIsPreparedWarning] = useState(false);
+    let warningTimeout: NodeJS.Timeout | null = null;
+
     if (!character) {
         return (
             <div className="sb-page">
@@ -100,11 +104,17 @@ const SpellbookContainer: React.FC = () => {
         const spell = character.spells.find(s => s.id === spellId);
         if (!spell) return;
 
+        // Если пытаемся подготовить (стало true)
         if (!spell.prepared) {
             const maxPrepared = getMaxPrepared(character);
             const currentPrepared = character.spells.filter(s => s.prepared).length;
             if (currentPrepared >= maxPrepared) {
-                alert(`You can only prepare ${maxPrepared} spells.`);
+                // Визуальное предупреждение вместо alert
+                if (warningTimeout) clearTimeout(warningTimeout);
+                setIsPreparedWarning(true);
+                warningTimeout = setTimeout(() => {
+                    setIsPreparedWarning(false);
+                }, 2000);
                 return;
             }
         }
@@ -186,7 +196,7 @@ const SpellbookContainer: React.FC = () => {
                     <span className="sb-stat-label">Spell Slots</span>
                     <span className="sb-stat-value">{totalSlots}</span>
                 </div>
-                <div className="sb-stat-item">
+                <div className={`sb-stat-item ${isPreparedWarning ? 'sb-warning' : ''}`}>
                     <span className="sb-stat-label">Prepared</span>
                     <span className="sb-stat-value">{preparedCount} / {maxPrepared}</span>
                 </div>

@@ -111,6 +111,25 @@
     font-size: 18px;
     color: #3b82f6;
     margin-top: 2px;
+    transition: color 0.5s ease;
+}
+
+/* Визуальное предупреждение для блока Prepared */
+.sb-stat-item.sb-warning {
+    animation: shakeWarning 0.5s ease-in-out;
+}
+
+.sb-stat-item.sb-warning .sb-stat-value {
+    color: #ef4444 !important;
+}
+
+@keyframes shakeWarning {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+    100% { transform: translateX(0); }
 }
 
 /* Выпадающий список для выбора уровня */
