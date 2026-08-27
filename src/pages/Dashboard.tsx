@@ -486,7 +486,7 @@ const Dashboard: React.FC = () => {
 
                 <QuickActions
                     characterId={character.id}
-                    spellsCount={character.spells?.length || 0}
+                    spellsCount={character.spells?.filter(s => s.prepared).length || 0}
                     inventoryCount={character.inventory?.length || 0}
                     questsActive={character.quests?.filter(q => q.status === 'active').length || 0}
                 />
