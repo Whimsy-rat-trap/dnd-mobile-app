@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ALL_ITEMS, LibraryItem } from '../constants/items';
 import { useItems } from '../context/ItemContext';
+import { useCharacters } from '../context/CharacterContext';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import './ItemsLibrary.css';
 
-// Уникальные типы и редкости
 const TYPES = Array.from(new Set(ALL_ITEMS.map(i => i.type)));
 const RARITIES = Array.from(new Set(ALL_ITEMS.map(i => i.rarity)));
 
@@ -15,13 +15,16 @@ const ItemsLibrary: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { customItems, addCustomItem } = useItems();
+    const { addItemToInventory, getCharacter } = useCharacters();
+    const [targetCharacterId, setTargetCharacterId] = useState<string | null>(null);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [filters, setFilters] = useState({
         type: '',
         rarity: '',
         attunement: '',
-        itemType: '', // 'standard' | 'custom'
+        itemType: '',
     });
 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -33,7 +36,7 @@ const ItemsLibrary: React.FC = () => {
         attunement: false,
     });
 
-    // Автоматическое открытие модалки при переходе с ?create=true
+    // Автоматическое открытие модалки при ?create=true
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get('create') === 'true') {
@@ -41,6 +44,15 @@ const ItemsLibrary: React.FC = () => {
             navigate('/items', { replace: true });
         }
     }, [location, navigate]);
+
+    // Получаем characterId из URL
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const charId = params.get('characterId');
+        if (charId) {
+            setTargetCharacterId(charId);
+        }
+    }, [location]);
 
     const handleFilterChange = (newFilters: Record<string, any>) => {
         setFilters(newFilters as any);
@@ -98,6 +110,26 @@ const ItemsLibrary: React.FC = () => {
     });
 
     const handleAddToInventory = (item: LibraryItem) => {
+        if (!targetCharacterId) {
+            alert('No character selected. Please go to Inventory first.');
+            return;
+        }
+        const character = getCharacter(targetCharacterId);
+        if (!character) {
+            alert('Character not found.');
+            return;
+        }
+
+        // Преобразуем LibraryItem в InventoryItem
+        const inventoryItem = {
+            name: item.name,
+            type: item.type,
+            rarity: item.rarity,
+            description: item.description,
+            equipped: false,
+            // при необходимости можно добавить attunement: item.attunement
+        };
+        addItemToInventory(targetCharacterId, inventoryItem);
         alert(`Added "${item.name}" to inventory!`);
     };
 

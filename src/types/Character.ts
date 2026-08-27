@@ -48,7 +48,7 @@ export interface Character {
 export interface InventoryItem {
     id: string;
     name: string;
-    type: 'weapon' | 'armor' | 'potion' | 'scroll' | 'other';
+    type: 'weapon' | 'armor' | 'potion' | 'scroll' | 'ring' | 'wand' | 'other';
     rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
     description: string;
     equipped: boolean;
