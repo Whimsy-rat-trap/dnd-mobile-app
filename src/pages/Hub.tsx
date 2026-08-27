@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
-import CreateModePopup from '../components/CreateModePopup';
 import SearchBar from '../components/SearchBar';
 import './Hub.css';
 
@@ -13,7 +12,6 @@ const Hub: React.FC = () => {
     const [isCampaignsOpen, setIsCampaignsOpen] = useState(true);
     const [isItemsOpen, setIsItemsOpen] = useState(true);
     const [isSpellsOpen, setIsSpellsOpen] = useState(true);
-    const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     // Локальные данные (заглушки) для кампаний, предметов и заклинаний
@@ -114,10 +112,11 @@ const Hub: React.FC = () => {
         return text.slice(0, maxLength) + '...';
     };
 
+    // ===== ИЗМЕНЕНО: переход на Dashboard с параметром create =====
     const renderAddCharacterCard = () => (
         <div
             className="hb-character-card hb-add-card"
-            onClick={() => setShowCreatePopup(true)}
+            onClick={() => navigate('/dashboard?create=true')}
             style={{ cursor: 'pointer' }}
         >
             <div className="hb-add-card-content">
@@ -176,6 +175,7 @@ const Hub: React.FC = () => {
         </div>
     );
 
+    // ===== ИЗМЕНЕНО: переход на SpellsLibrary с параметром create =====
     const renderAddSpellCard = () => (
         <div
             className="hb-spell-card hb-add-card"
@@ -233,11 +233,6 @@ const Hub: React.FC = () => {
                 </div>
             </div>
         );
-    };
-
-    const handleCreateModeSelect = (mode: 'creative' | 'rules') => {
-        setShowCreatePopup(false);
-        navigate(`/characters/new?mode=${mode}`);
     };
 
     return (
@@ -415,13 +410,6 @@ const Hub: React.FC = () => {
                     )}
                 </div>
             </div>
-
-            {showCreatePopup && (
-                <CreateModePopup
-                    onSelect={handleCreateModeSelect}
-                    onClose={() => setShowCreatePopup(false)}
-                />
-            )}
         </div>
     );
 };

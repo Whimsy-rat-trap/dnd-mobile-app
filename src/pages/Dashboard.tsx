@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react'; // <-- ИЗМЕНЕНИЕ: добавили useMemo
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import CreateModePopup from '../components/CreateModePopup';
 import Modal from '../components/Modal';
@@ -12,11 +12,12 @@ import DiceRollerSection from '../components/dashboard/DiceRollerSection';
 import QuickActions from '../components/dashboard/QuickActions';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
-import { SUBCLASSES } from '../constants/subclasses'; // <-- ИЗМЕНЕНИЕ: новый импорт
+import { SUBCLASSES } from '../constants/subclasses';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const {
         characters,
         currentCharacterId,
@@ -65,9 +66,24 @@ const Dashboard: React.FC = () => {
         20: false,
     });
 
+    // Обработка параметра create (автоматическое открытие модалки)
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get('create') === 'true') {
+            setShowCreatePopup(true);
+            navigate('/dashboard', { replace: true });
+        }
+    }, [location, navigate]);
+
+    // Обработчик выбора режима создания
+    const handleCreateModeSelect = (mode: 'creative' | 'rules') => {
+        setShowCreatePopup(false);
+        navigate(`/characters/new?mode=${mode}`);
+    };
+
     // Обработчик изменения фильтров для FilterModal
     const handleFilterChange = (newFilters: Record<string, any>) => {
-        // если изменился класс – сбрасываем сабкласс
+        // Если изменился класс – сбрасываем сабкласс
         if (newFilters.class !== filters.class) {
             newFilters.subclass = '';
         }
@@ -139,9 +155,9 @@ const Dashboard: React.FC = () => {
                 ],
             },
         ];
-    }, [filters.class, characters]); // <-- зависимости
+    }, [filters.class, characters]);
 
-    // Фильтрация персонажей для экрана выбора
+    // Фильтрация персонажей
     const filteredCharacters = characters.filter(char => {
         const matchesSearch = char.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesClass = !filters.class || char.class === filters.class || char.classes.includes(filters.class);
@@ -187,14 +203,19 @@ const Dashboard: React.FC = () => {
                                 />
                             );
                         })}
-                        <Link to="/characters/new" className="db-character-select-card db-add-card">
+                        {/* Заменяем Link на div с onClick */}
+                        <div
+                            className="db-character-select-card db-add-card"
+                            onClick={() => setShowCreatePopup(true)}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <div className="db-add-card-content">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
                                 </svg>
                                 <span className="db-add-card-label">Create New Character</span>
                             </div>
-                        </Link>
+                        </div>
                     </div>
                 </div>
 
@@ -222,11 +243,19 @@ const Dashboard: React.FC = () => {
                     }
                     title="Filter Characters"
                 />
+
+                {/* Модалка выбора режима создания */}
+                {showCreatePopup && (
+                    <CreateModePopup
+                        onSelect={handleCreateModeSelect}
+                        onClose={() => setShowCreatePopup(false)}
+                    />
+                )}
             </div>
         );
     }
 
-    // --- Функции для работы с HP и EXP ---
+    // Функции для работы с HP и EXP
     const updateChar = (updates: Partial<typeof character>) => {
         updateCharacter(character.id, updates);
     };
@@ -410,6 +439,7 @@ const Dashboard: React.FC = () => {
         setCurrentCharacterId(null);
     };
 
+    // Рендер для выбранного персонажа
     return (
         <div className="db-page">
             {/* Header */}
@@ -499,7 +529,7 @@ const Dashboard: React.FC = () => {
                 />
             </div>
 
-            {/* Попапы */}
+            {/* Попапы (HP, EXP, Settings, Profile) */}
             {popupType === 'hp' && (
                 <Modal isOpen={true} onClose={closePopup}>
                     <div className="db-popup-body">
