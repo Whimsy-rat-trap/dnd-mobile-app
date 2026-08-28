@@ -662,3 +662,57 @@ input[type=number] {
     font-size: 14px;
     color: #9ca3af;
 }
+
+/* Racial Proficiencies */
+.cr-racial-proficiencies {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.cr-racial-fixed,
+.cr-racial-choice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.cr-racial-label {
+    color: #9ca3af;
+    font-size: 13px;
+    font-weight: 500;
+    margin-right: 6px;
+}
+
+.cr-racial-tag {
+    background: #34d399;
+    color: #0f0f0f;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.cr-racial-selectors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.cr-racial-select {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #374957;
+    background: #1f2937;
+    color: #fff;
+    font-size: 12px;
+    height: 30px;
+    min-width: 120px;
+}
+
+.cr-racial-select:focus {
+    outline: none;
+    border-color: #34d399;
+}

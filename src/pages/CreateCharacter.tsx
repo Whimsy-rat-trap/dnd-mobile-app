@@ -13,6 +13,7 @@ import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACES } from '../constants/subraces';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { LANGUAGES } from '../constants/languages';
+import { RACIAL_SKILLS, RACIAL_TOOLS, ALL_SKILLS } from '../constants/raceProficiencies'; // <-- новый импорт
 import DiceRoller from '../components/DiceRoller';
 import Modal from '../components/Modal';
 import './CreateCharacter.css';
@@ -107,7 +108,11 @@ const CreateCharacter: React.FC = () => {
     const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
     const [selectedSubraceFeature, setSelectedSubraceFeature] = useState<string | null>(null);
 
-    // --- НОВОЕ: мультикласс ---
+    // Расовые навыки и инструменты
+    const [selectedRacialSkills, setSelectedRacialSkills] = useState<string[]>([]);
+    const [selectedRacialTools, setSelectedRacialTools] = useState<string[]>([]);
+
+    // Мультикласс
     const [classLevels, setClassLevels] = useState<{ className: string; level: number }[]>([
         { className: DND_CLASSES[0], level: 1 }
     ]);
@@ -279,6 +284,33 @@ const CreateCharacter: React.FC = () => {
         }
         // Сбрасываем выбранную фичу расы
         setSelectedFeature(null);
+
+        // Расовые навыки и инструменты
+        const skillData = RACIAL_SKILLS[formData.race];
+        if (skillData) {
+            if (skillData.fixed) {
+                setSelectedRacialSkills(skillData.fixed);
+            } else if (skillData.choose) {
+                setSelectedRacialSkills(new Array(skillData.choose.count).fill(''));
+            } else {
+                setSelectedRacialSkills([]);
+            }
+        } else {
+            setSelectedRacialSkills([]);
+        }
+
+        const toolData = RACIAL_TOOLS[formData.race];
+        if (toolData) {
+            if (toolData.fixed) {
+                setSelectedRacialTools(toolData.fixed);
+            } else if (toolData.choose) {
+                setSelectedRacialTools(new Array(toolData.choose.count).fill(''));
+            } else {
+                setSelectedRacialTools([]);
+            }
+        } else {
+            setSelectedRacialTools([]);
+        }
     }, [formData.race]);
 
     // При смене класса сбрасываем подкласс
@@ -297,7 +329,6 @@ const CreateCharacter: React.FC = () => {
     useEffect(() => {
         if (isCreative) return;
 
-        // Используем основной класс для расчёта HP (можно было бы суммировать по всем классам, но упростим)
         const mainClass = classLevels[0]?.className || formData.class;
         const conMod = Math.floor((formData.abilities.con - 10) / 2);
         const hitDie = CLASS_HIT_DICE[mainClass] || 6;
@@ -364,6 +395,28 @@ const CreateCharacter: React.FC = () => {
         setSelectedBonusAttrs(newAttrs);
     };
 
+    // Обработчики выбора расовых навыков и инструментов
+    const handleRacialSkillSelect = (index: number, value: string) => {
+        const newSkills = [...selectedRacialSkills];
+        // Проверяем, не выбран ли уже этот навык в другом слоте
+        const existingIndex = newSkills.indexOf(value);
+        if (existingIndex !== -1 && existingIndex !== index) {
+            newSkills[existingIndex] = ''; // очищаем другой слот
+        }
+        newSkills[index] = value;
+        setSelectedRacialSkills(newSkills);
+    };
+
+    const handleRacialToolSelect = (index: number, value: string) => {
+        const newTools = [...selectedRacialTools];
+        const existingIndex = newTools.indexOf(value);
+        if (existingIndex !== -1 && existingIndex !== index) {
+            newTools[existingIndex] = '';
+        }
+        newTools[index] = value;
+        setSelectedRacialTools(newTools);
+    };
+
     const handleRoll = (result: number) => {
         if (isCreative) return;
         const mainClass = classLevels[0]?.className || formData.class;
@@ -414,6 +467,22 @@ const CreateCharacter: React.FC = () => {
             }
         }
 
+        // Проверяем, выбраны ли все расовые навыки (если есть выбор)
+        const skillData = RACIAL_SKILLS[formData.race];
+        if (skillData && skillData.choose) {
+            if (selectedRacialSkills.some(s => s === '')) {
+                alert(`Please select ${skillData.choose.count} racial skills.`);
+                return;
+            }
+        }
+        const toolData = RACIAL_TOOLS[formData.race];
+        if (toolData && toolData.choose) {
+            if (selectedRacialTools.some(t => t === '')) {
+                alert(`Please select ${toolData.choose.count} racial tools.`);
+                return;
+            }
+        }
+
         let finalData = { ...formData };
         if (!isCreative) {
             finalData.ac = 10 + Math.floor((formData.abilities.dex - 10) / 2);
@@ -460,7 +529,7 @@ const CreateCharacter: React.FC = () => {
         }
         finalData.abilities = abilitiesWithBonuses;
 
-        // Создаём список навыков
+        // Формируем список навыков с учётом background и расы
         const defaultSkills = [
             { name: 'Acrobatics', attribute: 'DEX', proficient: false },
             { name: 'Animal Handling', attribute: 'WIS', proficient: false },
@@ -484,18 +553,57 @@ const CreateCharacter: React.FC = () => {
 
         const bg = DND_BACKGROUNDS.find(b => b.name === finalData.background);
         const backgroundSkills = bg ? bg.skillProficiencies : [];
+
+        // Собираем все навыки, которые должны быть proficient (background + расовые)
+        const proficientSkillNames = new Set<string>();
+        backgroundSkills.forEach(s => proficientSkillNames.add(s));
+        // Добавляем расовые навыки
+        if (skillData) {
+            if (skillData.fixed) {
+                skillData.fixed.forEach(s => proficientSkillNames.add(s));
+            } else if (skillData.choose) {
+                selectedRacialSkills.forEach(s => {
+                    if (s) proficientSkillNames.add(s);
+                });
+            }
+        }
+
+        // Создаём список навыков
         const skillsWithProficiencies = defaultSkills.map(skill => {
-            if (backgroundSkills.includes(skill.name)) {
+            if (proficientSkillNames.has(skill.name)) {
                 return { ...skill, proficient: true };
             }
             return skill;
         });
 
-        const toolProficiencies = bg?.toolProficiencies?.map(tool => ({
+        // Формируем список инструментов (background + расовые)
+        let toolProficiencies = bg?.toolProficiencies?.map(tool => ({
             name: tool.name,
             attribute: tool.attribute || 'DEX',
             proficient: true,
         })) || [];
+
+        // Добавляем расовые инструменты
+        if (toolData) {
+            const racialToolNames: string[] = [];
+            if (toolData.fixed) {
+                racialToolNames.push(...toolData.fixed);
+            } else if (toolData.choose) {
+                selectedRacialTools.forEach(t => {
+                    if (t) racialToolNames.push(t);
+                });
+            }
+            // Добавляем их, если их ещё нет в списке
+            racialToolNames.forEach(toolName => {
+                if (!toolProficiencies.some(t => t.name === toolName)) {
+                    toolProficiencies.push({
+                        name: toolName,
+                        attribute: 'DEX',
+                        proficient: true,
+                    });
+                }
+            });
+        }
 
         const languages = bg?.languages || [];
 
@@ -509,7 +617,6 @@ const CreateCharacter: React.FC = () => {
             level: cl.level
         }));
 
-        // Основной класс и классы (для обратной совместимости)
         const mainClass = classLevels[0]?.className || finalData.class;
         const allClasses = classLevels.map(cl => cl.className);
 
@@ -552,6 +659,10 @@ const CreateCharacter: React.FC = () => {
     const raceFeatures = RACE_FEATURES[formData.race] || [];
     const subraceFeatures = formData.subrace ? SUBRACE_DETAILS[formData.subrace]?.features || [] : [];
     const subraceBonus = formData.subrace ? SUBRACE_DETAILS[formData.subrace]?.abilityBonuses : null;
+
+    // Данные для отображения расовых навыков и инструментов
+    const racialSkillData = RACIAL_SKILLS[formData.race];
+    const racialToolData = RACIAL_TOOLS[formData.race];
 
     // Функция рендера шеврона
     const renderChevron = (isOpen: boolean) => (
@@ -684,11 +795,6 @@ const CreateCharacter: React.FC = () => {
                             ))}
                         </select>
                     </div>
-                    {/* Уровень теперь отображается как сумма, но оставляем поле для ручного ввода (закомментировано) */}
-                    {/* <div className="cr-form-group">
-                        <label>Level *</label>
-                        <input type="number" name="level" value={formData.level} onChange={handleChange} min="1" max="20" required />
-                    </div> */}
                 </div>
 
                 {/* Размер (если выбор) */}
@@ -849,6 +955,96 @@ const CreateCharacter: React.FC = () => {
                         );
                     })()}
                 </div>
+
+                {/* НОВЫЙ БЛОК: Racial Skill Proficiencies */}
+                {racialSkillData && (racialSkillData.fixed || racialSkillData.choose) && (
+                    <div className="cr-form-group">
+                        <label>Racial Skill Proficiencies</label>
+                        <div className="cr-racial-proficiencies">
+                            {racialSkillData.fixed && racialSkillData.fixed.length > 0 && (
+                                <div className="cr-racial-fixed">
+                                    <span className="cr-racial-label">Fixed:</span>
+                                    {racialSkillData.fixed.map(skill => (
+                                        <span key={skill} className="cr-racial-tag">{skill}</span>
+                                    ))}
+                                </div>
+                            )}
+                            {racialSkillData.choose && (() => {
+                                const choose = racialSkillData.choose;
+                                return (
+                                    <div className="cr-racial-choice">
+                                        <span className="cr-racial-label">Choose {choose.count}:</span>
+                                        <div className="cr-racial-selectors">
+                                            {Array.from({ length: choose.count }, (_, i) => (
+                                                <select
+                                                    key={i}
+                                                    value={selectedRacialSkills[i] || ''}
+                                                    onChange={(e) => handleRacialSkillSelect(i, e.target.value)}
+                                                    className="cr-racial-select"
+                                                >
+                                                    <option value="">Select</option>
+                                                    {choose.options.map(opt => {
+                                                        const isSelected = selectedRacialSkills.includes(opt) && selectedRacialSkills.indexOf(opt) !== i;
+                                                        return (
+                                                            <option key={opt} value={opt} disabled={isSelected}>
+                                                                {opt}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    </div>
+                )}
+
+                {/* НОВЫЙ БЛОК: Racial Tool Proficiencies */}
+                {racialToolData && (racialToolData.fixed || racialToolData.choose) && (
+                    <div className="cr-form-group">
+                        <label>Racial Tool Proficiencies</label>
+                        <div className="cr-racial-proficiencies">
+                            {racialToolData.fixed && racialToolData.fixed.length > 0 && (
+                                <div className="cr-racial-fixed">
+                                    <span className="cr-racial-label">Fixed:</span>
+                                    {racialToolData.fixed.map(tool => (
+                                        <span key={tool} className="cr-racial-tag">{tool}</span>
+                                    ))}
+                                </div>
+                            )}
+                            {racialToolData.choose && (() => {
+                                const choose = racialToolData.choose;
+                                return (
+                                    <div className="cr-racial-choice">
+                                        <span className="cr-racial-label">Choose {choose.count}:</span>
+                                        <div className="cr-racial-selectors">
+                                            {Array.from({ length: choose.count }, (_, i) => (
+                                                <select
+                                                    key={i}
+                                                    value={selectedRacialTools[i] || ''}
+                                                    onChange={(e) => handleRacialToolSelect(i, e.target.value)}
+                                                    className="cr-racial-select"
+                                                >
+                                                    <option value="">Select</option>
+                                                    {choose.options.map(opt => {
+                                                        const isSelected = selectedRacialTools.includes(opt) && selectedRacialTools.indexOf(opt) !== i;
+                                                        return (
+                                                            <option key={opt} value={opt} disabled={isSelected}>
+                                                                {opt}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    </div>
+                )}
 
                 {/* Stat Generation (только в rules) */}
                 {!isCreative && (
