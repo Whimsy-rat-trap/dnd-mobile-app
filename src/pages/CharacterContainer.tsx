@@ -9,6 +9,13 @@ import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import Modal from '../components/Modal';
 import './CharacterContainer.css';
 
+// Карта рас с natural armor (базовый AC, модификатор Dex и ограничение)
+const NATURAL_ARMOR: Record<string, { base: number; dex?: boolean; max?: number }> = {
+    Tortle: { base: 17 },
+    Lizardfolk: { base: 13, dex: true, max: 2 },
+    // Можно добавить другие расы при необходимости
+};
+
 const CharacterContainer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -61,6 +68,63 @@ const CharacterContainer: React.FC = () => {
         const score = character.abilities[attr];
         return Math.floor((score - 10) / 2);
     };
+
+    // Функция расчёта AC
+    const getACInfo = (char: typeof character): { total: number; breakdown: string[] } => {
+        const dexMod = getModifier('dex');
+        const equippedArmor = char.inventory.find(item => item.type === 'armor' && item.equipped);
+        const equippedShield = char.inventory.find(item =>
+            item.equipped && item.name.toLowerCase().includes('shield')
+        );
+        const raceNaturalArmor = NATURAL_ARMOR[char.race];
+
+        let total = 0;
+        const breakdown: string[] = [];
+
+        // 1. Определяем базовый AC
+        if (raceNaturalArmor) {
+            let ac = raceNaturalArmor.base;
+            if (raceNaturalArmor.dex) {
+                const maxDex = raceNaturalArmor.max ?? Infinity;
+                const dexBonus = Math.min(dexMod, maxDex);
+                ac += dexBonus;
+                breakdown.push(`Natural Armor: ${raceNaturalArmor.base} + Dex (max ${maxDex}) = ${ac}`);
+            } else {
+                breakdown.push(`Natural Armor: ${ac}`);
+            }
+            total = ac;
+        } else if (equippedArmor) {
+            // Если есть броня, используем character.ac (если задан) или вычисляем 10 + Dex
+            if (char.ac !== undefined && char.ac !== null) {
+                total = char.ac;
+                breakdown.push(`Armor (AC ${total})`);
+            } else {
+                const ac = 10 + dexMod;
+                total = ac;
+                breakdown.push(`Armor (estimated): 10 + Dex = ${ac}`);
+            }
+        } else {
+            // Нет ни natural armor, ни брони
+            const ac = 10 + dexMod;
+            total = ac;
+            breakdown.push(`Base: 10 + Dex = ${ac}`);
+        }
+
+        // 2. Щит (+2 к AC)
+        if (equippedShield) {
+            total += 2;
+            breakdown.push(`Shield: +2`);
+        }
+
+        // 3. Если character.ac задан вручную и отличается от вычисленного, используем его
+        if (char.ac !== undefined && char.ac !== null && char.ac !== total) {
+            total = char.ac;
+            breakdown.push(`Manual override: ${total}`);
+        }
+
+        return { total, breakdown };
+    };
+    // Конец функции AC
 
     // Вычисление бонуса навыка
     const getSkillBonus = (skill: typeof character.skills[0]) => {
@@ -313,7 +377,10 @@ const CharacterContainer: React.FC = () => {
     const totalSlots = spellSlots.reduce((a: number, b: number) => a + b, 0);
     const preparedCount = character.spells.filter(s => s.prepared).length;
     const knownCount = character.spells.length;
-    const racialCount = character.spells.filter(s => s.isRacial).length; // <-- добавлено
+    const racialCount = character.spells.filter(s => s.isRacial).length;
+
+    // Расчёт AC для отображения
+    const acInfo = getACInfo(character);
 
     return (
         <div className="cc-page">
@@ -373,7 +440,9 @@ const CharacterContainer: React.FC = () => {
                         </div>
                         <div className="cc-info-item">
                             <span className="cc-info-label">AC</span>
-                            <span className="cc-info-value">{character.ac || '—'}</span>
+                            <span className="cc-info-value" title={acInfo.breakdown.join('\n')} style={{ cursor: 'help', borderBottom: '1px dashed #6b7280' }}>
+                                {acInfo.total}
+                            </span>
                         </div>
                     </div>
                     <div className="cc-info-grid">
