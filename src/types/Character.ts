@@ -65,6 +65,8 @@ export interface Spell {
     description: string;
     prepared: boolean;
     isCustom?: boolean;
+    isRacial?: boolean;
+    source?: 'race' | 'subrace';
     element?: string;
 }
 

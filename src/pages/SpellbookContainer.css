@@ -183,6 +183,11 @@
     gap: 6px;
 }
 
+/* Отступ для второго ряда фильтров (тип заклинаний) */
+.sb-type-filters {
+    margin-top: 6px;
+}
+
 .sb-filter-btn {
     padding: 4px 12px;
     border: 1px solid #374957;

@@ -11,20 +11,20 @@ import { COMPONENT_OPTIONS } from '../constants/spellOptions';
 import './SpellbookContainer.css';
 
 type FilterType = 'all' | 'prepared' | 'notPrepared';
+type SpellTypeFilter = 'all' | 'standard' | 'custom' | 'racial';
 
 const SpellbookContainer: React.FC = () => {
     const navigate = useNavigate();
     const { currentCharacterId, getCharacter, updateSpell } = useCharacters();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
-    // Текущий выбранный уровень (0 = cantrips, 1-9)
-    const [currentLevel, setCurrentLevel] = useState<number>(0);
+    const [activeLevel, setActiveLevel] = useState<number>(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState<FilterType>('all');
+    const [spellTypeFilter, setSpellTypeFilter] = useState<SpellTypeFilter>('all');
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [schoolFilter, setSchoolFilter] = useState('');
     const [elementFilter, setElementFilter] = useState('');
-    const [typeFilter, setTypeFilter] = useState('');
     const [componentsFilter, setComponentsFilter] = useState<string[]>([]);
 
     // Состояние для предупреждения о превышении количества подготовленных
@@ -72,22 +72,22 @@ const SpellbookContainer: React.FC = () => {
         if (elementFilter) {
             result = result.filter(s => (s.element || getElementFromSpell(s) || '') === elementFilter);
         }
-        if (typeFilter) {
-            if (typeFilter === 'standard') {
-                result = result.filter(s => !s.isCustom);
-            } else if (typeFilter === 'custom') {
-                result = result.filter(s => s.isCustom);
-            }
-        }
         if (componentsFilter.length > 0) {
             result = result.filter(s => componentsFilter.every(comp => s.components.includes(comp)));
+        }
+        if (spellTypeFilter !== 'all') {
+            if (spellTypeFilter === 'standard') {
+                result = result.filter(s => !s.isCustom && !s.isRacial);
+            } else if (spellTypeFilter === 'custom') {
+                result = result.filter(s => s.isCustom);
+            } else if (spellTypeFilter === 'racial') {
+                result = result.filter(s => s.isRacial);
+            }
         }
         return result;
     };
 
-    // Текущие заклинания для выбранного уровня с применением всех фильтров
-    const levelSpells = getSpellsByLevel(currentLevel);
-    const currentSpells = applySearchAndFilters(applyFilter(levelSpells));
+    const currentSpells = applySearchAndFilters(applyFilter(getSpellsByLevel(activeLevel)));
 
     // Формирование заголовка вкладки
     const getTabLabel = (level: number) => {
@@ -104,12 +104,16 @@ const SpellbookContainer: React.FC = () => {
         const spell = character.spells.find(s => s.id === spellId);
         if (!spell) return;
 
-        // Если пытаемся подготовить (стало true)
+        if (spell.isRacial) {
+            // Расовые заклинания всегда подготовлены – игнорируем
+            return;
+        }
+
         if (!spell.prepared) {
             const maxPrepared = getMaxPrepared(character);
-            const currentPrepared = character.spells.filter(s => s.prepared).length;
-            if (currentPrepared >= maxPrepared) {
-                // Визуальное предупреждение вместо alert
+            const nonRacialPrepared = character.spells.filter(s => !s.isRacial && s.prepared).length;
+            if (nonRacialPrepared >= maxPrepared) {
+                // Визуальное предупреждение
                 if (warningTimeout) clearTimeout(warningTimeout);
                 setIsPreparedWarning(true);
                 warningTimeout = setTimeout(() => {
@@ -125,12 +129,13 @@ const SpellbookContainer: React.FC = () => {
     const handleBack = () => navigate(-1);
     const handleAddFromLibrary = () => navigate('/spells');
 
-    // Вычисления для статистики
+    // Статистика
     const spellSlotsArray = getSpellSlots(character);
     const totalSlots = spellSlotsArray.reduce((a: number, b: number) => a + b, 0);
     const maxPrepared = getMaxPrepared(character);
     const preparedCount = character.spells.filter(s => s.prepared).length;
     const knownCount = character.spells.length;
+    const racialCount = character.spells.filter(s => s.isRacial).length;
 
     // Фильтры для модалки
     const filterFields: FilterField[] = [
@@ -150,16 +155,6 @@ const SpellbookContainer: React.FC = () => {
             ],
         },
         {
-            key: 'type',
-            label: 'Type',
-            type: 'select',
-            options: [
-                { value: '', label: 'All' },
-                { value: 'standard', label: 'Standard' },
-                { value: 'custom', label: 'Custom' },
-            ],
-        },
-        {
             key: 'components',
             label: 'Components',
             type: 'tags',
@@ -170,7 +165,6 @@ const SpellbookContainer: React.FC = () => {
     const handleFilterChange = (newFilters: Record<string, any>) => {
         setSchoolFilter(newFilters.school || '');
         setElementFilter(newFilters.element || '');
-        setTypeFilter(newFilters.type || '');
         setComponentsFilter(newFilters.components || []);
     };
 
@@ -201,18 +195,22 @@ const SpellbookContainer: React.FC = () => {
                     <span className="sb-stat-value">{preparedCount} / {maxPrepared}</span>
                 </div>
                 <div className="sb-stat-item">
+                    <span className="sb-stat-label">Racial</span>
+                    <span className="sb-stat-value">{racialCount}</span>
+                </div>
+                <div className="sb-stat-item">
                     <span className="sb-stat-label">Known</span>
                     <span className="sb-stat-value">{knownCount}</span>
                 </div>
             </div>
 
-            {/* Выпадающий список уровней */}
+            {/* Выпадающий список для выбора уровня */}
             <div className="sb-level-selector">
                 <label htmlFor="level-select">Spell level:</label>
                 <select
                     id="level-select"
-                    value={currentLevel}
-                    onChange={(e) => setCurrentLevel(Number(e.target.value))}
+                    value={activeLevel}
+                    onChange={(e) => setActiveLevel(Number(e.target.value))}
                 >
                     {Array.from({ length: 10 }, (_, i) => i).map(level => (
                         <option key={level} value={level}>
@@ -250,9 +248,35 @@ const SpellbookContainer: React.FC = () => {
                             Not Prepared
                         </button>
                     </div>
+                    <div className="sb-filter-buttons sb-type-filters">
+                        <button
+                            className={`sb-filter-btn ${spellTypeFilter === 'all' ? 'sb-active' : ''}`}
+                            onClick={() => setSpellTypeFilter('all')}
+                        >
+                            All Types
+                        </button>
+                        <button
+                            className={`sb-filter-btn ${spellTypeFilter === 'standard' ? 'sb-active' : ''}`}
+                            onClick={() => setSpellTypeFilter('standard')}
+                        >
+                            Standard
+                        </button>
+                        <button
+                            className={`sb-filter-btn ${spellTypeFilter === 'custom' ? 'sb-active' : ''}`}
+                            onClick={() => setSpellTypeFilter('custom')}
+                        >
+                            Custom
+                        </button>
+                        <button
+                            className={`sb-filter-btn ${spellTypeFilter === 'racial' ? 'sb-active' : ''}`}
+                            onClick={() => setSpellTypeFilter('racial')}
+                        >
+                            Racial
+                        </button>
+                    </div>
                 </div>
                 <div className="sb-list-title">
-                    {getTabLabel(currentLevel)} ({currentSpells.length})
+                    {getTabLabel(activeLevel)} ({currentSpells.length})
                 </div>
                 {currentSpells.length === 0 ? (
                     <div className="sb-empty-message">
@@ -273,6 +297,7 @@ const SpellbookContainer: React.FC = () => {
                                     <SkillCheck proficient={prepared} onToggle={onToggle} />
                                 )}
                                 isCustom={spell.isCustom || false}
+                                disableToggle={spell.isRacial || false}
                             />
                         ))}
                     </div>
@@ -283,13 +308,12 @@ const SpellbookContainer: React.FC = () => {
                 <FilterModal
                     isOpen={showFilterModal}
                     onClose={() => setShowFilterModal(false)}
-                    filters={{ school: schoolFilter, element: elementFilter, type: typeFilter, components: componentsFilter }}
+                    filters={{ school: schoolFilter, element: elementFilter, components: componentsFilter }}
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
                     onReset={() => {
                         setSchoolFilter('');
                         setElementFilter('');
-                        setTypeFilter('');
                         setComponentsFilter([]);
                     }}
                     title="Filter Spells"

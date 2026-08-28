@@ -313,6 +313,7 @@ const CharacterContainer: React.FC = () => {
     const totalSlots = spellSlots.reduce((a: number, b: number) => a + b, 0);
     const preparedCount = character.spells.filter(s => s.prepared).length;
     const knownCount = character.spells.length;
+    const racialCount = character.spells.filter(s => s.isRacial).length; // <-- добавлено
 
     return (
         <div className="cc-page">
@@ -446,6 +447,10 @@ const CharacterContainer: React.FC = () => {
                             <div className="cc-stat-item">
                                 <span className="cc-stat-label">Prepared</span>
                                 <span className="cc-stat-value">{preparedCount} / {maxPrepared}</span>
+                            </div>
+                            <div className="cc-stat-item">
+                                <span className="cc-stat-label">Racial</span>
+                                <span className="cc-stat-value">{racialCount}</span>
                             </div>
                             <div className="cc-stat-item">
                                 <span className="cc-stat-label">Known</span>
