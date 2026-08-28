@@ -5,7 +5,7 @@ import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import './Inventory.css';
 
-// Уникальные типы и редкости для фильтров (на основе предметов в инвентаре)
+// Уникальные типы и редкости для фильтров (на основе инвентаря персонажа)
 const getTypes = (inventory: any[]) => Array.from(new Set(inventory.map(i => i.type)));
 const getRarities = (inventory: any[]) => Array.from(new Set(inventory.map(i => i.rarity)));
 
@@ -84,6 +84,9 @@ const Inventory: React.FC = () => {
         }
     };
 
+    // Определяем, является ли предмет natural weapon
+    const isNaturalWeapon = (type: string) => type === 'natural weapon';
+
     return (
         <div className="inv-page">
             <div className="inv-header">
@@ -114,35 +117,47 @@ const Inventory: React.FC = () => {
                     {filteredItems.length === 0 ? (
                         <div className="inv-empty">No items in inventory. Browse items to add some!</div>
                     ) : (
-                        filteredItems.map(item => (
-                            <div key={item.id} className={`inv-item ${item.equipped ? 'inv-equipped' : ''}`}>
-                                <div className="inv-item-info">
-                                    <span className="inv-item-name">{item.name}</span>
-                                    <span className="inv-item-type">{item.type}</span>
-                                    <span className="inv-item-rarity" style={{ color: getRarityColor(item.rarity) }}>
-                                        {item.rarity}
-                                    </span>
-                                    {item.description && (
-                                        <span className="inv-item-description">{item.description}</span>
-                                    )}
+                        filteredItems.map(item => {
+                            const isNatural = isNaturalWeapon(item.type);
+                            return (
+                                <div
+                                    key={item.id}
+                                    className={`inv-item ${item.equipped ? 'inv-equipped' : ''} ${isNatural ? 'inv-natural-weapon' : ''}`}
+                                >
+                                    <div className="inv-item-info">
+                                        <span className="inv-item-name">
+                                            {item.name}
+                                            {isNatural && <span className="inv-natural-badge"> (Natural)</span>}
+                                        </span>
+                                        <span className="inv-item-type">{item.type}</span>
+                                        <span className="inv-item-rarity" style={{ color: getRarityColor(item.rarity) }}>
+                                            {item.rarity}
+                                        </span>
+                                        {item.description && (
+                                            <span className="inv-item-description">{item.description}</span>
+                                        )}
+                                    </div>
+                                    <div className="inv-item-actions">
+                                        {item.equipped && <span className="inv-equipped-badge">Equipped</span>}
+                                        {/* Natural weapons нельзя экипировать/снимать, они всегда считаются equipped? Можно скрыть кнопку Equip для natural weapon */}
+                                        {!isNatural && (
+                                            <button
+                                                className="inv-action-btn inv-equip-btn"
+                                                onClick={() => handleEquip(item.id)}
+                                            >
+                                                {item.equipped ? 'Unequip' : 'Equip'}
+                                            </button>
+                                        )}
+                                        <button
+                                            className="inv-action-btn inv-remove-btn"
+                                            onClick={() => handleRemove(item.id)}
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="inv-item-actions">
-                                    {item.equipped && <span className="inv-equipped-badge">Equipped</span>}
-                                    <button
-                                        className="inv-action-btn inv-equip-btn"
-                                        onClick={() => handleEquip(item.id)}
-                                    >
-                                        {item.equipped ? 'Unequip' : 'Equip'}
-                                    </button>
-                                    <button
-                                        className="inv-action-btn inv-remove-btn"
-                                        onClick={() => handleRemove(item.id)}
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
                 <div className="inv-add-container">

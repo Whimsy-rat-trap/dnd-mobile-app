@@ -1,7 +1,7 @@
 export interface LibraryItem {
     id: string;
     name: string;
-    type: 'weapon' | 'armor' | 'potion' | 'scroll' | 'ring' | 'wand' | 'other';
+    type: 'weapon' | 'armor' | 'potion' | 'scroll' | 'ring' | 'wand' | 'natural weapon' | 'other';
     rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
     description: string;
     attunement?: boolean;
@@ -67,4 +67,34 @@ export const ALL_ITEMS: LibraryItem[] = [
     { id: 'o8', name: 'Ioun Stone', type: 'other', rarity: 'very rare', description: 'Various stones with different magical properties.', attunement: true },
     { id: 'o9', name: 'Figurine of Wondrous Power', type: 'other', rarity: 'rare', description: 'A figurine that can be transformed into a real creature for a limited time.' },
     { id: 'o10', name: 'Robe of Useful Items', type: 'other', rarity: 'uncommon', description: 'A robe with patches that can be torn off to produce various useful items.' },
+
+    // Natural Weapons
+    {
+        id: 'nw1',
+        name: 'Claws',
+        type: 'natural weapon',
+        rarity: 'common',
+        description: 'Your claws are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier.',
+    },
+    {
+        id: 'nw2',
+        name: 'Bite',
+        type: 'natural weapon',
+        rarity: 'common',
+        description: 'Your fanged maw is a natural weapon, which you can use to make unarmed strikes. If you hit with it, you deal piercing damage equal to 1d6 + your Strength modifier.',
+    },
+    {
+        id: 'nw3',
+        name: 'Talons',
+        type: 'natural weapon',
+        rarity: 'common',
+        description: 'Your talons are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier.',
+    },
+    {
+        id: 'nw4',
+        name: 'Fangs',
+        type: 'natural weapon',
+        rarity: 'common',
+        description: 'Your fangs are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal piercing damage equal to 1d4 + your Strength modifier.',
+    },
 ];

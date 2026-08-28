@@ -8,7 +8,17 @@ import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import './ItemsLibrary.css';
 
-const TYPES = Array.from(new Set(ALL_ITEMS.map(i => i.type)));
+// Уникальные типы и редкости (добавлен 'natural weapon')
+const TYPES = [
+    'weapon',
+    'armor',
+    'potion',
+    'scroll',
+    'ring',
+    'wand',
+    'natural weapon',
+    'other'
+];
 const RARITIES = Array.from(new Set(ALL_ITEMS.map(i => i.rarity)));
 
 const ItemsLibrary: React.FC = () => {
@@ -121,13 +131,13 @@ const ItemsLibrary: React.FC = () => {
         }
 
         // Преобразуем LibraryItem в InventoryItem
+        // Для natural weapon тип уже совпадает
         const inventoryItem = {
             name: item.name,
-            type: item.type,
+            type: item.type, // теперь включает 'natural weapon'
             rarity: item.rarity,
             description: item.description,
             equipped: false,
-            // при необходимости можно добавить attunement: item.attunement
         };
         addItemToInventory(targetCharacterId, inventoryItem);
         alert(`Added "${item.name}" to inventory!`);

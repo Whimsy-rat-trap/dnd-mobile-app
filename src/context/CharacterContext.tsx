@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Character, InventoryItem, Spell, Quest, Campaign } from '../types/Character';
+import { getNaturalWeapons } from '../utils/racialFeatures';
 
 // Дефолтный список навыков (используется при создании и для миграции старых персонажей)
 const defaultSkills = [
@@ -148,9 +149,26 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
 
+    // Вспомогательная функция для добавления natural weapons в инвентарь
+    const addNaturalWeaponsToCharacter = (character: Character): Character => {
+        const naturalWeapons = getNaturalWeapons(character.race, character.subrace);
+        if (naturalWeapons.length === 0) return character;
+
+        // Удаляем старые natural weapon предметы (по типу)
+        const filteredInventory = character.inventory.filter(item => item.type !== 'natural weapon');
+        const newNaturalWeapons = naturalWeapons.map(w => ({
+            ...w,
+            id: `natural-${Date.now()}-${Math.random()}`,
+        }));
+        return {
+            ...character,
+            inventory: [...filteredInventory, ...newNaturalWeapons],
+        };
+    };
+
     // Базовые CRUD операции
     const addCharacter = (character: Omit<Character, 'id'>) => {
-        const newCharacter: Character = {
+        let newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
             class: character.class || character.classLevels?.[0]?.className || 'Fighter',
@@ -173,13 +191,27 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             subrace: character.subrace || '',
             savingThrowProficiencies: character.savingThrowProficiencies || [],
         };
+
+        // Добавляем natural weapons в инвентарь
+        newCharacter = addNaturalWeaponsToCharacter(newCharacter);
+
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);
     };
 
     const updateCharacter = (id: string, data: Partial<Character>) => {
         setCharacters(prev =>
-            prev.map(char => (char.id === id ? { ...char, ...data } : char))
+            prev.map(char => {
+                if (char.id !== id) return char;
+                const updated = { ...char, ...data };
+
+                // Если изменилась раса или подраса, обновляем natural weapons
+                if (data.race !== undefined || data.subrace !== undefined) {
+                    return addNaturalWeaponsToCharacter(updated);
+                }
+
+                return updated;
+            })
         );
     };
 
