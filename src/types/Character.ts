@@ -70,6 +70,7 @@ export interface Spell {
     source?: 'race' | 'subrace';
     element?: string;
     requiresConcentration?: boolean;
+    classes?: string[];
 }
 
 export interface Quest {

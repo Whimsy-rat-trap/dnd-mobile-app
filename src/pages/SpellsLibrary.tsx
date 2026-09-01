@@ -4,6 +4,7 @@ import { useCharacters } from '../context/CharacterContext';
 import { useSpells } from '../context/SpellContext';
 import { ALL_SPELLS } from '../constants/spells';
 import { CASTING_TIMES, COMPONENT_OPTIONS, RANGES, ELEMENTS } from '../constants/spellOptions';
+import { DND_CLASSES } from '../constants/classes';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
@@ -27,6 +28,7 @@ const SpellsLibrary: React.FC = () => {
         type: '',
         components: [] as string[],
         concentration: '',
+        class: '',
     });
 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -42,7 +44,7 @@ const SpellsLibrary: React.FC = () => {
         element: ELEMENTS[0],
     });
 
-    // Автоматическое открытие модалки при переходе с параметром ?create=true
+    // Автоматическое открытие модалки при переходе с ?create=true
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get('create') === 'true') {
@@ -156,6 +158,15 @@ const SpellsLibrary: React.FC = () => {
                 { value: 'false', label: 'Does Not Require' },
             ],
         },
+        {
+            key: 'class',
+            label: 'Class',
+            type: 'select',
+            options: [
+                { value: '', label: 'All' },
+                ...DND_CLASSES.map(cls => ({ value: cls, label: cls })),
+            ],
+        },
     ];
 
     // Объединяем стандартные и пользовательские заклинания
@@ -180,7 +191,13 @@ const SpellsLibrary: React.FC = () => {
         const matchesConcentration = !filters.concentration ||
             (filters.concentration === 'true' && spell.requiresConcentration === true) ||
             (filters.concentration === 'false' && spell.requiresConcentration !== true);
-        return matchesSearch && matchesLevel && matchesSchool && matchesElement && matchesType && matchesComponents && matchesConcentration;
+        // Фильтр по классу – если класс не выбран, пропускаем; если выбран, проверяем наличие в массиве classes
+        // Если поле classes отсутствует (undefined), считаем, что заклинание доступно всем классам
+        const matchesClass = !filters.class ||
+            (spell.classes && spell.classes.includes(filters.class)) ||
+            (!spell.classes); // если classes не указано, считаем доступным для всех
+        return matchesSearch && matchesLevel && matchesSchool && matchesElement &&
+            matchesType && matchesComponents && matchesConcentration && matchesClass;
     });
 
     const handleAddSpell = (spellData: any) => {
@@ -319,7 +336,15 @@ const SpellsLibrary: React.FC = () => {
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
-                    onReset={() => setFilters({ level: '', school: '', element: '', type: '', components: [], concentration: '' })}
+                    onReset={() => setFilters({
+                        level: '',
+                        school: '',
+                        element: '',
+                        type: '',
+                        components: [],
+                        concentration: '',
+                        class: '',
+                    })}
                     title="Filter Spells"
                 />
             )}

@@ -9,7 +9,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S',
-        description: 'You hurl a bubble of acid. Choose one creature within range, or two creatures within 5 feet of each other.'
+        description: 'You hurl a bubble of acid. Choose one creature within range, or two creatures within 5 feet of each other.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Blade Ward',
@@ -19,7 +20,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self',
         components: 'V, S',
         description: 'You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage dealt by weapon attacks.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Chill Touch',
@@ -28,7 +29,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You create a ghostly, skeletal hand that attacks a creature.'
+        description: 'You create a ghostly, skeletal hand that attacks a creature.',
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Dancing Lights',
@@ -38,7 +40,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S, M',
         description: 'You create up to four torch-sized lights within range.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Fire Bolt',
@@ -47,7 +49,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You hurl a mote of fire at a creature or object within range.'
+        description: 'You hurl a mote of fire at a creature or object within range.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Guidance',
@@ -57,7 +60,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S',
         description: 'You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice.',
-        requiresConcentration: true
+        classes: ['Cleric', 'Druid'],
     },
     {
         name: 'Light',
@@ -66,7 +69,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, M',
-        description: 'You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet.'
+        description: 'You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-foot radius and dim light for an additional 20 feet.',
+        classes: ['Bard', 'Cleric', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Mage Hand',
@@ -75,7 +79,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration or until you dismiss it as an action.'
+        description: 'A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration or until you dismiss it as an action.',
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Mending',
@@ -84,7 +89,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'This spell repairs a single break or tear in an object you touch.'
+        description: 'This spell repairs a single break or tear in an object you touch.',
+        classes: ['Bard', 'Cleric', 'Druid', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Message',
@@ -93,7 +99,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'You point your finger toward a creature within range and whisper a message. The target is the only one who hears it.'
+        description: 'You point your finger toward a creature within range and whisper a message. The target is the only one who hears it.',
+        classes: ['Bard', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Minor Illusion',
@@ -103,7 +110,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'S, M',
         description: 'You create a sound or an image of an object within range that lasts for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Poison Spray',
@@ -112,7 +119,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '10 ft',
         components: 'V, S',
-        description: 'You project a puff of noxious gas.'
+        description: 'You project a puff of noxious gas.',
+        classes: ['Druid', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Prestidigitation',
@@ -121,7 +129,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '10 ft',
         components: 'V, S',
-        description: 'This spell is a minor magical trick that novice spellcasters use for practice.'
+        description: 'This spell is a minor magical trick that novice spellcasters use for practice.',
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Ray of Frost',
@@ -130,7 +139,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S',
-        description: 'A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 cold damage, and its speed is reduced by 10 feet until the start of your next turn.'
+        description: 'A frigid beam of blue-white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 cold damage, and its speed is reduced by 10 feet until the start of your next turn.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Shillelagh',
@@ -140,7 +150,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S, M',
         description: 'The wood of a club or quarterstaff you are holding is imbued with nature\'s power. For the duration, you can use your spellcasting ability instead of Strength for the attack and damage rolls of melee attacks using that weapon.',
-        requiresConcentration: true
+        classes: ['Druid'],
     },
     {
         name: 'Spare the Dying',
@@ -149,7 +159,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You touch a living creature that has 0 hit points. The creature becomes stable. This spell has no effect on undead or constructs.'
+        description: 'You touch a living creature that has 0 hit points. The creature becomes stable. This spell has no effect on undead or constructs.',
+        classes: ['Cleric'],
     },
     {
         name: 'Thaumaturgy',
@@ -158,7 +169,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V',
-        description: 'You manifest a minor wonder, a sign of supernatural power, within range.'
+        description: 'You manifest a minor wonder, a sign of supernatural power, within range.',
+        classes: ['Cleric'],
     },
     {
         name: 'True Strike',
@@ -168,10 +180,9 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'S',
         description: 'You extend your hand and point a finger at a target in range. Your magic grants you a brief insight into the target\'s defenses. On your next turn, you gain advantage on your first attack roll against the target, provided that this spell hasn\'t ended.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
-
-    // LEVEL 1
+    // Level 1
     {
         name: 'Alarm',
         level: 1,
@@ -179,7 +190,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'You set an alarm against unwanted intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot cube. Until the spell ends, an alarm alerts you whenever a Tiny or larger creature touches or enters the warded area.'
+        description: 'You set an alarm against unwanted intrusion. Choose a door, a window, or an area within range that is no larger than a 20-foot cube. Until the spell ends, an alarm alerts you whenever a Tiny or larger creature touches or enters the warded area.',
+        classes: ['Wizard', 'Ranger'],
     },
     {
         name: 'Animal Friendship',
@@ -189,7 +201,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, S, M',
         description: 'You attempt to charm a beast that you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Druid', 'Ranger'],
     },
     {
         name: 'Bane',
@@ -199,7 +211,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, S, M',
         description: 'Up to three creatures of your choice that you can see within range must make Charisma saving throws. Whenever a target that fails this saving throw makes an attack roll or a saving throw before the spell ends, the target must roll a d4 and subtract the number rolled from the attack roll or saving throw.',
-        requiresConcentration: true
+        classes: ['Bard', 'Cleric', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Bless',
@@ -209,7 +222,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, S, M',
         description: 'You bless up to three creatures of your choice within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw.',
-        requiresConcentration: true
+        classes: ['Cleric', 'Paladin'],
+        requiresConcentration: true,
     },
     {
         name: 'Burning Hands',
@@ -218,7 +232,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self (15-foot cone)',
         components: 'V, S',
-        description: 'As you hold your hands with thumbs touching and fingers spread, a thin sheet of flames shoots forth from your outstretched fingertips. Each creature in a 15-foot cone must make a Dexterity saving throw. A creature takes 3d6 fire damage on a failed save, or half as much damage on a successful one.'
+        description: 'As you hold your hands with thumbs touching and fingers spread, a thin sheet of flames shoots forth from your outstretched fingertips. Each creature in a 15-foot cone must make a Dexterity saving throw. A creature takes 3d6 fire damage on a failed save, or half as much damage on a successful one.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Charm Person',
@@ -228,7 +243,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, S',
         description: 'You attempt to charm a humanoid you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Druid', 'Warlock'],
     },
     {
         name: 'Chromatic Orb',
@@ -237,7 +252,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'You hurl a 4-inch-diameter sphere of energy at a creature within range. Choose acid, cold, fire, lightning, poison, or thunder for the type of orb you create.'
+        description: 'You hurl a 4-inch-diameter sphere of energy at a creature within range. Choose acid, cold, fire, lightning, poison, or thunder for the type of orb you create.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Cure Wounds',
@@ -246,7 +262,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier.'
+        description: 'A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier.',
+        classes: ['Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger'],
     },
     {
         name: 'Detect Magic',
@@ -256,7 +273,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self',
         components: 'V, S',
         description: 'For the duration, you sense the presence of magic within 30 feet of you. If you sense magic in this way, you can use your action to see a faint aura around any visible creature or object in the area that bears magic.',
-        requiresConcentration: true
+        classes: ['Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Disguise Self',
@@ -265,7 +282,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends or until you use your action to dismiss it.'
+        description: 'You make yourself—including your clothing, armor, weapons, and other belongings on your person—look different until the spell ends or until you use your action to dismiss it.',
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Expeditious Retreat',
@@ -275,7 +293,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self',
         components: 'V, S',
         description: 'This spell allows you to move at an incredible pace. When you cast this spell, and then as a bonus action on each of your turns until the spell ends, you can take the Dash action.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Faerie Fire',
@@ -285,7 +303,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V',
         description: 'Each object in a 20-foot cube within range is outlined in blue, green, or violet light (your choice). Any creature in the area when the spell is cast is also outlined in light if it fails a Dexterity saving throw.',
-        requiresConcentration: true
+        classes: ['Bard', 'Druid'],
     },
     {
         name: 'False Life',
@@ -294,7 +312,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S, M',
-        description: 'Bolstering yourself with a necromantic facsimile of life, you gain 1d4+4 temporary hit points for the duration.'
+        description: 'Bolstering yourself with a necromantic facsimile of life, you gain 1d4+4 temporary hit points for the duration.',
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Feather Fall',
@@ -303,7 +322,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 reaction',
         range: '60 ft',
         components: 'V, M',
-        description: 'Choose up to five falling creatures within range. Their rate of descent slows to 60 feet per round until the spell ends. If the creature lands before the spell ends, it takes no falling damage and can land on its feet.'
+        description: 'Choose up to five falling creatures within range. Their rate of descent slows to 60 feet per round until the spell ends. If the creature lands before the spell ends, it takes no falling damage and can land on its feet.',
+        classes: ['Bard', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Find Familiar',
@@ -312,7 +332,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 hour',
         range: '10 ft',
         components: 'V, S, M',
-        description: 'You gain the service of a familiar, a spirit that takes an animal form you choose.'
+        description: 'You gain the service of a familiar, a spirit that takes an animal form you choose.',
+        classes: ['Wizard'],
     },
     {
         name: 'Fog Cloud',
@@ -322,7 +343,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S',
         description: 'You create a 20-foot-radius sphere of fog centered on a point within range. The sphere spreads around corners, and its area is heavily obscured. It lasts for the duration or until a wind of moderate or greater speed (at least 10 miles per hour) disperses it.',
-        requiresConcentration: true
+        classes: ['Druid', 'Ranger', 'Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Grease',
@@ -331,7 +353,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'Slick grease covers the ground in a 10-foot square centered on a point within range and turns it into difficult terrain for the duration.'
+        description: 'Slick grease covers the ground in a 10-foot square centered on a point within range and turns it into difficult terrain for the duration.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Guiding Bolt',
@@ -340,7 +363,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'A flash of light streaks toward a creature of your choice within range. Make a ranged spell attack against the target. On a hit, the target takes 4d6 radiant damage, and the next attack roll made against this target before the end of your next turn has advantage.'
+        description: 'A flash of light streaks toward a creature of your choice within range. Make a ranged spell attack against the target. On a hit, the target takes 4d6 radiant damage, and the next attack roll made against this target before the end of your next turn has advantage.',
+        classes: ['Cleric'],
     },
     {
         name: 'Healing Word',
@@ -349,7 +373,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 bonus action',
         range: '60 ft',
         components: 'V',
-        description: 'A creature of your choice that you can see within range regains hit points equal to 1d4 + your spellcasting ability modifier.'
+        description: 'A creature of your choice that you can see within range regains hit points equal to 1d4 + your spellcasting ability modifier.',
+        classes: ['Bard', 'Cleric', 'Druid'],
     },
     {
         name: 'Hellish Rebuke',
@@ -358,7 +383,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 reaction',
         range: '60 ft',
         components: 'V, S',
-        description: 'You point your finger, and the creature that damaged you is momentarily surrounded by hellish flames. The creature must make a Dexterity saving throw. It takes 2d10 fire damage on a failed save, or half as much damage on a successful one.'
+        description: 'You point your finger, and the creature that damaged you is momentarily surrounded by hellish flames. The creature must make a Dexterity saving throw. It takes 2d10 fire damage on a failed save, or half as much damage on a successful one.',
+        classes: ['Warlock'],
     },
     {
         name: 'Identify',
@@ -367,7 +393,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You choose one object that you must touch throughout the casting of the spell. If it is a magic item or some other magic-imbued object, you learn its properties and how to use them.'
+        description: 'You choose one object that you must touch throughout the casting of the spell. If it is a magic item or some other magic-imbued object, you learn its properties and how to use them.',
+        classes: ['Bard', 'Wizard', 'Artificer'],
     },
     {
         name: 'Illusory Script',
@@ -376,7 +403,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: 'Touch',
         components: 'S, M',
-        description: 'You write on parchment, paper, or some other suitable writing material and imbue it with a potent illusion that lasts for the duration.'
+        description: 'You write on parchment, paper, or some other suitable writing material and imbue it with a potent illusion that lasts for the duration.',
+        classes: ['Bard', 'Wizard', 'Warlock'],
     },
     {
         name: 'Inflict Wounds',
@@ -385,7 +413,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'Make a melee spell attack against a creature you can reach. On a hit, the target takes 3d10 necrotic damage.'
+        description: 'Make a melee spell attack against a creature you can reach. On a hit, the target takes 3d10 necrotic damage.',
+        classes: ['Cleric'],
     },
     {
         name: 'Jump',
@@ -394,7 +423,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a creature. The creature\'s jump distance is tripled until the spell ends.'
+        description: 'You touch a creature. The creature\'s jump distance is tripled until the spell ends.',
+        classes: ['Druid', 'Ranger', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Longstrider',
@@ -403,7 +433,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a creature. The target\'s speed increases by 10 feet until the spell ends.'
+        description: 'You touch a creature. The target\'s speed increases by 10 feet until the spell ends.',
+        classes: ['Bard', 'Druid', 'Ranger', 'Wizard'],
     },
     {
         name: 'Mage Armor',
@@ -412,7 +443,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature who isn\'t wearing armor, and a protective magical force surrounds it until the spell ends. The target\'s base AC becomes 13 + its Dexterity modifier.'
+        description: 'You touch a willing creature who isn\'t wearing armor, and a protective magical force surrounds it until the spell ends. The target\'s base AC becomes 13 + its Dexterity modifier.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Magic Missile',
@@ -421,7 +453,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4+1 force damage.'
+        description: 'You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range. A dart deals 1d4+1 force damage.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Protection from Evil and Good',
@@ -431,7 +464,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S, M',
         description: 'Until the spell ends, one willing creature you touch is protected against certain creature types: aberrations, celestials, elementals, fey, fiends, and undead.',
-        requiresConcentration: true
+        classes: ['Cleric', 'Paladin', 'Warlock', 'Wizard'],
     },
     {
         name: 'Shield',
@@ -440,7 +473,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 reaction',
         range: 'Self',
         components: 'V, S',
-        description: 'An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile.'
+        description: 'An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Silent Image',
@@ -450,7 +484,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 15-foot cube. The image appears at a spot within range and lasts for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Sleep',
@@ -459,7 +493,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'Creatures within a 20-foot-radius sphere centered on a point you choose within range are affected in ascending order of their current hit points (ignoring unconscious creatures).'
+        description: 'Creatures within a 20-foot-radius sphere centered on a point you choose within range are affected in ascending order of their current hit points (ignoring unconscious creatures).',
+        classes: ['Bard', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Speak with Animals',
@@ -468,7 +503,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'You gain the ability to comprehend and verbally communicate with beasts for the duration.'
+        description: 'You gain the ability to comprehend and verbally communicate with beasts for the duration.',
+        classes: ['Bard', 'Druid', 'Ranger'],
     },
     {
         name: 'Thunderwave',
@@ -477,7 +513,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self (15-foot cube)',
         components: 'V, S',
-        description: 'A wave of thunderous force sweeps out from you. Each creature in a 15-foot cube originating from you must make a Constitution saving throw. On a failed save, a creature takes 2d8 thunder damage and is pushed 10 feet away from you. On a successful save, it takes half as much damage and isn\'t pushed.'
+        description: 'A wave of thunderous force sweeps out from you. Each creature in a 15-foot cube originating from you must make a Constitution saving throw. On a failed save, a creature takes 2d8 thunder damage and is pushed 10 feet away from you. On a successful save, it takes half as much damage and isn\'t pushed.',
+        classes: ['Bard', 'Druid', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Unseen Servant',
@@ -486,10 +523,10 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'This spell creates an invisible, mindless, shapeless force that performs simple tasks at your command until the spell ends.'
+        description: 'This spell creates an invisible, mindless, shapeless force that performs simple tasks at your command until the spell ends.',
+        classes: ['Bard', 'Wizard', 'Warlock'],
     },
-
-    // LEVEL 2
+    // Level 2
     {
         name: 'Aid',
         level: 2,
@@ -497,7 +534,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'Your spell bolsters your allies with toughness and resolve. Choose up to three creatures within range. Each target\'s hit point maximum and current hit points increase by 5 for the duration.'
+        description: 'Your spell bolsters your allies with toughness and resolve. Choose up to three creatures within range. Each target\'s hit point maximum and current hit points increase by 5 for the duration.',
+        classes: ['Cleric', 'Paladin'],
     },
     {
         name: 'Alter Self',
@@ -507,7 +545,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self',
         components: 'V, S',
         description: 'You assume a different form. When you cast the spell, choose one of the following options: Aquatic Adaptation, Change Appearance, or Natural Weapons.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Arcane Lock',
@@ -516,7 +555,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a closed door, window, gate, chest, or other entryway, and it becomes locked for the duration.'
+        description: 'You touch a closed door, window, gate, chest, or other entryway, and it becomes locked for the duration.',
+        classes: ['Wizard'],
     },
     {
         name: 'Barkskin',
@@ -526,7 +566,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S, M',
         description: 'You touch a willing creature. Until the spell ends, the target\'s skin has a rough, bark-like appearance, and the target\'s AC can\'t be less than 16, regardless of what kind of armor it is wearing.',
-        requiresConcentration: true
+        classes: ['Druid', 'Ranger'],
+        requiresConcentration: true,
     },
     {
         name: 'Blindness/Deafness',
@@ -535,7 +576,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V',
-        description: 'You can blind or deafen a foe. Choose one creature that you can see within range to make a Constitution saving throw. If it fails, the target is either blinded or deafened (your choice) for the duration.'
+        description: 'You can blind or deafen a foe. Choose one creature that you can see within range to make a Constitution saving throw. If it fails, the target is either blinded or deafened (your choice) for the duration.',
+        classes: ['Bard', 'Cleric', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Blur',
@@ -545,7 +587,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self',
         components: 'V',
         description: 'Your body becomes blurred, shifting and wavering to all who can see you. For the duration, any creature has disadvantage on attack rolls against you.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Calm Emotions',
@@ -555,7 +598,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S',
         description: 'You attempt to suppress strong emotions in a group of people. Each humanoid in a 20-foot-radius sphere centered on a point you choose within range must make a Charisma saving throw.',
-        requiresConcentration: true
+        classes: ['Bard', 'Cleric'],
     },
     {
         name: 'Cloud of Daggers',
@@ -565,7 +608,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'You fill the air with spinning daggers in a cube 5 feet on each side, centered on a point you choose within range. A creature takes 4d4 slashing damage when it enters the spell\'s area for the first time on a turn or starts its turn there.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Darkness',
@@ -575,7 +619,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, M',
         description: 'Magical darkness spreads from a point you choose within range to fill a 15-foot-radius sphere for the duration. The darkness spreads around corners. A creature with darkvision can\'t see through this darkness, and nonmagical light can\'t illuminate it.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Darkvision',
@@ -584,7 +629,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature to grant it the ability to see in the dark. For the duration, that creature has darkvision out to a range of 60 feet.'
+        description: 'You touch a willing creature to grant it the ability to see in the dark. For the duration, that creature has darkvision out to a range of 60 feet.',
+        classes: ['Druid', 'Ranger', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Enhance Ability',
@@ -594,7 +640,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S, M',
         description: 'You touch a creature and bestow upon it a magical enhancement. Choose one of the following effects: Bull\'s Strength, Cat\'s Grace, Bear\'s Endurance, Fox\'s Cunning, Owl\'s Wisdom, or Eagle\'s Splendor.',
-        requiresConcentration: true
+        classes: ['Bard', 'Cleric', 'Druid', 'Sorcerer', 'Wizard'],
+        requiresConcentration: true,
     },
     {
         name: 'Enlarge/Reduce',
@@ -604,7 +651,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, S, M',
         description: 'You cause a creature or an object you can see within range to grow larger or smaller for the duration. Choose either Enlarge or Reduce.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Flaming Sphere',
@@ -614,7 +662,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'A 5-foot-diameter sphere of fire appears in an unoccupied space of your choice within range and lasts for the duration. Any creature that ends its turn within 5 feet of the sphere must make a Dexterity saving throw. The creature takes 2d6 fire damage on a failed save, or half as much damage on a successful one.',
-        requiresConcentration: true
+        classes: ['Druid', 'Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Gentle Repose',
@@ -623,7 +672,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a corpse or other remains. For the duration, the target is protected from decay and can\'t become undead.'
+        description: 'You touch a corpse or other remains. For the duration, the target is protected from decay and can\'t become undead.',
+        classes: ['Cleric', 'Wizard'],
     },
     {
         name: 'Gust of Wind',
@@ -633,7 +683,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self (60-foot line)',
         components: 'V, S, M',
         description: 'A line of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the duration. Each creature that starts its turn in the line must succeed on a Strength saving throw or be pushed 15 feet away from you in the direction of the line.',
-        requiresConcentration: true
+        classes: ['Druid', 'Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Hold Person',
@@ -643,7 +694,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Cleric', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Invisibility',
@@ -653,7 +705,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S, M',
         description: 'A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target\'s person.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Knock',
@@ -662,7 +715,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V',
-        description: 'Choose an object that you can see within range. The object can be a door, a box, a chest, a set of manacles, a padlock, or another object that contains a mundane or magical means that prevents access.'
+        description: 'Choose an object that you can see within range. The object can be a door, a box, a chest, a set of manacles, a padlock, or another object that contains a mundane or magical means that prevents access.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Levitate',
@@ -672,7 +726,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'One creature or object of your choice that you can see within range rises vertically, up to 20 feet, and remains suspended there for the duration.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Mirror Image',
@@ -681,7 +736,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it\'s impossible to track which image is real.'
+        description: 'Three illusory duplicates of yourself appear in your space. Until the spell ends, the duplicates move with you and mimic your actions, shifting position so it\'s impossible to track which image is real.',
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Misty Step',
@@ -690,7 +746,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 bonus action',
         range: 'Self',
         components: 'V',
-        description: 'Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.'
+        description: 'Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.',
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Pass without Trace',
@@ -700,7 +757,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self',
         components: 'V, S, M',
         description: 'A veil of shadows and silence radiates from you, masking you and your companions from detection. For the duration, each creature you choose within 30 feet of you (including you) has a +10 bonus to Dexterity (Stealth) checks and can\'t be tracked except by magical means.',
-        requiresConcentration: true
+        classes: ['Druid', 'Ranger'],
     },
     {
         name: 'Scorching Ray',
@@ -709,7 +766,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several.'
+        description: 'You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'See Invisibility',
@@ -718,7 +776,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S, M',
-        description: 'For the duration, you see invisible creatures and objects as if they were visible, and you can see into the Ethereal Plane. Ethereal creatures and objects appear ghostly and translucent.'
+        description: 'For the duration, you see invisible creatures and objects as if they were visible, and you can see into the Ethereal Plane. Ethereal creatures and objects appear ghostly and translucent.',
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Shatter',
@@ -727,7 +786,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'A sudden loud ringing noise, painfully intense, erupts from a point of your choice within range. Each creature in a 10-foot-radius sphere centered on that point must make a Constitution saving throw. A creature takes 3d8 thunder damage on a failed save, or half as much damage on a successful one.'
+        description: 'A sudden loud ringing noise, painfully intense, erupts from a point of your choice within range. Each creature in a 10-foot-radius sphere centered on that point must make a Constitution saving throw. A creature takes 3d8 thunder damage on a failed save, or half as much damage on a successful one.',
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Spider Climb',
@@ -737,7 +797,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S, M',
         description: 'Until the spell ends, one willing creature you touch gains the ability to move up, down, and across vertical surfaces and upside down along ceilings, while leaving its hands free.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Spiritual Weapon',
@@ -746,7 +806,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 bonus action',
         range: '60 ft',
         components: 'V, S',
-        description: 'You create a floating, spectral weapon within range that lasts for the duration. When you cast the spell, you can make a melee spell attack against a creature within 5 feet of the weapon. On a hit, the target takes force damage equal to 1d8 + your spellcasting ability modifier.'
+        description: 'You create a floating, spectral weapon within range that lasts for the duration. When you cast the spell, you can make a melee spell attack against a creature within 5 feet of the weapon. On a hit, the target takes force damage equal to 1d8 + your spellcasting ability modifier.',
+        classes: ['Cleric'],
     },
     {
         name: 'Suggestion',
@@ -756,7 +817,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, M',
         description: 'You suggest a course of activity (limited to a sentence or two) and magically influence a creature you can see within range that can hear and understand you.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Web',
@@ -766,10 +828,10 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'You conjure a mass of thick, sticky webbing at a point of your choice within range. The webs fill a 20-foot cube from that point for the duration. The webs are difficult terrain and lightly obscure their area.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
-
-    // LEVEL 3
+    // Level 3
     {
         name: 'Animate Dead',
         level: 3,
@@ -777,7 +839,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: '10 ft',
         components: 'V, S, M',
-        description: 'This spell creates an undead servant. Choose a pile of bones or a corpse of a Medium or Small humanoid within range. Your spell imbues the target with a foul mimicry of life, raising it as an undead creature.'
+        description: 'This spell creates an undead servant. Choose a pile of bones or a corpse of a Medium or Small humanoid within range. Your spell imbues the target with a foul mimicry of life, raising it as an undead creature.',
+        classes: ['Cleric', 'Wizard'],
     },
     {
         name: 'Bestow Curse',
@@ -787,7 +850,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S',
         description: 'You touch a creature, and that creature must succeed on a Wisdom saving throw or become cursed for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Cleric', 'Wizard', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Blink',
@@ -796,7 +860,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'Roll a d20 at the end of each of your turns for the duration. On a roll of 11 or higher, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell fails and the casting is wasted if you were already on that plane).'
+        description: 'Roll a d20 at the end of each of your turns for the duration. On a roll of 11 or higher, you vanish from your current plane of existence and appear in the Ethereal Plane (the spell fails and the casting is wasted if you were already on that plane).',
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Clairvoyance',
@@ -806,7 +871,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '1 mile',
         components: 'V, S, M',
         description: 'You create an invisible sensor within range. For the duration, you can see and hear through the sensor as if you were there.',
-        requiresConcentration: true
+        classes: ['Bard', 'Cleric', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Counterspell',
@@ -815,7 +880,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 reaction',
         range: '60 ft',
         components: 'S',
-        description: 'You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect.'
+        description: 'You attempt to interrupt a creature in the process of casting a spell. If the creature is casting a spell of 3rd level or lower, its spell fails and has no effect.',
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Create Food and Water',
@@ -824,7 +890,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'You create 45 pounds of food and 30 gallons of water on the ground or in containers within range, enough to sustain up to fifteen humanoids or five steeds for 24 hours.'
+        description: 'You create 45 pounds of food and 30 gallons of water on the ground or in containers within range, enough to sustain up to fifteen humanoids or five steeds for 24 hours.',
+        classes: ['Cleric', 'Paladin'],
     },
     {
         name: 'Dispel Magic',
@@ -833,7 +900,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'Choose one creature, object, or magical effect within range. Any spell of 3rd level or lower on the target ends. For each spell of 4th level or higher on the target, make an ability check using your spellcasting ability. The DC equals 10 + the spell\'s level.'
+        description: 'Choose one creature, object, or magical effect within range. Any spell of 3rd level or lower on the target ends. For each spell of 4th level or higher on the target, make an ability check using your spellcasting ability. The DC equals 10 + the spell\'s level.',
+        classes: ['Bard', 'Cleric', 'Druid', 'Paladin', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Fear',
@@ -843,7 +911,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self (30-foot cone)',
         components: 'V, S, M',
         description: 'You project a phantasmal image of a creature\'s worst fears. Each creature in a 30-foot cone must succeed on a Wisdom saving throw or drop whatever it is holding and become frightened for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Fireball',
@@ -852,7 +921,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '150 ft',
         components: 'V, S, M',
-        description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere must make a Dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one.'
+        description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame. Each creature in a 20-foot-radius sphere must make a Dexterity saving throw. A target takes 8d6 fire damage on a failed save, or half as much damage on a successful one.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Fly',
@@ -862,7 +932,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S, M',
         description: 'You touch a willing creature. The target gains a flying speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft, unless it can stop the fall.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Gaseous Form',
@@ -872,7 +943,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S, M',
         description: 'You transform a willing creature you touch, along with everything it\'s wearing and carrying, into a misty cloud for the duration. The creature\'s only method of movement is a flying speed of 10 feet.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Haste',
@@ -882,7 +954,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, S, M',
         description: 'Choose a willing creature that you can see within range. Until the spell ends, the target\'s speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Hypnotic Pattern',
@@ -892,7 +965,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'S, M',
         description: 'You create a twisting pattern of colors that weaves through the air inside a 30-foot cube within range. The pattern appears for a moment and vanishes. Each creature in the area who sees the pattern must make a Wisdom saving throw. On a failed save, the creature becomes charmed for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Leomund\'s Tiny Hut',
@@ -901,7 +975,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: 'Self (10-foot-radius hemisphere)',
         components: 'V, S, M',
-        description: 'A 10-foot-radius immobile dome of force springs into existence around and above you and remains stationary for the duration. The spell ends if you leave its area.'
+        description: 'A 10-foot-radius immobile dome of force springs into existence around and above you and remains stationary for the duration. The spell ends if you leave its area.',
+        classes: ['Wizard'],
     },
     {
         name: 'Lightning Bolt',
@@ -910,7 +985,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self (100-foot line)',
         components: 'V, S, M',
-        description: 'A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you in a direction you choose. Each creature in the line must make a Dexterity saving throw. A creature takes 8d6 lightning damage on a failed save, or half as much damage on a successful one.'
+        description: 'A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you in a direction you choose. Each creature in the line must make a Dexterity saving throw. A creature takes 8d6 lightning damage on a failed save, or half as much damage on a successful one.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Magic Circle',
@@ -919,7 +995,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: '10 ft',
         components: 'V, S, M',
-        description: 'You create a 10-foot-radius, 20-foot-tall cylinder of magical energy centered on a point on the ground that you can see within range. Glowing runes appear wherever the cylinder intersects with the floor or other surface.'
+        description: 'You create a 10-foot-radius, 20-foot-tall cylinder of magical energy centered on a point on the ground that you can see within range. Glowing runes appear wherever the cylinder intersects with the floor or other surface.',
+        classes: ['Cleric', 'Paladin', 'Warlock', 'Wizard'],
     },
     {
         name: 'Major Image',
@@ -929,7 +1006,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S, M',
         description: 'You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 20-foot cube. The image appears at a spot that you can see within range and lasts for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Nondetection',
@@ -938,7 +1016,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature and prevent it from being detected by divination magic. For the duration, the target can\'t be targeted by any divination magic or perceived through magical scrying sensors.'
+        description: 'You touch a willing creature and prevent it from being detected by divination magic. For the duration, the target can\'t be targeted by any divination magic or perceived through magical scrying sensors.',
+        classes: ['Wizard', 'Ranger'],
     },
     {
         name: 'Remove Curse',
@@ -947,7 +1026,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner\'s attunement to the object so it can be removed or discarded.'
+        description: 'At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner\'s attunement to the object so it can be removed or discarded.',
+        classes: ['Cleric', 'Paladin', 'Warlock', 'Wizard'],
     },
     {
         name: 'Revivify',
@@ -956,7 +1036,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a creature that has died within the last minute. That creature returns to life with 1 hit point. This spell can\'t return to life a creature that has died of old age, nor can it restore any missing body parts.'
+        description: 'You touch a creature that has died within the last minute. That creature returns to life with 1 hit point. This spell can\'t return to life a creature that has died of old age, nor can it restore any missing body parts.',
+        classes: ['Cleric', 'Paladin'],
     },
     {
         name: 'Sending',
@@ -965,7 +1046,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Unlimited',
         components: 'V, S, M',
-        description: 'You send a short message of twenty-five words or less to a creature with which you are familiar. The creature hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately.'
+        description: 'You send a short message of twenty-five words or less to a creature with which you are familiar. The creature hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately.',
+        classes: ['Bard', 'Cleric', 'Wizard'],
     },
     {
         name: 'Slow',
@@ -975,7 +1057,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S, M',
         description: 'You alter time around up to six creatures of your choice in a 40-foot cube within range. Each target must succeed on a Wisdom saving throw or be affected by this spell for the duration.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Speak with Dead',
@@ -984,7 +1067,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '10 ft',
         components: 'V, S, M',
-        description: 'You grant the semblance of life and intelligence to a corpse of your choice within range, allowing it to answer the questions you pose. The corpse must still have a mouth and can\'t be undead.'
+        description: 'You grant the semblance of life and intelligence to a corpse of your choice within range, allowing it to answer the questions you pose. The corpse must still have a mouth and can\'t be undead.',
+        classes: ['Bard', 'Cleric', 'Wizard'],
     },
     {
         name: 'Spirit Guardians',
@@ -994,7 +1078,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self (15-foot radius)',
         components: 'V, S, M',
         description: 'You call forth spirits to protect you. They flit around you to a distance of 15 feet for the duration. When you cast this spell, you can designate any number of creatures you can see to be unaffected by it.',
-        requiresConcentration: true
+        classes: ['Cleric'],
+        requiresConcentration: true,
     },
     {
         name: 'Stinking Cloud',
@@ -1004,7 +1089,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '90 ft',
         components: 'V, S, M',
         description: 'You create a 20-foot-radius sphere of yellow, nauseating gas centered on a point within range. The cloud spreads around corners, and its area is heavily obscured. The cloud lingers in the air for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Tongues',
@@ -1013,7 +1099,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, M',
-        description: 'This spell grants the creature you touch the ability to understand any spoken language it hears. Moreover, when the target speaks, any creature that knows at least one language and can hear the target understands what it says.'
+        description: 'This spell grants the creature you touch the ability to understand any spoken language it hears. Moreover, when the target speaks, any creature that knows at least one language and can hear the target understands what it says.',
+        classes: ['Bard', 'Cleric', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Water Breathing',
@@ -1022,10 +1109,10 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'This spell grants up to ten willing creatures you can see within range the ability to breathe underwater until the spell ends.'
+        description: 'This spell grants up to ten willing creatures you can see within range the ability to breathe underwater until the spell ends.',
+        classes: ['Druid', 'Ranger', 'Wizard', 'Sorcerer'],
     },
-
-    // LEVEL 4
+    // Level 4
     {
         name: 'Banishment',
         level: 4,
@@ -1034,7 +1121,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'You attempt to send one creature that you can see within range to another plane of existence. The target must succeed on a Charisma saving throw or be banished.',
-        requiresConcentration: true
+        classes: ['Cleric', 'Paladin', 'Warlock', 'Wizard'],
+        requiresConcentration: true,
     },
     {
         name: 'Black Tentacles',
@@ -1044,7 +1132,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '90 ft',
         components: 'V, S, M',
         description: 'Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. When a creature enters the affected area for the first time on a turn or starts its turn there, it must succeed on a Dexterity saving throw or take 3d6 bludgeoning damage and be restrained by the tentacles until the spell ends.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Charm Monster',
@@ -1054,7 +1143,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, S',
         description: 'You attempt to charm a creature you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Druid', 'Warlock'],
     },
     {
         name: 'Confusion',
@@ -1064,7 +1153,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '90 ft',
         components: 'V, S, M',
         description: 'This spell assaults and twists creatures\' minds, spawning delusions and provoking uncontrolled action. Each creature in a 10-foot-radius sphere centered on a point you choose within range must succeed on a Wisdom saving throw or be affected by it.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Druid'],
+        requiresConcentration: true,
     },
     {
         name: 'Conjure Woodland Beings',
@@ -1074,7 +1164,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'You summon fey creatures that appear in unoccupied spaces that you can see within range. Choose one of the following options for what appears.',
-        requiresConcentration: true
+        classes: ['Druid', 'Ranger'],
+        requiresConcentration: true,
     },
     {
         name: 'Death Ward',
@@ -1083,7 +1174,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 hit points as a result of taking damage, the target instead drops to 1 hit point, and the spell ends.'
+        description: 'You touch a creature and grant it a measure of protection from death. The first time the target would drop to 0 hit points as a result of taking damage, the target instead drops to 1 hit point, and the spell ends.',
+        classes: ['Cleric', 'Paladin'],
     },
     {
         name: 'Dimension Door',
@@ -1092,7 +1184,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '500 ft',
         components: 'V',
-        description: 'You teleport yourself from your current location to any other spot within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction.'
+        description: 'You teleport yourself from your current location to any other spot within range. You arrive at exactly the spot desired. It can be a place you can see, one you can visualize, or one you can describe by stating distance and direction.',
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Divination',
@@ -1101,7 +1194,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S, M',
-        description: 'Your magic and an offering put you in contact with a god or a god\'s servants. You ask a single question concerning a specific goal, event, or activity to occur within 7 days.'
+        description: 'Your magic and an offering put you in contact with a god or a god\'s servants. You ask a single question concerning a specific goal, event, or activity to occur within 7 days.',
+        classes: ['Cleric'],
     },
     {
         name: 'Freedom of Movement',
@@ -1110,7 +1204,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature. For the duration, the target\'s movement is unaffected by difficult terrain, and spells and other magical effects can neither reduce the target\'s speed nor cause the target to be paralyzed or restrained.'
+        description: 'You touch a willing creature. For the duration, the target\'s movement is unaffected by difficult terrain, and spells and other magical effects can neither reduce the target\'s speed nor cause the target to be paralyzed or restrained.',
+        classes: ['Bard', 'Cleric', 'Druid', 'Ranger'],
     },
     {
         name: 'Greater Invisibility',
@@ -1120,7 +1215,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Touch',
         components: 'V, S',
         description: 'You or a creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target\'s person.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Ice Storm',
@@ -1129,7 +1225,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '300 ft',
         components: 'V, S, M',
-        description: 'A hail of rock-hard ice pounds to the ground in a 20-foot-radius, 40-foot-high cylinder centered on a point within range. Each creature in the cylinder must make a Dexterity saving throw. A creature takes 2d8 bludgeoning damage and 4d6 cold damage on a failed save, or half as much damage on a successful one.'
+        description: 'A hail of rock-hard ice pounds to the ground in a 20-foot-radius, 40-foot-high cylinder centered on a point within range. Each creature in the cylinder must make a Dexterity saving throw. A creature takes 2d8 bludgeoning damage and 4d6 cold damage on a failed save, or half as much damage on a successful one.',
+        classes: ['Druid', 'Wizard', 'Sorcerer'],
     },
     {
         name: 'Phantasmal Killer',
@@ -1139,7 +1236,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S',
         description: 'You tap into the nightmares of a creature you can see within range and create an illusory manifestation of its deepest fears, visible only to that creature. The target must make a Wisdom saving throw. On a failed save, the target becomes frightened for the duration.',
-        requiresConcentration: true
+        classes: ['Wizard', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Planar Binding',
@@ -1148,7 +1246,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 hour',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'With this spell, you attempt to bind a celestial, an elemental, a fey, or a fiend to your service. The creature must be within range for the entire casting of the spell.'
+        description: 'With this spell, you attempt to bind a celestial, an elemental, a fey, or a fiend to your service. The creature must be within range for the entire casting of the spell.',
+        classes: ['Cleric', 'Wizard', 'Warlock'],
     },
     {
         name: 'Polymorph',
@@ -1158,7 +1257,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S, M',
         description: 'This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect.',
-        requiresConcentration: true
+        classes: ['Bard', 'Druid', 'Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Stone Shape',
@@ -1167,7 +1267,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a stone object of Medium size or smaller or a section of stone no more than 5 feet in any dimension and form it into any shape that suits your purpose.'
+        description: 'You touch a stone object of Medium size or smaller or a section of stone no more than 5 feet in any dimension and form it into any shape that suits your purpose.',
+        classes: ['Cleric', 'Druid', 'Wizard'],
     },
     {
         name: 'Wall of Fire',
@@ -1177,10 +1278,10 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S, M',
         description: 'You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick.',
-        requiresConcentration: true
+        classes: ['Druid', 'Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
-
-    // LEVEL 5
+    // Level 5
     {
         name: 'Animate Objects',
         level: 5,
@@ -1189,7 +1290,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S',
         description: 'Objects come to life at your command. Choose up to ten nonmagical objects within range that are not being worn or carried. Medium targets count as two objects, Large as four, Huge as eight.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
     {
         name: 'Cone of Cold',
@@ -1198,7 +1300,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self (60-foot cone)',
         components: 'V, S, M',
-        description: 'A blast of cold air erupts from your hands. Each creature in a 60-foot cone must make a Constitution saving throw. A creature takes 8d8 cold damage on a failed save, or half as much damage on a successful one.'
+        description: 'A blast of cold air erupts from your hands. Each creature in a 60-foot cone must make a Constitution saving throw. A creature takes 8d8 cold damage on a failed save, or half as much damage on a successful one.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Contact Other Plane',
@@ -1207,7 +1310,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: 'Self',
         components: 'V',
-        description: 'You mentally contact a demigod, the spirit of a long-dead sage, or some other mysterious entity from another plane. Contacting this extraplanar intelligence can strain or even break your mind.'
+        description: 'You mentally contact a demigod, the spirit of a long-dead sage, or some other mysterious entity from another plane. Contacting this extraplanar intelligence can strain or even break your mind.',
+        classes: ['Warlock', 'Wizard'],
     },
     {
         name: 'Dominate Person',
@@ -1217,7 +1321,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '60 ft',
         components: 'V, S',
         description: 'You attempt to beguile a humanoid that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Dream',
@@ -1226,7 +1331,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: 'Special',
         components: 'V, S, M',
-        description: 'This spell shapes a creature\'s dreams. Choose a creature known to you as the target of this spell. The target must be on the same plane of existence as you.'
+        description: 'This spell shapes a creature\'s dreams. Choose a creature known to you as the target of this spell. The target must be on the same plane of existence as you.',
+        classes: ['Bard', 'Wizard', 'Warlock'],
     },
     {
         name: 'Geas',
@@ -1235,7 +1341,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: '60 ft',
         components: 'V',
-        description: 'You place a magical command on a creature that you can see within range, forcing it to carry out some service or refrain from some action or course of activity as you decide.'
+        description: 'You place a magical command on a creature that you can see within range, forcing it to carry out some service or refrain from some action or course of activity as you decide.',
+        classes: ['Bard', 'Cleric', 'Druid', 'Paladin', 'Wizard'],
     },
     {
         name: 'Hold Monster',
@@ -1245,7 +1352,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '90 ft',
         components: 'V, S, M',
         description: 'Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. This spell has no effect on undead.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Legend Lore',
@@ -1254,7 +1362,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '10 minutes',
         range: 'Self',
         components: 'V, S, M',
-        description: 'Name or describe a person, place, or object. The spell brings to your mind a brief summary of the significant lore about the thing you named.'
+        description: 'Name or describe a person, place, or object. The spell brings to your mind a brief summary of the significant lore about the thing you named.',
+        classes: ['Bard', 'Cleric', 'Wizard'],
     },
     {
         name: 'Mass Cure Wounds',
@@ -1263,7 +1372,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S',
-        description: 'A wave of healing energy washes out from a point of your choice within range. Choose up to six creatures in a 30-foot-radius sphere centered on that point. Each target regains hit points equal to 3d8 + your spellcasting ability modifier.'
+        description: 'A wave of healing energy washes out from a point of your choice within range. Choose up to six creatures in a 30-foot-radius sphere centered on that point. Each target regains hit points equal to 3d8 + your spellcasting ability modifier.',
+        classes: ['Bard', 'Cleric', 'Druid'],
     },
     {
         name: 'Mislead',
@@ -1273,7 +1383,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self',
         components: 'S',
         description: 'You become invisible at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends if you attack or cast a spell.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Modify Memory',
@@ -1283,7 +1394,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '30 ft',
         components: 'V, S',
         description: 'You attempt to reshape another creature\'s memories. One creature that you can see within range must make a Wisdom saving throw. If you are fighting the creature, it has advantage on the saving throw.',
-        requiresConcentration: true
+        classes: ['Bard', 'Wizard', 'Warlock'],
+        requiresConcentration: true,
     },
     {
         name: 'Passwall',
@@ -1292,7 +1404,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'A passage appears at a point of your choice that you can see on a wooden, plaster, or stone surface (such as a wall, a ceiling, or a floor) within range, and lasts for the duration.'
+        description: 'A passage appears at a point of your choice that you can see on a wooden, plaster, or stone surface (such as a wall, a ceiling, or a floor) within range, and lasts for the duration.',
+        classes: ['Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Raise Dead',
@@ -1301,7 +1414,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 hour',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You return a dead creature you touch to life, provided that it has been dead no longer than 10 days. If the creature\'s soul is both willing and at liberty to rejoin the body, the creature returns to life with 1 hit point.'
+        description: 'You return a dead creature you touch to life, provided that it has been dead no longer than 10 days. If the creature\'s soul is both willing and at liberty to rejoin the body, the creature returns to life with 1 hit point.',
+        classes: ['Bard', 'Cleric', 'Paladin'],
     },
     {
         name: 'Scrying',
@@ -1311,7 +1425,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: 'Self',
         components: 'V, S, M',
         description: 'You can see and hear a particular creature you choose that is on the same plane of existence as you. The target must make a Wisdom saving throw; if it fails, you can see and hear it for the duration.',
-        requiresConcentration: true
+        classes: ['Bard', 'Cleric', 'Druid', 'Wizard', 'Warlock'],
     },
     {
         name: 'Seeming',
@@ -1320,7 +1434,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'This spell allows you to change the appearance of any number of creatures that you can see within range. You give each target you choose a new, illusory appearance.'
+        description: 'This spell allows you to change the appearance of any number of creatures that you can see within range. You give each target you choose a new, illusory appearance.',
+        classes: ['Bard', 'Wizard', 'Sorcerer', 'Warlock'],
     },
     {
         name: 'Teleportation Circle',
@@ -1329,7 +1444,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 minute',
         range: '10 ft',
         components: 'V, S, M',
-        description: 'As you cast the spell, you draw a 10-foot-diameter circle on the ground inscribed with sigils that link your location to a permanent teleportation circle of your choice whose sigil sequence you know.'
+        description: 'As you cast the spell, you draw a 10-foot-diameter circle on the ground inscribed with sigils that link your location to a permanent teleportation circle of your choice whose sigil sequence you know.',
+        classes: ['Wizard', 'Sorcerer'],
     },
     {
         name: 'Wall of Force',
@@ -1339,7 +1455,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S, M',
         description: 'An invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle.',
-        requiresConcentration: true
+        classes: ['Wizard'],
+        requiresConcentration: true,
     },
     {
         name: 'Wall of Stone',
@@ -1349,6 +1466,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         range: '120 ft',
         components: 'V, S, M',
         description: 'A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels.',
-        requiresConcentration: true
+        classes: ['Druid', 'Wizard', 'Sorcerer'],
+        requiresConcentration: true,
     },
 ];
