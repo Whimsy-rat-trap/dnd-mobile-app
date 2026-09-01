@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Character, InventoryItem, Spell, Quest, Campaign } from '../types/Character';
-import { getNaturalWeapons } from '../utils/racialFeatures';
-import { getRacialSpells } from '../constants/racialSpells';
+import { recalculateAC } from '../utils/armorUtils'; // <-- новый импорт
 
 // Дефолтный список навыков (используется при создании и для миграции старых персонажей)
 const defaultSkills = [
@@ -135,6 +134,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.savingThrowProficiencies = [];
                 }
 
+                // Если AC отсутствует, вычисляем его
+                if (updated.ac === undefined) {
+                    updated.ac = recalculateAC(updated);
+                }
+
                 return updated;
             });
         } catch (e) {
@@ -150,51 +154,18 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
 
-    // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ОБНОВЛЕНИЯ РАСОВЫХ ОСОБЕННОСТЕЙ
-
-    // Добавляет / обновляет natural weapons на основе расы / подрасы
-    const addNaturalWeaponsToCharacter = (character: Character): Character => {
-        const naturalWeapons = getNaturalWeapons(character.race, character.subrace);
-        if (naturalWeapons.length === 0) return character;
-
-        // Удаляем старые natural weapon предметы (по типу)
-        const filteredInventory = character.inventory.filter(item => item.type !== 'natural weapon');
-        const newNaturalWeapons = naturalWeapons.map(w => ({
-            ...w,
-            id: `natural-${Date.now()}-${Math.random()}`,
-        }));
-        return {
-            ...character,
-            inventory: [...filteredInventory, ...newNaturalWeapons],
-        };
+    // Вспомогательная функция для обновления AC при изменении инвентаря или способностей
+    const updateACIfNeeded = (char: Character, data: Partial<Character>): Character => {
+        if (data.inventory !== undefined || data.abilities !== undefined || data.ac === undefined) {
+            // Пересчитываем AC и обновляем поле
+            return { ...char, ...data, ac: recalculateAC({ ...char, ...data }) };
+        }
+        return { ...char, ...data };
     };
 
-    // Добавляет / обновляет расовые заклинания на основе расы / подрасы
-    const addRacialSpellsToCharacter = (character: Character): Character => {
-        const racialSpellData = getRacialSpells(character.race, character.subrace);
-        if (racialSpellData.length === 0) return character;
-
-        // Удаляем старые расовые заклинания (по isRacial)
-        const nonRacialSpells = character.spells.filter(s => !s.isRacial);
-        const newRacialSpells = racialSpellData.map((data, index) => ({
-            ...data,
-            id: `racial-${Date.now()}-${index}`,
-            prepared: true, // всегда подготовлены
-            isRacial: true,
-            isCustom: false,
-            source: 'race' as const,
-        }));
-
-        return {
-            ...character,
-            spells: [...nonRacialSpells, ...newRacialSpells],
-        };
-    };
-
-    // ОСНОВНЫЕ CRUD ОПЕРАЦИИ
-
+    // Базовые CRUD операции
     const addCharacter = (character: Omit<Character, 'id'>) => {
-        let newCharacter: Character = {
+        const newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
             class: character.class || character.classLevels?.[0]?.className || 'Fighter',
@@ -216,13 +187,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             creatureType: character.creatureType || 'Humanoid',
             subrace: character.subrace || '',
             savingThrowProficiencies: character.savingThrowProficiencies || [],
+            // Вычисляем AC сразу
+            ac: recalculateAC(character as Character), // временно приводим, но recalculateAC использует inventory и abilities, которые уже переданы
         };
-
-        // Добавляем natural weapons
-        newCharacter = addNaturalWeaponsToCharacter(newCharacter);
-        // Добавляем расовые заклинания
-        newCharacter = addRacialSpellsToCharacter(newCharacter);
-
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);
     };
@@ -231,14 +198,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         setCharacters(prev =>
             prev.map(char => {
                 if (char.id !== id) return char;
-                let updated = { ...char, ...data };
-
-                // Если изменилась раса или подраса, обновляем natural weapons и расовые заклинания
-                if (data.race !== undefined || data.subrace !== undefined) {
-                    updated = addNaturalWeaponsToCharacter(updated);
-                    updated = addRacialSpellsToCharacter(updated);
-                }
-
+                // Применяем данные и пересчитываем AC при необходимости
+                const updated = updateACIfNeeded(char, data);
                 return updated;
             })
         );
@@ -251,8 +212,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     const getCharacter = (id: string) => characters.find(char => char.id === id);
 
-    // ИНВЕНТАРЬ
-
+    // Инвентарь
     const addItemToInventory = (characterId: string, item: Omit<InventoryItem, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -273,23 +233,16 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const updateItemInInventory = (characterId: string, itemId: string, updates: Partial<InventoryItem>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, {
-            inventory: char.inventory.map(item =>
-                item.id === itemId ? { ...item, ...updates } : item
-            ),
-        });
+        const updatedInventory = char.inventory.map(item =>
+            item.id === itemId ? { ...item, ...updates } : item
+        );
+        updateCharacter(characterId, { inventory: updatedInventory });
     };
 
-    // ЗАКЛИНАНИЯ
-
+    // Заклинания
     const addSpellToCharacter = (characterId: string, spell: Omit<Spell, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        // Убедимся, что не добавляем дубликат расового заклинания
-        if (spell.isRacial) {
-            // Если добавляем расовое вручную – игнорируем (или можно пересобрать через addRacialSpellsToCharacter)
-            return;
-        }
         const newSpell: Spell = { ...spell, id: Date.now().toString(), prepared: spell.prepared || false };
         updateCharacter(characterId, {
             spells: [...char.spells, newSpell],
@@ -299,9 +252,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeSpellFromCharacter = (characterId: string, spellId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const spell = char.spells.find(s => s.id === spellId);
-        // Запрещаем удалять расовые заклинания
-        if (spell?.isRacial) return;
         updateCharacter(characterId, {
             spells: char.spells.filter(spell => spell.id !== spellId),
         });
@@ -310,12 +260,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const updateSpell = (characterId: string, spellId: string, updates: Partial<Spell>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const spell = char.spells.find(s => s.id === spellId);
-        // Запрещаем менять prepared у расовых (они всегда true)
-        if (spell?.isRacial && updates.prepared !== undefined) {
-            // Можно проигнорировать или разрешить, но мы запрещаем
-            return;
-        }
         updateCharacter(characterId, {
             spells: char.spells.map(spell =>
                 spell.id === spellId ? { ...spell, ...updates } : spell
@@ -323,8 +267,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    // КВЕСТЫ
-
+    // Квесты
     const addQuestToCharacter = (characterId: string, quest: Omit<Quest, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -352,8 +295,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    // КАМПАНИИ
-
+    // Кампании
     const addCampaignToCharacter = (characterId: string, campaign: Omit<Campaign, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -381,8 +323,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    // DICE LOGS
-
+    // Dice Logs
     const addDiceLog = (characterId: string, sides: number, result: number) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -395,8 +336,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCharacter(characterId, { diceLogs: updatedLogs });
     };
 
-    // ЗНАЧЕНИЯ, ПЕРЕДАВАЕМЫЕ В КОНТЕКСТ
-
+    // Значения передаваемые в контекст
     const value: CharacterContextType = {
         characters,
         currentCharacterId,

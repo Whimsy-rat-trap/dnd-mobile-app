@@ -1,7 +1,7 @@
 export interface LibraryItem {
     id: string;
     name: string;
-    type: 'weapon' | 'armor' | 'potion' | 'scroll' | 'ring' | 'wand' | 'natural weapon' | 'other';
+    type: 'weapon' | 'armor' | 'potion' | 'scroll' | 'ring' | 'wand' | 'shield' | 'natural weapon' | 'other';
     rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
     description: string;
     attunement?: boolean;
@@ -24,11 +24,25 @@ export const ALL_ITEMS: LibraryItem[] = [
     { id: 'a1', name: 'Leather Armor', type: 'armor', rarity: 'common', description: 'Standard leather armor, well-worn but sturdy.' },
     { id: 'a2', name: 'Plate Armor +2', type: 'armor', rarity: 'very rare', description: 'Shining plate armor that grants a +2 bonus to AC.', attunement: false },
     { id: 'a3', name: 'Cloak of Protection', type: 'armor', rarity: 'uncommon', description: 'You gain a +1 bonus to AC and saving throws while wearing this cloak.', attunement: true },
-    { id: 'a4', name: 'Ring of Protection', type: 'armor', rarity: 'rare', description: 'You gain a +1 bonus to AC and saving throws while wearing this ring.', attunement: true },
+    { id: 'a4', name: 'Ring of Protection', type: 'ring', rarity: 'rare', description: 'You gain a +1 bonus to AC and saving throws while wearing this ring.', attunement: true },
     { id: 'a5', name: 'Elven Chain', type: 'armor', rarity: 'rare', description: 'A fine chain shirt that can be worn under clothing. You are considered proficient with it even if you lack proficiency with medium armor.', attunement: false },
     { id: 'a6', name: 'Dragon Scale Mail', type: 'armor', rarity: 'very rare', description: 'Armor made from the scales of a dragon. You have resistance to the dragon\'s damage type.', attunement: true },
     { id: 'a7', name: 'Demon Armor', type: 'armor', rarity: 'very rare', description: 'This armor grants a +1 bonus to AC and allows you to use it as a weapon.', attunement: true },
     { id: 'a8', name: 'Studded Leather +1', type: 'armor', rarity: 'uncommon', description: 'Studded leather armor with a +1 bonus to AC.', attunement: false },
+    // Additional armor types
+    { id: 'a9', name: 'Hide Armor', type: 'armor', rarity: 'common', description: 'Armor made from thick hide, gives AC 12 + Dex (max 2).' },
+    { id: 'a10', name: 'Chain Shirt', type: 'armor', rarity: 'common', description: 'A chain shirt gives AC 13 + Dex (max 2).' },
+    { id: 'a11', name: 'Scale Mail', type: 'armor', rarity: 'common', description: 'Scale mail gives AC 14 + Dex (max 2).' },
+    { id: 'a12', name: 'Breastplate', type: 'armor', rarity: 'common', description: 'A breastplate gives AC 14 + Dex (max 2).' },
+    { id: 'a13', name: 'Half Plate', type: 'armor', rarity: 'common', description: 'Half plate gives AC 15 + Dex (max 2).' },
+    { id: 'a14', name: 'Ring Mail', type: 'armor', rarity: 'common', description: 'Ring mail gives AC 14 (no Dex).' },
+    { id: 'a15', name: 'Chain Mail', type: 'armor', rarity: 'common', description: 'Chain mail gives AC 16, requires Str 13, stealth disadvantage.' },
+    { id: 'a16', name: 'Splint Armor', type: 'armor', rarity: 'common', description: 'Splint armor gives AC 17, requires Str 15, stealth disadvantage.' },
+    { id: 'a17', name: 'Plate Armor', type: 'armor', rarity: 'common', description: 'Plate armor gives AC 18, requires Str 15, stealth disadvantage.' },
+    // Shields
+    { id: 'sh1', name: 'Shield', type: 'shield', rarity: 'common', description: 'A wooden or metal shield that grants +2 to AC.' },
+    { id: 'sh2', name: 'Shield +1', type: 'shield', rarity: 'uncommon', description: 'A magic shield that grants a +1 bonus to AC in addition to the normal +2.' },
+    { id: 'sh3', name: 'Shield of Missile Attraction', type: 'shield', rarity: 'rare', description: 'While holding this shield, you have resistance to damage from ranged weapon attacks.', attunement: true },
     // Potions
     { id: 'p1', name: 'Healing Potion', type: 'potion', rarity: 'common', description: 'Restores 2d4+2 hit points when consumed.' },
     { id: 'p2', name: 'Potion of Invisibility', type: 'potion', rarity: 'rare', description: 'Becomes invisible for 1 hour or until you attack/cast a spell.' },
@@ -69,32 +83,8 @@ export const ALL_ITEMS: LibraryItem[] = [
     { id: 'o10', name: 'Robe of Useful Items', type: 'other', rarity: 'uncommon', description: 'A robe with patches that can be torn off to produce various useful items.' },
 
     // Natural Weapons
-    {
-        id: 'nw1',
-        name: 'Claws',
-        type: 'natural weapon',
-        rarity: 'common',
-        description: 'Your claws are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier.',
-    },
-    {
-        id: 'nw2',
-        name: 'Bite',
-        type: 'natural weapon',
-        rarity: 'common',
-        description: 'Your fanged maw is a natural weapon, which you can use to make unarmed strikes. If you hit with it, you deal piercing damage equal to 1d6 + your Strength modifier.',
-    },
-    {
-        id: 'nw3',
-        name: 'Talons',
-        type: 'natural weapon',
-        rarity: 'common',
-        description: 'Your talons are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier.',
-    },
-    {
-        id: 'nw4',
-        name: 'Fangs',
-        type: 'natural weapon',
-        rarity: 'common',
-        description: 'Your fangs are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal piercing damage equal to 1d4 + your Strength modifier.',
-    },
+    { id: 'nw1', name: 'Claws', type: 'natural weapon', rarity: 'common', description: 'Your claws are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier.' },
+    { id: 'nw2', name: 'Bite', type: 'natural weapon', rarity: 'common', description: 'Your fanged maw is a natural weapon, which you can use to make unarmed strikes. If you hit with it, you deal piercing damage equal to 1d6 + your Strength modifier.' },
+    { id: 'nw3', name: 'Talons', type: 'natural weapon', rarity: 'common', description: 'Your talons are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier.' },
+    { id: 'nw4', name: 'Fangs', type: 'natural weapon', rarity: 'common', description: 'Your fangs are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal piercing damage equal to 1d4 + your Strength modifier.' },
 ];
