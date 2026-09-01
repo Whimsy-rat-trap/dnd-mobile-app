@@ -26,6 +26,7 @@ const SpellsLibrary: React.FC = () => {
         element: '',
         type: '',
         components: [] as string[],
+        concentration: '',
     });
 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -145,6 +146,16 @@ const SpellsLibrary: React.FC = () => {
             type: 'tags',
             options: COMPONENT_OPTIONS.map(c => ({ value: c, label: c })),
         },
+        {
+            key: 'concentration',
+            label: 'Concentration',
+            type: 'select',
+            options: [
+                { value: '', label: 'All' },
+                { value: 'true', label: 'Requires Concentration' },
+                { value: 'false', label: 'Does Not Require' },
+            ],
+        },
     ];
 
     // Объединяем стандартные и пользовательские заклинания
@@ -166,7 +177,10 @@ const SpellsLibrary: React.FC = () => {
             (filters.type === 'standard' && !spell.isCustom);
         const matchesComponents = filters.components.length === 0 ||
             filters.components.every(comp => spell.components.includes(comp));
-        return matchesSearch && matchesLevel && matchesSchool && matchesElement && matchesType && matchesComponents;
+        const matchesConcentration = !filters.concentration ||
+            (filters.concentration === 'true' && spell.requiresConcentration === true) ||
+            (filters.concentration === 'false' && spell.requiresConcentration !== true);
+        return matchesSearch && matchesLevel && matchesSchool && matchesElement && matchesType && matchesComponents && matchesConcentration;
     });
 
     const handleAddSpell = (spellData: any) => {
@@ -236,7 +250,7 @@ const SpellsLibrary: React.FC = () => {
 
         if (isEditing) {
             // Обновление
-            const { isCustom, prepared, ...updateData } = spellData; // убираем лишние поля
+            const { isCustom, prepared, ...updateData } = spellData;
             updateCustomSpell(editingSpellId, updateData);
         } else {
             // Создание
@@ -291,6 +305,7 @@ const SpellsLibrary: React.FC = () => {
                                 isCustom={isCustom}
                                 showEdit={isCustom}
                                 onEdit={() => handleEditSpell(spell.id)}
+                                requiresConcentration={spell.requiresConcentration || false}
                             />
                         );
                     })}
@@ -304,7 +319,7 @@ const SpellsLibrary: React.FC = () => {
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
-                    onReset={() => setFilters({ level: '', school: '', element: '', type: '', components: [] })}
+                    onReset={() => setFilters({ level: '', school: '', element: '', type: '', components: [], concentration: '' })}
                     title="Filter Spells"
                 />
             )}

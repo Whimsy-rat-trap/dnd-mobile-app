@@ -18,7 +18,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage dealt by weapon attacks.'
+        description: 'You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage dealt by weapon attacks.',
+        requiresConcentration: true
     },
     {
         name: 'Chill Touch',
@@ -36,7 +37,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'You create up to four torch-sized lights within range.'
+        description: 'You create up to four torch-sized lights within range.',
+        requiresConcentration: true
     },
     {
         name: 'Fire Bolt',
@@ -54,7 +56,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice.'
+        description: 'You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice.',
+        requiresConcentration: true
     },
     {
         name: 'Light',
@@ -99,7 +102,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'S, M',
-        description: 'You create a sound or an image of an object within range that lasts for the duration.'
+        description: 'You create a sound or an image of an object within range that lasts for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Poison Spray',
@@ -135,7 +139,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 bonus action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'The wood of a club or quarterstaff you are holding is imbued with nature\'s power. For the duration, you can use your spellcasting ability instead of Strength for the attack and damage rolls of melee attacks using that weapon.'
+        description: 'The wood of a club or quarterstaff you are holding is imbued with nature\'s power. For the duration, you can use your spellcasting ability instead of Strength for the attack and damage rolls of melee attacks using that weapon.',
+        requiresConcentration: true
     },
     {
         name: 'Spare the Dying',
@@ -162,9 +167,11 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'S',
-        description: 'You extend your hand and point a finger at a target in range. Your magic grants you a brief insight into the target\'s defenses. On your next turn, you gain advantage on your first attack roll against the target, provided that this spell hasn\'t ended.'
+        description: 'You extend your hand and point a finger at a target in range. Your magic grants you a brief insight into the target\'s defenses. On your next turn, you gain advantage on your first attack roll against the target, provided that this spell hasn\'t ended.',
+        requiresConcentration: true
     },
-    // Level 1
+
+    // LEVEL 1
     {
         name: 'Alarm',
         level: 1,
@@ -181,7 +188,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'You attempt to charm a beast that you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.'
+        description: 'You attempt to charm a beast that you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Bane',
@@ -190,7 +198,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'Up to three creatures of your choice that you can see within range must make Charisma saving throws. Whenever a target that fails this saving throw makes an attack roll or a saving throw before the spell ends, the target must roll a d4 and subtract the number rolled from the attack roll or saving throw.'
+        description: 'Up to three creatures of your choice that you can see within range must make Charisma saving throws. Whenever a target that fails this saving throw makes an attack roll or a saving throw before the spell ends, the target must roll a d4 and subtract the number rolled from the attack roll or saving throw.',
+        requiresConcentration: true
     },
     {
         name: 'Bless',
@@ -199,7 +208,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'You bless up to three creatures of your choice within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw.'
+        description: 'You bless up to three creatures of your choice within range. Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw.',
+        requiresConcentration: true
     },
     {
         name: 'Burning Hands',
@@ -217,7 +227,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'You attempt to charm a humanoid you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.'
+        description: 'You attempt to charm a humanoid you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Chromatic Orb',
@@ -244,7 +255,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'For the duration, you sense the presence of magic within 30 feet of you. If you sense magic in this way, you can use your action to see a faint aura around any visible creature or object in the area that bears magic.'
+        description: 'For the duration, you sense the presence of magic within 30 feet of you. If you sense magic in this way, you can use your action to see a faint aura around any visible creature or object in the area that bears magic.',
+        requiresConcentration: true
     },
     {
         name: 'Disguise Self',
@@ -262,7 +274,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 bonus action',
         range: 'Self',
         components: 'V, S',
-        description: 'This spell allows you to move at an incredible pace. When you cast this spell, and then as a bonus action on each of your turns until the spell ends, you can take the Dash action.'
+        description: 'This spell allows you to move at an incredible pace. When you cast this spell, and then as a bonus action on each of your turns until the spell ends, you can take the Dash action.',
+        requiresConcentration: true
     },
     {
         name: 'Faerie Fire',
@@ -271,7 +284,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V',
-        description: 'Each object in a 20-foot cube within range is outlined in blue, green, or violet light (your choice). Any creature in the area when the spell is cast is also outlined in light if it fails a Dexterity saving throw.'
+        description: 'Each object in a 20-foot cube within range is outlined in blue, green, or violet light (your choice). Any creature in the area when the spell is cast is also outlined in light if it fails a Dexterity saving throw.',
+        requiresConcentration: true
     },
     {
         name: 'False Life',
@@ -307,7 +321,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You create a 20-foot-radius sphere of fog centered on a point within range. The sphere spreads around corners, and its area is heavily obscured. It lasts for the duration or until a wind of moderate or greater speed (at least 10 miles per hour) disperses it.'
+        description: 'You create a 20-foot-radius sphere of fog centered on a point within range. The sphere spreads around corners, and its area is heavily obscured. It lasts for the duration or until a wind of moderate or greater speed (at least 10 miles per hour) disperses it.',
+        requiresConcentration: true
     },
     {
         name: 'Grease',
@@ -415,7 +430,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'Until the spell ends, one willing creature you touch is protected against certain creature types: aberrations, celestials, elementals, fey, fiends, and undead.'
+        description: 'Until the spell ends, one willing creature you touch is protected against certain creature types: aberrations, celestials, elementals, fey, fiends, and undead.',
+        requiresConcentration: true
     },
     {
         name: 'Shield',
@@ -433,7 +449,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 15-foot cube. The image appears at a spot within range and lasts for the duration.'
+        description: 'You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 15-foot cube. The image appears at a spot within range and lasts for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Sleep',
@@ -471,7 +488,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         components: 'V, S, M',
         description: 'This spell creates an invisible, mindless, shapeless force that performs simple tasks at your command until the spell ends.'
     },
-    // Level 2
+
+    // LEVEL 2
     {
         name: 'Aid',
         level: 2,
@@ -488,7 +506,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'You assume a different form. When you cast the spell, choose one of the following options: Aquatic Adaptation, Change Appearance, or Natural Weapons.'
+        description: 'You assume a different form. When you cast the spell, choose one of the following options: Aquatic Adaptation, Change Appearance, or Natural Weapons.',
+        requiresConcentration: true
     },
     {
         name: 'Arcane Lock',
@@ -506,7 +525,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature. Until the spell ends, the target\'s skin has a rough, bark-like appearance, and the target\'s AC can\'t be less than 16, regardless of what kind of armor it is wearing.'
+        description: 'You touch a willing creature. Until the spell ends, the target\'s skin has a rough, bark-like appearance, and the target\'s AC can\'t be less than 16, regardless of what kind of armor it is wearing.',
+        requiresConcentration: true
     },
     {
         name: 'Blindness/Deafness',
@@ -524,7 +544,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V',
-        description: 'Your body becomes blurred, shifting and wavering to all who can see you. For the duration, any creature has disadvantage on attack rolls against you.'
+        description: 'Your body becomes blurred, shifting and wavering to all who can see you. For the duration, any creature has disadvantage on attack rolls against you.',
+        requiresConcentration: true
     },
     {
         name: 'Calm Emotions',
@@ -533,7 +554,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S',
-        description: 'You attempt to suppress strong emotions in a group of people. Each humanoid in a 20-foot-radius sphere centered on a point you choose within range must make a Charisma saving throw.'
+        description: 'You attempt to suppress strong emotions in a group of people. Each humanoid in a 20-foot-radius sphere centered on a point you choose within range must make a Charisma saving throw.',
+        requiresConcentration: true
     },
     {
         name: 'Cloud of Daggers',
@@ -542,7 +564,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You fill the air with spinning daggers in a cube 5 feet on each side, centered on a point you choose within range. A creature takes 4d4 slashing damage when it enters the spell\'s area for the first time on a turn or starts its turn there.'
+        description: 'You fill the air with spinning daggers in a cube 5 feet on each side, centered on a point you choose within range. A creature takes 4d4 slashing damage when it enters the spell\'s area for the first time on a turn or starts its turn there.',
+        requiresConcentration: true
     },
     {
         name: 'Darkness',
@@ -551,7 +574,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, M',
-        description: 'Magical darkness spreads from a point you choose within range to fill a 15-foot-radius sphere for the duration. The darkness spreads around corners. A creature with darkvision can\'t see through this darkness, and nonmagical light can\'t illuminate it.'
+        description: 'Magical darkness spreads from a point you choose within range to fill a 15-foot-radius sphere for the duration. The darkness spreads around corners. A creature with darkvision can\'t see through this darkness, and nonmagical light can\'t illuminate it.',
+        requiresConcentration: true
     },
     {
         name: 'Darkvision',
@@ -569,7 +593,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a creature and bestow upon it a magical enhancement. Choose one of the following effects: Bull\'s Strength, Cat\'s Grace, Bear\'s Endurance, Fox\'s Cunning, Owl\'s Wisdom, or Eagle\'s Splendor.'
+        description: 'You touch a creature and bestow upon it a magical enhancement. Choose one of the following effects: Bull\'s Strength, Cat\'s Grace, Bear\'s Endurance, Fox\'s Cunning, Owl\'s Wisdom, or Eagle\'s Splendor.',
+        requiresConcentration: true
     },
     {
         name: 'Enlarge/Reduce',
@@ -578,7 +603,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'You cause a creature or an object you can see within range to grow larger or smaller for the duration. Choose either Enlarge or Reduce.'
+        description: 'You cause a creature or an object you can see within range to grow larger or smaller for the duration. Choose either Enlarge or Reduce.',
+        requiresConcentration: true
     },
     {
         name: 'Flaming Sphere',
@@ -587,7 +613,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'A 5-foot-diameter sphere of fire appears in an unoccupied space of your choice within range and lasts for the duration. Any creature that ends its turn within 5 feet of the sphere must make a Dexterity saving throw. The creature takes 2d6 fire damage on a failed save, or half as much damage on a successful one.'
+        description: 'A 5-foot-diameter sphere of fire appears in an unoccupied space of your choice within range and lasts for the duration. Any creature that ends its turn within 5 feet of the sphere must make a Dexterity saving throw. The creature takes 2d6 fire damage on a failed save, or half as much damage on a successful one.',
+        requiresConcentration: true
     },
     {
         name: 'Gentle Repose',
@@ -605,7 +632,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self (60-foot line)',
         components: 'V, S, M',
-        description: 'A line of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the duration. Each creature that starts its turn in the line must succeed on a Strength saving throw or be pushed 15 feet away from you in the direction of the line.'
+        description: 'A line of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the duration. Each creature that starts its turn in the line must succeed on a Strength saving throw or be pushed 15 feet away from you in the direction of the line.',
+        requiresConcentration: true
     },
     {
         name: 'Hold Person',
@@ -614,7 +642,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration.'
+        description: 'Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Invisibility',
@@ -623,7 +652,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target\'s person.'
+        description: 'A creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target\'s person.',
+        requiresConcentration: true
     },
     {
         name: 'Knock',
@@ -641,7 +671,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'One creature or object of your choice that you can see within range rises vertically, up to 20 feet, and remains suspended there for the duration.'
+        description: 'One creature or object of your choice that you can see within range rises vertically, up to 20 feet, and remains suspended there for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Mirror Image',
@@ -668,7 +699,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S, M',
-        description: 'A veil of shadows and silence radiates from you, masking you and your companions from detection. For the duration, each creature you choose within 30 feet of you (including you) has a +10 bonus to Dexterity (Stealth) checks and can\'t be tracked except by magical means.'
+        description: 'A veil of shadows and silence radiates from you, masking you and your companions from detection. For the duration, each creature you choose within 30 feet of you (including you) has a +10 bonus to Dexterity (Stealth) checks and can\'t be tracked except by magical means.',
+        requiresConcentration: true
     },
     {
         name: 'Scorching Ray',
@@ -704,7 +736,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'Until the spell ends, one willing creature you touch gains the ability to move up, down, and across vertical surfaces and upside down along ceilings, while leaving its hands free.'
+        description: 'Until the spell ends, one willing creature you touch gains the ability to move up, down, and across vertical surfaces and upside down along ceilings, while leaving its hands free.',
+        requiresConcentration: true
     },
     {
         name: 'Spiritual Weapon',
@@ -722,7 +755,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, M',
-        description: 'You suggest a course of activity (limited to a sentence or two) and magically influence a creature you can see within range that can hear and understand you.'
+        description: 'You suggest a course of activity (limited to a sentence or two) and magically influence a creature you can see within range that can hear and understand you.',
+        requiresConcentration: true
     },
     {
         name: 'Web',
@@ -731,9 +765,11 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You conjure a mass of thick, sticky webbing at a point of your choice within range. The webs fill a 20-foot cube from that point for the duration. The webs are difficult terrain and lightly obscure their area.'
+        description: 'You conjure a mass of thick, sticky webbing at a point of your choice within range. The webs fill a 20-foot cube from that point for the duration. The webs are difficult terrain and lightly obscure their area.',
+        requiresConcentration: true
     },
-    // Level 3
+
+    // LEVEL 3
     {
         name: 'Animate Dead',
         level: 3,
@@ -750,7 +786,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You touch a creature, and that creature must succeed on a Wisdom saving throw or become cursed for the duration.'
+        description: 'You touch a creature, and that creature must succeed on a Wisdom saving throw or become cursed for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Blink',
@@ -768,7 +805,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '10 minutes',
         range: '1 mile',
         components: 'V, S, M',
-        description: 'You create an invisible sensor within range. For the duration, you can see and hear through the sensor as if you were there.'
+        description: 'You create an invisible sensor within range. For the duration, you can see and hear through the sensor as if you were there.',
+        requiresConcentration: true
     },
     {
         name: 'Counterspell',
@@ -804,7 +842,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self (30-foot cone)',
         components: 'V, S, M',
-        description: 'You project a phantasmal image of a creature\'s worst fears. Each creature in a 30-foot cone must succeed on a Wisdom saving throw or drop whatever it is holding and become frightened for the duration.'
+        description: 'You project a phantasmal image of a creature\'s worst fears. Each creature in a 30-foot cone must succeed on a Wisdom saving throw or drop whatever it is holding and become frightened for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Fireball',
@@ -822,7 +861,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature. The target gains a flying speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft, unless it can stop the fall.'
+        description: 'You touch a willing creature. The target gains a flying speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft, unless it can stop the fall.',
+        requiresConcentration: true
     },
     {
         name: 'Gaseous Form',
@@ -831,7 +871,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You transform a willing creature you touch, along with everything it\'s wearing and carrying, into a misty cloud for the duration. The creature\'s only method of movement is a flying speed of 10 feet.'
+        description: 'You transform a willing creature you touch, along with everything it\'s wearing and carrying, into a misty cloud for the duration. The creature\'s only method of movement is a flying speed of 10 feet.',
+        requiresConcentration: true
     },
     {
         name: 'Haste',
@@ -840,7 +881,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'Choose a willing creature that you can see within range. Until the spell ends, the target\'s speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns.'
+        description: 'Choose a willing creature that you can see within range. Until the spell ends, the target\'s speed is doubled, it gains a +2 bonus to AC, it has advantage on Dexterity saving throws, and it gains an additional action on each of its turns.',
+        requiresConcentration: true
     },
     {
         name: 'Hypnotic Pattern',
@@ -849,7 +891,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'S, M',
-        description: 'You create a twisting pattern of colors that weaves through the air inside a 30-foot cube within range. The pattern appears for a moment and vanishes. Each creature in the area who sees the pattern must make a Wisdom saving throw. On a failed save, the creature becomes charmed for the duration.'
+        description: 'You create a twisting pattern of colors that weaves through the air inside a 30-foot cube within range. The pattern appears for a moment and vanishes. Each creature in the area who sees the pattern must make a Wisdom saving throw. On a failed save, the creature becomes charmed for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Leomund\'s Tiny Hut',
@@ -885,7 +928,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 20-foot cube. The image appears at a spot that you can see within range and lasts for the duration.'
+        description: 'You create the image of an object, a creature, or some other visible phenomenon that is no larger than a 20-foot cube. The image appears at a spot that you can see within range and lasts for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Nondetection',
@@ -930,7 +974,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'You alter time around up to six creatures of your choice in a 40-foot cube within range. Each target must succeed on a Wisdom saving throw or be affected by this spell for the duration.'
+        description: 'You alter time around up to six creatures of your choice in a 40-foot cube within range. Each target must succeed on a Wisdom saving throw or be affected by this spell for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Speak with Dead',
@@ -948,7 +993,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self (15-foot radius)',
         components: 'V, S, M',
-        description: 'You call forth spirits to protect you. They flit around you to a distance of 15 feet for the duration. When you cast this spell, you can designate any number of creatures you can see to be unaffected by it.'
+        description: 'You call forth spirits to protect you. They flit around you to a distance of 15 feet for the duration. When you cast this spell, you can designate any number of creatures you can see to be unaffected by it.',
+        requiresConcentration: true
     },
     {
         name: 'Stinking Cloud',
@@ -957,7 +1003,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'You create a 20-foot-radius sphere of yellow, nauseating gas centered on a point within range. The cloud spreads around corners, and its area is heavily obscured. The cloud lingers in the air for the duration.'
+        description: 'You create a 20-foot-radius sphere of yellow, nauseating gas centered on a point within range. The cloud spreads around corners, and its area is heavily obscured. The cloud lingers in the air for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Tongues',
@@ -977,7 +1024,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         components: 'V, S, M',
         description: 'This spell grants up to ten willing creatures you can see within range the ability to breathe underwater until the spell ends.'
     },
-    // Level 4
+
+    // LEVEL 4
     {
         name: 'Banishment',
         level: 4,
@@ -985,7 +1033,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You attempt to send one creature that you can see within range to another plane of existence. The target must succeed on a Charisma saving throw or be banished.'
+        description: 'You attempt to send one creature that you can see within range to another plane of existence. The target must succeed on a Charisma saving throw or be banished.',
+        requiresConcentration: true
     },
     {
         name: 'Black Tentacles',
@@ -994,7 +1043,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. When a creature enters the affected area for the first time on a turn or starts its turn there, it must succeed on a Dexterity saving throw or take 3d6 bludgeoning damage and be restrained by the tentacles until the spell ends.'
+        description: 'Squirming, ebony tentacles fill a 20-foot square on ground that you can see within range. When a creature enters the affected area for the first time on a turn or starts its turn there, it must succeed on a Dexterity saving throw or take 3d6 bludgeoning damage and be restrained by the tentacles until the spell ends.',
+        requiresConcentration: true
     },
     {
         name: 'Charm Monster',
@@ -1003,7 +1053,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'You attempt to charm a creature you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.'
+        description: 'You attempt to charm a creature you can see within range. It must make a Wisdom saving throw, and if it fails, it is charmed by you for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Confusion',
@@ -1012,7 +1063,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'This spell assaults and twists creatures\' minds, spawning delusions and provoking uncontrolled action. Each creature in a 10-foot-radius sphere centered on a point you choose within range must succeed on a Wisdom saving throw or be affected by it.'
+        description: 'This spell assaults and twists creatures\' minds, spawning delusions and provoking uncontrolled action. Each creature in a 10-foot-radius sphere centered on a point you choose within range must succeed on a Wisdom saving throw or be affected by it.',
+        requiresConcentration: true
     },
     {
         name: 'Conjure Woodland Beings',
@@ -1021,7 +1073,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You summon fey creatures that appear in unoccupied spaces that you can see within range. Choose one of the following options for what appears.'
+        description: 'You summon fey creatures that appear in unoccupied spaces that you can see within range. Choose one of the following options for what appears.',
+        requiresConcentration: true
     },
     {
         name: 'Death Ward',
@@ -1066,7 +1119,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You or a creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target\'s person.'
+        description: 'You or a creature you touch becomes invisible until the spell ends. Anything the target is wearing or carrying is invisible as long as it is on the target\'s person.',
+        requiresConcentration: true
     },
     {
         name: 'Ice Storm',
@@ -1084,7 +1138,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You tap into the nightmares of a creature you can see within range and create an illusory manifestation of its deepest fears, visible only to that creature. The target must make a Wisdom saving throw. On a failed save, the target becomes frightened for the duration.'
+        description: 'You tap into the nightmares of a creature you can see within range and create an illusory manifestation of its deepest fears, visible only to that creature. The target must make a Wisdom saving throw. On a failed save, the target becomes frightened for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Planar Binding',
@@ -1102,7 +1157,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect.'
+        description: 'This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect.',
+        requiresConcentration: true
     },
     {
         name: 'Stone Shape',
@@ -1120,9 +1176,11 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick.'
+        description: 'You create a wall of fire on a solid surface within range. You can make the wall up to 60 feet long, 20 feet high, and 1 foot thick, or a ringed wall up to 20 feet in diameter, 20 feet high, and 1 foot thick.',
+        requiresConcentration: true
     },
-    // Level 5
+
+    // LEVEL 5
     {
         name: 'Animate Objects',
         level: 5,
@@ -1130,7 +1188,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'Objects come to life at your command. Choose up to ten nonmagical objects within range that are not being worn or carried. Medium targets count as two objects, Large as four, Huge as eight.'
+        description: 'Objects come to life at your command. Choose up to ten nonmagical objects within range that are not being worn or carried. Medium targets count as two objects, Large as four, Huge as eight.',
+        requiresConcentration: true
     },
     {
         name: 'Cone of Cold',
@@ -1157,7 +1216,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S',
-        description: 'You attempt to beguile a humanoid that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration.'
+        description: 'You attempt to beguile a humanoid that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Dream',
@@ -1184,7 +1244,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. This spell has no effect on undead.'
+        description: 'Choose a creature that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. This spell has no effect on undead.',
+        requiresConcentration: true
     },
     {
         name: 'Legend Lore',
@@ -1211,7 +1272,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'S',
-        description: 'You become invisible at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends if you attack or cast a spell.'
+        description: 'You become invisible at the same time that an illusory double of you appears where you are standing. The double lasts for the duration, but the invisibility ends if you attack or cast a spell.',
+        requiresConcentration: true
     },
     {
         name: 'Modify Memory',
@@ -1220,7 +1282,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'You attempt to reshape another creature\'s memories. One creature that you can see within range must make a Wisdom saving throw. If you are fighting the creature, it has advantage on the saving throw.'
+        description: 'You attempt to reshape another creature\'s memories. One creature that you can see within range must make a Wisdom saving throw. If you are fighting the creature, it has advantage on the saving throw.',
+        requiresConcentration: true
     },
     {
         name: 'Passwall',
@@ -1247,7 +1310,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '10 minutes',
         range: 'Self',
         components: 'V, S, M',
-        description: 'You can see and hear a particular creature you choose that is on the same plane of existence as you. The target must make a Wisdom saving throw; if it fails, you can see and hear it for the duration.'
+        description: 'You can see and hear a particular creature you choose that is on the same plane of existence as you. The target must make a Wisdom saving throw; if it fails, you can see and hear it for the duration.',
+        requiresConcentration: true
     },
     {
         name: 'Seeming',
@@ -1274,7 +1338,8 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'An invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle.'
+        description: 'An invisible wall of force springs into existence at a point you choose within range. The wall appears in any orientation you choose, as a horizontal or vertical barrier or at an angle.',
+        requiresConcentration: true
     },
     {
         name: 'Wall of Stone',
@@ -1283,6 +1348,7 @@ export const ALL_SPELLS: Omit<Spell, 'id' | 'prepared'>[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels.'
+        description: 'A nonmagical wall of solid stone springs into existence at a point you choose within range. The wall is 6 inches thick and is composed of ten 10-foot-by-10-foot panels.',
+        requiresConcentration: true
     },
 ];

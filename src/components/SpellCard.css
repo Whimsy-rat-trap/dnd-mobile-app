@@ -207,3 +207,43 @@
     font-size: 11px;
     font-weight: 500;
 }
+
+.spell-concentration-tag {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid #fbbf24;
+    color: #fbbf24;
+    padding: 0 6px;
+    border-radius: 4px;
+    line-height: 18px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.spell-tag-concentration {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid #fbbf24;
+    color: #fbbf24;
+}
+
+.btn-concentration {
+    background: transparent;
+    border: 1px solid #6b7280;
+    border-radius: 4px;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.btn-concentration.active {
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+}
+
+.btn-concentration:hover {
+    border-color: #fbbf24;
+    color: #fbbf24;
+}

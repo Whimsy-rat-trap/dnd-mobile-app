@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import CreateModePopup from '../components/CreateModePopup';
@@ -25,6 +25,11 @@ const Dashboard: React.FC = () => {
         getCharacter,
         updateCharacter,
         addDiceLog,
+        startConcentration,
+        endConcentration,
+        makeConcentrationCheck,
+        resolveConcentrationCheck,
+        concentrationCheck,
     } = useCharacters();
 
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
@@ -66,7 +71,7 @@ const Dashboard: React.FC = () => {
         20: false,
     });
 
-    // Обработка параметра create (автоматическое открытие модалки)
+    // Автоматическое открытие модалки создания при ?create=true
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get('create') === 'true') {
@@ -75,13 +80,7 @@ const Dashboard: React.FC = () => {
         }
     }, [location, navigate]);
 
-    // Обработчик выбора режима создания
-    const handleCreateModeSelect = (mode: 'creative' | 'rules') => {
-        setShowCreatePopup(false);
-        navigate(`/characters/new?mode=${mode}`);
-    };
-
-    // Обработчик изменения фильтров для FilterModal
+    // Обработчик изменения фильтров
     const handleFilterChange = (newFilters: Record<string, any>) => {
         // Если изменился класс – сбрасываем сабкласс
         if (newFilters.class !== filters.class) {
@@ -90,9 +89,8 @@ const Dashboard: React.FC = () => {
         setFilters(newFilters as any);
     };
 
-    // Поля для фильтрации персонажей (вычисляются динамически)
-    const filterFields: FilterField[] = useMemo(() => {
-        // Для поля subclass строим опции в зависимости от выбранного класса
+    // Поля для фильтрации (вычисляются динамически)
+    const filterFields: FilterField[] = React.useMemo(() => {
         let subclassOptions: { value: string; label: string }[] = [{ value: '', label: 'All' }];
         if (filters.class && SUBCLASSES[filters.class]) {
             subclassOptions = [
@@ -100,7 +98,6 @@ const Dashboard: React.FC = () => {
                 ...SUBCLASSES[filters.class].map(s => ({ value: s, label: s })),
             ];
         }
-
         return [
             {
                 key: 'class',
@@ -247,7 +244,10 @@ const Dashboard: React.FC = () => {
                 {/* Модалка выбора режима создания */}
                 {showCreatePopup && (
                     <CreateModePopup
-                        onSelect={handleCreateModeSelect}
+                        onSelect={(mode) => {
+                            setShowCreatePopup(false);
+                            navigate(`/characters/new?mode=${mode}`);
+                        }}
                         onClose={() => setShowCreatePopup(false)}
                     />
                 )}
@@ -255,7 +255,7 @@ const Dashboard: React.FC = () => {
         );
     }
 
-    // Функции для работы с HP и EXP
+    // --- Функции для работы с HP и EXP ---
     const updateChar = (updates: Partial<typeof character>) => {
         updateCharacter(character.id, updates);
     };
@@ -312,6 +312,10 @@ const Dashboard: React.FC = () => {
         if (amount <= 0) return;
         const newHp = Math.max(hp - amount, 0);
         updateChar({ hp: newHp });
+        // Проверка концентрации при получении урона (если персонаж концентрируется)
+        if (character.activeConcentrationSpellId) {
+            makeConcentrationCheck(character.id, amount);
+        }
     };
 
     const addTempHp = (amount: number) => {
@@ -439,7 +443,11 @@ const Dashboard: React.FC = () => {
         setCurrentCharacterId(null);
     };
 
-    // Рендер для выбранного персонажа
+    // Активное заклинание с концентрацией
+    const activeConcentrationSpell = character.activeConcentrationSpellId
+        ? character.spells.find(s => s.id === character.activeConcentrationSpellId)
+        : null;
+
     return (
         <div className="db-page">
             {/* Header */}
@@ -483,6 +491,20 @@ const Dashboard: React.FC = () => {
                     hp={hp}
                     rollDeathSave={rollDeathSave}
                 />
+
+                {/* Отображение активной концентрации */}
+                {activeConcentrationSpell && (
+                    <div className="db-active-concentration">
+                        <span className="db-concentration-label">Concentrating: </span>
+                        <span className="db-concentration-spell-name">{activeConcentrationSpell.name}</span>
+                        <button
+                            className="db-end-concentration-btn"
+                            onClick={() => endConcentration(character.id)}
+                        >
+                            End
+                        </button>
+                    </div>
+                )}
 
                 <QuickActions
                     characterId={character.id}
@@ -529,7 +551,7 @@ const Dashboard: React.FC = () => {
                 />
             </div>
 
-            {/* Попапы (HP, EXP, Settings, Profile) */}
+            {/* Попапы */}
             {popupType === 'hp' && (
                 <Modal isOpen={true} onClose={closePopup}>
                     <div className="db-popup-body">
@@ -638,6 +660,43 @@ const Dashboard: React.FC = () => {
                     <div className="db-popup-body">
                         <h3 className="db-popup-title">Character Profile</h3>
                         <p>Empty popup</p>
+                    </div>
+                </Modal>
+            )}
+
+            {/* Модальное окно для проверки концентрации */}
+            {concentrationCheck && (
+                <Modal isOpen={true} onClose={() => {}}>
+                    <div className="db-concentration-modal">
+                        <h3 className="db-concentration-modal-title">Concentration Check</h3>
+                        <p className="db-concentration-modal-text">
+                            You are concentrating on a spell and took damage. You must make a Constitution saving throw.
+                        </p>
+                        <div className="db-concentration-details">
+                            <div className="db-concentration-detail">
+                                <span className="db-concentration-detail-label">DC:</span>
+                                <span className="db-concentration-detail-value">{concentrationCheck.dc}</span>
+                            </div>
+                            <div className="db-concentration-detail">
+                                <span className="db-concentration-detail-label">Your Constitution modifier:</span>
+                                <span className="db-concentration-detail-value">{concentrationCheck.conMod >= 0 ? '+' : ''}{concentrationCheck.conMod}</span>
+                            </div>
+                        </div>
+                        <div className="db-concentration-actions">
+                            <button
+                                className="db-concentration-roll-btn"
+                                onClick={() => {
+                                    const roll = Math.floor(Math.random() * 20) + 1;
+                                    const total = roll + concentrationCheck.conMod;
+                                    const success = total >= concentrationCheck.dc;
+                                    const spellName = character.spells.find(s => s.id === concentrationCheck.spellId)?.name || 'unknown';
+                                    alert(`You rolled ${roll} + ${concentrationCheck.conMod} = ${total}. ${success ? 'Concentration maintained!' : `Concentration on "${spellName}" is lost.`}`);
+                                    resolveConcentrationCheck(character.id, success);
+                                }}
+                            >
+                                Roll Constitution Save
+                            </button>
+                        </div>
                     </div>
                 </Modal>
             )}

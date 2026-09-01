@@ -15,6 +15,10 @@ interface SpellCardProps {
     showEdit?: boolean;
     onEdit?: () => void;
     disableToggle?: boolean;
+    requiresConcentration?: boolean;
+    isConcentrating?: boolean;
+    onToggleConcentration?: () => void;
+    showConcentrationControl?: boolean;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -30,6 +34,10 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  showEdit = false,
                                                  onEdit,
                                                  disableToggle = false,
+                                                 requiresConcentration = false,
+                                                 isConcentrating = false,
+                                                 onToggleConcentration,
+                                                 showConcentrationControl = false,
                                              }) => {
     // Цвет элемента (для тега)
     const getElementColor = (element?: string): string => {
@@ -59,35 +67,26 @@ const SpellCard: React.FC<SpellCardProps> = ({
                     <div className="spell-card-info">
                         <div className="spell-name-wrapper">
                             <span className="spell-card-name">{spell.name}</span>
-                            {isCustom && (
-                                <span className="spell-custom-badge" title="Custom spell">✨</span>
-                            )}
+                            {isCustom && <span className="spell-custom-badge" title="Custom spell">✨</span>}
+                            {requiresConcentration && <span className="spell-concentration-tag">C</span>}
                         </div>
                         <span className="spell-card-school">{spell.school}</span>
                     </div>
                 </div>
                 <div className="spell-card-actions">
-                    {/* Переключатель подготовки (если передан) */}
-                    {renderPreparedToggle && !disableToggle && (
-                        renderPreparedToggle({
-                            prepared: isPrepared,
-                            onToggle: onTogglePrepared || (() => {}),
-                        })
-                    )}
-                    {/* Если disableToggle – показываем иконку "Always prepared" */}
-                    {disableToggle && (
-                        <span className="spell-tag-racial" title="Racial spell – always prepared">✦</span>
-                    )}
-                    {/* Кнопка редактирования (только для кастомных) */}
-                    {showEdit && onEdit && (
-                        <button className="spell-edit-btn" onClick={onEdit}>Edit</button>
-                    )}
-                    {/* Кнопки добавления/удаления */}
-                    {showAddButton && onAdd && (
-                        <button className="btn-add-spell" onClick={onAdd}>+</button>
-                    )}
-                    {showRemoveButton && onRemove && (
-                        <button className="btn-remove-spell" onClick={onRemove}>✕</button>
+                    {renderPreparedToggle && !disableToggle && renderPreparedToggle({ prepared: isPrepared, onToggle: onTogglePrepared || (() => {}) })}
+                    {disableToggle && <span className="spell-always-prepared" title="Always prepared (racial spell)">✦</span>}
+                    {showEdit && onEdit && <button className="spell-edit-btn" onClick={onEdit}>Edit</button>}
+                    {showAddButton && onAdd && <button className="btn-add-spell" onClick={onAdd}>+</button>}
+                    {showRemoveButton && onRemove && <button className="btn-remove-spell" onClick={onRemove}>✕</button>}
+                    {showConcentrationControl && (
+                        <button
+                            className={`btn-concentration ${isConcentrating ? 'active' : ''}`}
+                            onClick={onToggleConcentration}
+                            title={isConcentrating ? 'End concentration' : 'Start concentrating'}
+                        >
+                            {isConcentrating ? '⏳' : '⚡'}
+                        </button>
                     )}
                 </div>
             </div>
@@ -112,27 +111,13 @@ const SpellCard: React.FC<SpellCardProps> = ({
 
             {/* Теги (уровень, школа, элемент, кастомность, расовость) */}
             <div className="spell-card-tags">
-                <span className="spell-tag-level">
-                    {spell.level === 0 ? 'Cantrip' : `Level ${spell.level}`}
-                </span>
+                <span className="spell-tag-level">{spell.level === 0 ? 'Cantrip' : `Level ${spell.level}`}</span>
                 <span className="spell-tag-school">{spell.school}</span>
-                {spell.element && (
-                    <span className="spell-tag-element" style={{ color: getElementColor(spell.element) }}>
-                        {spell.element}
-                    </span>
-                )}
-                {isCustom && (
-                    <span className="spell-tag-custom">Custom</span>
-                )}
-                {spell.isRacial && (
-                    <span className="spell-tag-racial">Racial</span>
-                )}
+                {spell.element && <span className="spell-tag-element" style={{ color: getElementColor(spell.element) }}>{spell.element}</span>}
+                {isCustom && <span className="spell-tag-custom">Custom</span>}
+                {spell.isRacial && <span className="spell-tag-racial">Racial</span>}
             </div>
-
-            {/* Описание */}
-            <div className="spell-card-description">
-                {spell.description}
-            </div>
+            <div className="spell-card-description">{spell.description}</div>
         </div>
     );
 };

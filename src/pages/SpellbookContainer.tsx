@@ -12,16 +12,18 @@ import './SpellbookContainer.css';
 
 type FilterType = 'all' | 'prepared' | 'notPrepared';
 type SpellTypeFilter = 'all' | 'standard' | 'custom' | 'racial';
+type ConcentrationFilter = 'all' | 'concentration' | 'noConcentration';
 
 const SpellbookContainer: React.FC = () => {
     const navigate = useNavigate();
-    const { currentCharacterId, getCharacter, updateSpell } = useCharacters();
+    const { currentCharacterId, getCharacter, updateSpell, startConcentration, endConcentration } = useCharacters();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
     const [activeLevel, setActiveLevel] = useState<number>(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState<FilterType>('all');
     const [spellTypeFilter, setSpellTypeFilter] = useState<SpellTypeFilter>('all');
+    const [concentrationFilter, setConcentrationFilter] = useState<ConcentrationFilter>('all');
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [schoolFilter, setSchoolFilter] = useState('');
     const [elementFilter, setElementFilter] = useState('');
@@ -84,6 +86,14 @@ const SpellbookContainer: React.FC = () => {
                 result = result.filter(s => s.isRacial);
             }
         }
+        // Фильтр по концентрации
+        if (concentrationFilter !== 'all') {
+            if (concentrationFilter === 'concentration') {
+                result = result.filter(s => s.requiresConcentration === true);
+            } else if (concentrationFilter === 'noConcentration') {
+                result = result.filter(s => !s.requiresConcentration);
+            }
+        }
         return result;
     };
 
@@ -103,12 +113,7 @@ const SpellbookContainer: React.FC = () => {
     const togglePrepared = (spellId: string) => {
         const spell = character.spells.find(s => s.id === spellId);
         if (!spell) return;
-
-        if (spell.isRacial) {
-            // Расовые заклинания всегда подготовлены – игнорируем
-            return;
-        }
-
+        if (spell.isRacial) return;
         if (!spell.prepared) {
             const maxPrepared = getMaxPrepared(character);
             const nonRacialPrepared = character.spells.filter(s => !s.isRacial && s.prepared).length;
@@ -116,14 +121,32 @@ const SpellbookContainer: React.FC = () => {
                 // Визуальное предупреждение
                 if (warningTimeout) clearTimeout(warningTimeout);
                 setIsPreparedWarning(true);
-                warningTimeout = setTimeout(() => {
-                    setIsPreparedWarning(false);
-                }, 2000);
+                warningTimeout = setTimeout(() => setIsPreparedWarning(false), 2000);
                 return;
             }
         }
 
         updateSpell(character.id, spellId, { prepared: !spell.prepared });
+    };
+
+    const handleToggleConcentration = (spellId: string) => {
+        const spell = character.spells.find(s => s.id === spellId);
+        if (!spell || !spell.requiresConcentration) return;
+
+        // Если это заклинание уже активное – завершаем концентрацию
+        if (character.activeConcentrationSpellId === spellId) {
+            endConcentration(character.id);
+            return;
+        }
+
+        // Если активно другое заклинание – спрашиваем
+        if (character.activeConcentrationSpellId) {
+            if (!window.confirm('You are already concentrating on another spell. End it and concentrate on this one?')) {
+                return;
+            }
+            endConcentration(character.id);
+        }
+        startConcentration(character.id, spellId);
     };
 
     const handleBack = () => navigate(-1);
@@ -137,7 +160,12 @@ const SpellbookContainer: React.FC = () => {
     const knownCount = character.spells.length;
     const racialCount = character.spells.filter(s => s.isRacial).length;
 
-    // Фильтры для модалки
+    // Активная концентрация
+    const activeSpell = character.activeConcentrationSpellId
+        ? character.spells.find(s => s.id === character.activeConcentrationSpellId)
+        : null;
+
+    // Фильтры для модалки (без поля концентрации)
     const filterFields: FilterField[] = [
         {
             key: 'school',
@@ -274,6 +302,27 @@ const SpellbookContainer: React.FC = () => {
                             Racial
                         </button>
                     </div>
+                    {/* Новый ряд фильтров по концентрации */}
+                    <div className="sb-filter-buttons sb-concentration-filters">
+                        <button
+                            className={`sb-filter-btn ${concentrationFilter === 'all' ? 'sb-active' : ''}`}
+                            onClick={() => setConcentrationFilter('all')}
+                        >
+                            All
+                        </button>
+                        <button
+                            className={`sb-filter-btn ${concentrationFilter === 'concentration' ? 'sb-active' : ''}`}
+                            onClick={() => setConcentrationFilter('concentration')}
+                        >
+                            Concentration
+                        </button>
+                        <button
+                            className={`sb-filter-btn ${concentrationFilter === 'noConcentration' ? 'sb-active' : ''}`}
+                            onClick={() => setConcentrationFilter('noConcentration')}
+                        >
+                            No Concentration
+                        </button>
+                    </div>
                 </div>
                 <div className="sb-list-title">
                     {getTabLabel(activeLevel)} ({currentSpells.length})
@@ -298,6 +347,10 @@ const SpellbookContainer: React.FC = () => {
                                 )}
                                 isCustom={spell.isCustom || false}
                                 disableToggle={spell.isRacial || false}
+                                requiresConcentration={spell.requiresConcentration || false}
+                                isConcentrating={character.activeConcentrationSpellId === spell.id}
+                                onToggleConcentration={() => handleToggleConcentration(spell.id)}
+                                showConcentrationControl={!!spell.requiresConcentration}
                             />
                         ))}
                     </div>

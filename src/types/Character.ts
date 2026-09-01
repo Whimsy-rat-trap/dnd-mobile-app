@@ -43,6 +43,7 @@ export interface Character {
     deathSuccesses: number;
     deathFailures: number;
     isStable: boolean;
+    activeConcentrationSpellId?: string | null;
 }
 
 export interface InventoryItem {
@@ -68,6 +69,7 @@ export interface Spell {
     isRacial?: boolean;
     source?: 'race' | 'subrace';
     element?: string;
+    requiresConcentration?: boolean;
 }
 
 export interface Quest {

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Character, InventoryItem, Spell, Quest, Campaign } from '../types/Character';
-import { recalculateAC } from '../utils/armorUtils'; // <-- новый импорт
+import { getNaturalWeapons } from '../utils/racialFeatures';
+import { recalculateAC } from '../utils/armorUtils';
+import { getRacialSpells } from '../constants/racialSpells';
 
 // Дефолтный список навыков (используется при создании и для миграции старых персонажей)
 const defaultSkills = [
@@ -28,6 +30,7 @@ const defaultSkills = [
 interface CharacterContextType {
     characters: Character[];
     currentCharacterId: string | null;
+    concentrationCheck: { spellId: string; dc: number; conMod: number } | null;
     addCharacter: (character: Omit<Character, 'id'>) => void;
     updateCharacter: (id: string, data: Partial<Character>) => void;
     deleteCharacter: (id: string) => void;
@@ -46,6 +49,11 @@ interface CharacterContextType {
     removeCampaignFromCharacter: (characterId: string, campaignId: string) => void;
     updateCampaign: (characterId: string, campaignId: string, updates: Partial<Campaign>) => void;
     addDiceLog: (characterId: string, sides: number, result: number) => void;
+    // Концентрация
+    startConcentration: (characterId: string, spellId: string) => void;
+    endConcentration: (characterId: string) => void;
+    makeConcentrationCheck: (characterId: string, damage: number) => void;
+    resolveConcentrationCheck: (characterId: string, success: boolean) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -134,9 +142,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.savingThrowProficiencies = [];
                 }
 
-                // Если AC отсутствует, вычисляем его
-                if (updated.ac === undefined) {
-                    updated.ac = recalculateAC(updated);
+                // activeConcentrationSpellId
+                if (updated.activeConcentrationSpellId === undefined) {
+                    updated.activeConcentrationSpellId = null;
                 }
 
                 return updated;
@@ -148,24 +156,64 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     });
 
     const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
+    const [concentrationCheck, setConcentrationCheck] = useState<{ spellId: string; dc: number; conMod: number } | null>(null);
 
     // Сохранение в localStorage при каждом изменении
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
 
-    // Вспомогательная функция для обновления AC при изменении инвентаря или способностей
-    const updateACIfNeeded = (char: Character, data: Partial<Character>): Character => {
-        if (data.inventory !== undefined || data.abilities !== undefined || data.ac === undefined) {
-            // Пересчитываем AC и обновляем поле
-            return { ...char, ...data, ac: recalculateAC({ ...char, ...data }) };
-        }
-        return { ...char, ...data };
+    // Вспомогательная функция для добавления natural weapons в инвентарь
+    const addNaturalWeaponsToCharacter = (character: Character): Character => {
+        const naturalWeapons = getNaturalWeapons(character.race, character.subrace);
+        if (naturalWeapons.length === 0) return character;
+
+        // Удаляем старые natural weapon предметы (по типу)
+        const filteredInventory = character.inventory.filter(item => item.type !== 'natural weapon');
+        const newNaturalWeapons = naturalWeapons.map(w => ({
+            ...w,
+            id: `natural-${Date.now()}-${Math.random()}`,
+        }));
+        return {
+            ...character,
+            inventory: [...filteredInventory, ...newNaturalWeapons],
+        };
+    };
+
+    // Вспомогательная функция для добавления расовых заклинаний
+    const addRacialSpellsToCharacter = (character: Character): Character => {
+        const racialSpellData = getRacialSpells(character.race, character.subrace);
+        if (racialSpellData.length === 0) return character;
+
+        // Удаляем старые расовые заклинания (по isRacial)
+        const nonRacialSpells = character.spells.filter(s => !s.isRacial);
+        // Создаём новые расовые заклинания
+        const newRacialSpells = racialSpellData.map((data, index) => ({
+            ...data,
+            id: `racial-${Date.now()}-${index}`,
+            prepared: true,
+            isRacial: true,
+            isCustom: false,
+            source: 'race' as const,
+            requiresConcentration: data.requiresConcentration ?? false,
+        }));
+
+        return {
+            ...character,
+            spells: [...nonRacialSpells, ...newRacialSpells],
+        };
+    };
+
+    // Вспомогательная функция для обновления AC и других зависящих полей
+    const recalculateCharacterStats = (character: Character): Character => {
+        let updated = { ...character };
+        updated.ac = recalculateAC(updated);
+        return updated;
     };
 
     // Базовые CRUD операции
     const addCharacter = (character: Omit<Character, 'id'>) => {
-        const newCharacter: Character = {
+        let newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
             class: character.class || character.classLevels?.[0]?.className || 'Fighter',
@@ -187,9 +235,16 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             creatureType: character.creatureType || 'Humanoid',
             subrace: character.subrace || '',
             savingThrowProficiencies: character.savingThrowProficiencies || [],
-            // Вычисляем AC сразу
-            ac: recalculateAC(character as Character), // временно приводим, но recalculateAC использует inventory и abilities, которые уже переданы
+            activeConcentrationSpellId: null,
         };
+
+        // Добавляем natural weapons
+        newCharacter = addNaturalWeaponsToCharacter(newCharacter);
+        // Добавляем расовые заклинания
+        newCharacter = addRacialSpellsToCharacter(newCharacter);
+        // Пересчитываем AC
+        newCharacter = recalculateCharacterStats(newCharacter);
+
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);
     };
@@ -198,8 +253,19 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         setCharacters(prev =>
             prev.map(char => {
                 if (char.id !== id) return char;
-                // Применяем данные и пересчитываем AC при необходимости
-                const updated = updateACIfNeeded(char, data);
+                let updated = { ...char, ...data };
+
+                // Если изменилась раса или подраса, обновляем natural weapons и расовые заклинания
+                if (data.race !== undefined || data.subrace !== undefined) {
+                    updated = addNaturalWeaponsToCharacter(updated);
+                    updated = addRacialSpellsToCharacter(updated);
+                }
+
+                // Если изменился инвентарь или способности, пересчитываем AC
+                if (data.inventory !== undefined || data.abilities !== undefined) {
+                    updated = recalculateCharacterStats(updated);
+                }
+
                 return updated;
             })
         );
@@ -233,10 +299,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const updateItemInInventory = (characterId: string, itemId: string, updates: Partial<InventoryItem>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const updatedInventory = char.inventory.map(item =>
-            item.id === itemId ? { ...item, ...updates } : item
-        );
-        updateCharacter(characterId, { inventory: updatedInventory });
+        updateCharacter(characterId, {
+            inventory: char.inventory.map(item =>
+                item.id === itemId ? { ...item, ...updates } : item
+            ),
+        });
     };
 
     // Заклинания
@@ -336,10 +403,41 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCharacter(characterId, { diceLogs: updatedLogs });
     };
 
+    // Концентрация
+    const startConcentration = (characterId: string, spellId: string) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+        // Если уже есть активная концентрация, сбрасываем её (можно также уведомить пользователя)
+        if (char.activeConcentrationSpellId) {
+            // Можно добавить уведомление
+        }
+        updateCharacter(characterId, { activeConcentrationSpellId: spellId });
+    };
+
+    const endConcentration = (characterId: string) => {
+        updateCharacter(characterId, { activeConcentrationSpellId: null });
+    };
+
+    const makeConcentrationCheck = (characterId: string, damage: number) => {
+        const char = getCharacter(characterId);
+        if (!char || !char.activeConcentrationSpellId) return;
+        const dc = Math.max(10, Math.floor(damage / 2));
+        const conMod = Math.floor((char.abilities.con - 10) / 2);
+        setConcentrationCheck({ spellId: char.activeConcentrationSpellId, dc, conMod });
+    };
+
+    const resolveConcentrationCheck = (characterId: string, success: boolean) => {
+        if (!success) {
+            endConcentration(characterId);
+        }
+        setConcentrationCheck(null);
+    };
+
     // Значения передаваемые в контекст
     const value: CharacterContextType = {
         characters,
         currentCharacterId,
+        concentrationCheck,
         addCharacter,
         updateCharacter,
         deleteCharacter,
@@ -358,6 +456,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         removeCampaignFromCharacter,
         updateCampaign,
         addDiceLog,
+        startConcentration,
+        endConcentration,
+        makeConcentrationCheck,
+        resolveConcentrationCheck,
     };
 
     return (
