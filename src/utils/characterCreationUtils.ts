@@ -1,13 +1,14 @@
 import { DND_BACKGROUNDS } from '../constants/backgrounds';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
+import { SUBRACES } from '../constants/subraces';
 import { RACIAL_SKILLS, RACIAL_TOOLS } from '../constants/raceProficiencies';
 import { CLASS_STARTING_EQUIPMENT } from '../constants/classStartingEquipment';
 import { CLASS_SAVING_THROWS } from '../constants/classSavingThrows';
 import { RACE_DETAILS } from '../constants/raceDetails';
 import { LibraryItem } from '../constants/items';
 import { Character, InventoryItem } from '../types/Character';
-import {getRacialEffects} from "./racialFeatures";
+import { getRacialEffects } from './racialFeatures';
 
 export const POINT_BUY_POINTS = 27;
 export const DEFAULT_SKILLS = [
@@ -62,6 +63,17 @@ export const getPointBuyCost = (value: number): number => {
     };
     return costMap[value] || 0;
 };
+
+/**
+ * Возвращает первую подрасу для расы, если она есть, иначе undefined
+ */
+export function getDefaultSubrace(race: string): string | undefined {
+    const subraceOptions = SUBRACES[race];
+    if (subraceOptions && subraceOptions.length > 0) {
+        return subraceOptions[0];
+    }
+    return undefined;
+}
 
 // Применение всех бонусов к способностям
 export function applyBonuses(
@@ -138,33 +150,30 @@ export function buildCharacter(
     selectedRacialTools: string[],
     today: string
 ): Omit<Character, 'id'> {
+    // Если подраса не выбрана, но есть доступные подрасы, берём первую
+    let subrace = formData.subrace;
+    if (!subrace) {
+        const defaultSubrace = getDefaultSubrace(formData.race);
+        if (defaultSubrace) {
+            subrace = defaultSubrace;
+        }
+    }
+
     const skillData = RACIAL_SKILLS[formData.race];
     const toolData = RACIAL_TOOLS[formData.race];
     const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
-    const bgLanguages = bg?.languages || [];
     const raceDetails = RACE_DETAILS[formData.race];
 
+    // Применяем бонусы с учётом подрасы (subrace вместо formData.subrace)
     const abilities = applyBonuses(
         formData.abilities,
         formData.race,
-        formData.subrace,
+        subrace,
         formData.background,
         selectedBonusAttrs
     );
 
-    const racialEffects = getRacialEffects(formData.race, formData.subrace);
-    const racialLanguages = racialEffects
-        .filter(e => e.type === 'language')
-        .flatMap(e => {
-            if (typeof e.value === 'string') {
-                return e.value.split(', ').map(l => l.trim());
-            }
-            return [];
-        });
-
-// Объединяем и убираем дубликаты
-    const allLanguages = Array.from(new Set([...bgLanguages, ...racialLanguages]));
-
+    // Навыки (proficiency)
     const proficientSkillNames = new Set<string>();
     bg?.skillProficiencies.forEach(s => proficientSkillNames.add(s));
     if (skillData) {
@@ -176,6 +185,7 @@ export function buildCharacter(
         proficient: proficientSkillNames.has(skill.name),
     }));
 
+    // Инструменты
     let toolProficiencies = bg?.toolProficiencies?.map(tool => ({
         name: tool.name,
         attribute: tool.attribute || 'DEX',
@@ -192,6 +202,19 @@ export function buildCharacter(
         });
     }
 
+    // Языки (background + расовые)
+    const bgLanguages = bg?.languages || [];
+    const racialEffects = getRacialEffects(formData.race, subrace);
+    const racialLanguages = racialEffects
+        .filter(e => e.type === 'language')
+        .flatMap(e => {
+            if (typeof e.value === 'string') {
+                return e.value.split(', ').map(l => l.trim());
+            }
+            return [];
+        });
+    const allLanguages = Array.from(new Set([...bgLanguages, ...racialLanguages]));
+
     const mainClass = classLevels[0]?.className || formData.class;
     const creatureType = raceDetails?.creatureType || 'Humanoid';
     const size = formData.size || (typeof raceDetails?.size === 'string' ? raceDetails.size : 'Medium');
@@ -202,7 +225,7 @@ export function buildCharacter(
         classes: classLevels.map(cl => cl.className),
         level: formData.level,
         classLevels: classLevels.map(cl => ({ className: cl.className, level: cl.level })),
-        subclass: formData.subclass,
+        subclass: subrace,
         abilities,
         skills,
         toolProficiencies,
