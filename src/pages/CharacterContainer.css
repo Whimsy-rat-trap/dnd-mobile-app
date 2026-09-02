@@ -859,3 +859,53 @@
 .cc-input-group button:hover {
     background: #059669;
 }
+
+.cc-passive-effects-section {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+}
+
+.cc-passive-effects-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #374957;
+}
+
+.cc-passive-effects-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.cc-passive-effects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 0;
+}
+
+.cc-passive-effect-item {
+    display: flex;
+    flex-direction: column;
+    background: #1f2937;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.cc-passive-effect-name {
+    font-weight: 600;
+    color: #34d399;
+    font-size: 14px;
+}
+
+.cc-passive-effect-description {
+    color: #d1d5db;
+    font-size: 13px;
+    margin-top: 2px;
+    line-height: 1.4;
+}

@@ -6,6 +6,7 @@ import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import DiceRoller from '../components/DiceRoller';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
+import { getAllRacialFeatures, getActivePassiveEffects } from '../utils/racialFeatures';
 import Modal from '../components/Modal';
 import './CharacterContainer.css';
 
@@ -595,6 +596,21 @@ const CharacterContainer: React.FC = () => {
                             )}
                         </>
                     )}
+                </div>
+
+                {/* Passive Effects */}
+                <div className="cc-passive-effects-section">
+                    <div className="cc-passive-effects-header">
+                        <span className="cc-passive-effects-title">Passive Effects</span>
+                    </div>
+                    <div className="cc-passive-effects-list">
+                        {getActivePassiveEffects(character.race, character.subrace).map((effect, idx) => (
+                            <div key={idx} className="cc-passive-effect-item">
+                                <span className="cc-passive-effect-name">{effect.name}</span>
+                                <span className="cc-passive-effect-description">{effect.description}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Переключатель variant */}
