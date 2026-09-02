@@ -7,6 +7,7 @@ import { CLASS_SAVING_THROWS } from '../constants/classSavingThrows';
 import { RACE_DETAILS } from '../constants/raceDetails';
 import { LibraryItem } from '../constants/items';
 import { Character, InventoryItem } from '../types/Character';
+import {getRacialEffects} from "./racialFeatures";
 
 export const POINT_BUY_POINTS = 27;
 export const DEFAULT_SKILLS = [
@@ -140,6 +141,7 @@ export function buildCharacter(
     const skillData = RACIAL_SKILLS[formData.race];
     const toolData = RACIAL_TOOLS[formData.race];
     const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
+    const bgLanguages = bg?.languages || [];
     const raceDetails = RACE_DETAILS[formData.race];
 
     const abilities = applyBonuses(
@@ -149,6 +151,19 @@ export function buildCharacter(
         formData.background,
         selectedBonusAttrs
     );
+
+    const racialEffects = getRacialEffects(formData.race, formData.subrace);
+    const racialLanguages = racialEffects
+        .filter(e => e.type === 'language')
+        .flatMap(e => {
+            if (typeof e.value === 'string') {
+                return e.value.split(', ').map(l => l.trim());
+            }
+            return [];
+        });
+
+// Объединяем и убираем дубликаты
+    const allLanguages = Array.from(new Set([...bgLanguages, ...racialLanguages]));
 
     const proficientSkillNames = new Set<string>();
     bg?.skillProficiencies.forEach(s => proficientSkillNames.add(s));
@@ -191,7 +206,7 @@ export function buildCharacter(
         abilities,
         skills,
         toolProficiencies,
-        languages: bg?.languages || [],
+        languages: allLanguages,
         creatureType,
         size,
         savingThrowProficiencies: CLASS_SAVING_THROWS[mainClass] || [],
