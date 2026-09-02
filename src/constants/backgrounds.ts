@@ -1,4 +1,5 @@
 import { getDefaultAttribute } from './toolAttributes';
+import { LibraryItem } from './items';
 
 export interface BackgroundData {
     name: string;
@@ -6,6 +7,12 @@ export interface BackgroundData {
     abilityBonuses?: { [key: string]: number };
     toolProficiencies?: { name: string; attribute: string }[];
     languages?: string[];
+    startingEquipment?: Omit<LibraryItem, 'id'>[]; // новое поле
+}
+
+// Вспомогательная функция для создания предмета
+function item(name: string, type: any, rarity: any, desc: string): Omit<LibraryItem, 'id'> {
+    return { name, type, rarity, description: desc };
 }
 
 export const DND_BACKGROUNDS: BackgroundData[] = [
@@ -15,6 +22,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { wis: 1, int: 1 },
         toolProficiencies: [],
         languages: ['Common', 'Celestial', 'Infernal'],
+        startingEquipment: [
+            item("Holy Symbol", "other", "common", "A holy symbol of your deity."),
+            item("Prayer Book", "other", "common", "A book of prayers and rituals."),
+            item("Incense (5 blocks)", "other", "common", "Blocks of incense for rituals."),
+            item("Common Clothes", "other", "common", "Simple clothes."),
+        ],
     },
     {
         name: 'Charlatan',
@@ -25,6 +38,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: 'Forgery Kit', attribute: getDefaultAttribute('Forgery Kit') },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Fine Clothes", "other", "common", "Quality clothing."),
+            item("Disguise Kit", "other", "common", "A kit for changing your appearance."),
+            item("Forgery Kit", "other", "common", "A kit for forging documents."),
+            item("Dice Set", "other", "common", "A set of dice."),
+        ],
     },
     {
         name: 'Criminal',
@@ -34,6 +53,11 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: "Thieves' Tools", attribute: getDefaultAttribute("Thieves' Tools") },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Thieves' Tools", "other", "common", "A set of tools for picking locks."),
+            item("Dark Clothes", "other", "common", "Dark, hooded clothing."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Entertainer',
@@ -43,6 +67,11 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: 'Musical Instruments', attribute: getDefaultAttribute('Musical Instruments') },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Musical Instrument", "other", "common", "Your choice of instrument."),
+            item("Costume", "other", "common", "A colorful costume."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Folk Hero',
@@ -50,6 +79,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { str: 1, con: 1 },
         toolProficiencies: [],
         languages: ['Common'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Shovel", "other", "common", "A sturdy shovel."),
+            item("Iron Pot", "other", "common", "A cooking pot."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Gladiator',
@@ -59,6 +94,11 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: 'Musical Instruments', attribute: getDefaultAttribute('Musical Instruments') },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Costume", "other", "common", "A gladiator's costume."),
+            item("Musical Instrument", "other", "common", "Your choice of instrument."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Guild Artisan',
@@ -68,6 +108,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: "Artisan's Tools", attribute: getDefaultAttribute("Artisan's Tools") },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Artisan's Tools", "other", "common", "The tools of your trade."),
+            item("Letter of Introduction", "other", "common", "A letter from your guild."),
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Hermit',
@@ -75,6 +121,11 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { wis: 1, int: 1 },
         toolProficiencies: [],
         languages: ['Common'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Herbalism Kit", "other", "common", "A kit for making potions."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Knight',
@@ -82,6 +133,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { str: 1, cha: 1 },
         toolProficiencies: [],
         languages: ['Common', 'Elvish', 'Orc'],
+        startingEquipment: [
+            item("Fine Clothes", "other", "common", "Quality clothing."),
+            item("Horse", "other", "common", "A riding horse."),
+            item("Saddle", "other", "common", "A saddle and tack."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Noble',
@@ -89,6 +146,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { cha: 1, int: 1 },
         toolProficiencies: [],
         languages: ['Common', 'Elvish', 'Dwarvish'],
+        startingEquipment: [
+            item("Fine Clothes", "other", "common", "Quality clothing."),
+            item("Signet Ring", "other", "common", "A ring with your family crest."),
+            item("Scroll of Pedigree", "other", "common", "A scroll proving your lineage."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Outlander',
@@ -96,6 +159,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { str: 1, wis: 1 },
         toolProficiencies: [],
         languages: ['Common', 'Giant'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Staff", "other", "common", "A wooden staff."),
+            item("Hunting Trap", "other", "common", "A trap for hunting."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Sage',
@@ -103,6 +172,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { int: 1, wis: 1 },
         toolProficiencies: [],
         languages: ['Common', 'Draconic', 'Celestial'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Book of Lore", "other", "common", "A book containing knowledge."),
+            item("Ink and Quill", "other", "common", "Writing supplies."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Sailor',
@@ -112,6 +187,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: "Navigator's Tools", attribute: getDefaultAttribute("Navigator's Tools") },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Navigator's Tools", "other", "common", "Tools for navigation."),
+            item("Whistle", "other", "common", "A signaling whistle."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Soldier',
@@ -121,6 +202,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: 'Vehicles (Land)', attribute: getDefaultAttribute('Vehicles (Land)') },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Rank Insignia", "other", "common", "A symbol of your rank."),
+            item("Dice Set", "other", "common", "A set of dice."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Urchin',
@@ -130,6 +217,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: "Thieves' Tools", attribute: getDefaultAttribute("Thieves' Tools") },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Small Knife", "other", "common", "A simple knife."),
+            item("Map of the City", "other", "common", "A map of your home city."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Artisan',
@@ -139,6 +232,11 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: "Artisan's Tools", attribute: getDefaultAttribute("Artisan's Tools") },
         ],
         languages: ['Common'],
+        startingEquipment: [
+            item("Artisan's Tools", "other", "common", "The tools of your trade."),
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Bounty Hunter',
@@ -148,6 +246,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
             { name: "Thieves' Tools", attribute: getDefaultAttribute("Thieves' Tools") },
         ],
         languages: ['Common', "Thieves' Cant"],
+        startingEquipment: [
+            item("Thieves' Tools", "other", "common", "A set of tools for picking locks."),
+            item("Manacles", "other", "common", "A set of manacles."),
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Courtier',
@@ -155,6 +259,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { cha: 1, int: 1 },
         toolProficiencies: [],
         languages: ['Common', 'Elvish', 'Dwarvish'],
+        startingEquipment: [
+            item("Fine Clothes", "other", "common", "Quality clothing."),
+            item("Signet Ring", "other", "common", "A ring with your family crest."),
+            item("Scroll of Pedigree", "other", "common", "A scroll proving your lineage."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Faction Agent',
@@ -162,6 +272,12 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { cha: 1, wis: 1 },
         toolProficiencies: [],
         languages: ['Common', 'Undercommon'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Faction Badge", "other", "common", "A symbol of your faction."),
+            item("Codebook", "other", "common", "A book with secret codes."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
     {
         name: 'Far Traveler',
@@ -169,5 +285,11 @@ export const DND_BACKGROUNDS: BackgroundData[] = [
         abilityBonuses: { wis: 1, cha: 1 },
         toolProficiencies: [],
         languages: ['Common', 'Druidic'],
+        startingEquipment: [
+            item("Common Clothes", "other", "common", "Simple clothes."),
+            item("Staff", "other", "common", "A wooden staff."),
+            item("Map of the Region", "other", "common", "A map of your travels."),
+            item("Pouch", "other", "common", "A small pouch with 10 gp."),
+        ],
     },
 ];

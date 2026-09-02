@@ -13,7 +13,9 @@ import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACES } from '../constants/subraces';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { LANGUAGES } from '../constants/languages';
-import { RACIAL_SKILLS, RACIAL_TOOLS, ALL_SKILLS } from '../constants/raceProficiencies'; // <-- новый импорт
+import { RACIAL_SKILLS, RACIAL_TOOLS, ALL_SKILLS } from '../constants/raceProficiencies';
+import { LibraryItem } from '../constants/items';
+import { CLASS_STARTING_EQUIPMENT } from '../constants/classStartingEquipment';
 import DiceRoller from '../components/DiceRoller';
 import Modal from '../components/Modal';
 import './CreateCharacter.css';
@@ -489,6 +491,19 @@ const CreateCharacter: React.FC = () => {
             finalData.speed = 30;
         }
 
+        const classEquipData = CLASS_STARTING_EQUIPMENT[finalData.class];
+        const classItems: Omit<LibraryItem, 'id'>[] = [];
+        if (classEquipData) {
+            classItems.push(...classEquipData.mandatory);
+            // Для выборов
+            if (classEquipData.choices) {
+                classEquipData.choices.forEach(choice => {
+                    const firstOption = choice.options[0];
+                    if (firstOption) classItems.push(...firstOption.items);
+                });
+            }
+        }
+
         // Применяем расовые бонусы
         const abilitiesWithBonuses = { ...finalData.abilities };
         const raceBonus = RACIAL_BONUSES[finalData.race];
@@ -552,6 +567,18 @@ const CreateCharacter: React.FC = () => {
         ];
 
         const bg = DND_BACKGROUNDS.find(b => b.name === finalData.background);
+        const bgItems = bg?.startingEquipment || [];
+
+        const allStartingItems = [...classItems, ...bgItems];
+        const allItems = [...classItems, ...bgItems].map(item => ({
+            id: `start-${Date.now()}-${Math.random()}`,
+            name: item.name,
+            type: item.type,
+            rarity: item.rarity,
+            description: item.description,
+            equipped: item.type === 'armor' || item.type === 'shield' ? true : false,
+        }));
+
         const backgroundSkills = bg ? bg.skillProficiencies : [];
 
         // Собираем все навыки, которые должны быть proficient (background + расовые)
@@ -642,7 +669,7 @@ const CreateCharacter: React.FC = () => {
             deathSuccesses: 0,
             deathFailures: 0,
             isStable: false,
-            inventory: [],
+            inventory: allItems,
             spells: [],
             quests: [],
             campaigns: [],
