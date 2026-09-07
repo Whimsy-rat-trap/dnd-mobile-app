@@ -38,6 +38,7 @@ export interface Character {
     spells: Spell[];
     quests: Quest[];
     campaigns: Campaign[];
+    feats: Feat[];
     diceLogs: Record<number, { result: number; timestamp: number }[]>;
     // Death Saving Throws
     deathSuccesses: number;
@@ -89,4 +90,12 @@ export interface Campaign {
     players?: number;
     sessions?: number;
     lastPlayed?: string;
+}
+
+export interface Feat {
+    id: string;
+    name: string;
+    description: string;
+    source: 'background' | 'class' | 'race' | 'subrace' | 'custom' | 'other';
+    prerequisite?: string;
 }

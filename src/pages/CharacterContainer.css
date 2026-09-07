@@ -909,3 +909,92 @@
     margin-top: 2px;
     line-height: 1.4;
 }
+
+.cc-feats-section {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+}
+
+.cc-feats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #374957;
+}
+
+.cc-feats-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.cc-add-feat-btn {
+    background: #34d399;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 12px;
+    color: #0f0f0f;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cc-feats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.cc-feat-item {
+    background: #1f2937;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: relative;
+}
+
+.cc-feat-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cc-feat-name {
+    font-weight: 600;
+    color: #34d399;
+    font-size: 14px;
+}
+
+.cc-feat-source {
+    font-size: 11px;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.cc-feat-description {
+    color: #d1d5db;
+    font-size: 13px;
+    margin-top: 2px;
+    line-height: 1.4;
+}
+
+.cc-feat-remove {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.cc-feats-empty {
+    color: #6b7280;
+    font-size: 14px;
+    font-style: italic;
+    padding: 4px 0;
+}

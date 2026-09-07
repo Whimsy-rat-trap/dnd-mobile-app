@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Character, InventoryItem, Spell, Quest, Campaign } from '../types/Character';
+import { Character, InventoryItem, Spell, Quest, Campaign, Feat } from '../types/Character';
 import { getNaturalWeapons } from '../utils/racialFeatures';
 import { recalculateAC } from '../utils/armorUtils';
 import { getRacialSpells } from '../constants/racialSpells';
+import { getFeatsForCharacter } from '../constants/feats';
 
-// Дефолтный список навыков (используется при создании и для миграции старых персонажей)
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
     { name: 'Animal Handling', attribute: 'WIS', proficient: false },
@@ -54,13 +54,15 @@ interface CharacterContextType {
     endConcentration: (characterId: string) => void;
     makeConcentrationCheck: (characterId: string, damage: number) => void;
     resolveConcentrationCheck: (characterId: string, success: boolean) => void;
+    // Feats
+    addFeat: (characterId: string, feat: Omit<Feat, 'id'>) => void;
+    removeFeat: (characterId: string, featId: string) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
 const STORAGE_KEY = 'dnd_characters';
 
 export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    // Инициализация состояния с миграцией для старых персонажей
     const [characters, setCharacters] = useState<Character[]>(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (!stored) return [];
@@ -125,26 +127,21 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.toolProficiencies = updated.toolProficiencies || [];
                 }
 
-                // languages
                 if (!updated.languages) {
                     updated.languages = [];
                 }
-
-                // size и creatureType
                 if (!updated.size) updated.size = 'Medium';
                 if (!updated.creatureType) updated.creatureType = 'Humanoid';
-
-                // subrace
                 if (!updated.subrace) updated.subrace = '';
-
-                // savingThrowProficiencies
                 if (!updated.savingThrowProficiencies) {
                     updated.savingThrowProficiencies = [];
                 }
-
-                // activeConcentrationSpellId
                 if (updated.activeConcentrationSpellId === undefined) {
                     updated.activeConcentrationSpellId = null;
+                }
+                // Новая миграция: feats
+                if (!updated.feats) {
+                    updated.feats = [];
                 }
 
                 return updated;
@@ -163,12 +160,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
 
-    // Вспомогательная функция для добавления natural weapons в инвентарь
+    // Вспомогательные функции
     const addNaturalWeaponsToCharacter = (character: Character): Character => {
         const naturalWeapons = getNaturalWeapons(character.race, character.subrace);
         if (naturalWeapons.length === 0) return character;
 
-        // Удаляем старые natural weapon предметы (по типу)
         const filteredInventory = character.inventory.filter(item => item.type !== 'natural weapon');
         const newNaturalWeapons = naturalWeapons.map(w => ({
             ...w,
@@ -185,9 +181,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const racialSpellData = getRacialSpells(character.race, character.subrace);
         if (racialSpellData.length === 0) return character;
 
-        // Удаляем старые расовые заклинания (по isRacial)
         const nonRacialSpells = character.spells.filter(s => !s.isRacial);
-        // Создаём новые расовые заклинания
         const newRacialSpells = racialSpellData.map((data, index) => ({
             ...data,
             id: `racial-${Date.now()}-${index}`,
@@ -204,14 +198,35 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         };
     };
 
-    // Вспомогательная функция для обновления AC и других зависящих полей
+    // Обновление черт
+    const updateFeatsForCharacter = (character: Character): Character => {
+        const autoFeats = getFeatsForCharacter(
+            character.class,
+            character.race,
+            character.subrace,
+            character.background
+        );
+
+        const customFeats = character.feats.filter(f => f.source === 'custom');
+
+        const allFeats = [...autoFeats, ...customFeats];
+        const uniqueFeats = allFeats.filter((feat, index, self) =>
+            index === self.findIndex(f => f.id === feat.id)
+        );
+
+        return {
+            ...character,
+            feats: uniqueFeats,
+        };
+    };
+
     const recalculateCharacterStats = (character: Character): Character => {
         let updated = { ...character };
         updated.ac = recalculateAC(updated);
         return updated;
     };
 
-    // Базовые CRUD операции
+    // CRUD
     const addCharacter = (character: Omit<Character, 'id'>) => {
         let newCharacter: Character = {
             ...character,
@@ -236,13 +251,12 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             subrace: character.subrace || '',
             savingThrowProficiencies: character.savingThrowProficiencies || [],
             activeConcentrationSpellId: null,
+            feats: [],
         };
 
-        // Добавляем natural weapons
         newCharacter = addNaturalWeaponsToCharacter(newCharacter);
-        // Добавляем расовые заклинания
         newCharacter = addRacialSpellsToCharacter(newCharacter);
-        // Пересчитываем AC
+        newCharacter = updateFeatsForCharacter(newCharacter);
         newCharacter = recalculateCharacterStats(newCharacter);
 
         setCharacters(prev => [...prev, newCharacter]);
@@ -255,10 +269,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 if (char.id !== id) return char;
                 let updated = { ...char, ...data };
 
-                // Если изменилась раса или подраса, обновляем natural weapons и расовые заклинания
-                if (data.race !== undefined || data.subrace !== undefined) {
+                // Если изменились поля, влияющие на черты, natural weapons или расовые заклинания
+                if (data.race !== undefined || data.subrace !== undefined || data.class !== undefined || data.background !== undefined) {
                     updated = addNaturalWeaponsToCharacter(updated);
                     updated = addRacialSpellsToCharacter(updated);
+                    updated = updateFeatsForCharacter(updated);
                 }
 
                 // Если изменился инвентарь или способности, пересчитываем AC
@@ -283,17 +298,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
         const newItem: InventoryItem = { ...item, id: Date.now().toString() };
-        updateCharacter(characterId, {
-            inventory: [...char.inventory, newItem],
-        });
+        updateCharacter(characterId, { inventory: [...char.inventory, newItem] });
     };
 
     const removeItemFromInventory = (characterId: string, itemId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, {
-            inventory: char.inventory.filter(item => item.id !== itemId),
-        });
+        updateCharacter(characterId, { inventory: char.inventory.filter(item => item.id !== itemId) });
     };
 
     const updateItemInInventory = (characterId: string, itemId: string, updates: Partial<InventoryItem>) => {
@@ -311,17 +322,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
         const newSpell: Spell = { ...spell, id: Date.now().toString(), prepared: spell.prepared || false };
-        updateCharacter(characterId, {
-            spells: [...char.spells, newSpell],
-        });
+        updateCharacter(characterId, { spells: [...char.spells, newSpell] });
     };
 
     const removeSpellFromCharacter = (characterId: string, spellId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, {
-            spells: char.spells.filter(spell => spell.id !== spellId),
-        });
+        updateCharacter(characterId, { spells: char.spells.filter(spell => spell.id !== spellId) });
     };
 
     const updateSpell = (characterId: string, spellId: string, updates: Partial<Spell>) => {
@@ -339,17 +346,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
         const newQuest: Quest = { ...quest, id: Date.now().toString() };
-        updateCharacter(characterId, {
-            quests: [...char.quests, newQuest],
-        });
+        updateCharacter(characterId, { quests: [...char.quests, newQuest] });
     };
 
     const removeQuestFromCharacter = (characterId: string, questId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, {
-            quests: char.quests.filter(q => q.id !== questId),
-        });
+        updateCharacter(characterId, { quests: char.quests.filter(q => q.id !== questId) });
     };
 
     const updateQuest = (characterId: string, questId: string, updates: Partial<Quest>) => {
@@ -367,17 +370,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
         const newCampaign: Campaign = { ...campaign, id: Date.now().toString() };
-        updateCharacter(characterId, {
-            campaigns: [...char.campaigns, newCampaign],
-        });
+        updateCharacter(characterId, { campaigns: [...char.campaigns, newCampaign] });
     };
 
     const removeCampaignFromCharacter = (characterId: string, campaignId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, {
-            campaigns: char.campaigns.filter(c => c.id !== campaignId),
-        });
+        updateCharacter(characterId, { campaigns: char.campaigns.filter(c => c.id !== campaignId) });
     };
 
     const updateCampaign = (characterId: string, campaignId: string, updates: Partial<Campaign>) => {
@@ -409,7 +408,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!char) return;
         // Если уже есть активная концентрация, сбрасываем её (можно также уведомить пользователя)
         if (char.activeConcentrationSpellId) {
-            // Можно добавить уведомление
+            // Нужно добавить уведомление
         }
         updateCharacter(characterId, { activeConcentrationSpellId: spellId });
     };
@@ -427,13 +426,24 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     const resolveConcentrationCheck = (characterId: string, success: boolean) => {
-        if (!success) {
-            endConcentration(characterId);
-        }
+        if (!success) endConcentration(characterId);
         setConcentrationCheck(null);
     };
 
-    // Значения передаваемые в контекст
+    // Feats
+    const addFeat = (characterId: string, feat: Omit<Feat, 'id'>) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+        const newFeat: Feat = { ...feat, id: `custom-${Date.now()}` };
+        updateCharacter(characterId, { feats: [...char.feats, newFeat] });
+    };
+
+    const removeFeat = (characterId: string, featId: string) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+        updateCharacter(characterId, { feats: char.feats.filter(f => f.id !== featId) });
+    };
+
     const value: CharacterContextType = {
         characters,
         currentCharacterId,
@@ -460,6 +470,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         endConcentration,
         makeConcentrationCheck,
         resolveConcentrationCheck,
+        addFeat,
+        removeFeat,
     };
 
     return (

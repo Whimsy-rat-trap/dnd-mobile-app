@@ -6,7 +6,7 @@ import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import DiceRoller from '../components/DiceRoller';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
-import { getAllRacialFeatures, getActivePassiveEffects } from '../utils/racialFeatures';
+import { getActivePassiveEffects } from '../utils/racialFeatures';
 import Modal from '../components/Modal';
 import './CharacterContainer.css';
 
@@ -14,13 +14,12 @@ import './CharacterContainer.css';
 const NATURAL_ARMOR: Record<string, { base: number; dex?: boolean; max?: number }> = {
     Tortle: { base: 17 },
     Lizardfolk: { base: 13, dex: true, max: 2 },
-    // Можно добавить другие расы при необходимости
 };
 
 const CharacterContainer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { getCharacter, updateCharacter, setCurrentCharacterId } = useCharacters();
+    const { getCharacter, updateCharacter, setCurrentCharacterId, addFeat, removeFeat } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
     // Состояние для переключателя variant
@@ -42,6 +41,11 @@ const CharacterContainer: React.FC = () => {
     const [hpPopupOpen, setHpPopupOpen] = useState(false);
     const [hpInputValue, setHpInputValue] = useState(0);
     const [tempInputValue, setTempInputValue] = useState(0);
+
+    // Состояния для добавления кастомной черты (Feat)
+    const [showAddFeatModal, setShowAddFeatModal] = useState(false);
+    const [newFeatName, setNewFeatName] = useState('');
+    const [newFeatDescription, setNewFeatDescription] = useState('');
 
     if (!character) {
         return <div className="cc-page">Character not found</div>;
@@ -244,13 +248,11 @@ const CharacterContainer: React.FC = () => {
     // Переключение variant-режима с сохранением/восстановлением атрибутов
     const handleVariantToggle = () => {
         if (!useVariant) {
-            // Включаем variant: сохраняем текущие атрибуты
             const skillAttrs = character.skills.map(s => ({ name: s.name, attribute: s.attribute }));
             const toolAttrs = character.toolProficiencies.map(t => ({ name: t.name, attribute: t.attribute || 'DEX' }));
             setBackupSkillAttributes(skillAttrs);
             setBackupToolAttributes(toolAttrs);
         } else {
-            // Выключаем variant: восстанавливаем атрибуты из бэкапа
             const restoredSkills = character.skills.map(skill => {
                 const backup = backupSkillAttributes.find(b => b.name === skill.name);
                 return backup ? { ...skill, attribute: backup.attribute } : skill;
@@ -383,6 +385,26 @@ const CharacterContainer: React.FC = () => {
     // Расчёт AC для отображения
     const acInfo = getACInfo(character);
 
+    // Функции для работы с чертами (Feats)
+    const handleAddFeat = () => {
+        if (newFeatName.trim() && newFeatDescription.trim()) {
+            addFeat(character.id, {
+                name: newFeatName.trim(),
+                description: newFeatDescription.trim(),
+                source: 'custom',
+            });
+            setNewFeatName('');
+            setNewFeatDescription('');
+            setShowAddFeatModal(false);
+        }
+    };
+
+    const handleRemoveFeat = (featId: string) => {
+        if (window.confirm('Remove this feat?')) {
+            removeFeat(character.id, featId);
+        }
+    };
+
     return (
         <div className="cc-page">
             <header className="cc-header">
@@ -414,6 +436,7 @@ const CharacterContainer: React.FC = () => {
             </header>
 
             <div className="cc-content">
+                {/* Character Details */}
                 <div className="cc-section-info">
                     <div className="cc-info-title">Character Details</div>
                     <div className="cc-info-grid">
@@ -485,6 +508,7 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Abilities */}
                 <div className="cc-section-abilities">
                     <div className="cc-abilities-title">Abilities</div>
                     <div className="cc-abilities-grid">
@@ -613,7 +637,43 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Переключатель variant */}
+                {/* ===== НОВАЯ СЕКЦИЯ: Feats ===== */}
+                <div className="cc-feats-section">
+                    <div className="cc-feats-header">
+                        <span className="cc-feats-title">Feats</span>
+                        <button
+                            className="cc-add-feat-btn"
+                            onClick={() => setShowAddFeatModal(true)}
+                        >
+                            + Add
+                        </button>
+                    </div>
+                    <div className="cc-feats-list">
+                        {character.feats.length === 0 ? (
+                            <div className="cc-feats-empty">No feats</div>
+                        ) : (
+                            character.feats.map((feat) => (
+                                <div key={feat.id} className="cc-feat-item">
+                                    <div className="cc-feat-info">
+                                        <span className="cc-feat-name">{feat.name}</span>
+                                        <span className="cc-feat-source">[{feat.source}]</span>
+                                    </div>
+                                    <div className="cc-feat-description">{feat.description}</div>
+                                    {feat.source === 'custom' && (
+                                        <button
+                                            className="cc-feat-remove"
+                                            onClick={() => handleRemoveFeat(feat.id)}
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+
+                {/* Variant Toggle */}
                 <div className="cc-variant-toggle-container">
                     <label className="cc-variant-toggle">
                         <span className="cc-toggle-label">Use Skills with Different Abilities variant rule?</span>
@@ -797,6 +857,35 @@ const CharacterContainer: React.FC = () => {
                                 <button onClick={() => { subtractTempHp(tempInputValue); closeHpPopup(); }}>Subtract Temp</button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* ===== Модалка для добавления кастомной черты ===== */}
+            <Modal isOpen={showAddFeatModal} onClose={() => setShowAddFeatModal(false)}>
+                <h3>Add Custom Feat</h3>
+                <div className="cc-add-feat-form">
+                    <div className="cc-form-group">
+                        <label>Feat Name</label>
+                        <input
+                            type="text"
+                            value={newFeatName}
+                            onChange={(e) => setNewFeatName(e.target.value)}
+                            placeholder="e.g., Dragon Slayer"
+                        />
+                    </div>
+                    <div className="cc-form-group">
+                        <label>Description</label>
+                        <textarea
+                            value={newFeatDescription}
+                            onChange={(e) => setNewFeatDescription(e.target.value)}
+                            placeholder="Describe the feat..."
+                            rows={3}
+                        />
+                    </div>
+                    <div className="cc-modal-actions">
+                        <button className="cc-modal-btn cancel" onClick={() => setShowAddFeatModal(false)}>Cancel</button>
+                        <button className="cc-modal-btn apply" onClick={handleAddFeat}>Add</button>
                     </div>
                 </div>
             </Modal>

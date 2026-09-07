@@ -7,6 +7,7 @@ import { CLASS_STARTING_EQUIPMENT } from '../constants/classStartingEquipment';
 import { CLASS_SAVING_THROWS } from '../constants/classSavingThrows';
 import { RACE_DETAILS } from '../constants/raceDetails';
 import { LibraryItem } from '../constants/items';
+import { getFeatsForCharacter } from '../constants/feats';
 import { Character, InventoryItem } from '../types/Character';
 import { getRacialEffects } from './racialFeatures';
 
@@ -219,6 +220,13 @@ export function buildCharacter(
     const creatureType = raceDetails?.creatureType || 'Humanoid';
     const size = formData.size || (typeof raceDetails?.size === 'string' ? raceDetails.size : 'Medium');
 
+    const feats = getFeatsForCharacter(
+        mainClass,
+        formData.race,
+        subrace,
+        formData.background
+    );
+
     return {
         ...formData,
         class: mainClass,
@@ -246,5 +254,6 @@ export function buildCharacter(
         spells: [],
         quests: [],
         campaigns: [],
+        feats,
     };
 }
