@@ -998,3 +998,78 @@
     font-style: italic;
     padding: 4px 0;
 }
+
+/* Стили для модалки добавления фита */
+.cc-add-feat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.cc-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cc-form-group label {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.cc-form-group input,
+.cc-form-group textarea {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #374957;
+    background: #0f0f0f;
+    color: #fff;
+    font-size: 14px;
+    font-family: var(--font-family);
+}
+
+.cc-form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.cc-form-group input:focus,
+.cc-form-group textarea:focus {
+    outline: none;
+    border-color: #34d399;
+}
+
+.cc-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.cc-modal-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cc-modal-btn.cancel {
+    background: #374151;
+    color: #9ca3af;
+}
+
+.cc-modal-btn.cancel:hover {
+    background: #4b5563;
+}
+
+.cc-modal-btn.apply {
+    background: #34d399;
+    color: #0f0f0f;
+}
+
+.cc-modal-btn.apply:hover {
+    background: #059669;
+}
