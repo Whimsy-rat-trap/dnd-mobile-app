@@ -630,14 +630,17 @@ const CharacterContainer: React.FC = () => {
                     <div className="cc-passive-effects-list">
                         {getActivePassiveEffects(character.race, character.subrace).map((effect, idx) => (
                             <div key={idx} className="cc-passive-effect-item">
-                                <span className="cc-passive-effect-name">{effect.name}</span>
+                                <span className="cc-passive-effect-name">
+                                    {effect.name}
+                                    {effect.source && <span className="cc-passive-effect-source"> ({effect.source})</span>}
+                                </span>
                                 <span className="cc-passive-effect-description">{effect.description}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* ===== НОВАЯ СЕКЦИЯ: Feats ===== */}
+                {/* Feats */}
                 <div className="cc-feats-section">
                     <div className="cc-feats-header">
                         <span className="cc-feats-title">Feats</span>
@@ -861,7 +864,7 @@ const CharacterContainer: React.FC = () => {
                 </div>
             </Modal>
 
-            {/* ===== Модалка для добавления кастомной черты ===== */}
+            {/* Модалка для добавления кастомной черты */}
             <Modal isOpen={showAddFeatModal} onClose={() => setShowAddFeatModal(false)}>
                 <h3>Add Custom Feat</h3>
                 <div className="cc-add-feat-form">

@@ -1073,3 +1073,10 @@
 .cc-modal-btn.apply:hover {
     background: #059669;
 }
+
+.cc-passive-effect-source {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 4px;
+}
