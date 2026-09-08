@@ -316,3 +316,55 @@
 .quest-btn-primary:hover {
     background: #059669;
 }
+
+.quest-item-reward {
+    font-size: 13px;
+    color: #d1d5db;
+    margin-top: 2px;
+}
+
+.quest-reward-label {
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.quest-reward-text {
+    color: #fbbf24;
+    font-weight: 500;
+}
+
+.quest-reward-dm-only {
+    color: #ef4444;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.quest-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: #d1d5db;
+    font-size: 14px;
+}
+
+.quest-hint {
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.quest-edit-btn {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color 0.2s;
+}
+
+.quest-edit-btn:hover {
+    color: #34d399;
+}

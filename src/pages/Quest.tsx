@@ -18,9 +18,14 @@ const Quest: React.FC = () => {
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [newQuestName, setNewQuestName] = useState('');
-    const [newQuestDescription, setNewQuestDescription] = useState('');
-    const [newQuestStatus, setNewQuestStatus] = useState<'active' | 'completed' | 'failed'>('active');
+    const [editingQuestId, setEditingQuestId] = useState<string | null>(null);
+
+    // Поля для добавления/редактирования
+    const [questName, setQuestName] = useState('');
+    const [questDescription, setQuestDescription] = useState('');
+    const [questStatus, setQuestStatus] = useState<'active' | 'completed' | 'failed'>('active');
+    const [questReward, setQuestReward] = useState('');
+    const [questRewardVisible, setQuestRewardVisible] = useState(false);
 
     if (!character) {
         return (
@@ -38,25 +43,57 @@ const Quest: React.FC = () => {
     // Фильтрация квестов
     const filteredQuests = character.quests.filter(quest => {
         const matchesSearch = quest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            quest.description.toLowerCase().includes(searchQuery.toLowerCase());
+            quest.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (quest.reward && quest.reward.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchesStatus = statusFilter === 'all' || quest.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
 
-    // Добавление квеста
-    const handleAddQuest = () => {
-        if (!newQuestName.trim()) {
+    // Сброс формы
+    const resetForm = () => {
+        setQuestName('');
+        setQuestDescription('');
+        setQuestStatus('active');
+        setQuestReward('');
+        setQuestRewardVisible(false);
+        setEditingQuestId(null);
+    };
+
+    // Открытие модалки для редактирования
+    const handleEdit = (questId: string) => {
+        const quest = character.quests.find(q => q.id === questId);
+        if (!quest) return;
+        setEditingQuestId(questId);
+        setQuestName(quest.name);
+        setQuestDescription(quest.description);
+        setQuestStatus(quest.status);
+        setQuestReward(quest.reward || '');
+        setQuestRewardVisible(quest.rewardVisibleToPlayers ?? false);
+        setShowAddModal(true);
+    };
+
+    // Сохранение (добавление или обновление)
+    const handleSaveQuest = () => {
+        if (!questName.trim()) {
             alert('Please enter a quest name.');
             return;
         }
-        addQuestToCharacter(character.id, {
-            name: newQuestName.trim(),
-            description: newQuestDescription.trim(),
-            status: newQuestStatus,
-        });
-        setNewQuestName('');
-        setNewQuestDescription('');
-        setNewQuestStatus('active');
+
+        const questData = {
+            name: questName.trim(),
+            description: questDescription.trim(),
+            status: questStatus,
+            reward: questReward.trim() || undefined,
+            rewardVisibleToPlayers: questRewardVisible,
+        };
+
+        if (editingQuestId) {
+            updateQuest(character.id, editingQuestId, questData);
+        } else {
+            addQuestToCharacter(character.id, questData);
+        }
+
+        resetForm();
         setShowAddModal(false);
     };
 
@@ -117,7 +154,10 @@ const Quest: React.FC = () => {
                     <div className="quest-title">Quests</div>
                     <div className="quest-subtitle">{character.name}</div>
                 </div>
-                <button className="quest-btn-add" onClick={() => setShowAddModal(true)}>
+                <button className="quest-btn-add" onClick={() => {
+                    resetForm();
+                    setShowAddModal(true);
+                }}>
                     + Add Quest
                 </button>
             </header>
@@ -172,6 +212,15 @@ const Quest: React.FC = () => {
                                     </span>
                                 </div>
                                 <div className="quest-item-description">{quest.description}</div>
+                                {quest.reward && (
+                                    <div className="quest-item-reward">
+                                        <span className="quest-reward-label">Reward: </span>
+                                        <span className="quest-reward-text">{quest.reward}</span>
+                                        {!quest.rewardVisibleToPlayers && (
+                                            <span className="quest-reward-dm-only"> (DM only)</span>
+                                        )}
+                                    </div>
+                                )}
                                 <div className="quest-item-actions">
                                     <select
                                         value={quest.status}
@@ -183,6 +232,12 @@ const Quest: React.FC = () => {
                                         <option value="completed">Completed</option>
                                         <option value="failed">Failed</option>
                                     </select>
+                                    <button
+                                        className="quest-edit-btn"
+                                        onClick={() => handleEdit(quest.id)}
+                                    >
+                                        ✎
+                                    </button>
                                     <button
                                         className="quest-delete-btn"
                                         onClick={() => handleDelete(quest.id, quest.name)}
@@ -209,24 +264,26 @@ const Quest: React.FC = () => {
                 />
             )}
 
-            {/* Модалка добавления квеста */}
-            <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)}>
-                <h3>Add New Quest</h3>
+            <Modal isOpen={showAddModal} onClose={() => {
+                resetForm();
+                setShowAddModal(false);
+            }}>
+                <h3>{editingQuestId ? 'Edit Quest' : 'Add New Quest'}</h3>
                 <div className="quest-add-form">
                     <div className="quest-form-group">
                         <label>Quest Name *</label>
                         <input
                             type="text"
-                            value={newQuestName}
-                            onChange={(e) => setNewQuestName(e.target.value)}
+                            value={questName}
+                            onChange={(e) => setQuestName(e.target.value)}
                             placeholder="e.g., Defeat the Dragon"
                         />
                     </div>
                     <div className="quest-form-group">
                         <label>Description</label>
                         <textarea
-                            value={newQuestDescription}
-                            onChange={(e) => setNewQuestDescription(e.target.value)}
+                            value={questDescription}
+                            onChange={(e) => setQuestDescription(e.target.value)}
                             placeholder="Describe the quest..."
                             rows={3}
                         />
@@ -234,18 +291,43 @@ const Quest: React.FC = () => {
                     <div className="quest-form-group">
                         <label>Status</label>
                         <select
-                            value={newQuestStatus}
-                            onChange={(e) => setNewQuestStatus(e.target.value as any)}
+                            value={questStatus}
+                            onChange={(e) => setQuestStatus(e.target.value as any)}
                         >
                             <option value="active">Active</option>
                             <option value="completed">Completed</option>
                             <option value="failed">Failed</option>
                         </select>
                     </div>
+                    <div className="quest-form-group">
+                        <label>Reward</label>
+                        <input
+                            type="text"
+                            value={questReward}
+                            onChange={(e) => setQuestReward(e.target.value)}
+                            placeholder="e.g., 500 gp, +1 Sword, XP"
+                        />
+                    </div>
+                    <div className="quest-form-group">
+                        <label className="quest-checkbox-label">
+                            <input
+                                type="checkbox"
+                                checked={questRewardVisible}
+                                onChange={(e) => setQuestRewardVisible(e.target.checked)}
+                            />
+                            Visible to players
+                        </label>
+                        <span className="quest-hint">If unchecked, reward will be marked as "DM only"</span>
+                    </div>
                 </div>
                 <div className="quest-modal-actions">
-                    <button className="quest-modal-btn cancel" onClick={() => setShowAddModal(false)}>Cancel</button>
-                    <button className="quest-modal-btn apply" onClick={handleAddQuest}>Add</button>
+                    <button className="quest-modal-btn cancel" onClick={() => {
+                        resetForm();
+                        setShowAddModal(false);
+                    }}>Cancel</button>
+                    <button className="quest-modal-btn apply" onClick={handleSaveQuest}>
+                        {editingQuestId ? 'Update' : 'Add'}
+                    </button>
                 </div>
             </Modal>
         </div>

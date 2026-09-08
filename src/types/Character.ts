@@ -79,6 +79,8 @@ export interface Quest {
     name: string;
     description: string;
     status: 'active' | 'completed' | 'failed';
+    reward?: string;
+    rewardVisibleToPlayers?: boolean;   // true – видна всем, false – только DM
 }
 
 export interface Campaign {
