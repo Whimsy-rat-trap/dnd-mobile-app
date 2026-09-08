@@ -1,31 +1,45 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
+import { useItems } from '../context/ItemContext';
 import Modal from '../components/Modal';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
+import { ALL_ITEMS } from '../constants/items';
 import './Quest.css';
 
 type StatusFilter = 'all' | 'active' | 'completed' | 'failed';
+type RewardType = 'text' | 'item' | 'currency';
 
 const Quest: React.FC = () => {
     const navigate = useNavigate();
-    const { currentCharacterId, getCharacter, addQuestToCharacter, removeQuestFromCharacter, updateQuest } = useCharacters();
+    const { currentCharacterId, getCharacter, addQuestToCharacter, removeQuestFromCharacter, updateQuest, updateCurrency } = useCharacters();
+    const { customItems } = useItems();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
-    // Состояния
+    // Фильтры и поиск
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingQuestId, setEditingQuestId] = useState<string | null>(null);
 
-    // Поля для добавления/редактирования
+    // Форма квеста
     const [questName, setQuestName] = useState('');
     const [questDescription, setQuestDescription] = useState('');
     const [questStatus, setQuestStatus] = useState<'active' | 'completed' | 'failed'>('active');
-    const [questReward, setQuestReward] = useState('');
-    const [questRewardVisible, setQuestRewardVisible] = useState(false);
+    const [rewardType, setRewardType] = useState<RewardType>('text');
+    const [rewardText, setRewardText] = useState('');
+    const [rewardItemId, setRewardItemId] = useState('');
+    const [rewardCurrency, setRewardCurrency] = useState({ gp: 0, sp: 0, cp: 0 });
+    const [rewardVisible, setRewardVisible] = useState(false);
+
+    // Модалка выбора предмета
+    const [showItemSelector, setShowItemSelector] = useState(false);
+    const [itemSearchQuery, setItemSearchQuery] = useState('');
+
+    // Все предметы (стандартные + кастомные)
+    const allItems = [...ALL_ITEMS, ...customItems];
 
     if (!character) {
         return (
@@ -44,7 +58,7 @@ const Quest: React.FC = () => {
     const filteredQuests = character.quests.filter(quest => {
         const matchesSearch = quest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             quest.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (quest.reward && quest.reward.toLowerCase().includes(searchQuery.toLowerCase()));
+            (quest.rewardText && quest.rewardText.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchesStatus = statusFilter === 'all' || quest.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
@@ -54,8 +68,11 @@ const Quest: React.FC = () => {
         setQuestName('');
         setQuestDescription('');
         setQuestStatus('active');
-        setQuestReward('');
-        setQuestRewardVisible(false);
+        setRewardType('text');
+        setRewardText('');
+        setRewardItemId('');
+        setRewardCurrency({ gp: 0, sp: 0, cp: 0 });
+        setRewardVisible(false);
         setEditingQuestId(null);
     };
 
@@ -67,8 +84,11 @@ const Quest: React.FC = () => {
         setQuestName(quest.name);
         setQuestDescription(quest.description);
         setQuestStatus(quest.status);
-        setQuestReward(quest.reward || '');
-        setQuestRewardVisible(quest.rewardVisibleToPlayers ?? false);
+        setRewardType(quest.rewardType || 'text');
+        setRewardText(quest.rewardText || '');
+        setRewardItemId(quest.rewardItemId || '');
+        setRewardCurrency(quest.rewardCurrency || { gp: 0, sp: 0, cp: 0 });
+        setRewardVisible(quest.rewardVisibleToPlayers ?? false);
         setShowAddModal(true);
     };
 
@@ -79,13 +99,31 @@ const Quest: React.FC = () => {
             return;
         }
 
-        const questData = {
+        // Валидация награды
+        if (rewardType === 'item' && !rewardItemId) {
+            alert('Please select an item reward.');
+            return;
+        }
+        if (rewardType === 'currency' && rewardCurrency.gp === 0 && rewardCurrency.sp === 0 && rewardCurrency.cp === 0) {
+            alert('Please enter a currency reward amount.');
+            return;
+        }
+
+        const questData: any = {
             name: questName.trim(),
             description: questDescription.trim(),
             status: questStatus,
-            reward: questReward.trim() || undefined,
-            rewardVisibleToPlayers: questRewardVisible,
+            rewardType,
+            rewardVisibleToPlayers: rewardVisible,
         };
+
+        if (rewardType === 'text') {
+            questData.rewardText = rewardText.trim() || undefined;
+        } else if (rewardType === 'item') {
+            questData.rewardItemId = rewardItemId;
+        } else if (rewardType === 'currency') {
+            questData.rewardCurrency = { ...rewardCurrency };
+        }
 
         if (editingQuestId) {
             updateQuest(character.id, editingQuestId, questData);
@@ -109,7 +147,12 @@ const Quest: React.FC = () => {
         }
     };
 
-    // Поля для модалки фильтрации (статус – уже есть быстрые кнопки, но можно добавить расширенные фильтры)
+    // Выбор предмета
+    const handleSelectItem = (itemId: string) => {
+        setRewardItemId(itemId);
+        setShowItemSelector(false);
+    };
+
     const filterFields: FilterField[] = [
         {
             key: 'status',
@@ -141,9 +184,44 @@ const Quest: React.FC = () => {
         }
     };
 
+    // Получение названия предмета по ID
+    const getItemName = (itemId: string) => {
+        const item = allItems.find(i => i.id === itemId);
+        return item ? item.name : 'Unknown Item';
+    };
+
+    // Отображение награды в списке
+    const renderReward = (quest: any) => {
+        if (!quest.rewardType) return null;
+        let rewardDisplay = '';
+        let extraClass = '';
+        if (quest.rewardType === 'text' && quest.rewardText) {
+            rewardDisplay = quest.rewardText;
+        } else if (quest.rewardType === 'item' && quest.rewardItemId) {
+            rewardDisplay = `Item: ${getItemName(quest.rewardItemId)}`;
+        } else if (quest.rewardType === 'currency' && quest.rewardCurrency) {
+            const { gp, sp, cp } = quest.rewardCurrency;
+            const parts = [];
+            if (gp) parts.push(`${gp} gp`);
+            if (sp) parts.push(`${sp} sp`);
+            if (cp) parts.push(`${cp} cp`);
+            rewardDisplay = parts.join(' ') || '0 gp';
+        } else {
+            return null;
+        }
+        return (
+            <div className="quest-item-reward">
+                <span className="quest-reward-label">Reward: </span>
+                <span className="quest-reward-text">{rewardDisplay}</span>
+                {!quest.rewardVisibleToPlayers && (
+                    <span className="quest-reward-dm-only"> (DM only)</span>
+                )}
+            </div>
+        );
+    };
+
     return (
         <div className="quest-page">
-            {/* Header */}
             <header className="quest-header">
                 <button className="quest-back-btn" onClick={handleBack}>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -212,15 +290,7 @@ const Quest: React.FC = () => {
                                     </span>
                                 </div>
                                 <div className="quest-item-description">{quest.description}</div>
-                                {quest.reward && (
-                                    <div className="quest-item-reward">
-                                        <span className="quest-reward-label">Reward: </span>
-                                        <span className="quest-reward-text">{quest.reward}</span>
-                                        {!quest.rewardVisibleToPlayers && (
-                                            <span className="quest-reward-dm-only"> (DM only)</span>
-                                        )}
-                                    </div>
-                                )}
+                                {renderReward(quest)}
                                 <div className="quest-item-actions">
                                     <select
                                         value={quest.status}
@@ -299,21 +369,116 @@ const Quest: React.FC = () => {
                             <option value="failed">Failed</option>
                         </select>
                     </div>
-                    <div className="quest-form-group">
-                        <label>Reward</label>
-                        <input
-                            type="text"
-                            value={questReward}
-                            onChange={(e) => setQuestReward(e.target.value)}
-                            placeholder="e.g., 500 gp, +1 Sword, XP"
-                        />
+
+                    {/* Блок награды */}
+                    <div className="quest-form-group quest-reward-type-group">
+                        <label>Reward Type</label>
+                        <div className="quest-reward-type-options">
+                            <label className="quest-reward-option">
+                                <input
+                                    type="radio"
+                                    value="text"
+                                    checked={rewardType === 'text'}
+                                    onChange={() => setRewardType('text')}
+                                />
+                                Text
+                            </label>
+                            <label className="quest-reward-option">
+                                <input
+                                    type="radio"
+                                    value="item"
+                                    checked={rewardType === 'item'}
+                                    onChange={() => setRewardType('item')}
+                                />
+                                Item
+                            </label>
+                            <label className="quest-reward-option">
+                                <input
+                                    type="radio"
+                                    value="currency"
+                                    checked={rewardType === 'currency'}
+                                    onChange={() => setRewardType('currency')}
+                                />
+                                Currency
+                            </label>
+                        </div>
                     </div>
+
+                    {rewardType === 'text' && (
+                        <div className="quest-form-group">
+                            <label>Reward Description</label>
+                            <input
+                                type="text"
+                                value={rewardText}
+                                onChange={(e) => setRewardText(e.target.value)}
+                                placeholder="e.g., A magical sword, information, etc."
+                            />
+                        </div>
+                    )}
+
+                    {rewardType === 'item' && (
+                        <div className="quest-form-group">
+                            <label>Select Item</label>
+                            <div className="quest-item-selector">
+                                <input
+                                    type="text"
+                                    value={rewardItemId ? getItemName(rewardItemId) : ''}
+                                    placeholder="Click to select item"
+                                    readOnly
+                                    onClick={() => setShowItemSelector(true)}
+                                />
+                                <button
+                                    type="button"
+                                    className="quest-select-item-btn"
+                                    onClick={() => setShowItemSelector(true)}
+                                >
+                                    Browse
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {rewardType === 'currency' && (
+                        <div className="quest-form-group quest-currency-group">
+                            <label>Currency Reward</label>
+                            <div className="quest-currency-inputs">
+                                <div className="quest-currency-input">
+                                    <label>GP</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={rewardCurrency.gp}
+                                        onChange={(e) => setRewardCurrency(prev => ({ ...prev, gp: Math.max(0, Number(e.target.value)) }))}
+                                    />
+                                </div>
+                                <div className="quest-currency-input">
+                                    <label>SP</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={rewardCurrency.sp}
+                                        onChange={(e) => setRewardCurrency(prev => ({ ...prev, sp: Math.max(0, Number(e.target.value)) }))}
+                                    />
+                                </div>
+                                <div className="quest-currency-input">
+                                    <label>CP</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={rewardCurrency.cp}
+                                        onChange={(e) => setRewardCurrency(prev => ({ ...prev, cp: Math.max(0, Number(e.target.value)) }))}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="quest-form-group">
                         <label className="quest-checkbox-label">
                             <input
                                 type="checkbox"
-                                checked={questRewardVisible}
-                                onChange={(e) => setQuestRewardVisible(e.target.checked)}
+                                checked={rewardVisible}
+                                onChange={(e) => setRewardVisible(e.target.checked)}
                             />
                             Visible to players
                         </label>
@@ -328,6 +493,33 @@ const Quest: React.FC = () => {
                     <button className="quest-modal-btn apply" onClick={handleSaveQuest}>
                         {editingQuestId ? 'Update' : 'Add'}
                     </button>
+                </div>
+            </Modal>
+
+            {/* Модалка выбора предмета */}
+            <Modal isOpen={showItemSelector} onClose={() => setShowItemSelector(false)}>
+                <h3>Select Reward Item</h3>
+                <div className="quest-item-selector-modal">
+                    <SearchBar
+                        value={itemSearchQuery}
+                        onChange={setItemSearchQuery}
+                        placeholder="Search items..."
+                    />
+                    <div className="quest-item-list">
+                        {allItems
+                            .filter(item => item.name.toLowerCase().includes(itemSearchQuery.toLowerCase()))
+                            .map(item => (
+                                <div
+                                    key={item.id}
+                                    className="quest-item-option"
+                                    onClick={() => handleSelectItem(item.id)}
+                                >
+                                    <span className="quest-item-option-name">{item.name}</span>
+                                    <span className="quest-item-option-type">{item.type}</span>
+                                    <span className="quest-item-option-rarity">{item.rarity}</span>
+                                </div>
+                            ))}
+                    </div>
                 </div>
             </Modal>
         </div>

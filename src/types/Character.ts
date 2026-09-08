@@ -39,6 +39,11 @@ export interface Character {
     quests: Quest[];
     campaigns: Campaign[];
     feats: Feat[];
+    currency: {
+        gp: number;
+        sp: number;
+        cp: number;
+    };
     diceLogs: Record<number, { result: number; timestamp: number }[]>;
     // Death Saving Throws
     deathSuccesses: number;
@@ -79,7 +84,14 @@ export interface Quest {
     name: string;
     description: string;
     status: 'active' | 'completed' | 'failed';
-    reward?: string;
+    rewardType: 'text' | 'item' | 'currency';
+    rewardText?: string;
+    rewardItemId?: string;  // ID предмета из LibraryItem или custom
+    rewardCurrency?: {
+        gp: number;
+        sp: number;
+        cp: number;
+    };
     rewardVisibleToPlayers?: boolean;   // true – видна всем, false – только DM
 }
 

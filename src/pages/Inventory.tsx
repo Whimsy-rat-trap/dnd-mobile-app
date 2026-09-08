@@ -107,6 +107,14 @@ const Inventory: React.FC = () => {
             </div>
 
             <div className="inv-content">
+                {/* Блок с деньгами */}
+                <div className="inv-currency">
+                    <span className="inv-currency-label">Currency:</span>
+                    <span className="inv-currency-gp">{character.currency?.gp ?? 0} gp</span>
+                    <span className="inv-currency-sp">{character.currency?.sp ?? 0} sp</span>
+                    <span className="inv-currency-cp">{character.currency?.cp ?? 0} cp</span>
+                </div>
+
                 <SearchBar
                     value={searchQuery}
                     onChange={setSearchQuery}
@@ -117,47 +125,35 @@ const Inventory: React.FC = () => {
                     {filteredItems.length === 0 ? (
                         <div className="inv-empty">No items in inventory. Browse items to add some!</div>
                     ) : (
-                        filteredItems.map(item => {
-                            const isNatural = isNaturalWeapon(item.type);
-                            return (
-                                <div
-                                    key={item.id}
-                                    className={`inv-item ${item.equipped ? 'inv-equipped' : ''} ${isNatural ? 'inv-natural-weapon' : ''}`}
-                                >
-                                    <div className="inv-item-info">
-                                        <span className="inv-item-name">
-                                            {item.name}
-                                            {isNatural && <span className="inv-natural-badge"> (Natural)</span>}
-                                        </span>
-                                        <span className="inv-item-type">{item.type}</span>
-                                        <span className="inv-item-rarity" style={{ color: getRarityColor(item.rarity) }}>
-                                            {item.rarity}
-                                        </span>
-                                        {item.description && (
-                                            <span className="inv-item-description">{item.description}</span>
-                                        )}
-                                    </div>
-                                    <div className="inv-item-actions">
-                                        {item.equipped && <span className="inv-equipped-badge">Equipped</span>}
-                                        {/* Natural weapons нельзя экипировать/снимать, они всегда считаются equipped? Можно скрыть кнопку Equip для natural weapon */}
-                                        {!isNatural && (
-                                            <button
-                                                className="inv-action-btn inv-equip-btn"
-                                                onClick={() => handleEquip(item.id)}
-                                            >
-                                                {item.equipped ? 'Unequip' : 'Equip'}
-                                            </button>
-                                        )}
-                                        <button
-                                            className="inv-action-btn inv-remove-btn"
-                                            onClick={() => handleRemove(item.id)}
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
+                        filteredItems.map(item => (
+                            <div key={item.id} className={`inv-item ${item.equipped ? 'inv-equipped' : ''}`}>
+                                <div className="inv-item-info">
+                                    <span className="inv-item-name">{item.name}</span>
+                                    <span className="inv-item-type">{item.type}</span>
+                                    <span className="inv-item-rarity" style={{ color: getRarityColor(item.rarity) }}>
+                                        {item.rarity}
+                                    </span>
+                                    {item.description && (
+                                        <span className="inv-item-description">{item.description}</span>
+                                    )}
                                 </div>
-                            );
-                        })
+                                <div className="inv-item-actions">
+                                    {item.equipped && <span className="inv-equipped-badge">Equipped</span>}
+                                    <button
+                                        className="inv-action-btn inv-equip-btn"
+                                        onClick={() => handleEquip(item.id)}
+                                    >
+                                        {item.equipped ? 'Unequip' : 'Equip'}
+                                    </button>
+                                    <button
+                                        className="inv-action-btn inv-remove-btn"
+                                        onClick={() => handleRemove(item.id)}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        ))
                     )}
                 </div>
                 <div className="inv-add-container">

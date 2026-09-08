@@ -991,3 +991,18 @@
     background: rgba(239, 68, 68, 0.15);
     color: #ef4444;
 }
+
+.db-currency-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 14px;
+    color: #fbbf24;
+}
+.db-currency-icon {
+    font-size: 18px;
+}
+.db-currency-value {
+    font-weight: 600;
+}

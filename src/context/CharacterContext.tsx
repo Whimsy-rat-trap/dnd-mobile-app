@@ -1,3 +1,4 @@
+// src/context/CharacterContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Character, InventoryItem, Spell, Quest, Campaign, Feat } from '../types/Character';
 import { getNaturalWeapons } from '../utils/racialFeatures';
@@ -57,6 +58,8 @@ interface CharacterContextType {
     // Feats
     addFeat: (characterId: string, feat: Omit<Feat, 'id'>) => void;
     removeFeat: (characterId: string, featId: string) => void;
+    // Currency
+    updateCurrency: (characterId: string, currency: { gp: number; sp: number; cp: number }) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -71,7 +74,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             return parsed.map((char: any) => {
                 const updated = { ...char };
 
-                // миграция class -> classes
+                // Миграция class -> classes
                 if (typeof updated.class === 'string' && !updated.classes) {
                     updated.classes = [updated.class];
                 } else if (!updated.classes) {
@@ -81,7 +84,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.class = updated.classes[0] || 'Fighter';
                 }
 
-                // миграция classLevels
+                // Миграция classLevels
                 if (!updated.classLevels || updated.classLevels.length === 0) {
                     if (updated.classes && updated.level) {
                         updated.classLevels = updated.classes.map((cls: string) => ({ className: cls, level: updated.level }));
@@ -96,20 +99,22 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.level = updated.classLevels.reduce((sum: number, cl: any) => sum + cl.level, 0);
                 }
 
-                // заполняем skills, если их нет или они пустые
+                // Навыки
                 if (!updated.skills || updated.skills.length === 0) {
                     updated.skills = defaultSkills;
                 }
 
+                // Dice logs
                 if (!updated.diceLogs) {
                     updated.diceLogs = {};
                 }
 
+                // Death saves
                 if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
                 if (updated.deathFailures === undefined) updated.deathFailures = 0;
                 if (updated.isStable === undefined) updated.isStable = false;
 
-                // toolProficiencies: если массив строк, преобразуем в объекты
+                // Tool proficiencies
                 if (Array.isArray(updated.toolProficiencies) && updated.toolProficiencies.length > 0) {
                     if (typeof updated.toolProficiencies[0] === 'string') {
                         updated.toolProficiencies = updated.toolProficiencies.map((name: string) => ({
@@ -127,21 +132,26 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.toolProficiencies = updated.toolProficiencies || [];
                 }
 
-                if (!updated.languages) {
-                    updated.languages = [];
-                }
+                // Languages, size, creatureType, subrace
+                if (!updated.languages) updated.languages = [];
                 if (!updated.size) updated.size = 'Medium';
                 if (!updated.creatureType) updated.creatureType = 'Humanoid';
                 if (!updated.subrace) updated.subrace = '';
-                if (!updated.savingThrowProficiencies) {
-                    updated.savingThrowProficiencies = [];
-                }
+                if (!updated.savingThrowProficiencies) updated.savingThrowProficiencies = [];
+
+                // Concentration
                 if (updated.activeConcentrationSpellId === undefined) {
                     updated.activeConcentrationSpellId = null;
                 }
-                // Новая миграция: feats
+
+                // Feats (новая миграция)
                 if (!updated.feats) {
                     updated.feats = [];
+                }
+
+                // Currency (новая миграция)
+                if (!updated.currency) {
+                    updated.currency = { gp: 0, sp: 0, cp: 0 };
                 }
 
                 return updated;
@@ -206,14 +216,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             character.subrace,
             character.background
         );
-
         const customFeats = character.feats.filter(f => f.source === 'custom');
-
         const allFeats = [...autoFeats, ...customFeats];
         const uniqueFeats = allFeats.filter((feat, index, self) =>
             index === self.findIndex(f => f.id === feat.id)
         );
-
         return {
             ...character,
             feats: uniqueFeats,
@@ -252,6 +259,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             savingThrowProficiencies: character.savingThrowProficiencies || [],
             activeConcentrationSpellId: null,
             feats: [],
+            currency: { gp: 0, sp: 0, cp: 0 },
         };
 
         newCharacter = addNaturalWeaponsToCharacter(newCharacter);
@@ -444,6 +452,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCharacter(characterId, { feats: char.feats.filter(f => f.id !== featId) });
     };
 
+    // Currency
+    const updateCurrency = (characterId: string, currency: { gp: number; sp: number; cp: number }) => {
+        updateCharacter(characterId, { currency });
+    };
+
     const value: CharacterContextType = {
         characters,
         currentCharacterId,
@@ -472,6 +485,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         resolveConcentrationCheck,
         addFeat,
         removeFeat,
+        updateCurrency,
     };
 
     return (
@@ -481,7 +495,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     );
 };
 
-// Хук для использования контекста
 export const useCharacters = () => {
     const context = useContext(CharacterContext);
     if (!context) {

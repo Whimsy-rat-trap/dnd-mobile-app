@@ -458,12 +458,24 @@ const Dashboard: React.FC = () => {
         ? character.spells.find(s => s.id === character.activeConcentrationSpellId)
         : null;
 
+    // Деньги персонажа
+    const currency = character.currency || { gp: 0, sp: 0, cp: 0 };
+    const currencyDisplay = `${currency.gp} gp` +
+        (currency.sp > 0 ? ` ${currency.sp} sp` : '') +
+        (currency.cp > 0 ? ` ${currency.cp} cp` : '');
+
     return (
         <div className="db-page">
             {/* Header */}
             <div className="db-header">
                 <div className="db-header-top">
-                    <span className="db-title">Arcane Realms</span>
+                    <div className="db-header-left">
+                        <span className="db-title">Arcane Realms</span>
+                        <div className="db-currency-display">
+                            <span className="db-currency-icon">Moneyyyyyy</span>
+                            <span className="db-currency-value">{currencyDisplay}</span>
+                        </div>
+                    </div>
                     <div className="db-header-actions">
                         <button className="db-switch-char-btn" onClick={switchCharacter}>
                             Switch
