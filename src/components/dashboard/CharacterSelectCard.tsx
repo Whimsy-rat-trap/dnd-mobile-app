@@ -5,15 +5,26 @@ interface CharacterSelectCardProps {
     character: Character;
     onClick: () => void;
     needsDeathSave: boolean;
+    onDelete?: (e: React.MouseEvent) => void;
 }
 
-const CharacterSelectCard: React.FC<CharacterSelectCardProps> = ({ character, onClick, needsDeathSave }) => {
+const CharacterSelectCard: React.FC<CharacterSelectCardProps> = ({ character, onClick, needsDeathSave, onDelete }) => {
     return (
         <div
             className={`db-character-select-card ${needsDeathSave ? 'db-needs-death-save' : ''}`}
             onClick={onClick}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', position: 'relative' }}
         >
+            {onDelete && (
+                <button
+                    className="db-card-delete-btn"
+                    onClick={onDelete}
+                    title="Delete character"
+                    aria-label="Delete character"
+                >
+                    ✕
+                </button>
+            )}
             <div className="db-character-select-info">
                 <div className="db-character-select-name">{character.name}</div>
                 <div className="db-character-select-class">

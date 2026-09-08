@@ -973,3 +973,21 @@
     font-size: 14px;
     color: #fca5a5;
 }
+
+.db-card-delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+.db-card-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}

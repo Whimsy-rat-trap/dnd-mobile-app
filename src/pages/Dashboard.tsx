@@ -24,6 +24,7 @@ const Dashboard: React.FC = () => {
         setCurrentCharacterId,
         getCharacter,
         updateCharacter,
+        deleteCharacter,
         addDiceLog,
         startConcentration,
         endConcentration,
@@ -89,7 +90,7 @@ const Dashboard: React.FC = () => {
         setFilters(newFilters as any);
     };
 
-    // Поля для фильтрации (вычисляются динамически)
+    // Поля для фильтрации
     const filterFields: FilterField[] = React.useMemo(() => {
         let subclassOptions: { value: string; label: string }[] = [{ value: '', label: 'All' }];
         if (filters.class && SUBCLASSES[filters.class]) {
@@ -171,6 +172,14 @@ const Dashboard: React.FC = () => {
         return matchesSearch && matchesClass && matchesSubclass && matchesRace && matchesSubrace && matchesLevel && matchesAlive && matchesCreatedAfter && matchesCreatedBefore && matchesLastUsedAfter && matchesLastUsedBefore && matchesStatus;
     });
 
+    // Обработчик удаления персонажа
+    const handleDeleteCharacter = (id: string, name: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (window.confirm(`Delete "${name}"? This action cannot be undone.`)) {
+            deleteCharacter(id);
+        }
+    };
+
     // Если персонаж не выбран – показываем экран выбора
     if (!character) {
         return (
@@ -197,6 +206,7 @@ const Dashboard: React.FC = () => {
                                     character={char}
                                     onClick={() => setCurrentCharacterId(char.id)}
                                     needsDeathSave={needsDeathSave}
+                                    onDelete={(e) => handleDeleteCharacter(char.id, char.name, e)}
                                 />
                             );
                         })}

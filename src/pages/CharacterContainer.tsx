@@ -19,7 +19,7 @@ const NATURAL_ARMOR: Record<string, { base: number; dex?: boolean; max?: number 
 const CharacterContainer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { getCharacter, updateCharacter, setCurrentCharacterId, addFeat, removeFeat } = useCharacters();
+    const { getCharacter, updateCharacter, setCurrentCharacterId, deleteCharacter, addFeat, removeFeat } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
     // Состояние для переключателя variant
@@ -55,6 +55,14 @@ const CharacterContainer: React.FC = () => {
     const handleSetCurrent = () => {
         setCurrentCharacterId(character.id);
         navigate('/dashboard');
+    };
+
+    // Удаление персонажа
+    const handleDelete = () => {
+        if (window.confirm(`Are you sure you want to delete "${character.name}"? This action cannot be undone.`)) {
+            deleteCharacter(character.id);
+            navigate('/hub');
+        }
     };
 
     // Вычисление бонуса мастерства (proficiency) по уровню
@@ -432,6 +440,22 @@ const CharacterContainer: React.FC = () => {
                     }}
                 >
                     Set as current
+                </button>
+                <button
+                    className="cc-delete-btn"
+                    onClick={handleDelete}
+                    style={{
+                        background: '#ef4444',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        marginLeft: '8px',
+                    }}
+                >
+                    Delete
                 </button>
             </header>
 
