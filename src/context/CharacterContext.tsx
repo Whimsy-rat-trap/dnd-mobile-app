@@ -149,7 +149,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.feats = [];
                 }
 
-                // Currency (новая миграция)
+                // Currency
                 if (!updated.currency) {
                     updated.currency = { gp: 0, sp: 0, cp: 0 };
                 }
@@ -276,6 +276,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             prev.map(char => {
                 if (char.id !== id) return char;
                 let updated = { ...char, ...data };
+
+                // Добавляем валюту, если её нет
+                if (!updated.currency) {
+                    updated.currency = { gp: 0, sp: 0, cp: 0 };
+                }
 
                 // Если изменились поля, влияющие на черты, natural weapons или расовые заклинания
                 if (data.race !== undefined || data.subrace !== undefined || data.class !== undefined || data.background !== undefined) {

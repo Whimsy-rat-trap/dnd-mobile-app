@@ -265,7 +265,7 @@ const Dashboard: React.FC = () => {
         );
     }
 
-    // --- Функции для работы с HP и EXP ---
+    // Функции для работы с HP и EXP
     const updateChar = (updates: Partial<typeof character>) => {
         updateCharacter(character.id, updates);
     };
@@ -471,10 +471,6 @@ const Dashboard: React.FC = () => {
                 <div className="db-header-top">
                     <div className="db-header-left">
                         <span className="db-title">Arcane Realms</span>
-                        <div className="db-currency-display">
-                            <span className="db-currency-icon">Moneyyyyyy</span>
-                            <span className="db-currency-value">{currencyDisplay}</span>
-                        </div>
                     </div>
                     <div className="db-header-actions">
                         <button className="db-switch-char-btn" onClick={switchCharacter}>
@@ -507,6 +503,16 @@ const Dashboard: React.FC = () => {
                     onExpClick={() => openPopup('exp')}
                     onProfileClick={() => openPopup('profile')}
                 />
+
+                {/* Currency */}
+                <div className="db-currency-display">
+                    <span className="db-currency-label">Currency</span>
+                    <div className="db-currency-values">
+                        <span className="db-currency-gp">{currency.gp} gp</span>
+                        <span className="db-currency-sp">{currency.sp} sp</span>
+                        <span className="db-currency-cp">{currency.cp} cp</span>
+                    </div>
+                </div>
 
                 <DeathSaves
                     character={character}

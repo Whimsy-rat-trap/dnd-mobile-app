@@ -993,16 +993,38 @@
 }
 
 .db-currency-display {
+    background: #1f2937;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 8px 0;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 6px;
-    margin-top: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.db-currency-label {
     font-size: 14px;
+    font-weight: 500;
+    color: #9ca3af;
+}
+
+.db-currency-values {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.db-currency-gp {
     color: #fbbf24;
 }
-.db-currency-icon {
-    font-size: 18px;
+
+.db-currency-sp {
+    color: #9ca3af;
 }
-.db-currency-value {
-    font-weight: 600;
+
+.db-currency-cp {
+    color: #b45309;
 }
