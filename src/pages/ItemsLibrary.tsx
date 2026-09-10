@@ -7,6 +7,7 @@ import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import './ItemsLibrary.css';
+import {InventoryItem} from "../types/Character";
 
 // Уникальные типы и редкости
 const TYPES = [
@@ -143,8 +144,8 @@ const ItemsLibrary: React.FC = () => {
             return;
         }
 
-        // Преобразуем LibraryItem в InventoryItem
-        const inventoryItem = {
+        // Преобразуем LibraryItem в InventoryItem, КОПИРУЯ все новые поля
+        const inventoryItem: Omit<InventoryItem, 'id'> = {
             name: item.name,
             type: item.type,
             rarity: item.rarity,

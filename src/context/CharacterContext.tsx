@@ -1,10 +1,10 @@
-// src/context/CharacterContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Character, InventoryItem, Spell, Quest, Campaign, Feat } from '../types/Character';
 import { getNaturalWeapons } from '../utils/racialFeatures';
 import { recalculateAC } from '../utils/armorUtils';
 import { getRacialSpells } from '../constants/racialSpells';
 import { getFeatsForCharacter } from '../constants/feats';
+import { ALL_ITEMS } from '../constants/items';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -152,6 +152,27 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 // Currency
                 if (!updated.currency) {
                     updated.currency = { gp: 0, sp: 0, cp: 0 };
+                }
+
+                if (updated.inventory && Array.isArray(updated.inventory)) {
+                    updated.inventory = updated.inventory.map((invItem: any) => {
+                        // Если уже есть все поля – пропускаем
+                        if (invItem.damageDice || invItem.healingDice || invItem.uses) {
+                            return invItem;
+                        }
+                        // Ищем предмет в библиотеке по имени
+                        const libraryItem = ALL_ITEMS.find((li: any) => li.name === invItem.name);
+                        if (libraryItem) {
+                            return {
+                                ...invItem,
+                                damageDice: libraryItem.damageDice,
+                                damageType: libraryItem.damageType,
+                                healingDice: libraryItem.healingDice,
+                                uses: libraryItem.uses,
+                            };
+                        }
+                        return invItem;
+                    });
                 }
 
                 return updated;
