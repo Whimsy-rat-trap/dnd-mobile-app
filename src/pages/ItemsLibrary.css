@@ -263,3 +263,21 @@
     font-size: 12px;
     color: #d1d5db;
 }
+
+.inv-item-stat-ac,
+.il-item-stat-ac {
+    color: #60a5fa;
+    border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.inv-item-stat-strength,
+.il-item-stat-strength {
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.inv-item-stat-stealth,
+.il-item-stat-stealth {
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.3);
+}

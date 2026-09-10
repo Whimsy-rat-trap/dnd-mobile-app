@@ -33,6 +33,12 @@ const Dashboard: React.FC = () => {
         concentrationCheck,
     } = useCharacters();
 
+    // Защита от undefined/null в массиве characters
+    const safeCharacters = React.useMemo(
+        () => (characters || []).filter(c => c != null),
+        [characters]
+    );
+
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
     // Состояния для попапов и ввода
@@ -99,6 +105,12 @@ const Dashboard: React.FC = () => {
                 ...SUBCLASSES[filters.class].map(s => ({ value: s, label: s })),
             ];
         }
+
+        // Защита от undefined при сборе подрас
+        const subraceOptions = Array.from(new Set(
+            safeCharacters.flatMap(c => (c && c.subrace) ? [c.subrace] : [])
+        )).map(s => ({ value: s, label: s }));
+
         return [
             {
                 key: 'class',
@@ -122,10 +134,7 @@ const Dashboard: React.FC = () => {
                 key: 'subrace',
                 label: 'Subrace',
                 type: 'select',
-                options: [
-                    { value: '', label: 'All' },
-                    ...Array.from(new Set(characters.flatMap(c => c.subrace ? [c.subrace] : []))).map(s => ({ value: s, label: s })),
-                ],
+                options: [{ value: '', label: 'All' }, ...subraceOptions],
             },
             { key: 'level', label: 'Level Range', type: 'range', min: 1, max: 20 },
             {
@@ -153,12 +162,13 @@ const Dashboard: React.FC = () => {
                 ],
             },
         ];
-    }, [filters.class, characters]);
+    }, [filters.class, safeCharacters]);
 
-    // Фильтрация персонажей
-    const filteredCharacters = characters.filter(char => {
+    // Фильтрация персонажей с защитой от undefined
+    const filteredCharacters = safeCharacters.filter(char => {
+        if (!char) return false;
         const matchesSearch = char.name.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesClass = !filters.class || char.class === filters.class || char.classes.includes(filters.class);
+        const matchesClass = !filters.class || char.class === filters.class || (char.classes && char.classes.includes(filters.class));
         const matchesSubclass = !filters.subclass || char.subclass === filters.subclass;
         const matchesRace = !filters.race || char.race === filters.race;
         const matchesSubrace = !filters.subrace || char.subrace === filters.subrace;
@@ -458,11 +468,8 @@ const Dashboard: React.FC = () => {
         ? character.spells.find(s => s.id === character.activeConcentrationSpellId)
         : null;
 
-    // Деньги персонажа
+    // Валюта
     const currency = character.currency || { gp: 0, sp: 0, cp: 0 };
-    const currencyDisplay = `${currency.gp} gp` +
-        (currency.sp > 0 ? ` ${currency.sp} sp` : '') +
-        (currency.cp > 0 ? ` ${currency.cp} cp` : '');
 
     return (
         <div className="db-page">
@@ -506,7 +513,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Currency */}
                 <div className="db-currency-display">
-                    <span className="db-currency-label">Currency</span>
+                    <span className="db-currency-label">💰 Currency</span>
                     <div className="db-currency-values">
                         <span className="db-currency-gp">{currency.gp} gp</span>
                         <span className="db-currency-sp">{currency.sp} sp</span>

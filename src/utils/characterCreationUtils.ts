@@ -143,6 +143,12 @@ export function buildStartingItems(
         damageType: item.damageType,
         healingDice: item.healingDice,
         uses: item.uses,
+        baseAC: item.baseAC,
+        acBonus: item.acBonus,
+        dexModifierAllowed: item.dexModifierAllowed,
+        maxDexBonus: item.maxDexBonus,
+        strengthRequirement: item.strengthRequirement,
+        stealthDisadvantage: item.stealthDisadvantage,
     }));
 }
 

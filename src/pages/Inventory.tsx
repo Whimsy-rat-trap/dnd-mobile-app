@@ -137,8 +137,9 @@ const Inventory: React.FC = () => {
                                         <span className="inv-item-description">{item.description}</span>
                                     )}
                                     {/* Блок с характеристиками предмета */}
-                                    {(item.damageDice || item.healingDice || item.uses) && (
+                                    {(item.damageDice || item.healingDice || item.uses || item.baseAC || item.acBonus || item.strengthRequirement) && (
                                         <div className="inv-item-stats">
+                                            {/* Урон */}
                                             {item.damageDice && (
                                                 <span className="inv-item-stat inv-item-stat-damage">
                                                     Damage: {item.damageDice}
@@ -148,6 +149,29 @@ const Inventory: React.FC = () => {
                                             {item.healingDice && (
                                                 <span className="inv-item-stat inv-item-stat-healing">
                                                     Healing: {item.healingDice}
+                                                </span>
+                                            )}
+                                            {item.baseAC !== undefined && (
+                                                <span className="inv-item-stat inv-item-stat-ac">
+                                                    AC {item.baseAC}
+                                                    {item.dexModifierAllowed && (
+                                                        item.maxDexBonus !== undefined ? ` + Dex (max ${item.maxDexBonus})` : ' + Dex'
+                                                    )}
+                                                </span>
+                                            )}
+                                            {item.acBonus !== undefined && (
+                                                <span className="inv-item-stat inv-item-stat-ac">
+                                                    Bonus +{item.acBonus} AC
+                                                </span>
+                                            )}
+                                            {item.strengthRequirement !== undefined && (
+                                                <span className="inv-item-stat inv-item-stat-strength">
+                                                    Str: {item.strengthRequirement}
+                                                </span>
+                                            )}
+                                            {item.stealthDisadvantage && (
+                                                <span className="inv-item-stat inv-item-stat-stealth">
+                                                    Stealth Disadv.
                                                 </span>
                                             )}
                                             {item.uses && (

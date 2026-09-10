@@ -155,6 +155,12 @@ const ItemsLibrary: React.FC = () => {
             damageType: item.damageType,
             healingDice: item.healingDice,
             uses: item.uses,
+            baseAC: item.baseAC,
+            acBonus: item.acBonus,
+            dexModifierAllowed: item.dexModifierAllowed,
+            maxDexBonus: item.maxDexBonus,
+            strengthRequirement: item.strengthRequirement,
+            stealthDisadvantage: item.stealthDisadvantage,
         };
         addItemToInventory(targetCharacterId, inventoryItem);
         alert(`Added "${item.name}" to inventory!`);
@@ -255,23 +261,48 @@ const ItemsLibrary: React.FC = () => {
                                         )}
                                         <span className="il-item-description">{item.description}</span>
 
-                                        {/* Новый блок со статами предмета */}
-                                        {(item.damageDice || item.healingDice || item.uses) && (
-                                            <div className="il-item-stats">
+                                        {/* Блок с характеристиками предмета */}
+                                        {(item.damageDice || item.healingDice || item.uses || item.baseAC || item.acBonus || item.strengthRequirement) && (
+                                            <div className="inv-item-stats">
+                                                {/* Урон */}
                                                 {item.damageDice && (
-                                                    <span className="il-item-stat">
-                                                        Damage: {item.damageDice} {item.damageType || ''}
-                                                    </span>
+                                                    <span className="inv-item-stat inv-item-stat-damage">
+                                                    Damage: {item.damageDice}
+                                                        {item.damageType ? ` ${item.damageType}` : ''}
+                                                </span>
                                                 )}
                                                 {item.healingDice && (
-                                                    <span className="il-item-stat">
-                                                        Heal: {item.healingDice}
-                                                    </span>
+                                                    <span className="inv-item-stat inv-item-stat-healing">
+                                                    Healing: {item.healingDice}
+                                                </span>
+                                                )}
+                                                {item.baseAC !== undefined && (
+                                                    <span className="inv-item-stat inv-item-stat-ac">
+                                                    AC {item.baseAC}
+                                                        {item.dexModifierAllowed && (
+                                                            item.maxDexBonus !== undefined ? ` + Dex (max ${item.maxDexBonus})` : ' + Dex'
+                                                        )}
+                                                </span>
+                                                )}
+                                                {item.acBonus !== undefined && (
+                                                    <span className="inv-item-stat inv-item-stat-ac">
+                                                    Bonus +{item.acBonus} AC
+                                                </span>
+                                                )}
+                                                {item.strengthRequirement !== undefined && (
+                                                    <span className="inv-item-stat inv-item-stat-strength">
+                                                    Str: {item.strengthRequirement}
+                                                </span>
+                                                )}
+                                                {item.stealthDisadvantage && (
+                                                    <span className="inv-item-stat inv-item-stat-stealth">
+                                                    Stealth Disadv.
+                                                </span>
                                                 )}
                                                 {item.uses && (
-                                                    <span className="il-item-stat">
-                                                        Uses: {item.uses.current}/{item.uses.max}
-                                                    </span>
+                                                    <span className="inv-item-stat inv-item-stat-uses">
+                                                    Uses: {item.uses.current}/{item.uses.max}
+                                                </span>
                                                 )}
                                             </div>
                                         )}

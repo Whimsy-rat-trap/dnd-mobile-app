@@ -63,6 +63,12 @@ export interface InventoryItem {
     damageType?: string;    // fire, slashing
     healingDice?: string;   // 2d4+2
     uses?: { current: number; max: number };
+    baseAC?: number;
+    acBonus?: number;
+    dexModifierAllowed?: boolean;
+    maxDexBonus?: number;
+    strengthRequirement?: number;
+    stealthDisadvantage?: boolean;
 }
 
 export interface Spell {

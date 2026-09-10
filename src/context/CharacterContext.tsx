@@ -71,8 +71,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!stored) return [];
         try {
             const parsed = JSON.parse(stored);
-            return parsed.map((char: any) => {
-                const updated = { ...char };
+            return parsed
+                .filter((char: any) => char && typeof char === 'object')
+                .map((char: any) => {
+                    const updated = { ...char };
 
                 // Миграция class -> classes
                 if (typeof updated.class === 'string' && !updated.classes) {
@@ -156,8 +158,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
                 if (updated.inventory && Array.isArray(updated.inventory)) {
                     updated.inventory = updated.inventory.map((invItem: any) => {
-                        // Если уже есть все поля – пропускаем
-                        if (invItem.damageDice || invItem.healingDice || invItem.uses) {
+                        // Если уже есть хотя бы одно из новых полей – пропускаем
+                        if (invItem.baseAC !== undefined || invItem.acBonus !== undefined || invItem.damageDice || invItem.healingDice || invItem.uses) {
                             return invItem;
                         }
                         // Ищем предмет в библиотеке по имени
@@ -169,6 +171,12 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                                 damageType: libraryItem.damageType,
                                 healingDice: libraryItem.healingDice,
                                 uses: libraryItem.uses,
+                                baseAC: libraryItem.baseAC,
+                                acBonus: libraryItem.acBonus,
+                                dexModifierAllowed: libraryItem.dexModifierAllowed,
+                                maxDexBonus: libraryItem.maxDexBonus,
+                                strengthRequirement: libraryItem.strengthRequirement,
+                                stealthDisadvantage: libraryItem.stealthDisadvantage,
                             };
                         }
                         return invItem;

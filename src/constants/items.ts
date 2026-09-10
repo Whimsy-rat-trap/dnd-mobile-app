@@ -1,53 +1,71 @@
 export interface LibraryItem {
     id: string;
     name: string;
-    type: 'weapon' | 'armor' | 'potion' | 'scroll' | 'ring' | 'wand' | 'shield' | 'natural weapon' | 'other';
+    type: 'weapon' | 'armor' | 'shield' | 'potion' | 'scroll' | 'ring' | 'wand' | 'natural weapon' | 'other';
     rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
     description: string;
     attunement?: boolean;
     value?: string;
+    // Оружие
     damageDice?: string;
     damageType?: string;
+    // Исцеление
     healingDice?: string;
+    // Заряды
     uses?: { current: number; max: number };
+    // Броня / щит
+    baseAC?: number;
+    acBonus?: number;
+    dexModifierAllowed?: boolean;
+    maxDexBonus?: number;
+    strengthRequirement?: number;
+    stealthDisadvantage?: boolean;
 }
 
 export const ALL_ITEMS: LibraryItem[] = [
     // Weapons
     { id: 'w1', name: 'Longsword +1', type: 'weapon', rarity: 'uncommon', description: 'A finely crafted longsword with a faint magical aura.', attunement: false, damageDice: '1d8+1', damageType: 'slashing' },
-    { id: 'w2', name: 'Dagger of Venom', type: 'weapon', rarity: 'rare', description: 'On a hit, you can activate the dagger to deal an extra 2d10 poison damage.', attunement: true, damageDice: '1d4+2d10', damageType: 'piercing/poison' },
-    { id: 'w3', name: 'Flame Tongue', type: 'weapon', rarity: 'rare', description: 'While ignited, this sword deals an extra 2d6 fire damage on a hit.', attunement: true, damageDice: '1d8+2d6', damageType: 'slashing/fire' },
-    { id: 'w4', name: 'Frost Brand', type: 'weapon', rarity: 'very rare', description: 'This sword sheds dim light in a 10-foot radius when the temperature drops below 0°F.', attunement: true, damageDice: '1d8+1d6', damageType: 'slashing/cold' },
+    { id: 'w2', name: 'Dagger of Venom', type: 'weapon', rarity: 'rare', description: 'On a hit, you can activate the dagger to deal an extra 2d10 poison damage.', attunement: true, damageDice: '1d4', damageType: 'piercing' },
+    { id: 'w3', name: 'Flame Tongue', type: 'weapon', rarity: 'rare', description: 'While ignited, this sword deals an extra 2d6 fire damage on a hit.', attunement: true, damageDice: '1d8 + 2d6', damageType: 'slashing / fire' },
+    { id: 'w4', name: 'Frost Brand', type: 'weapon', rarity: 'very rare', description: 'This sword sheds dim light in a 10-foot radius when the temperature drops below 0°F.', attunement: true, damageDice: '1d8 + 1d6', damageType: 'slashing / cold' },
     { id: 'w5', name: 'Vorpal Sword', type: 'weapon', rarity: 'legendary', description: 'On a critical hit, the sword severs a creature\'s head.', attunement: true, damageDice: '3d8', damageType: 'slashing' },
-    { id: 'w6', name: 'Sun Blade', type: 'weapon', rarity: 'rare', description: 'This weapon is a magic longsword that sheds bright light in a 15-foot radius.', attunement: true, damageDice: '1d8+1', damageType: 'radiant' },
+    { id: 'w6', name: 'Sun Blade', type: 'weapon', rarity: 'rare', description: 'This weapon is a magic longsword that sheds bright light in a 15-foot radius.', attunement: true, damageDice: '1d8 + 1d4', damageType: 'radiant' },
     { id: 'w7', name: 'Defender', type: 'weapon', rarity: 'legendary', description: 'A magic sword that grants a +3 bonus to attack and damage, but you can transfer some of the bonus to AC.', attunement: true, damageDice: '1d8+3', damageType: 'slashing' },
-    { id: 'w8', name: 'Holy Avenger', type: 'weapon', rarity: 'legendary', description: 'A powerful sword that deals extra radiant damage to fiends and undead.', attunement: true, damageDice: '2d10+2d10', damageType: 'slashing/radiant' },
+    { id: 'w8', name: 'Holy Avenger', type: 'weapon', rarity: 'legendary', description: 'A powerful sword that deals extra radiant damage to fiends and undead.', attunement: true, damageDice: '1d8 + 1d10', damageType: 'slashing / radiant' },
     { id: 'w9', name: 'Rapier +2', type: 'weapon', rarity: 'rare', description: 'A finely balanced rapier with a +2 bonus.', attunement: false, damageDice: '1d8+2', damageType: 'piercing' },
     { id: 'w10', name: 'Mace of Disruption', type: 'weapon', rarity: 'rare', description: 'When you hit a fiend or undead with this mace, it must make a Wisdom saving throw or be destroyed.', attunement: true, damageDice: '1d6', damageType: 'bludgeoning' },
 
-    // Armor
-    { id: 'a1', name: 'Leather Armor', type: 'armor', rarity: 'common', description: 'Standard leather armor, well-worn but sturdy.' },
-    { id: 'a2', name: 'Plate Armor +2', type: 'armor', rarity: 'very rare', description: 'Shining plate armor that grants a +2 bonus to AC.', attunement: false },
-    { id: 'a3', name: 'Cloak of Protection', type: 'armor', rarity: 'uncommon', description: 'You gain a +1 bonus to AC and saving throws while wearing this cloak.', attunement: true },
-    { id: 'a4', name: 'Ring of Protection', type: 'ring', rarity: 'rare', description: 'You gain a +1 bonus to AC and saving throws while wearing this ring.', attunement: true },
-    { id: 'a5', name: 'Elven Chain', type: 'armor', rarity: 'rare', description: 'A fine chain shirt that can be worn under clothing. You are considered proficient with it even if you lack proficiency with medium armor.', attunement: false },
-    { id: 'a6', name: 'Dragon Scale Mail', type: 'armor', rarity: 'very rare', description: 'Armor made from the scales of a dragon. You have resistance to the dragon\'s damage type.', attunement: true },
-    { id: 'a7', name: 'Demon Armor', type: 'armor', rarity: 'very rare', description: 'This armor grants a +1 bonus to AC and allows you to use it as a weapon.', attunement: true, damageDice: '1d8', damageType: 'slashing' },
-    { id: 'a8', name: 'Studded Leather +1', type: 'armor', rarity: 'uncommon', description: 'Studded leather armor with a +1 bonus to AC.', attunement: false },
-    { id: 'a9', name: 'Hide Armor', type: 'armor', rarity: 'common', description: 'Armor made from thick hide, gives AC 12 + Dex (max 2).' },
-    { id: 'a10', name: 'Chain Shirt', type: 'armor', rarity: 'common', description: 'A chain shirt gives AC 13 + Dex (max 2).' },
-    { id: 'a11', name: 'Scale Mail', type: 'armor', rarity: 'common', description: 'Scale mail gives AC 14 + Dex (max 2).' },
-    { id: 'a12', name: 'Breastplate', type: 'armor', rarity: 'common', description: 'A breastplate gives AC 14 + Dex (max 2).' },
-    { id: 'a13', name: 'Half Plate', type: 'armor', rarity: 'common', description: 'Half plate gives AC 15 + Dex (max 2).' },
-    { id: 'a14', name: 'Ring Mail', type: 'armor', rarity: 'common', description: 'Ring mail gives AC 14 (no Dex).' },
-    { id: 'a15', name: 'Chain Mail', type: 'armor', rarity: 'common', description: 'Chain mail gives AC 16, requires Str 13, stealth disadvantage.' },
-    { id: 'a16', name: 'Splint Armor', type: 'armor', rarity: 'common', description: 'Splint armor gives AC 17, requires Str 15, stealth disadvantage.' },
-    { id: 'a17', name: 'Plate Armor', type: 'armor', rarity: 'common', description: 'Plate armor gives AC 18, requires Str 15, stealth disadvantage.' },
+    // Armour
+    // Лёгкая броня
+    { id: 'a1', name: 'Leather Armor', type: 'armor', rarity: 'common', description: 'Standard leather armor, well-worn but sturdy.', baseAC: 11, dexModifierAllowed: true },
+    { id: 'a8', name: 'Studded Leather +1', type: 'armor', rarity: 'uncommon', description: 'Studded leather armor with a +1 bonus to AC.', baseAC: 13, dexModifierAllowed: true },
+
+    // Средняя броня
+    { id: 'a9', name: 'Hide Armor', type: 'armor', rarity: 'common', description: 'Armor made from thick hide, gives AC 12 + Dex (max 2).', baseAC: 12, dexModifierAllowed: true, maxDexBonus: 2 },
+    { id: 'a10', name: 'Chain Shirt', type: 'armor', rarity: 'common', description: 'A chain shirt gives AC 13 + Dex (max 2).', baseAC: 13, dexModifierAllowed: true, maxDexBonus: 2 },
+    { id: 'a11', name: 'Scale Mail', type: 'armor', rarity: 'common', description: 'Scale mail gives AC 14 + Dex (max 2).', baseAC: 14, dexModifierAllowed: true, maxDexBonus: 2, stealthDisadvantage: true },
+    { id: 'a12', name: 'Breastplate', type: 'armor', rarity: 'common', description: 'A breastplate gives AC 14 + Dex (max 2).', baseAC: 14, dexModifierAllowed: true, maxDexBonus: 2 },
+    { id: 'a13', name: 'Half Plate', type: 'armor', rarity: 'common', description: 'Half plate gives AC 15 + Dex (max 2).', baseAC: 15, dexModifierAllowed: true, maxDexBonus: 2, stealthDisadvantage: true },
+
+    // Тяжёлая броня
+    { id: 'a14', name: 'Ring Mail', type: 'armor', rarity: 'common', description: 'Ring mail gives AC 14 (no Dex).', baseAC: 14, dexModifierAllowed: false, stealthDisadvantage: true },
+    { id: 'a15', name: 'Chain Mail', type: 'armor', rarity: 'common', description: 'Chain mail gives AC 16, requires Str 13, stealth disadvantage.', baseAC: 16, dexModifierAllowed: false, strengthRequirement: 13, stealthDisadvantage: true },
+    { id: 'a16', name: 'Splint Armor', type: 'armor', rarity: 'common', description: 'Splint armor gives AC 17, requires Str 15, stealth disadvantage.', baseAC: 17, dexModifierAllowed: false, strengthRequirement: 15, stealthDisadvantage: true },
+    { id: 'a17', name: 'Plate Armor', type: 'armor', rarity: 'common', description: 'Plate armor gives AC 18, requires Str 15, stealth disadvantage.', baseAC: 18, dexModifierAllowed: false, strengthRequirement: 15, stealthDisadvantage: true },
+
+    // Магическая броня
+    { id: 'a2', name: 'Plate Armor +2', type: 'armor', rarity: 'very rare', description: 'Shining plate armor that grants a +2 bonus to AC.', baseAC: 20, dexModifierAllowed: false, strengthRequirement: 15, stealthDisadvantage: true, attunement: false },
+    { id: 'a5', name: 'Elven Chain', type: 'armor', rarity: 'rare', description: 'A fine chain shirt that can be worn under clothing. You are considered proficient with it even if you lack proficiency with medium armor.', baseAC: 13, dexModifierAllowed: true, maxDexBonus: 2, attunement: false },
+    { id: 'a6', name: 'Dragon Scale Mail', type: 'armor', rarity: 'very rare', description: 'Armor made from the scales of a dragon. You have resistance to the dragon\'s damage type.', baseAC: 14, dexModifierAllowed: true, maxDexBonus: 2, stealthDisadvantage: true, attunement: true },
+    { id: 'a7', name: 'Demon Armor', type: 'armor', rarity: 'very rare', description: 'This armor grants a +1 bonus to AC and allows you to use it as a weapon.', baseAC: 18, dexModifierAllowed: false, strengthRequirement: 15, stealthDisadvantage: true, attunement: true },
+
+    // Прочие защитные предметы
+    { id: 'a3', name: 'Cloak of Protection', type: 'armor', rarity: 'uncommon', description: 'You gain a +1 bonus to AC and saving throws while wearing this cloak.', acBonus: 1, attunement: true },
 
     // Shields
-    { id: 'sh1', name: 'Shield', type: 'shield', rarity: 'common', description: 'A wooden or metal shield that grants +2 to AC.' },
-    { id: 'sh2', name: 'Shield +1', type: 'shield', rarity: 'uncommon', description: 'A magic shield that grants a +1 bonus to AC in addition to the normal +2.' },
-    { id: 'sh3', name: 'Shield of Missile Attraction', type: 'shield', rarity: 'rare', description: 'While holding this shield, you have resistance to damage from ranged weapon attacks.', attunement: true },
+    { id: 'sh1', name: 'Shield', type: 'shield', rarity: 'common', description: 'A wooden or metal shield that grants +2 to AC.', acBonus: 2 },
+    { id: 'sh2', name: 'Shield +1', type: 'shield', rarity: 'uncommon', description: 'A magic shield that grants a +1 bonus to AC in addition to the normal +2.', acBonus: 3 },
+    { id: 'sh3', name: 'Shield of Missile Attraction', type: 'shield', rarity: 'rare', description: 'While holding this shield, you have resistance to damage from ranged weapon attacks.', acBonus: 2, attunement: true },
 
     // Potions
     { id: 'p1', name: 'Healing Potion', type: 'potion', rarity: 'common', description: 'Restores 2d4+2 hit points when consumed.', healingDice: '2d4+2', uses: { current: 1, max: 1 } },
@@ -79,6 +97,7 @@ export const ALL_ITEMS: LibraryItem[] = [
     { id: 'r3', name: 'Ring of Invisibility', type: 'ring', rarity: 'legendary', description: 'While wearing this ring, you can turn invisible at will.', attunement: true },
     { id: 'r4', name: 'Ring of Spell Storing', type: 'ring', rarity: 'rare', description: 'This ring stores spells cast into it, which can be released later.', attunement: true },
     { id: 'r5', name: 'Ring of Warmth', type: 'ring', rarity: 'uncommon', description: 'You have resistance to cold damage while wearing this ring.', attunement: true },
+    { id: 'a4', name: 'Ring of Protection', type: 'ring', rarity: 'rare', description: 'You gain a +1 bonus to AC and saving throws while wearing this ring.', acBonus: 1, attunement: true },
 
     // Other
     { id: 'o1', name: 'Bag of Holding', type: 'other', rarity: 'uncommon', description: 'A bag that can hold up to 500 pounds of items without changing weight.' },
