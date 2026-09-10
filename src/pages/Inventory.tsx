@@ -126,7 +126,7 @@ const Inventory: React.FC = () => {
                         <div className="inv-empty">No items in inventory. Browse items to add some!</div>
                     ) : (
                         filteredItems.map(item => (
-                            <div key={item.id} className={`inv-item ${item.equipped ? 'inv-equipped' : ''}`}>
+                            <div key={item.id} className={`inv-item ${item.equipped ? 'inv-equipped' : ''} ${isNaturalWeapon(item.type) ? 'inv-natural-weapon' : ''}`}>
                                 <div className="inv-item-info">
                                     <span className="inv-item-name">{item.name}</span>
                                     <span className="inv-item-type">{item.type}</span>
@@ -135,6 +135,27 @@ const Inventory: React.FC = () => {
                                     </span>
                                     {item.description && (
                                         <span className="inv-item-description">{item.description}</span>
+                                    )}
+                                    {/* Блок с характеристиками предмета */}
+                                    {(item.damageDice || item.healingDice || item.uses) && (
+                                        <div className="inv-item-stats">
+                                            {item.damageDice && (
+                                                <span className="inv-item-stat inv-item-stat-damage">
+                                                    Damage: {item.damageDice}
+                                                    {item.damageType ? ` ${item.damageType}` : ''}
+                                                </span>
+                                            )}
+                                            {item.healingDice && (
+                                                <span className="inv-item-stat inv-item-stat-healing">
+                                                    Healing: {item.healingDice}
+                                                </span>
+                                            )}
+                                            {item.uses && (
+                                                <span className="inv-item-stat inv-item-stat-uses">
+                                                    Uses: {item.uses.current}/{item.uses.max}
+                                                </span>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                                 <div className="inv-item-actions">

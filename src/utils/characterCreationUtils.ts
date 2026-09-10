@@ -139,6 +139,10 @@ export function buildStartingItems(
         rarity: item.rarity,
         description: item.description,
         equipped: item.type === 'armor' || item.type === 'shield' ? true : false,
+        damageDice: item.damageDice,
+        damageType: item.damageType,
+        healingDice: item.healingDice,
+        uses: item.uses,
     }));
 }
 

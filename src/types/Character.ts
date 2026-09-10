@@ -59,6 +59,10 @@ export interface InventoryItem {
     rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
     description: string;
     equipped: boolean;
+    damageDice?: string;    // например 2d6
+    damageType?: string;    // fire, slashing
+    healingDice?: string;   // 2d4+2
+    uses?: { current: number; max: number };
 }
 
 export interface Spell {

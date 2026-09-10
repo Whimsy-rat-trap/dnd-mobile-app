@@ -8,7 +8,7 @@ import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import './ItemsLibrary.css';
 
-// Уникальные типы и редкости (добавлен 'natural weapon')
+// Уникальные типы и редкости
 const TYPES = [
     'weapon',
     'armor',
@@ -16,10 +16,19 @@ const TYPES = [
     'scroll',
     'ring',
     'wand',
+    'shield',
     'natural weapon',
     'other'
 ];
 const RARITIES = Array.from(new Set(ALL_ITEMS.map(i => i.rarity)));
+
+// Опции для типов урона
+const DAMAGE_TYPES = [
+    'slashing', 'piercing', 'bludgeoning',
+    'fire', 'cold', 'lightning', 'thunder',
+    'acid', 'poison', 'necrotic', 'radiant',
+    'force', 'psychic'
+];
 
 const ItemsLibrary: React.FC = () => {
     const navigate = useNavigate();
@@ -44,6 +53,10 @@ const ItemsLibrary: React.FC = () => {
         rarity: 'common',
         description: '',
         attunement: false,
+        damageDice: '',
+        damageType: '',
+        healingDice: '',
+        uses: undefined,
     });
 
     // Автоматическое открытие модалки при ?create=true
@@ -131,13 +144,16 @@ const ItemsLibrary: React.FC = () => {
         }
 
         // Преобразуем LibraryItem в InventoryItem
-        // Для natural weapon тип уже совпадает
         const inventoryItem = {
             name: item.name,
-            type: item.type, // теперь включает 'natural weapon'
+            type: item.type,
             rarity: item.rarity,
             description: item.description,
             equipped: false,
+            damageDice: item.damageDice,
+            damageType: item.damageType,
+            healingDice: item.healingDice,
+            uses: item.uses,
         };
         addItemToInventory(targetCharacterId, inventoryItem);
         alert(`Added "${item.name}" to inventory!`);
@@ -159,7 +175,14 @@ const ItemsLibrary: React.FC = () => {
             alert('Please enter an item name.');
             return;
         }
-        addCustomItem(newItem);
+
+        // Обрабатываем поле uses, если заданы max и current
+        const itemToSave = { ...newItem };
+        if (itemToSave.uses && itemToSave.uses.max <= 0) {
+            itemToSave.uses = undefined;
+        }
+
+        addCustomItem(itemToSave);
         setShowCreateModal(false);
         setNewItem({
             name: '',
@@ -167,7 +190,22 @@ const ItemsLibrary: React.FC = () => {
             rarity: 'common',
             description: '',
             attunement: false,
+            damageDice: '',
+            damageType: '',
+            healingDice: '',
+            uses: undefined,
         });
+    };
+
+    // Обновление полей uses в форме
+    const handleUsesChange = (field: 'current' | 'max', value: number) => {
+        setNewItem(prev => ({
+            ...prev,
+            uses: {
+                current: field === 'current' ? Math.max(0, value) : (prev.uses?.current ?? 0),
+                max: field === 'max' ? Math.max(0, value) : (prev.uses?.max ?? 0),
+            },
+        }));
     };
 
     return (
@@ -215,6 +253,27 @@ const ItemsLibrary: React.FC = () => {
                                             <span className="il-item-custom-tag">Custom</span>
                                         )}
                                         <span className="il-item-description">{item.description}</span>
+
+                                        {/* Новый блок со статами предмета */}
+                                        {(item.damageDice || item.healingDice || item.uses) && (
+                                            <div className="il-item-stats">
+                                                {item.damageDice && (
+                                                    <span className="il-item-stat">
+                                                        Damage: {item.damageDice} {item.damageType || ''}
+                                                    </span>
+                                                )}
+                                                {item.healingDice && (
+                                                    <span className="il-item-stat">
+                                                        Heal: {item.healingDice}
+                                                    </span>
+                                                )}
+                                                {item.uses && (
+                                                    <span className="il-item-stat">
+                                                        Uses: {item.uses.current}/{item.uses.max}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                     <button
                                         className="il-add-btn"
@@ -285,6 +344,65 @@ const ItemsLibrary: React.FC = () => {
                             <option value="true">Requires Attunement</option>
                         </select>
                     </div>
+
+                    {/* Поля для урона */}
+                    <div className="il-form-row">
+                        <div className="il-form-group">
+                            <label>Damage Dice</label>
+                            <input
+                                type="text"
+                                value={newItem.damageDice || ''}
+                                onChange={(e) => setNewItem({ ...newItem, damageDice: e.target.value })}
+                                placeholder="e.g., 2d6"
+                            />
+                        </div>
+                        <div className="il-form-group">
+                            <label>Damage Type</label>
+                            <select
+                                value={newItem.damageType || ''}
+                                onChange={(e) => setNewItem({ ...newItem, damageType: e.target.value })}
+                            >
+                                <option value="">None</option>
+                                {DAMAGE_TYPES.map(dt => (
+                                    <option key={dt} value={dt}>{dt.charAt(0).toUpperCase() + dt.slice(1)}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Поле для исцеления */}
+                    <div className="il-form-group">
+                        <label>Healing Dice</label>
+                        <input
+                            type="text"
+                            value={newItem.healingDice || ''}
+                            onChange={(e) => setNewItem({ ...newItem, healingDice: e.target.value })}
+                            placeholder="e.g., 2d4+2"
+                        />
+                    </div>
+
+                    {/* Поля для зарядов */}
+                    <div className="il-form-row">
+                        <div className="il-form-group">
+                            <label>Uses (current)</label>
+                            <input
+                                type="number"
+                                min="0"
+                                value={newItem.uses?.current ?? 0}
+                                onChange={(e) => handleUsesChange('current', Number(e.target.value))}
+                            />
+                        </div>
+                        <div className="il-form-group">
+                            <label>Uses (max)</label>
+                            <input
+                                type="number"
+                                min="0"
+                                value={newItem.uses?.max ?? 0}
+                                onChange={(e) => handleUsesChange('max', Number(e.target.value))}
+                            />
+                        </div>
+                    </div>
+
                     <div className="il-form-group">
                         <label>Description</label>
                         <textarea

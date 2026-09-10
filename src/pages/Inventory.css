@@ -289,3 +289,20 @@
 .inv-currency-gp { color: #fbbf24; font-weight: 600; }
 .inv-currency-sp { color: #9ca3af; font-weight: 600; }
 .inv-currency-cp { color: #b45309; font-weight: 600; }
+
+.inv-item-stats,
+.il-item-stats {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+.inv-item-stat,
+.il-item-stat {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0 8px;
+    border-radius: 4px;
+    line-height: 20px;
+    font-size: 12px;
+    color: #d1d5db;
+}
