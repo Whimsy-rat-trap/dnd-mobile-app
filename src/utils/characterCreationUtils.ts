@@ -6,7 +6,7 @@ import { RACIAL_SKILLS, RACIAL_TOOLS } from '../constants/raceProficiencies';
 import { CLASS_STARTING_EQUIPMENT } from '../constants/classStartingEquipment';
 import { CLASS_SAVING_THROWS } from '../constants/classSavingThrows';
 import { RACE_DETAILS } from '../constants/raceDetails';
-import { LibraryItem } from '../constants/items';
+import { LibraryItem, ALL_ITEMS } from '../constants/items';
 import { getFeatsForCharacter } from '../constants/feats';
 import { Character, InventoryItem } from '../types/Character';
 import { getRacialEffects } from './racialFeatures';
@@ -132,24 +132,46 @@ export function buildStartingItems(
     }
     const bg = DND_BACKGROUNDS.find(b => b.name === background);
     const bgItems = bg?.startingEquipment || [];
-    return [...classItems, ...bgItems].map(item => ({
-        id: `start-${Date.now()}-${Math.random()}`,
-        name: item.name,
-        type: item.type,
-        rarity: item.rarity,
-        description: item.description,
-        equipped: item.type === 'armor' || item.type === 'shield' ? true : false,
-        damageDice: item.damageDice,
-        damageType: item.damageType,
-        healingDice: item.healingDice,
-        uses: item.uses,
-        baseAC: item.baseAC,
-        acBonus: item.acBonus,
-        dexModifierAllowed: item.dexModifierAllowed,
-        maxDexBonus: item.maxDexBonus,
-        strengthRequirement: item.strengthRequirement,
-        stealthDisadvantage: item.stealthDisadvantage,
-    }));
+
+    const enrichItem = (item: Omit<LibraryItem, 'id'>): Omit<LibraryItem, 'id'> => {
+        const libraryItem = ALL_ITEMS.find(li => li.name === item.name);
+        if (!libraryItem) return item;
+        return {
+            ...item,
+            damageDice: item.damageDice ?? libraryItem.damageDice,
+            damageType: item.damageType ?? libraryItem.damageType,
+            healingDice: item.healingDice ?? libraryItem.healingDice,
+            uses: item.uses ?? libraryItem.uses,
+            baseAC: item.baseAC ?? libraryItem.baseAC,
+            acBonus: item.acBonus ?? libraryItem.acBonus,
+            dexModifierAllowed: item.dexModifierAllowed ?? libraryItem.dexModifierAllowed,
+            maxDexBonus: item.maxDexBonus ?? libraryItem.maxDexBonus,
+            strengthRequirement: item.strengthRequirement ?? libraryItem.strengthRequirement,
+            stealthDisadvantage: item.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
+        };
+    };
+
+    return [...classItems, ...bgItems].map(rawItem => {
+        const item = enrichItem(rawItem);
+        return {
+            id: `start-${Date.now()}-${Math.random()}`,
+            name: item.name,
+            type: item.type,
+            rarity: item.rarity,
+            description: item.description,
+            equipped: item.type === 'armor' || item.type === 'shield' ? true : false,
+            damageDice: item.damageDice,
+            damageType: item.damageType,
+            healingDice: item.healingDice,
+            uses: item.uses,
+            baseAC: item.baseAC,
+            acBonus: item.acBonus,
+            dexModifierAllowed: item.dexModifierAllowed,
+            maxDexBonus: item.maxDexBonus,
+            strengthRequirement: item.strengthRequirement,
+            stealthDisadvantage: item.stealthDisadvantage,
+        };
+    });
 }
 
 // Основная функция построения объекта персонажа
