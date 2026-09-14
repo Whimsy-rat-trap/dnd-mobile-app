@@ -329,3 +329,121 @@
     background: #374151;
     color: #9ca3af;
 }
+
+/* Кнопки действий на карточке */
+.cg-card-actions {
+    display: flex;
+    gap: 4px;
+    align-self: flex-start;
+    margin-left: auto;
+}
+
+.cg-card-action-btn {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.cg-card-action-btn:hover {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+}
+
+.cg-card-action-delete:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.cg-card-description {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+.cg-card-ended {
+    opacity: 0.6;
+    filter: grayscale(0.4);
+}
+
+.cg-campaign-count {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.cg-empty-state {
+    text-align: center;
+    color: #9ca3af;
+    padding: 40px 20px;
+    font-size: 14px;
+    background: #1f2937;
+    border-radius: 12px;
+    border: 2px dashed #374957;
+}
+
+/* Форма кампании */
+.cg-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.cg-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cg-form-group label {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.cg-form-group input,
+.cg-form-group textarea,
+.cg-form-group select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #374957;
+    background: #0f0f0f;
+    color: #fff;
+    font-size: 14px;
+    font-family: var(--font-family);
+}
+
+.cg-form-group textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.cg-form-group input:focus,
+.cg-form-group textarea:focus,
+.cg-form-group select:focus {
+    outline: none;
+    border-color: #34d399;
+}
+
+.cg-form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.cg-form-row .cg-form-group {
+    flex: 1;
+}
+
+.cg-form-error {
+    color: #ef4444;
+    font-size: 13px;
+    padding: 6px 10px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}

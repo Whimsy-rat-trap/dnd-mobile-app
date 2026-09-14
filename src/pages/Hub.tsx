@@ -112,7 +112,7 @@ const Hub: React.FC = () => {
         return text.slice(0, maxLength) + '...';
     };
 
-    // ===== ИЗМЕНЕНО: переход на Dashboard с параметром create =====
+    // переход на Dashboard с параметром create
     const renderAddCharacterCard = () => (
         <div
             className="hb-character-card hb-add-card"
@@ -175,7 +175,7 @@ const Hub: React.FC = () => {
         </div>
     );
 
-    // ===== ИЗМЕНЕНО: переход на SpellsLibrary с параметром create =====
+    // переход на SpellsLibrary с параметром create
     const renderAddSpellCard = () => (
         <div
             className="hb-spell-card hb-add-card"
