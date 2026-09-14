@@ -39,30 +39,35 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  onToggleConcentration,
                                                  showConcentrationControl = false,
                                              }) => {
-    // Цвет элемента (для тега)
-    const getElementColor = (element?: string): string => {
-        const colors: Record<string, string> = {
-            fire: '#ef4444',
-            cold: '#38bdf8',
-            lightning: '#fbbf24',
-            acid: '#22c55e',
-            poison: '#84cc16',
-            force: '#a855f7',
-            necrotic: '#8b5cf6',
-            radiant: '#fcd34d',
-            psychic: '#f472b6',
-            healing: '#22c55e',
-            thunder: '#a855f7',
-        };
-        return element ? colors[element] || '#6b7280' : '#6b7280';
+    // Цвета элементов (совпадают с Hub)
+    const elementColors: Record<string, string> = {
+        fire: '#ef4444',
+        force: '#a855f7',
+        necrotic: '#8b5cf6',
+        acid: '#22c55e',
+        cold: '#38bdf8',
+        lightning: '#fbbf24',
+        thunder: '#a855f7',
+        psychic: '#f472b6',
+        radiant: '#fcd34d',
+        poison: '#84cc16',
+        healing: '#22c55e',
     };
+
+    const getElementColor = (element?: string): string => {
+        if (!element) return '#6b7280';
+        return elementColors[element.toLowerCase()] || '#6b7280';
+    };
+
+    // Определяем, какой бросок показывать
+    const displayRoll = spell.damageRoll || spell.diceRoll;
+    const elementColor = getElementColor(spell.element);
 
     return (
         <div className="spell-card">
             {/* Верхняя часть: заголовок с названием и действиями */}
             <div className="spell-card-header">
                 <div className="spell-card-left">
-                    {/* Иконка (квадрат с градиентом – можно оставить или убрать) */}
                     <div className="spell-card-icon"></div>
                     <div className="spell-card-info">
                         <div className="spell-name-wrapper">
@@ -109,14 +114,37 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 </div>
             </div>
 
-            {/* Теги (уровень, школа, элемент, кастомность, расовость) */}
-            <div className="spell-card-tags">
-                <span className="spell-tag-level">{spell.level === 0 ? 'Cantrip' : `Level ${spell.level}`}</span>
+            {/* Теги в стиле Hub: уровень, школа, элемент, бросок, тип урона, кастомность, расовость */}
+            <div className="spell-card-tags spell-card-tags-hub">
+                <span className="spell-tag-level">
+                    {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
+                </span>
                 <span className="spell-tag-school">{spell.school}</span>
-                {spell.element && <span className="spell-tag-element" style={{ color: getElementColor(spell.element) }}>{spell.element}</span>}
+                {spell.element && (
+                    <span
+                        className="spell-tag-element"
+                        style={{ color: elementColor }}
+                    >
+                        {spell.element}
+                    </span>
+                )}
+                {displayRoll && (
+                    <span
+                        className="spell-tag-dice"
+                        style={{ color: spell.element ? elementColor : '#fff' }}
+                    >
+                        {displayRoll}
+                    </span>
+                )}
+                {spell.damageType && spell.damageType !== spell.element && (
+                    <span className="spell-tag-damage-type">
+                        {spell.damageType}
+                    </span>
+                )}
                 {isCustom && <span className="spell-tag-custom">Custom</span>}
                 {spell.isRacial && <span className="spell-tag-racial">Racial</span>}
             </div>
+
             <div className="spell-card-description">{spell.description}</div>
         </div>
     );

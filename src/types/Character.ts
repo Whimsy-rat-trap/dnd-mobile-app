@@ -87,6 +87,9 @@ export interface Spell {
     element?: string;
     requiresConcentration?: boolean;
     classes?: string[];
+    diceRoll?: string;
+    damageRoll?: string;
+    damageType?: string;
 }
 
 export interface Quest {

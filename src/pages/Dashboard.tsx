@@ -513,7 +513,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Currency */}
                 <div className="db-currency-display">
-                    <span className="db-currency-label">💰 Currency</span>
+                    <span className="db-currency-label">Currency</span>
                     <div className="db-currency-values">
                         <span className="db-currency-gp">{currency.gp} gp</span>
                         <span className="db-currency-sp">{currency.sp} sp</span>
