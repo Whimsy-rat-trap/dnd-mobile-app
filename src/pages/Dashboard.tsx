@@ -190,13 +190,20 @@ const Dashboard: React.FC = () => {
         }
     };
 
-    // Если персонаж не выбран – показываем экран выбора
+    // Экран выбора персонажа
     if (!character) {
         return (
             <div className="db-page">
                 <div className="db-header">
                     <div className="db-header-top">
                         <span className="db-title">Arcane Realms</span>
+                        <button
+                            className="db-back-to-hub-btn"
+                            onClick={() => navigate('/hub')}
+                            title="Back to Hub"
+                        >
+                            ← Hub
+                        </button>
                     </div>
                     <div className="db-subtitle">Select a character to begin</div>
                 </div>
@@ -699,7 +706,6 @@ const Dashboard: React.FC = () => {
                 </Modal>
             )}
 
-            {/* Модальное окно для проверки концентрации */}
             {concentrationCheck && (
                 <Modal isOpen={true} onClose={() => {}}>
                     <div className="db-concentration-modal">

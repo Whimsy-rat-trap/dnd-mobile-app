@@ -1028,3 +1028,21 @@
 .db-currency-cp {
     color: #b45309;
 }
+
+.db-back-to-hub-btn {
+    background: transparent;
+    border: 1px solid #374957;
+    color: #9ca3af;
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.db-back-to-hub-btn:hover {
+    border-color: #34d399;
+    color: #34d399;
+}
