@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
+import InventoryItemCard from '../components/InventoryItemCard';
+import {
+    getTypes,
+    getRarities,
+    filterInventoryItems,
+} from '../utils/inventoryUtils';
 import './Inventory.css';
 
-// Уникальные типы и редкости для фильтров (на основе инвентаря персонажа)
-const getTypes = (inventory: any[]) => Array.from(new Set(inventory.map(i => i.type)));
-const getRarities = (inventory: any[]) => Array.from(new Set(inventory.map(i => i.rarity)));
-
 const Inventory: React.FC = () => {
-    const { currentCharacterId, getCharacter, removeItemFromInventory, updateItemInInventory } = useCharacters();
+    const {
+        currentCharacterId,
+        getCharacter,
+        removeItemFromInventory,
+        updateItemInInventory,
+    } = useCharacters();
+
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -20,12 +28,63 @@ const Inventory: React.FC = () => {
         rarity: '',
     });
 
+    // Хуки должны вызываться всегда, до early return
+    const types = useMemo(
+        () => (character ? getTypes(character.inventory) : []),
+        [character]
+    );
+    const rarities = useMemo(
+        () => (character ? getRarities(character.inventory) : []),
+        [character]
+    );
+
+    const filterFields: FilterField[] = useMemo(
+        () => [
+            {
+                key: 'type',
+                label: 'Type',
+                type: 'select',
+                options: [
+                    { value: '', label: 'All' },
+                    ...types.map(t => ({
+                        value: t,
+                        label: t.charAt(0).toUpperCase() + t.slice(1),
+                    })),
+                ],
+            },
+            {
+                key: 'rarity',
+                label: 'Rarity',
+                type: 'select',
+                options: [
+                    { value: '', label: 'All' },
+                    ...rarities.map(r => ({
+                        value: r,
+                        label: r.charAt(0).toUpperCase() + r.slice(1),
+                    })),
+                ],
+            },
+        ],
+        [types, rarities]
+    );
+
+    const filteredItems = useMemo(
+        () =>
+            character
+                ? filterInventoryItems(character.inventory, searchQuery, filters)
+                : [],
+        [character, searchQuery, filters]
+    );
+
+    // Early return после всех хуков
     if (!character) {
         return (
             <div className="inv-page">
                 <div className="inv-empty-state">
                     <p>No character selected. Please go to Dashboard and select one.</p>
-                    <Link to="/dashboard" className="inv-btn-primary">Go to Dashboard</Link>
+                    <Link to="/dashboard" className="inv-btn-primary">
+                        Go to Dashboard
+                    </Link>
                 </div>
             </div>
         );
@@ -34,33 +93,6 @@ const Inventory: React.FC = () => {
     const handleFilterChange = (newFilters: Record<string, any>) => {
         setFilters(newFilters as any);
     };
-
-    // Определяем доступные типы и редкости на основе инвентаря персонажа
-    const types = getTypes(character.inventory);
-    const rarities = getRarities(character.inventory);
-
-    const filterFields: FilterField[] = [
-        {
-            key: 'type',
-            label: 'Type',
-            type: 'select',
-            options: [{ value: '', label: 'All' }, ...types.map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))],
-        },
-        {
-            key: 'rarity',
-            label: 'Rarity',
-            type: 'select',
-            options: [{ value: '', label: 'All' }, ...rarities.map(r => ({ value: r, label: r.charAt(0).toUpperCase() + r.slice(1) }))],
-        },
-    ];
-
-    const filteredItems = character.inventory.filter(item => {
-        const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (item.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesType = !filters.type || item.type === filters.type;
-        const matchesRarity = !filters.rarity || item.rarity === filters.rarity;
-        return matchesSearch && matchesType && matchesRarity;
-    });
 
     const handleRemove = (itemId: string) => {
         removeItemFromInventory(character.id, itemId);
@@ -72,20 +104,6 @@ const Inventory: React.FC = () => {
             updateItemInInventory(character.id, itemId, { equipped: !item.equipped });
         }
     };
-
-    const getRarityColor = (rarity: string) => {
-        switch (rarity) {
-            case 'common': return '#9ca3af';
-            case 'uncommon': return '#34d399';
-            case 'rare': return '#60a5fa';
-            case 'very rare': return '#a78bfa';
-            case 'legendary': return '#fbbf24';
-            default: return '#fff';
-        }
-    };
-
-    // Определяем, является ли предмет natural weapon
-    const isNaturalWeapon = (type: string) => type === 'natural weapon';
 
     return (
         <div className="inv-page">
@@ -99,7 +117,10 @@ const Inventory: React.FC = () => {
                         <Link to={`/characters/${character.id}`} className="inv-back-btn">
                             ← Back to Character
                         </Link>
-                        <Link to={`/items?characterId=${character.id}`} className="inv-browse-btn">
+                        <Link
+                            to={`/items?characterId=${character.id}`}
+                            className="inv-browse-btn"
+                        >
                             Browse Items
                         </Link>
                     </div>
@@ -121,90 +142,40 @@ const Inventory: React.FC = () => {
                     placeholder="Search items..."
                     onFilterClick={() => setShowFilterModal(true)}
                 />
+
                 <div className="inv-list">
                     {filteredItems.length === 0 ? (
-                        <div className="inv-empty">No items in inventory. Browse items to add some!</div>
+                        <div className="inv-empty">
+                            No items in inventory. Browse items to add some!
+                        </div>
                     ) : (
                         filteredItems.map(item => (
-                            <div key={item.id} className={`inv-item ${item.equipped ? 'inv-equipped' : ''} ${isNaturalWeapon(item.type) ? 'inv-natural-weapon' : ''}`}>
-                                <div className="inv-item-info">
-                                    <span className="inv-item-name">{item.name}</span>
-                                    <span className="inv-item-type">{item.type}</span>
-                                    <span className="inv-item-rarity" style={{ color: getRarityColor(item.rarity) }}>
-                                        {item.rarity}
-                                    </span>
-                                    {item.description && (
-                                        <span className="inv-item-description">{item.description}</span>
-                                    )}
-                                    {/* Блок с характеристиками предмета */}
-                                    {(item.damageDice || item.healingDice || item.uses || item.baseAC || item.acBonus || item.strengthRequirement) && (
-                                        <div className="inv-item-stats">
-                                            {/* Урон */}
-                                            {item.damageDice && (
-                                                <span className="inv-item-stat inv-item-stat-damage">
-                                                    Damage: {item.damageDice}
-                                                    {item.damageType ? ` ${item.damageType}` : ''}
-                                                </span>
-                                            )}
-                                            {item.healingDice && (
-                                                <span className="inv-item-stat inv-item-stat-healing">
-                                                    Healing: {item.healingDice}
-                                                </span>
-                                            )}
-                                            {item.baseAC !== undefined && (
-                                                <span className="inv-item-stat inv-item-stat-ac">
-                                                    AC {item.baseAC}
-                                                    {item.dexModifierAllowed && (
-                                                        item.maxDexBonus !== undefined ? ` + Dex (max ${item.maxDexBonus})` : ' + Dex'
-                                                    )}
-                                                </span>
-                                            )}
-                                            {item.acBonus !== undefined && (
-                                                <span className="inv-item-stat inv-item-stat-ac">
-                                                    Bonus +{item.acBonus} AC
-                                                </span>
-                                            )}
-                                            {item.strengthRequirement !== undefined && (
-                                                <span className="inv-item-stat inv-item-stat-strength">
-                                                    Str: {item.strengthRequirement}
-                                                </span>
-                                            )}
-                                            {item.stealthDisadvantage && (
-                                                <span className="inv-item-stat inv-item-stat-stealth">
-                                                    Stealth Disadv.
-                                                </span>
-                                            )}
-                                            {item.uses && (
-                                                <span className="inv-item-stat inv-item-stat-uses">
-                                                    Uses: {item.uses.current}/{item.uses.max}
-                                                </span>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="inv-item-actions">
-                                    {item.equipped && <span className="inv-equipped-badge">Equipped</span>}
-                                    <button
-                                        className="inv-action-btn inv-equip-btn"
-                                        onClick={() => handleEquip(item.id)}
-                                    >
-                                        {item.equipped ? 'Unequip' : 'Equip'}
-                                    </button>
-                                    <button
-                                        className="inv-action-btn inv-remove-btn"
-                                        onClick={() => handleRemove(item.id)}
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-                            </div>
+                            <InventoryItemCard
+                                key={item.id}
+                                item={item}
+                                onEquip={handleEquip}
+                                onRemove={handleRemove}
+                            />
                         ))
                     )}
                 </div>
+
                 <div className="inv-add-container">
-                    <Link to={`/items?characterId=${character.id}`} className="inv-add-btn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
+                    <Link
+                        to={`/items?characterId=${character.id}`}
+                        className="inv-add-btn"
+                    >
+                        <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z"
+                                fill="#34D399"
+                            />
                         </svg>
                         Add from Library
                     </Link>
