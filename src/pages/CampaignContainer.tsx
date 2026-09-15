@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useEffect  } from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 import { useCampaigns } from '../context/CampaignContext';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
@@ -16,6 +16,7 @@ import './CampaignContainer.css';
 
 const CampaignContainer: React.FC = () => {
     const navigate = useNavigate();
+    const routerLocation = useLocation();
     const {
         campaigns,
         addCampaign,
@@ -31,6 +32,16 @@ const CampaignContainer: React.FC = () => {
     // Управление модалкой формы
     const [showFormModal, setShowFormModal] = useState(false);
     const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+
+    // Обработка ?create=true при переходе из Hub
+    useEffect(() => {
+        const params = new URLSearchParams(routerLocation.search);
+        if (params.get('create') === 'true') {
+            setEditingCampaign(null);
+            setShowFormModal(true);
+            navigate('/campaigns', { replace: true });
+        }
+    }, [routerLocation, navigate]);
 
     const handleBack = () => navigate(-1);
 

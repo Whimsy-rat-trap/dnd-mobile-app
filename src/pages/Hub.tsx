@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
+import { useCampaigns } from '../context/CampaignContext';
 import SearchBar from '../components/SearchBar';
 import './Hub.css';
 
 const Hub: React.FC = () => {
     const navigate = useNavigate();
     const { characters } = useCharacters();
+    const { campaigns } = useCampaigns();
 
     const [isCharactersOpen, setIsCharactersOpen] = useState(true);
     const [isCampaignsOpen, setIsCampaignsOpen] = useState(true);
@@ -14,15 +16,7 @@ const Hub: React.FC = () => {
     const [isSpellsOpen, setIsSpellsOpen] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Локальные данные (заглушки) для кампаний, предметов и заклинаний
-    const campaigns = [
-        { id: 1, name: 'Curse of Strahd', status: 'active', description: 'Ravenloft', playedWith: ['Alice', 'Bob', 'Charlie'], lastPlayed: '2026-07-01' },
-        { id: 2, name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin', playedWith: ['Dave', 'Eve'], lastPlayed: '2026-06-28' },
-        { id: 3, name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep', playedWith: ['Frank', 'Grace'], archivedDate: '2026-05-15' },
-        { id: 4, name: 'Tomb of Annihilation', status: 'inactive', description: 'Chult', playedWith: ['Henry', 'Ivy'], archivedDate: '2026-04-10' },
-        { id: 5, name: 'Storm King\'s Thunder', status: 'active', description: 'The North', playedWith: ['Jack', 'Kate'], lastPlayed: '2026-07-05' },
-        { id: 6, name: 'Descent into Avernus', status: 'active', description: 'Baldur\'s Gate', playedWith: ['Liam', 'Mia'], lastPlayed: '2026-07-08' },
-    ];
+    // Локальные данные (заглушки) для предметов и заклинаний
 
     const items = [
         { id: 1, name: 'Potion of Healing', description: 'Restores 2d4+2 hit points.', charges: { current: 1, max: 1 }, diceRoll: '2d4+2', healing: true },
@@ -64,7 +58,8 @@ const Hub: React.FC = () => {
 
     const filteredCampaigns = campaigns.filter(camp =>
         camp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        camp.description.toLowerCase().includes(searchQuery.toLowerCase())
+        (camp.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (camp.dm || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const filteredItems = items.filter(item =>
@@ -140,7 +135,7 @@ const Hub: React.FC = () => {
     const renderAddCampaignCard = () => (
         <div
             className="hb-campaign-card hb-add-card"
-            onClick={() => navigate('/campaigns')}
+            onClick={() => navigate('/campaigns?create=true')}
             style={{ cursor: 'pointer' }}
         >
             <div className="hb-add-card-content">
@@ -202,18 +197,6 @@ const Hub: React.FC = () => {
             case 'archived': return `Archived: ${date || 'N/A'}`;
             default: return '';
         }
-    };
-
-    const getCampaignPlayers = (players: string[]) => {
-        const text = `Played with: ${players.join(', ')}`;
-        if (text.length <= 35) return text;
-        return text.slice(0, 32) + '...';
-    };
-
-    const getCampaignDateLabel = (status: string, lastPlayed?: string, archivedDate?: string) => {
-        if (status === 'active' && lastPlayed) return `Last played: ${lastPlayed}`;
-        if (status === 'inactive' && archivedDate) return `Archived: ${archivedDate}`;
-        return '';
     };
 
     const renderDeathSaves = (character: any) => {
@@ -307,17 +290,31 @@ const Hub: React.FC = () => {
                     {isCampaignsOpen && (
                         <div className="hb-campaign-grid">
                             {filteredCampaigns.slice(0, 5).map((camp) => (
-                                <Link to={`/campaign/${camp.id}`} key={camp.id} className="hb-campaign-card-link" style={{ textDecoration: 'none' }}>
+                                <Link
+                                    to="/campaigns"
+                                    key={camp.id}
+                                    className="hb-campaign-card-link"
+                                    style={{ textDecoration: 'none' }}
+                                >
                                     <div className={`hb-campaign-card ${camp.status !== 'active' ? 'hb-inactive' : ''}`}>
                                         <div className="hb-campaign-info">
                                             <div className="hb-campaign-name">{camp.name}</div>
-                                            <div className="hb-campaign-description">{camp.description}</div>
-                                            <div className="hb-campaign-players">{getCampaignPlayers(camp.playedWith)}</div>
+                                            <div className="hb-campaign-description">
+                                                {camp.description || 'No description'}
+                                            </div>
+                                            <div className="hb-campaign-players">
+                                                {camp.dm ? `DM: ${camp.dm}` : 'Dungeon Master'}
+                                                {camp.players ? ` • ${camp.players} players` : ''}
+                                            </div>
                                             <div className="hb-campaign-date">
-                                                {getCampaignDateLabel(camp.status, camp.lastPlayed, camp.archivedDate)}
+                                                {camp.lastPlayed
+                                                    ? `Last played: ${camp.lastPlayed}`
+                                                    : 'Not played yet'}
                                             </div>
                                         </div>
-                                        <div className="hb-campaign-status">{camp.status}</div>
+                                        <div className={`hb-campaign-status ${camp.status}`}>
+                                            {camp.status}
+                                        </div>
                                     </div>
                                 </Link>
                             ))}
