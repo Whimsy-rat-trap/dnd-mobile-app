@@ -6,19 +6,30 @@ import {
     hasItemStats,
     formatACDescription,
 } from '../utils/inventoryUtils';
+import AttackRoller from './AttackRoller';
 
 interface InventoryItemCardProps {
     item: InventoryItem;
     onEquip: (itemId: string) => void;
     onRemove: (itemId: string) => void;
+    attackBonus?: number;
+    damageBonus?: number;
+    onAttackRoll?: (attackRoll: number, damageRoll: number | null, sourceName: string) => void;
 }
 
 const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
                                                                  item,
                                                                  onEquip,
                                                                  onRemove,
+                                                                 attackBonus = 0,
+                                                                 damageBonus = 0,
+                                                                 onAttackRoll,
                                                              }) => {
     const showStats = hasItemStats(item);
+
+    const canAttack =
+        (item.type === 'weapon' || item.type === 'natural weapon') &&
+        Boolean(item.damageDice);
 
     return (
         <div
@@ -83,12 +94,39 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
 
             <div className="inv-item-actions">
                 {item.equipped && <span className="inv-equipped-badge">Equipped</span>}
+
                 <button
                     className="inv-action-btn inv-equip-btn"
                     onClick={() => onEquip(item.id)}
                 >
                     {item.equipped ? 'Unequip' : 'Equip'}
                 </button>
+
+                {canAttack && (
+                    <AttackRoller
+                        sourceName={item.name}
+                        damageDice={item.damageDice}
+                        damageType={item.damageType}
+                        defaultAttackBonus={attackBonus}
+                        defaultDamageBonus={damageBonus}
+                        onRoll={({ attack, damage }) => {
+                            onAttackRoll?.(
+                                attack.total,
+                                damage?.total ?? null,
+                                item.name
+                            );
+                        }}
+                        trigger={
+                            <button
+                                className="inv-action-btn inv-attack-btn"
+                                title="Roll attack"
+                            >
+                                Roll attack
+                            </button>
+                        }
+                    />
+                )}
+
                 <button
                     className="inv-action-btn inv-remove-btn"
                     onClick={() => onRemove(item.id)}

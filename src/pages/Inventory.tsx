@@ -4,6 +4,7 @@ import { useCharacters } from '../context/CharacterContext';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import InventoryItemCard from '../components/InventoryItemCard';
+import { Character, InventoryItem } from '../types/Character';
 import {
     getTypes,
     getRarities,
@@ -11,12 +12,86 @@ import {
 } from '../utils/inventoryUtils';
 import './Inventory.css';
 
+/**
+ * Бонус мастерства по уровню персонажа.
+ */
+const getProficiencyBonus = (level: number): number => {
+    if (level <= 4) return 2;
+    if (level <= 8) return 3;
+    if (level <= 12) return 4;
+    if (level <= 16) return 5;
+    return 6;
+};
+
+/**
+ * Модификатор характеристики.
+ */
+const getModifier = (score: number): number => Math.floor((score - 10) / 2);
+
+/**
+ * Оружие с finesse — можно использовать DEX вместо STR.
+ */
+const FINESSE_WEAPONS = [
+    'dagger', 'rapier', 'shortsword', 'scimitar', 'whip',
+];
+
+/**
+ * Двуручное/дальнобойное — использует DEX.
+ */
+const RANGED_WEAPONS = [
+    'shortbow', 'longbow', 'crossbow', 'sling', 'dart', 'blowgun',
+];
+
+const isFinesse = (name: string): boolean =>
+    FINESSE_WEAPONS.some(w => name.toLowerCase().includes(w));
+
+const isRanged = (name: string): boolean =>
+    RANGED_WEAPONS.some(w => name.toLowerCase().includes(w));
+
+/**
+ * Вычисляет бонус к попаданию для оружия с учётом характеристик персонажа.
+ */
+const computeAttackBonus = (item: InventoryItem, character: Character): number => {
+    const profBonus = getProficiencyBonus(character.level);
+    const strMod = getModifier(character.abilities.str);
+    const dexMod = getModifier(character.abilities.dex);
+
+    // Natural weapon — обычно STR
+    if (item.type === 'natural weapon') {
+        return profBonus + strMod;
+    }
+
+    // Finesse — максимум из STR/DEX; Ranged — DEX; иначе STR
+    const abilityMod = isFinesse(item.name)
+        ? Math.max(strMod, dexMod)
+        : isRanged(item.name)
+            ? dexMod
+            : strMod;
+
+    return profBonus + abilityMod;
+};
+
+/**
+ * Вычисляет бонус к урону (без proficiency).
+ */
+const computeDamageBonus = (item: InventoryItem, character: Character): number => {
+    const strMod = getModifier(character.abilities.str);
+    const dexMod = getModifier(character.abilities.dex);
+
+    if (item.type === 'natural weapon') return strMod;
+
+    if (isFinesse(item.name)) return Math.max(strMod, dexMod);
+    if (isRanged(item.name)) return dexMod;
+    return strMod;
+};
+
 const Inventory: React.FC = () => {
     const {
         currentCharacterId,
         getCharacter,
         removeItemFromInventory,
         updateItemInInventory,
+        addDiceLog,
     } = useCharacters();
 
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
@@ -105,6 +180,20 @@ const Inventory: React.FC = () => {
         }
     };
 
+    // Логирование бросков атаки в diceLogs персонажа
+    const handleAttackRoll = (
+        attackRoll: number,
+        damageRoll: number | null,
+        sourceName: string
+    ) => {
+        addDiceLog(character.id, 20, attackRoll);
+        if (damageRoll !== null) {
+            // Логируем урон как бросок d20 с результатом (показываем в общем логе)
+            // В будущем можно расширить diceLogs для произвольных кубиков
+            addDiceLog(character.id, 20, damageRoll);
+        }
+    };
+
     return (
         <div className="inv-page">
             <div className="inv-header">
@@ -155,6 +244,9 @@ const Inventory: React.FC = () => {
                                 item={item}
                                 onEquip={handleEquip}
                                 onRemove={handleRemove}
+                                attackBonus={computeAttackBonus(item, character)}
+                                damageBonus={computeDamageBonus(item, character)}
+                                onAttackRoll={handleAttackRoll}
                             />
                         ))
                     )}

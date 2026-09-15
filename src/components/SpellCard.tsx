@@ -1,5 +1,6 @@
 import React from 'react';
 import { Spell } from '../types/Character';
+import AttackRoller from './AttackRoller';
 import './SpellCard.css';
 
 interface SpellCardProps {
@@ -92,6 +93,16 @@ const SpellCard: React.FC<SpellCardProps> = ({
                         >
                             {isConcentrating ? '⏳' : '⚡'}
                         </button>
+                    )}
+                    {spell.diceRoll && spell.damageType && (
+                        <AttackRoller
+                            sourceName={spell.name}
+                            damageDice={spell.diceRoll}
+                            damageType={spell.damageType}
+                            defaultAttackBonus={0}
+                            defaultDamageBonus={0}
+                            trigger={<button className="spell-attack-btn">Cast</button>}
+                        />
                     )}
                 </div>
             </div>

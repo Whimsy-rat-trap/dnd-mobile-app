@@ -1,0 +1,207 @@
+/* Кнопка-триггер */
+.attack-trigger-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.attack-trigger-btn:hover {
+    background: #dc2626;
+}
+
+/* Модальное окно */
+.attack-roller {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: #fff;
+    min-width: 280px;
+}
+
+.attack-title {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    text-align: center;
+    color: #fff;
+}
+
+.attack-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.attack-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.attack-btn-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.attack-mode-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 6px 10px;
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.attack-mode-btn:hover {
+    border-color: #6b7280;
+    color: #e5e7eb;
+}
+
+.attack-mode-btn.active {
+    background: rgba(52, 211, 153, 0.15);
+    border-color: #34d399;
+    color: #34d399;
+}
+
+.attack-bonus-input {
+    padding: 6px 10px;
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+}
+
+.attack-bonus-input:focus {
+    border-color: #34d399;
+}
+
+.attack-damage-info {
+    font-size: 13px;
+    color: #9ca3af;
+    padding: 4px 0;
+}
+
+.attack-damage-info strong {
+    color: #fbbf24;
+}
+
+.attack-roll-btn {
+    background: #34d399;
+    color: #0f0f0f;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 4px;
+}
+
+.attack-roll-btn:hover {
+    background: #059669;
+}
+
+/* Результаты */
+.attack-results {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #374957;
+}
+
+.attack-result-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #0f0f0f;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.attack-result-label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.attack-result-rolls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.attack-die {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 6px;
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #e5e7eb;
+}
+
+.attack-die.chosen {
+    border-color: #34d399;
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.1);
+}
+
+.attack-bonus {
+    color: #fbbf24;
+    font-size: 14px;
+}
+
+.attack-equals {
+    color: #6b7280;
+    margin: 0 4px;
+}
+
+.attack-total {
+    font-size: 22px;
+    font-weight: 800;
+    color: #34d399;
+}
+
+.attack-total.crit {
+    color: #fbbf24;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.attack-total.crit-fail {
+    color: #ef4444;
+}
+
+.attack-total.damage {
+    color: #ef4444;
+}
+
+.attack-result-hint {
+    font-size: 12px;
+    color: #9ca3af;
+    font-style: italic;
+}
