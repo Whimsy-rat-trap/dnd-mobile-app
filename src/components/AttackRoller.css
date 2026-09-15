@@ -205,3 +205,20 @@
     color: #9ca3af;
     font-style: italic;
 }
+
+.cc-attack-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 6px;
+}
+
+.cc-attack-btn:hover {
+    background: #dc2626;
+}

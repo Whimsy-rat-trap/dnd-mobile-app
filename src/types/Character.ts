@@ -125,4 +125,6 @@ export interface Feat {
     description: string;
     source: 'background' | 'class' | 'race' | 'subrace' | 'custom' | 'other';
     prerequisite?: string;
+    damageDice?: string;
+    damageType?: string;
 }

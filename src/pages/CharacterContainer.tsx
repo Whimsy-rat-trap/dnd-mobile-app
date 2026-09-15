@@ -5,12 +5,13 @@ import SkillCheck from '../components/SkillCheck';
 import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import DiceRoller from '../components/DiceRoller';
+import AttackRoller from '../components/AttackRoller';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import { getActivePassiveEffects } from '../utils/racialFeatures';
 import Modal from '../components/Modal';
 import './CharacterContainer.css';
 
-// Карта рас с natural armor (базовый AC, модификатор Dex и ограничение)
+// Карта рас с natural armor
 const NATURAL_ARMOR: Record<string, { base: number; dex?: boolean; max?: number }> = {
     Tortle: { base: 17 },
     Lizardfolk: { base: 13, dex: true, max: 2 },
@@ -19,7 +20,14 @@ const NATURAL_ARMOR: Record<string, { base: number; dex?: boolean; max?: number 
 const CharacterContainer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { getCharacter, updateCharacter, setCurrentCharacterId, deleteCharacter, addFeat, removeFeat } = useCharacters();
+    const {
+        getCharacter,
+        updateCharacter,
+        setCurrentCharacterId,
+        deleteCharacter,
+        addFeat,
+        removeFeat,
+    } = useCharacters();
     const character = id ? getCharacter(id) : undefined;
 
     // Состояние для переключателя variant
@@ -42,10 +50,12 @@ const CharacterContainer: React.FC = () => {
     const [hpInputValue, setHpInputValue] = useState(0);
     const [tempInputValue, setTempInputValue] = useState(0);
 
-    // Состояния для добавления кастомной черты (Feat)
+    // Состояния для добавления кастомной черты
     const [showAddFeatModal, setShowAddFeatModal] = useState(false);
     const [newFeatName, setNewFeatName] = useState('');
     const [newFeatDescription, setNewFeatDescription] = useState('');
+    const [newFeatDamageDice, setNewFeatDamageDice] = useState('');
+    const [newFeatDamageType, setNewFeatDamageType] = useState('');
 
     if (!character) {
         return <div className="cc-page">Character not found</div>;
@@ -65,7 +75,7 @@ const CharacterContainer: React.FC = () => {
         }
     };
 
-    // Вычисление бонуса мастерства (proficiency) по уровню
+    // Bonuses
     const getProficiencyBonus = (level: number) => {
         if (level <= 4) return 2;
         if (level <= 8) return 3;
@@ -82,7 +92,21 @@ const CharacterContainer: React.FC = () => {
         return Math.floor((score - 10) / 2);
     };
 
-    // Функция расчёта AC
+    // Расчёт дефолтных бонусов для атак
+    const getSpellcastingAbility = (): keyof typeof character.abilities => {
+        // Простая эвристика: берём основной класс, ищем его ability
+        const mainClass = character.classLevels?.[0]?.className;
+        if (!mainClass) return 'cha';
+        if (['Wizard', 'Artificer'].includes(mainClass)) return 'int';
+        if (['Cleric', 'Druid', 'Ranger'].includes(mainClass)) return 'wis';
+        return 'cha';
+    };
+
+    const defaultMeleeAttackBonus = proficiencyBonus + getModifier('str');
+    const defaultMeleeDamageBonus = getModifier('str');
+    const defaultSpellAttackBonus = proficiencyBonus + getModifier(getSpellcastingAbility());
+
+    // AC Calculation
     const getACInfo = (char: typeof character): { total: number; breakdown: string[] } => {
         const dexMod = getModifier('dex');
         const equippedArmor = char.inventory.find(item => item.type === 'armor' && item.equipped);
@@ -139,7 +163,7 @@ const CharacterContainer: React.FC = () => {
     };
     // Конец функции AC
 
-    // Вычисление бонуса навыка
+    // Skill/tool/save bonuses
     const getSkillBonus = (skill: typeof character.skills[0]) => {
         const attrKey = skill.attribute.toLowerCase() as keyof typeof character.abilities;
         const mod = getModifier(attrKey);
@@ -171,7 +195,7 @@ const CharacterContainer: React.FC = () => {
         { name: 'CHA', bonus: getSavingThrowBonus('cha') },
     ];
 
-    // Переключение владения спасброском
+    // Handlers
     const toggleSavingThrowProficiency = (attr: string) => {
         if (rollMode) {
             handleSavingThrowRoll(attr);
@@ -188,12 +212,7 @@ const CharacterContainer: React.FC = () => {
     const handleSavingThrowRoll = (attr: string) => {
         const bonus = getSavingThrowBonus(attr.toLowerCase() as keyof typeof character.abilities);
         const roll = Math.floor(Math.random() * 20) + 1;
-        setRollResultModal({
-            type: 'saving',
-            name: `${attr} Saving Throw`,
-            modifier: bonus,
-            result: roll,
-        });
+        setRollResultModal({ type: 'saving', name: `${attr} Saving Throw`, modifier: bonus, result: roll });
         setIsRolling(true);
     };
 
@@ -201,24 +220,14 @@ const CharacterContainer: React.FC = () => {
     const handleSkillRoll = (skill: typeof character.skills[0]) => {
         const bonus = getSkillBonus(skill);
         const roll = Math.floor(Math.random() * 20) + 1;
-        setRollResultModal({
-            type: 'skill',
-            name: skill.name,
-            modifier: bonus,
-            result: roll,
-        });
+        setRollResultModal({ type: 'skill', name: skill.name, modifier: bonus, result: roll });
         setIsRolling(true);
     };
 
     const handleToolRoll = (tool: typeof character.toolProficiencies[0]) => {
         const bonus = getToolBonus(tool);
         const roll = Math.floor(Math.random() * 20) + 1;
-        setRollResultModal({
-            type: 'skill',
-            name: tool.name,
-            modifier: bonus,
-            result: roll,
-        });
+        setRollResultModal({ type: 'skill', name: tool.name, modifier: bonus, result: roll });
         setIsRolling(true);
     };
 
@@ -301,25 +310,11 @@ const CharacterContainer: React.FC = () => {
 
     // Функция для рендера шеврона
     const renderChevron = (isOpen: boolean) => (
-        <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={`cc-chevron-icon ${isOpen ? 'cc-open' : ''}`}
-        >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`cc-chevron-icon ${isOpen ? 'cc-open' : ''}`}>
             <g clipPath="url(#clip0_403_3483)">
-                <path
-                    d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z"
-                    fill="#374957"
-                />
+                <path d="M22.586 5.92896L12.707 15.808C12.5169 15.9904 12.2636 16.0923 12 16.0923C11.7365 16.0923 11.4832 15.9904 11.293 15.808L1.42004 5.93396L0.00604248 7.34796L9.87904 17.222C10.4509 17.767 11.2106 18.071 12.0005 18.071C12.7905 18.071 13.5502 17.767 14.122 17.222L24 7.34296L22.586 5.92896Z" fill="#374957" />
             </g>
-            <defs>
-                <clipPath id="clip0_403_3483">
-                    <rect width="24" height="24" fill="white" />
-                </clipPath>
-            </defs>
+            <defs><clipPath id="clip0_403_3483"><rect width="24" height="24" fill="white" /></clipPath></defs>
         </svg>
     );
 
@@ -345,19 +340,14 @@ const CharacterContainer: React.FC = () => {
     // Объединение фич (уникальные по имени)
     const allFeaturesMap = new Map<string, typeof raceFeatures[0]>();
     [...raceFeatures, ...subraceFeatures].forEach(f => {
-        if (!allFeaturesMap.has(f.name)) {
-            allFeaturesMap.set(f.name, f);
-        }
+        if (!allFeaturesMap.has(f.name)) allFeaturesMap.set(f.name, f);
     });
     const allFeatures = Array.from(allFeaturesMap.values());
 
     // Функция для переключения выбранной фичи (toggle)
     const toggleFeature = (featureName: string) => {
-        if (selectedFeature === featureName) {
-            setSelectedFeature(null);
-        } else {
-            setSelectedFeature(featureName);
-        }
+        if (selectedFeature === featureName) setSelectedFeature(null);
+        else setSelectedFeature(featureName);
     };
 
     // Roll mode toggle
@@ -393,16 +383,20 @@ const CharacterContainer: React.FC = () => {
     // Расчёт AC для отображения
     const acInfo = getACInfo(character);
 
-    // Функции для работы с чертами (Feats)
+    // Feats
     const handleAddFeat = () => {
         if (newFeatName.trim() && newFeatDescription.trim()) {
             addFeat(character.id, {
                 name: newFeatName.trim(),
                 description: newFeatDescription.trim(),
                 source: 'custom',
+                damageDice: newFeatDamageDice.trim() || undefined,
+                damageType: newFeatDamageType.trim() || undefined,
             });
             setNewFeatName('');
             setNewFeatDescription('');
+            setNewFeatDamageDice('');
+            setNewFeatDamageType('');
             setShowAddFeatModal(false);
         }
     };
@@ -412,6 +406,11 @@ const CharacterContainer: React.FC = () => {
             removeFeat(character.id, featId);
         }
     };
+
+    // Фичи с уроном (для секции Attacks)
+    const attackingFeatures = allFeatures.filter(f => f.damageDice);
+    const attackingFeats = character.feats.filter(f => f.damageDice);
+    const hasAttacks = attackingFeatures.length > 0 || attackingFeats.length > 0;
 
     return (
         <div className="cc-page">
@@ -425,36 +424,10 @@ const CharacterContainer: React.FC = () => {
                     <div className="cc-title">Character Sheet</div>
                     <div className="cc-subtitle">{character.name}</div>
                 </div>
-                <button
-                    className="cc-set-current-btn"
-                    onClick={handleSetCurrent}
-                    style={{
-                        background: '#34d399',
-                        border: 'none',
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        color: '#fff',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        marginLeft: 'auto',
-                    }}
-                >
+                <button className="cc-set-current-btn" onClick={handleSetCurrent} style={{ background: '#34d399', border: 'none', padding: '8px 16px', borderRadius: '8px', color: '#fff', fontWeight: 'bold', cursor: 'pointer', marginLeft: 'auto' }}>
                     Set as current
                 </button>
-                <button
-                    className="cc-delete-btn"
-                    onClick={handleDelete}
-                    style={{
-                        background: '#ef4444',
-                        border: 'none',
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        color: '#fff',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        marginLeft: '8px',
-                    }}
-                >
+                <button className="cc-delete-btn" onClick={handleDelete} style={{ background: '#ef4444', border: 'none', padding: '8px 16px', borderRadius: '8px', color: '#fff', fontWeight: 'bold', cursor: 'pointer', marginLeft: '8px' }}>
                     Delete
                 </button>
             </header>
@@ -464,54 +437,25 @@ const CharacterContainer: React.FC = () => {
                 <div className="cc-section-info">
                     <div className="cc-info-title">Character Details</div>
                     <div className="cc-info-grid">
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Level</span>
-                            <span className="cc-info-value">{character.level}</span>
-                        </div>
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Class</span>
-                            <span className="cc-info-value">{classDisplay}</span>
-                        </div>
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Race</span>
-                            <span className="cc-info-value">{character.race}</span>
-                        </div>
+                        <div className="cc-info-item"><span className="cc-info-label">Level</span><span className="cc-info-value">{character.level}</span></div>
+                        <div className="cc-info-item"><span className="cc-info-label">Class</span><span className="cc-info-value">{classDisplay}</span></div>
+                        <div className="cc-info-item"><span className="cc-info-label">Race</span><span className="cc-info-value">{character.race}</span></div>
                     </div>
                     <div className="cc-info-grid">
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Background</span>
-                            <span className="cc-info-value">{character.background}</span>
-                        </div>
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Subrace</span>
-                            <span className="cc-info-value">{character.subrace || '—'}</span>
-                        </div>
+                        <div className="cc-info-item"><span className="cc-info-label">Background</span><span className="cc-info-value">{character.background}</span></div>
+                        <div className="cc-info-item"><span className="cc-info-label">Subrace</span><span className="cc-info-value">{character.subrace || '—'}</span></div>
                         <div className="cc-info-item">
                             <span className="cc-info-label">AC</span>
-                            <span className="cc-info-value" title={acInfo.breakdown.join('\n')} style={{ cursor: 'help', borderBottom: '1px dashed #6b7280' }}>
-                                {acInfo.total}
-                            </span>
+                            <span className="cc-info-value" title={acInfo.breakdown.join('\n')} style={{ cursor: 'help', borderBottom: '1px dashed #6b7280' }}>{acInfo.total}</span>
                         </div>
                     </div>
                     <div className="cc-info-grid">
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Speed</span>
-                            <span className="cc-info-value">{character.speed ? `${character.speed} ft` : '—'}</span>
-                        </div>
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Size</span>
-                            <span className="cc-info-value">{character.size || 'Medium'}</span>
-                        </div>
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Creature Type</span>
-                            <span className="cc-info-value">{character.creatureType || 'Humanoid'}</span>
-                        </div>
+                        <div className="cc-info-item"><span className="cc-info-label">Speed</span><span className="cc-info-value">{character.speed ? `${character.speed} ft` : '—'}</span></div>
+                        <div className="cc-info-item"><span className="cc-info-label">Size</span><span className="cc-info-value">{character.size || 'Medium'}</span></div>
+                        <div className="cc-info-item"><span className="cc-info-label">Creature Type</span><span className="cc-info-value">{character.creatureType || 'Humanoid'}</span></div>
                     </div>
                     <div className="cc-info-grid">
-                        <div className="cc-info-item">
-                            <span className="cc-info-label">Proficiency Bonus</span>
-                            <span className="cc-info-value">+{proficiencyBonus}</span>
-                        </div>
+                        <div className="cc-info-item"><span className="cc-info-label">Proficiency Bonus</span><span className="cc-info-value">+{proficiencyBonus}</span></div>
                     </div>
                 </div>
 
@@ -540,13 +484,62 @@ const CharacterContainer: React.FC = () => {
                             <div className="cc-ability-card" key={ability.name}>
                                 <span className="cc-ability-name">{ability.name}</span>
                                 <span className="cc-ability-score">{ability.score}</span>
-                                <span className="cc-ability-modifier">
-                                    {ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}
-                                </span>
+                                <span className="cc-ability-modifier">{ability.modifier >= 0 ? `+${ability.modifier}` : `${ability.modifier}`}</span>
                             </div>
                         ))}
                     </div>
                 </div>
+
+                {/* Attacks Section */}
+                {hasAttacks && (
+                    <div className="cc-attacks-section">
+                        <div className="cc-attacks-header">
+                            <span className="cc-attacks-title">Attacks</span>
+                        </div>
+                        <div className="cc-attacks-list">
+                            {attackingFeatures.map((feature, idx) => (
+                                <div key={`feature-${idx}`} className="cc-attack-item">
+                                    <span className="cc-attack-name">
+                                        {feature.name}
+                                        <span className="cc-attack-source"> (race)</span>
+                                    </span>
+                                    <span className="cc-attack-dice">
+                                        {feature.damageDice}
+                                        {feature.damageType ? ` ${feature.damageType}` : ''}
+                                    </span>
+                                    <AttackRoller
+                                        sourceName={feature.name}
+                                        damageDice={feature.damageDice}
+                                        damageType={feature.damageType}
+                                        defaultAttackBonus={defaultMeleeAttackBonus}
+                                        defaultDamageBonus={defaultMeleeDamageBonus}
+                                        trigger={<button className="cc-attack-btn">Attack</button>}
+                                    />
+                                </div>
+                            ))}
+                            {attackingFeats.map((feat) => (
+                                <div key={`feat-${feat.id}`} className="cc-attack-item">
+                                    <span className="cc-attack-name">
+                                        {feat.name}
+                                        <span className="cc-attack-source"> (feat)</span>
+                                    </span>
+                                    <span className="cc-attack-dice">
+                                        {feat.damageDice}
+                                        {feat.damageType ? ` ${feat.damageType}` : ''}
+                                    </span>
+                                    <AttackRoller
+                                        sourceName={feat.name}
+                                        damageDice={feat.damageDice}
+                                        damageType={feat.damageType}
+                                        defaultAttackBonus={defaultMeleeAttackBonus}
+                                        defaultDamageBonus={defaultMeleeDamageBonus}
+                                        trigger={<button className="cc-attack-btn">⚔️ Attack</button>}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Spellcasting */}
                 {(character.classLevels?.some(cl =>
@@ -558,22 +551,10 @@ const CharacterContainer: React.FC = () => {
                             <Link to="/spellbook" className="cc-view-full-spellbook">View Full Spellbook</Link>
                         </div>
                         <div className="cc-spell-stats">
-                            <div className="cc-stat-item">
-                                <span className="cc-stat-label">Spell Slots</span>
-                                <span className="cc-stat-value">{totalSlots}</span>
-                            </div>
-                            <div className="cc-stat-item">
-                                <span className="cc-stat-label">Prepared</span>
-                                <span className="cc-stat-value">{preparedCount} / {maxPrepared}</span>
-                            </div>
-                            <div className="cc-stat-item">
-                                <span className="cc-stat-label">Racial</span>
-                                <span className="cc-stat-value">{racialCount}</span>
-                            </div>
-                            <div className="cc-stat-item">
-                                <span className="cc-stat-label">Known</span>
-                                <span className="cc-stat-value">{knownCount}</span>
-                            </div>
+                            <div className="cc-stat-item"><span className="cc-stat-label">Spell Slots</span><span className="cc-stat-value">{totalSlots}</span></div>
+                            <div className="cc-stat-item"><span className="cc-stat-label">Prepared</span><span className="cc-stat-value">{preparedCount} / {maxPrepared}</span></div>
+                            <div className="cc-stat-item"><span className="cc-stat-label">Racial</span><span className="cc-stat-value">{racialCount}</span></div>
+                            <div className="cc-stat-item"><span className="cc-stat-label">Known</span><span className="cc-stat-value">{knownCount}</span></div>
                         </div>
                     </div>
                 )}
@@ -582,10 +563,7 @@ const CharacterContainer: React.FC = () => {
                 <div className="cc-section-saving-throws">
                     <div className="cc-saving-throws-header">
                         <span className="cc-saving-throws-title">Saving Throws</span>
-                        <button
-                            className={`cc-roll-mode-toggle ${rollMode ? 'cc-active' : ''}`}
-                            onClick={toggleRollMode}
-                        >
+                        <button className={`cc-roll-mode-toggle ${rollMode ? 'cc-active' : ''}`} onClick={toggleRollMode}>
                             {rollMode ? 'Roll Mode ON' : 'Roll Mode OFF'}
                         </button>
                     </div>
@@ -593,15 +571,9 @@ const CharacterContainer: React.FC = () => {
                         {savingThrowsData.map((st) => {
                             const isProficient = (character.savingThrowProficiencies || []).includes(st.name);
                             return (
-                                <div
-                                    className={`cc-saving-throw-card ${isProficient ? 'cc-proficient' : ''} ${rollMode ? 'cc-rollable' : ''}`}
-                                    key={st.name}
-                                    onClick={() => toggleSavingThrowProficiency(st.name)}
-                                >
+                                <div className={`cc-saving-throw-card ${isProficient ? 'cc-proficient' : ''} ${rollMode ? 'cc-rollable' : ''}`} key={st.name} onClick={() => toggleSavingThrowProficiency(st.name)}>
                                     <span className="cc-saving-throw-name">{st.name}</span>
-                                    <span className="cc-saving-throw-bonus">
-                                        {st.bonus >= 0 ? `+${st.bonus}` : `${st.bonus}`}
-                                    </span>
+                                    <span className="cc-saving-throw-bonus">{st.bonus >= 0 ? `+${st.bonus}` : `${st.bonus}`}</span>
                                 </div>
                             );
                         })}
@@ -610,10 +582,7 @@ const CharacterContainer: React.FC = () => {
 
                 {/* Race Features */}
                 <div className="cc-race-features-section">
-                    <div
-                        className="cc-race-features-header"
-                        onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}
-                    >
+                    <div className="cc-race-features-header" onClick={() => setIsRaceFeaturesOpen(!isRaceFeaturesOpen)}>
                         <span className="cc-race-features-title">Race Features</span>
                         {renderChevron(isRaceFeaturesOpen)}
                     </div>
@@ -668,12 +637,7 @@ const CharacterContainer: React.FC = () => {
                 <div className="cc-feats-section">
                     <div className="cc-feats-header">
                         <span className="cc-feats-title">Feats</span>
-                        <button
-                            className="cc-add-feat-btn"
-                            onClick={() => setShowAddFeatModal(true)}
-                        >
-                            + Add
-                        </button>
+                        <button className="cc-add-feat-btn" onClick={() => setShowAddFeatModal(true)}>+ Add</button>
                     </div>
                     <div className="cc-feats-list">
                         {character.feats.length === 0 ? (
@@ -686,13 +650,14 @@ const CharacterContainer: React.FC = () => {
                                         <span className="cc-feat-source">[{feat.source}]</span>
                                     </div>
                                     <div className="cc-feat-description">{feat.description}</div>
+                                    {feat.damageDice && (
+                                        <div className="cc-feat-damage">
+                                            Damage: <strong>{feat.damageDice}</strong>
+                                            {feat.damageType ? ` ${feat.damageType}` : ''}
+                                        </div>
+                                    )}
                                     {feat.source === 'custom' && (
-                                        <button
-                                            className="cc-feat-remove"
-                                            onClick={() => handleRemoveFeat(feat.id)}
-                                        >
-                                            ✕
-                                        </button>
+                                        <button className="cc-feat-remove" onClick={() => handleRemoveFeat(feat.id)}>✕</button>
                                     )}
                                 </div>
                             ))
@@ -704,16 +669,12 @@ const CharacterContainer: React.FC = () => {
                 <div className="cc-variant-toggle-container">
                     <label className="cc-variant-toggle">
                         <span className="cc-toggle-label">Use Skills with Different Abilities variant rule?</span>
-                        <input
-                            type="checkbox"
-                            checked={useVariant}
-                            onChange={handleVariantToggle}
-                        />
+                        <input type="checkbox" checked={useVariant} onChange={handleVariantToggle} />
                         <span className="cc-toggle-slider"></span>
                     </label>
                 </div>
 
-                {/* Skills & Proficiencies */}
+                {/* Skills */}
                 <div className="cc-section-skills">
                     <div className="cc-skills-header">
                         <span className="cc-skills-title">Skills & Proficiencies</span>
@@ -723,30 +684,17 @@ const CharacterContainer: React.FC = () => {
                         {character.skills.map((skill, index) => {
                             const bonus = getSkillBonus(skill);
                             return (
-                                <div
-                                    className={`cc-skill-card ${rollMode ? 'cc-rollable' : ''}`}
-                                    key={skill.name}
-                                    onClick={rollMode ? () => handleSkillRoll(skill) : undefined}
-                                >
+                                <div className={`cc-skill-card ${rollMode ? 'cc-rollable' : ''}`} key={skill.name} onClick={rollMode ? () => handleSkillRoll(skill) : undefined}>
                                     <div className="cc-skill-left">
                                         {!rollMode && (
-                                            <SkillCheck
-                                                proficient={skill.proficient}
-                                                onToggle={() => toggleSkillProficient(index)}
-                                            />
+                                            <SkillCheck proficient={skill.proficient} onToggle={() => toggleSkillProficient(index)} />
                                         )}
                                         <span className="cc-skill-name">{skill.name} ({skill.attribute})</span>
                                     </div>
                                     <div className="cc-skill-right">
                                         {useVariant && (
-                                            <select
-                                                value={skill.attribute}
-                                                onChange={(e) => handleSkillAttributeChange(index, e.target.value)}
-                                                className="cc-attr-select"
-                                            >
-                                                {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(attr => (
-                                                    <option key={attr} value={attr}>{attr}</option>
-                                                ))}
+                                            <select value={skill.attribute} onChange={(e) => handleSkillAttributeChange(index, e.target.value)} className="cc-attr-select">
+                                                {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(attr => (<option key={attr} value={attr}>{attr}</option>))}
                                             </select>
                                         )}
                                         <span className="cc-skill-bonus">{bonus >= 0 ? `+${bonus}` : `${bonus}`}</span>
@@ -757,7 +705,7 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Tool Proficiencies */}
+                {/* Tools */}
                 <div className="cc-section-tools">
                     <div className="cc-tools-title">Tool Proficiencies</div>
                     {character.toolProficiencies && character.toolProficiencies.length > 0 ? (
@@ -765,30 +713,17 @@ const CharacterContainer: React.FC = () => {
                             {character.toolProficiencies.map((tool, index) => {
                                 const bonus = getToolBonus(tool);
                                 return (
-                                    <div
-                                        className={`cc-skill-card ${rollMode ? 'cc-rollable' : ''}`}
-                                        key={tool.name}
-                                        onClick={rollMode ? () => handleToolRoll(tool) : undefined}
-                                    >
+                                    <div className={`cc-skill-card ${rollMode ? 'cc-rollable' : ''}`} key={tool.name} onClick={rollMode ? () => handleToolRoll(tool) : undefined}>
                                         <div className="cc-skill-left">
                                             {!rollMode && (
-                                                <SkillCheck
-                                                    proficient={tool.proficient}
-                                                    onToggle={() => toggleToolProficient(index)}
-                                                />
+                                                <SkillCheck proficient={tool.proficient} onToggle={() => toggleToolProficient(index)} />
                                             )}
                                             <span className="cc-skill-name">{tool.name} ({tool.attribute || 'DEX'})</span>
                                         </div>
                                         <div className="cc-skill-right">
                                             {useVariant && (
-                                                <select
-                                                    value={tool.attribute || 'DEX'}
-                                                    onChange={(e) => handleToolAttributeChange(index, e.target.value)}
-                                                    className="cc-attr-select"
-                                                >
-                                                    {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(attr => (
-                                                        <option key={attr} value={attr}>{attr}</option>
-                                                    ))}
+                                                <select value={tool.attribute || 'DEX'} onChange={(e) => handleToolAttributeChange(index, e.target.value)} className="cc-attr-select">
+                                                    {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(attr => (<option key={attr} value={attr}>{attr}</option>))}
                                                 </select>
                                             )}
                                             <span className="cc-skill-bonus">{bonus >= 0 ? `+${bonus}` : `${bonus}`}</span>
@@ -807,9 +742,7 @@ const CharacterContainer: React.FC = () => {
                     <div className="cc-languages-title">Languages</div>
                     {character.languages && character.languages.length > 0 ? (
                         <div className="cc-languages-grid">
-                            {character.languages.map((lang, index) => (
-                                <span key={index} className="cc-language-tag">{lang}</span>
-                            ))}
+                            {character.languages.map((lang, index) => (<span key={index} className="cc-language-tag">{lang}</span>))}
                         </div>
                     ) : (
                         <div className="cc-languages-empty">No languages</div>
@@ -823,12 +756,7 @@ const CharacterContainer: React.FC = () => {
                     <>
                         <h3 className="cc-roll-modal-title">{rollResultModal.name}</h3>
                         <div className="cc-roll-modal-dice">
-                            <DiceRoller
-                                sides={20}
-                                initialResult={rollResultModal.result}
-                                autoRoll={true}
-                                displayOnly={true}
-                            />
+                            <DiceRoller sides={20} initialResult={rollResultModal.result} autoRoll={true} displayOnly={true} />
                         </div>
                         <div className="cc-roll-modal-modifier">
                             Modifier: {rollResultModal.modifier >= 0 ? `+${rollResultModal.modifier}` : `${rollResultModal.modifier}`}
@@ -861,12 +789,7 @@ const CharacterContainer: React.FC = () => {
                         <div className="cc-control-group">
                             <label>HP Adjustment</label>
                             <div className="cc-input-group">
-                                <input
-                                    type="number"
-                                    value={hpInputValue}
-                                    onChange={(e) => setHpInputValue(Number(e.target.value))}
-                                    min="0"
-                                />
+                                <input type="number" value={hpInputValue} onChange={(e) => setHpInputValue(Number(e.target.value))} min="0" />
                                 <button onClick={() => { addHp(hpInputValue); closeHpPopup(); }}>Add</button>
                                 <button onClick={() => { subtractHp(hpInputValue); closeHpPopup(); }}>Subtract</button>
                             </div>
@@ -874,12 +797,7 @@ const CharacterContainer: React.FC = () => {
                         <div className="cc-control-group">
                             <label>Temp HP Adjustment</label>
                             <div className="cc-input-group">
-                                <input
-                                    type="number"
-                                    value={tempInputValue}
-                                    onChange={(e) => setTempInputValue(Number(e.target.value))}
-                                    min="0"
-                                />
+                                <input type="number" value={tempInputValue} onChange={(e) => setTempInputValue(Number(e.target.value))} min="0" />
                                 <button onClick={() => { addTempHp(tempInputValue); closeHpPopup(); }}>Add Temp</button>
                                 <button onClick={() => { subtractTempHp(tempInputValue); closeHpPopup(); }}>Subtract Temp</button>
                             </div>
@@ -888,27 +806,25 @@ const CharacterContainer: React.FC = () => {
                 </div>
             </Modal>
 
-            {/* Модалка для добавления кастомной черты */}
+            {/* Add Feat Modal */}
             <Modal isOpen={showAddFeatModal} onClose={() => setShowAddFeatModal(false)}>
                 <h3>Add Custom Feat</h3>
                 <div className="cc-add-feat-form">
                     <div className="cc-form-group">
                         <label>Feat Name</label>
-                        <input
-                            type="text"
-                            value={newFeatName}
-                            onChange={(e) => setNewFeatName(e.target.value)}
-                            placeholder="e.g., Dragon Slayer"
-                        />
+                        <input type="text" value={newFeatName} onChange={(e) => setNewFeatName(e.target.value)} placeholder="e.g., Dragon Slayer" />
                     </div>
                     <div className="cc-form-group">
                         <label>Description</label>
-                        <textarea
-                            value={newFeatDescription}
-                            onChange={(e) => setNewFeatDescription(e.target.value)}
-                            placeholder="Describe the feat..."
-                            rows={3}
-                        />
+                        <textarea value={newFeatDescription} onChange={(e) => setNewFeatDescription(e.target.value)} placeholder="Describe the feat..." rows={3} />
+                    </div>
+                    <div className="cc-form-group">
+                        <label>Damage Dice (optional)</label>
+                        <input type="text" value={newFeatDamageDice} onChange={(e) => setNewFeatDamageDice(e.target.value)} placeholder="e.g., 2d6" />
+                    </div>
+                    <div className="cc-form-group">
+                        <label>Damage Type (optional)</label>
+                        <input type="text" value={newFeatDamageType} onChange={(e) => setNewFeatDamageType(e.target.value)} placeholder="e.g., fire, slashing" />
                     </div>
                     <div className="cc-modal-actions">
                         <button className="cc-modal-btn cancel" onClick={() => setShowAddFeatModal(false)}>Cancel</button>
