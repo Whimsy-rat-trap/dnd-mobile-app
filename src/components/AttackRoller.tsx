@@ -3,43 +3,26 @@ import Modal from './Modal';
 import {
     rollD20,
     rollDice,
+    getPrimaryDiceSides,
     D20RollResult,
     DiceRollResult,
     RollMode,
 } from '../utils/diceUtils';
+import './DiceRoller.css';
 import './AttackRoller.css';
 
 type BonusMode = 'default' | 'custom';
 
 interface AttackRollerProps {
-    /** Название источника (оружие, заклинание, фича). */
     sourceName: string;
-
-    /** Бонус к попаданию по умолчанию (proficiency + ability mod). */
     defaultAttackBonus?: number;
-
-    /** Формула урона, например "1d8" или "2d6+3". */
     damageDice?: string;
-
-    /** Бонус к урону по умолчанию. */
     defaultDamageBonus?: number;
-
-    /** Тип урона (для отображения). */
     damageType?: string;
-
-    /** Если true — не показываем урон (например, для utility-эффекта). */
     hideDamage?: boolean;
-
-    /** Колбэк, вызываемый после броска. */
-    onRoll?: (payload: {
-        attack: D20RollResult;
-        damage: DiceRollResult | null;
-    }) => void;
-
-    /** Кнопка, при нажатии на которую открывается окно броска. */
+    onRollAttack?: (result: D20RollResult) => void;
+    onRollDamage?: (result: DiceRollResult) => void;
     trigger?: React.ReactNode;
-
-    /** Опционально: класс для обёртки. */
     className?: string;
 }
 
@@ -50,71 +33,79 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                        defaultDamageBonus = 0,
                                                        damageType,
                                                        hideDamage = false,
-                                                       onRoll,
+                                                       onRollAttack,
+                                                       onRollDamage,
                                                        trigger,
                                                        className,
                                                    }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    // Состояния
     const [rollMode, setRollMode] = useState<RollMode>('normal');
     const [attackBonusMode, setAttackBonusMode] = useState<BonusMode>('default');
     const [customAttackBonus, setCustomAttackBonus] = useState<number>(0);
     const [damageBonusMode, setDamageBonusMode] = useState<BonusMode>('default');
     const [customDamageBonus, setCustomDamageBonus] = useState<number>(0);
 
-    // Результаты
     const [attackResult, setAttackResult] = useState<D20RollResult | null>(null);
     const [damageResult, setDamageResult] = useState<DiceRollResult | null>(null);
+    const [spinningAttack, setSpinningAttack] = useState(false);
+    const [spinningDamage, setSpinningDamage] = useState(false);
 
-    const resetResults = () => {
+    const damageSides = getPrimaryDiceSides(damageDice);
+
+    const handleOpen = () => setIsOpen(true);
+    const handleClose = () => {
+        setIsOpen(false);
         setAttackResult(null);
         setDamageResult(null);
     };
 
-    const handleOpen = () => {
-        setIsOpen(true);
-        resetResults();
+    const handleRollAttack = () => {
+        if (spinningAttack) return;
+        setSpinningAttack(true);
+        setAttackResult(null);
+        setTimeout(() => {
+            const attackBonus =
+                attackBonusMode === 'custom' ? customAttackBonus : defaultAttackBonus;
+            const result = rollD20(rollMode, attackBonus);
+            setAttackResult(result);
+            setSpinningAttack(false);
+            if (onRollAttack) onRollAttack(result);
+        }, 700);
     };
 
-    const handleClose = () => {
-        setIsOpen(false);
-        resetResults();
-    };
-
-    const handleRoll = () => {
-        const attackBonus =
-            attackBonusMode === 'custom' ? customAttackBonus : defaultAttackBonus;
-        const damageBonus =
-            damageBonusMode === 'custom' ? customDamageBonus : defaultDamageBonus;
-
-        const attack = rollD20(rollMode, attackBonus);
-        setAttackResult(attack);
-
-        // Урон бросаем только если есть формула и урон не скрыт
-        if (!hideDamage && damageDice) {
-            // Если в формуле уже есть модификатор, добавляем damageBonus сверху
+    const handleRollDamage = () => {
+        if (spinningDamage || !damageDice) return;
+        setSpinningDamage(true);
+        setDamageResult(null);
+        setTimeout(() => {
+            const damageBonus =
+                damageBonusMode === 'custom' ? customDamageBonus : defaultDamageBonus;
             const parsed = damageDice.replace(/\s+/g, '');
             const hasModifier = /[+-]\d+$/.test(parsed);
-            const formula = damageBonus !== 0
-                ? hasModifier
-                    ? parsed.replace(/([+-]\d+)$/, (m, sign) =>
-                        `${sign}${Math.abs(parseInt(m, 10)) + damageBonus}`)
-                    : `${parsed}${damageBonus > 0 ? '+' : ''}${damageBonus}`
-                : parsed;
-
-            const damage = rollDice(formula);
-            setDamageResult(damage);
-
-            if (onRoll) onRoll({ attack, damage });
-        } else {
-            if (onRoll) onRoll({ attack, damage: null });
-        }
+            let formula = parsed;
+            if (damageBonus !== 0) {
+                if (hasModifier) {
+                    formula = parsed.replace(/([+-]\d+)$/, (m) => {
+                        const sign = m[0];
+                        const val = parseInt(m.slice(1), 10);
+                        return `${sign}${val + damageBonus}`;
+                    });
+                } else {
+                    formula = `${parsed}${damageBonus > 0 ? '+' : ''}${damageBonus}`;
+                }
+            }
+            const result = rollDice(formula);
+            if (result) {
+                setDamageResult(result);
+                if (onRollDamage) onRollDamage(result);
+            }
+            setSpinningDamage(false);
+        }, 700);
     };
 
-    // Кнопка-триггер
     const defaultTrigger = (
-        <button className="attack-trigger-btn" onClick={handleOpen} type="button">
+        <button className="attack-trigger-btn" type="button">
             Attack
         </button>
     );
@@ -130,111 +121,76 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                     <div className="attack-roller">
                         <h3 className="attack-title">Attack: {sourceName}</h3>
 
-                        {/* Режим броска */}
-                        <div className="attack-section">
-                            <span className="attack-label">Roll Mode</span>
-                            <div className="attack-btn-group">
-                                <button
-                                    type="button"
-                                    className={`attack-mode-btn ${rollMode === 'normal' ? 'active' : ''}`}
-                                    onClick={() => setRollMode('normal')}
-                                >
-                                    Normal
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`attack-mode-btn ${rollMode === 'advantage' ? 'active' : ''}`}
-                                    onClick={() => setRollMode('advantage')}
-                                >
-                                    Advantage
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`attack-mode-btn ${rollMode === 'disadvantage' ? 'active' : ''}`}
-                                    onClick={() => setRollMode('disadvantage')}
-                                >
-                                    Disadvantage
-                                </button>
-                            </div>
-                        </div>
+                        {/* Attack roll */}
+                        <div className="attack-block">
+                            <div className="attack-block-header">Attack Roll</div>
 
-                        {/* Бонус к попаданию */}
-                        <div className="attack-section">
-                            <span className="attack-label">Attack Bonus</span>
-                            <div className="attack-btn-group">
-                                <button
-                                    type="button"
-                                    className={`attack-mode-btn ${attackBonusMode === 'default' ? 'active' : ''}`}
-                                    onClick={() => setAttackBonusMode('default')}
-                                >
-                                    Modifier ({defaultAttackBonus >= 0 ? '+' : ''}{defaultAttackBonus})
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`attack-mode-btn ${attackBonusMode === 'custom' ? 'active' : ''}`}
-                                    onClick={() => setAttackBonusMode('custom')}
-                                >
-                                    Custom
-                                </button>
-                            </div>
-                            {attackBonusMode === 'custom' && (
-                                <input
-                                    type="number"
-                                    className="attack-bonus-input"
-                                    value={customAttackBonus}
-                                    onChange={(e) => setCustomAttackBonus(Number(e.target.value))}
-                                    placeholder="Enter bonus"
-                                />
-                            )}
-                        </div>
-
-                        {/* Урон */}
-                        {!hideDamage && damageDice && (
                             <div className="attack-section">
-                                <span className="attack-label">
-                                    Damage {damageType ? `(${damageType})` : ''}
-                                </span>
-                                <div className="attack-damage-info">
-                                    Formula: <strong>{damageDice}</strong>
+                                <span className="attack-label">Roll Mode</span>
+                                <div className="attack-btn-group">
+                                    {(['normal', 'advantage', 'disadvantage'] as RollMode[]).map(mode => (
+                                        <button
+                                            key={mode}
+                                            type="button"
+                                            className={`attack-mode-btn ${rollMode === mode ? 'active' : ''}`}
+                                            onClick={() => setRollMode(mode)}
+                                        >
+                                            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                        </button>
+                                    ))}
                                 </div>
+                            </div>
+
+                            <div className="attack-section">
+                                <span className="attack-label">Attack Bonus</span>
                                 <div className="attack-btn-group">
                                     <button
                                         type="button"
-                                        className={`attack-mode-btn ${damageBonusMode === 'default' ? 'active' : ''}`}
-                                        onClick={() => setDamageBonusMode('default')}
+                                        className={`attack-mode-btn ${attackBonusMode === 'default' ? 'active' : ''}`}
+                                        onClick={() => setAttackBonusMode('default')}
                                     >
-                                        Bonus ({defaultDamageBonus >= 0 ? '+' : ''}{defaultDamageBonus})
+                                        Modifier ({defaultAttackBonus >= 0 ? '+' : ''}{defaultAttackBonus})
                                     </button>
                                     <button
                                         type="button"
-                                        className={`attack-mode-btn ${damageBonusMode === 'custom' ? 'active' : ''}`}
-                                        onClick={() => setDamageBonusMode('custom')}
+                                        className={`attack-mode-btn ${attackBonusMode === 'custom' ? 'active' : ''}`}
+                                        onClick={() => setAttackBonusMode('custom')}
                                     >
                                         Custom
                                     </button>
                                 </div>
-                                {damageBonusMode === 'custom' && (
+                                {attackBonusMode === 'custom' && (
                                     <input
                                         type="number"
                                         className="attack-bonus-input"
-                                        value={customDamageBonus}
-                                        onChange={(e) => setCustomDamageBonus(Number(e.target.value))}
+                                        value={customAttackBonus}
+                                        onChange={(e) => setCustomAttackBonus(Number(e.target.value))}
                                         placeholder="Enter bonus"
                                     />
                                 )}
                             </div>
-                        )}
 
-                        {/* Кнопка броска */}
-                        <button className="attack-roll-btn" onClick={handleRoll} type="button">
-                            Roll Attack
-                        </button>
+                            <div className="attack-roll-row">
+                                <button
+                                    className={`dice-btn dice-20 ${spinningAttack ? 'spinning' : ''}`}
+                                    onClick={handleRollAttack}
+                                    disabled={spinningAttack}
+                                    type="button"
+                                >
+                                    <span>{attackResult ? attackResult.chosen : '20'}</span>
+                                </button>
+                                <button
+                                    className="attack-roll-btn"
+                                    onClick={handleRollAttack}
+                                    disabled={spinningAttack}
+                                    type="button"
+                                >
+                                    Roll Attack
+                                </button>
+                            </div>
 
-                        {/* Результаты */}
-                        {attackResult && (
-                            <div className="attack-results">
+                            {attackResult && (
                                 <div className="attack-result-block">
-                                    <div className="attack-result-label">Attack Roll</div>
                                     <div className="attack-result-rolls">
                                         {attackResult.rolls.map((r, i) => (
                                             <span
@@ -268,12 +224,71 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                         )}
                                     </div>
                                 </div>
+                            )}
+                        </div>
+
+                        {/* Damage roll */}
+                        {!hideDamage && damageDice && (
+                            <div className="attack-block">
+                                <div className="attack-block-header">
+                                    Damage Roll {damageType ? `(${damageType})` : ''}
+                                </div>
+
+                                <div className="attack-section">
+                                    <span className="attack-label">Formula</span>
+                                    <span className="attack-formula">{damageDice}</span>
+                                </div>
+
+                                <div className="attack-section">
+                                    <span className="attack-label">Damage Bonus</span>
+                                    <div className="attack-btn-group">
+                                        <button
+                                            type="button"
+                                            className={`attack-mode-btn ${damageBonusMode === 'default' ? 'active' : ''}`}
+                                            onClick={() => setDamageBonusMode('default')}
+                                        >
+                                            Bonus ({defaultDamageBonus >= 0 ? '+' : ''}{defaultDamageBonus})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`attack-mode-btn ${damageBonusMode === 'custom' ? 'active' : ''}`}
+                                            onClick={() => setDamageBonusMode('custom')}
+                                        >
+                                            Custom
+                                        </button>
+                                    </div>
+                                    {damageBonusMode === 'custom' && (
+                                        <input
+                                            type="number"
+                                            className="attack-bonus-input"
+                                            value={customDamageBonus}
+                                            onChange={(e) => setCustomDamageBonus(Number(e.target.value))}
+                                            placeholder="Enter bonus"
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="attack-roll-row">
+                                    <button
+                                        className={`dice-btn dice-${damageSides} ${spinningDamage ? 'spinning' : ''}`}
+                                        onClick={handleRollDamage}
+                                        disabled={spinningDamage}
+                                        type="button"
+                                    >
+                                        <span>{damageResult ? damageResult.total : `D${damageSides}`}</span>
+                                    </button>
+                                    <button
+                                        className="attack-roll-btn damage-btn"
+                                        onClick={handleRollDamage}
+                                        disabled={spinningDamage}
+                                        type="button"
+                                    >
+                                        Roll Damage
+                                    </button>
+                                </div>
 
                                 {damageResult && (
                                     <div className="attack-result-block">
-                                        <div className="attack-result-label">
-                                            Damage {damageType ? `(${damageType})` : ''}
-                                        </div>
                                         <div className="attack-result-rolls">
                                             {damageResult.rolls.map((r, i) => (
                                                 <span key={i} className="attack-die">{r}</span>

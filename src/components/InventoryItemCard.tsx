@@ -14,7 +14,7 @@ interface InventoryItemCardProps {
     onRemove: (itemId: string) => void;
     attackBonus?: number;
     damageBonus?: number;
-    onAttackRoll?: (attackRoll: number, damageRoll: number | null, sourceName: string) => void;
+    onAttackRoll?: (attackTotal: number, damageTotal: number | null, sourceName: string) => void;
 }
 
 const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
@@ -30,6 +30,17 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
     const canAttack =
         (item.type === 'weapon' || item.type === 'natural weapon') &&
         Boolean(item.damageDice);
+
+    // Собираем итоговые значения для логирования (если оба ролла сделаны — можем вызвать onAttackRoll)
+    const handleRollAttack = (attackTotal: number) => {
+        // Урон ещё не брошен — вызываем с null
+        onAttackRoll?.(attackTotal, null, item.name);
+    };
+
+    const handleRollDamage = (damageTotal: number) => {
+        // Урон брошен отдельно — можно логировать отдельно (с нулевой атакой)
+        onAttackRoll?.(0, damageTotal, item.name);
+    };
 
     return (
         <div
@@ -109,19 +120,14 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
                         damageType={item.damageType}
                         defaultAttackBonus={attackBonus}
                         defaultDamageBonus={damageBonus}
-                        onRoll={({ attack, damage }) => {
-                            onAttackRoll?.(
-                                attack.total,
-                                damage?.total ?? null,
-                                item.name
-                            );
-                        }}
+                        onRollAttack={(result) => handleRollAttack(result.total)}
+                        onRollDamage={(result) => handleRollDamage(result.total)}
                         trigger={
                             <button
                                 className="inv-action-btn inv-attack-btn"
                                 title="Roll attack"
                             >
-                                Roll attack
+                                Attack
                             </button>
                         }
                     />

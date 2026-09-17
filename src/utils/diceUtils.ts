@@ -100,3 +100,13 @@ export function formatDiceResult(result: DiceRollResult): string {
         : '';
     return `${rollsStr}${modStr} = ${result.total}`;
 }
+
+/**
+ * Возвращает количество граней первого кубика из формулы.
+ * Например, для "2d6+3" вернёт 6. Для "1d8 + 1d6" вернёт 8.
+ */
+export function getPrimaryDiceSides(formula?: string): number {
+    if (!formula) return 6;
+    const parsed = parseDiceFormula(formula);
+    return parsed ? parsed.sides : 6;
+}
