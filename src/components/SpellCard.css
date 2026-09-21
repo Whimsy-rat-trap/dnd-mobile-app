@@ -308,3 +308,25 @@
     cursor: help;
     padding: 0 4px;
 }
+
+.spell-card-attack-row {
+    display: flex;
+    justify-content: flex-start;
+    margin: 6px 0;
+}
+
+.spell-attack-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.spell-attack-btn:hover {
+    background: #dc2626;
+}

@@ -20,6 +20,13 @@ interface SpellCardProps {
     isConcentrating?: boolean;
     onToggleConcentration?: () => void;
     showConcentrationControl?: boolean;
+
+    /** Бонус к атаке заклинанием (proficiency + spellcasting ability mod). */
+    spellAttackBonus?: number;
+    /** Бонус к урону заклинанием (обычно = spellcasting ability mod). */
+    spellDamageBonus?: number;
+    /** Колбэк для логирования броска. */
+    onAttackRoll?: (attackTotal: number, damageTotal: number | null, sourceName: string) => void;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -39,6 +46,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  isConcentrating = false,
                                                  onToggleConcentration,
                                                  showConcentrationControl = false,
+                                                 spellAttackBonus = 0,
+                                                 spellDamageBonus = 0,
+                                                 onAttackRoll,
                                              }) => {
     // Цвета элементов (совпадают с Hub)
     const elementColors: Record<string, string> = {
@@ -63,6 +73,12 @@ const SpellCard: React.FC<SpellCardProps> = ({
     // Определяем, какой бросок показывать
     const displayRoll = spell.damageRoll || spell.diceRoll;
     const elementColor = getElementColor(spell.element);
+
+    // Показывать ли кнопку атаки: есть формула урона и это не лечение
+    const canRollAttack =
+        Boolean(displayRoll) &&
+        spell.damageType !== 'healing' &&
+        spell.element !== 'healing';
 
     return (
         <div className="spell-card">
@@ -94,20 +110,10 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             {isConcentrating ? '⏳' : '⚡'}
                         </button>
                     )}
-                    {spell.diceRoll && spell.damageType && (
-                        <AttackRoller
-                            sourceName={spell.name}
-                            damageDice={spell.diceRoll}
-                            damageType={spell.damageType}
-                            defaultAttackBonus={0}
-                            defaultDamageBonus={0}
-                            trigger={<button className="spell-attack-btn">Cast</button>}
-                        />
-                    )}
                 </div>
             </div>
 
-            {/* Детали заклинания (casting time, range, components) */}
+            {/* Детали заклинания */}
             <div className="spell-card-details">
                 <div className="spell-card-row">
                     <div className="spell-detail-item">
@@ -125,17 +131,14 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 </div>
             </div>
 
-            {/* Теги в стиле Hub: уровень, школа, элемент, бросок, тип урона, кастомность, расовость */}
+            {/* Теги */}
             <div className="spell-card-tags spell-card-tags-hub">
                 <span className="spell-tag-level">
                     {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
                 </span>
                 <span className="spell-tag-school">{spell.school}</span>
                 {spell.element && (
-                    <span
-                        className="spell-tag-element"
-                        style={{ color: elementColor }}
-                    >
+                    <span className="spell-tag-element" style={{ color: elementColor }}>
                         {spell.element}
                     </span>
                 )}
@@ -148,13 +151,31 @@ const SpellCard: React.FC<SpellCardProps> = ({
                     </span>
                 )}
                 {spell.damageType && spell.damageType !== spell.element && (
-                    <span className="spell-tag-damage-type">
-                        {spell.damageType}
-                    </span>
+                    <span className="spell-tag-damage-type">{spell.damageType}</span>
                 )}
                 {isCustom && <span className="spell-tag-custom">Custom</span>}
                 {spell.isRacial && <span className="spell-tag-racial">Racial</span>}
             </div>
+
+            {/* Кнопка атаки/урона */}
+            {canRollAttack && (
+                <div className="spell-card-attack-row">
+                    <AttackRoller
+                        sourceName={spell.name}
+                        damageDice={displayRoll}
+                        damageType={spell.damageType || spell.element}
+                        defaultAttackBonus={spellAttackBonus}
+                        defaultDamageBonus={spellDamageBonus}
+                        onRollAttack={(result) => onAttackRoll?.(result.total, null, spell.name)}
+                        onRollDamage={(result) => onAttackRoll?.(0, result.total, spell.name)}
+                        trigger={
+                            <button className="spell-attack-btn" type="button">
+                                Attack
+                            </button>
+                        }
+                    />
+                </div>
+            )}
 
             <div className="spell-card-description">{spell.description}</div>
         </div>
