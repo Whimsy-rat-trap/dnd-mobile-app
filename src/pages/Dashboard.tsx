@@ -199,11 +199,7 @@ const Dashboard: React.FC = () => {
         [character, getCampaignsForCharacter]
     );
 
-    // Только активные — для отображения в Dashboard
-    const activeCharacterCampaigns = React.useMemo(
-        () => characterCampaigns.filter(c => c.status === 'active'),
-        [characterCampaigns]
-    );
+    const displayCampaigns = characterCampaigns;
 
     // Экран выбора персонажа
     if (!character) {
@@ -562,16 +558,14 @@ const Dashboard: React.FC = () => {
                         <Link to="/campaigns" className="db-view-all-btn">View all</Link>
                     </div>
                     <div className="db-campaigns-scroll">
-                        {activeCharacterCampaigns.length === 0 ? (
-                            <div className="db-campaigns-empty">
-                                Not in any active campaign
-                            </div>
+                        {displayCampaigns.length === 0 ? (
+                            <div className="db-campaigns-empty">Not in any campaign</div>
                         ) : (
-                            activeCharacterCampaigns.map(campaign => (
+                            displayCampaigns.map(campaign => (
                                 <Link
                                     key={campaign.id}
                                     to="/campaigns"
-                                    className="db-campaign-card"
+                                    className={`db-campaign-card ${campaign.status !== 'active' ? 'db-inactive' : ''}`}
                                     style={{ textDecoration: 'none' }}
                                 >
                                     <div className="db-campaign-name">{campaign.name}</div>

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Campaign } from '../types/Character';
+import { useCharacters } from './CharacterContext';
 
 interface CampaignContextType {
     campaigns: Campaign[];
@@ -16,8 +17,11 @@ const CampaignContext = createContext<CampaignContextType | undefined>(undefined
 
 const STORAGE_KEY = 'dnd_campaigns';
 const CHARACTERS_STORAGE_KEY = 'dnd_characters';
+const LEGACY_ATTACHED_KEY = 'dnd_campaigns_legacy_attached';
 
 export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const { currentCharacterId } = useCharacters();
+
     const [campaigns, setCampaigns] = useState<Campaign[]>(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         let parsed: any[] = [];
@@ -38,7 +42,7 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
             characters = [];
         }
 
-        // Собираем map: campaignId → Set<characterId> из устаревших character.campaigns
+        // Собираем map: campaignId → Set<characterId> из legacy character.campaigns
         const legacyMap: Record<string, Set<string>> = {};
         for (const char of characters) {
             if (!char || !char.id) continue;
@@ -66,10 +70,39 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
         });
     });
 
+    // Авто-привязка legacy-кампаний к текущему персонажу (один раз)
+    useEffect(() => {
+        if (!currentCharacterId) return;
+        if (localStorage.getItem(LEGACY_ATTACHED_KEY) === 'done') return;
+        if (campaigns.length === 0) return;
+
+        // Находим кампании без участников
+        const hasLegacy = campaigns.some(c => (c.characterIds || []).length === 0);
+        if (!hasLegacy) {
+            localStorage.setItem(LEGACY_ATTACHED_KEY, 'done');
+            return;
+        }
+
+        // Привязываем все legacy-кампании к текущему персонажу
+        setCampaigns(prev =>
+            prev.map(c => {
+                const ids = c.characterIds || [];
+                if (ids.length === 0) {
+                    return { ...c, characterIds: [currentCharacterId] };
+                }
+                return c;
+            })
+        );
+
+        localStorage.setItem(LEGACY_ATTACHED_KEY, 'done');
+    }, [currentCharacterId, campaigns]);
+
+    // Сохранение в localStorage
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
     }, [campaigns]);
 
+    // CRUD
     const addCampaign = (campaign: Omit<Campaign, 'id'>): string => {
         const newId = Date.now().toString();
         const newCampaign: Campaign = {
@@ -94,7 +127,7 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const getCampaign = (id: string) => campaigns.find(c => c.id === id);
 
-    // Работа с персонажами
+    // Управление участниками
     const addCharacterToCampaign = (campaignId: string, characterId: string) => {
         setCampaigns(prev =>
             prev.map(c => {
@@ -116,9 +149,23 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
         );
     };
 
-    const getCampaignsForCharacter = (characterId: string) =>
-        campaigns.filter(c => (c.characterIds || []).includes(characterId));
+    /**
+     * Возвращает кампании для указанного персонажа.
+     *
+     * Логика:
+     * 1. Кампания, где characterId явно указан в characterIds → показываем.
+     * 2. Legacy-кампания без участников (characterIds пустой) → показываем всем,
+     *    чтобы пользователь мог вручную распределить участников.
+     */
+    const getCampaignsForCharacter = (characterId: string): Campaign[] =>
+        campaigns.filter(c => {
+            const ids = c.characterIds || [];
+            if (ids.includes(characterId)) return true;
+            if (ids.length === 0) return true;
+            return false;
+        });
 
+    // Значение контекста
     const value: CampaignContextType = {
         campaigns,
         addCampaign,
