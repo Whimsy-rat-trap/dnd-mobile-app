@@ -334,6 +334,19 @@
     display: none;
 }
 
+.db-campaigns-empty {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    color: #6b7280;
+    font-size: 13px;
+    font-style: italic;
+    background: #1f2937;
+    border-radius: 10px;
+    height: 100px;
+    flex-shrink: 0;
+}
+
 .db-campaign-card {
     flex: 0 0 140px;
     background: #1f2937;

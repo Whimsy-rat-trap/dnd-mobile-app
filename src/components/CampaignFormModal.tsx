@@ -6,7 +6,7 @@ import { validateCampaign } from '../utils/campaignUtils';
 interface CampaignFormModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: Omit<Campaign, 'id'>) => void;
+    onSubmit: (data: Omit<Campaign, 'id' | 'characterIds'>) => void;
     initialData?: Campaign | null;
     title?: string;
 }

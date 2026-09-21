@@ -37,6 +37,10 @@ export interface Character {
     inventory: InventoryItem[];
     spells: Spell[];
     quests: Quest[];
+    /**
+     * @deprecated Кампании теперь хранятся в Campaign.characterIds.
+     * Оставлено для обратной совместимости, использовать не рекомендеутся
+     */
     campaigns: Campaign[];
     feats: Feat[];
     currency: {
@@ -117,6 +121,7 @@ export interface Campaign {
     players?: number;
     sessions?: number;
     lastPlayed?: string;
+    characterIds: string[];
 }
 
 export interface Feat {

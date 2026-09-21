@@ -13,6 +13,7 @@ import QuickActions from '../components/dashboard/QuickActions';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
+import { useCampaigns } from '../context/CampaignContext';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -189,6 +190,20 @@ const Dashboard: React.FC = () => {
             deleteCharacter(id);
         }
     };
+
+    const { getCampaignsForCharacter } = useCampaigns();
+
+    // Реальные кампании, в которых состоит персонаж
+    const characterCampaigns = React.useMemo(
+        () => (character ? getCampaignsForCharacter(character.id) : []),
+        [character, getCampaignsForCharacter]
+    );
+
+    // Только активные — для отображения в Dashboard
+    const activeCharacterCampaigns = React.useMemo(
+        () => characterCampaigns.filter(c => c.status === 'active'),
+        [characterCampaigns]
+    );
 
     // Экран выбора персонажа
     if (!character) {
@@ -451,21 +466,6 @@ const Dashboard: React.FC = () => {
         return '#fff';
     };
 
-    // Данные кампаний (заглушка)
-    const campaigns = character.campaigns && character.campaigns.length > 0
-        ? character.campaigns.map(c => ({
-            id: c.id,
-            name: c.name,
-            status: c.status,
-            description: c.description,
-        }))
-        : [
-            { id: '1', name: 'Curse of Strahd', status: 'active', description: 'Ravenloft' },
-            { id: '2', name: 'Lost Mine of Phandelver', status: 'active', description: 'Phandalin' },
-            { id: '3', name: 'Dragon Heist', status: 'inactive', description: 'Waterdeep' },
-            { id: '4', name: 'Tomb of Annihilation', status: 'ended', description: 'Chult' },
-        ];
-
     const switchCharacter = () => {
         setCurrentCharacterId(null);
     };
@@ -558,23 +558,35 @@ const Dashboard: React.FC = () => {
                 {/* Campaigns */}
                 <div className="db-campaigns-container">
                     <div className="db-campaigns-header">
-                        <span className="db-campaigns-title">Active campaigns</span>
+                        <span className="db-campaigns-title">Your campaigns</span>
                         <Link to="/campaigns" className="db-view-all-btn">View all</Link>
                     </div>
                     <div className="db-campaigns-scroll">
-                        {campaigns.map(campaign => (
-                            <Link
-                                key={campaign.id}
-                                to="/campaigns"
-                                className={`db-campaign-card ${campaign.status !== 'active' ? 'db-inactive' : ''}`}
-                                style={{ textDecoration: 'none' }}
-                            >
-                                <div className="db-campaign-name">{campaign.name}</div>
-                                <div className="db-campaign-description">{campaign.description}</div>
-                                <div className="db-campaign-status-label">{campaign.status}</div>
-                            </Link>
-                        ))}
-                        <Link to="/campaigns" className="db-campaign-card db-add-campaign" style={{ textDecoration: 'none' }}>
+                        {activeCharacterCampaigns.length === 0 ? (
+                            <div className="db-campaigns-empty">
+                                Not in any active campaign
+                            </div>
+                        ) : (
+                            activeCharacterCampaigns.map(campaign => (
+                                <Link
+                                    key={campaign.id}
+                                    to="/campaigns"
+                                    className="db-campaign-card"
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    <div className="db-campaign-name">{campaign.name}</div>
+                                    <div className="db-campaign-description">
+                                        {campaign.description || campaign.dm || 'No description'}
+                                    </div>
+                                    <div className="db-campaign-status-label">{campaign.status}</div>
+                                </Link>
+                            ))
+                        )}
+                        <Link
+                            to="/campaigns"
+                            className="db-campaign-card db-add-campaign"
+                            style={{ textDecoration: 'none' }}
+                        >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M13 14.0002H16V16.0002H13V19.0002H11V16.0002H8V14.0002H11V11.0002H13V14.0002ZM24 6.00024V23.0002H0V4.00024C0 3.20459 0.31607 2.44153 0.87868 1.87892C1.44129 1.31631 2.20435 1.00024 3 1.00024H8.236L12.236 3.00024H21C21.7956 3.00024 22.5587 3.31631 23.1213 3.87892C23.6839 4.44153 24 5.20459 24 6.00024ZM2 4.00024V7.00024H22V6.00024C22 5.73503 21.8946 5.48067 21.7071 5.29314C21.5196 5.1056 21.2652 5.00024 21 5.00024H11.764L7.764 3.00024H3C2.73478 3.00024 2.48043 3.1056 2.29289 3.29314C2.10536 3.48067 2 3.73503 2 4.00024ZM22 21.0002V9.00024H2V21.0002H22Z" fill="#34D399" />
                             </svg>

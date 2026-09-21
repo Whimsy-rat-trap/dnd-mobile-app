@@ -75,9 +75,12 @@ const CampaignContainer: React.FC = () => {
         setShowFormModal(true);
     };
 
-    const handleFormSubmit = (data: Omit<Campaign, 'id'>) => {
+    const handleFormSubmit = (data: Omit<Campaign, 'id' | 'characterIds'>) => {
         if (editingCampaign) {
-            updateCampaign(editingCampaign.id, data);
+            updateCampaign(editingCampaign.id, {
+                ...data,
+                characterIds: editingCampaign.characterIds || [],
+            });
         } else {
             addCampaign(data);
         }
