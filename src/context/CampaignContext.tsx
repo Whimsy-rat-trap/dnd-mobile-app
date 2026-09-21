@@ -3,98 +3,85 @@ import { Campaign } from '../types/Character';
 
 interface CampaignContextType {
     campaigns: Campaign[];
-    addCampaign: (campaign: Omit<Campaign, 'id' | 'characterIds'>) => void;
+    addCampaign: (campaign: Omit<Campaign, 'id'>) => string;
     updateCampaign: (id: string, data: Partial<Campaign>) => void;
     deleteCampaign: (id: string) => void;
     getCampaign: (id: string) => Campaign | undefined;
-    // Работа с персонажами
     addCharacterToCampaign: (campaignId: string, characterId: string) => void;
     removeCharacterFromCampaign: (campaignId: string, characterId: string) => void;
     getCampaignsForCharacter: (characterId: string) => Campaign[];
 }
 
 const CampaignContext = createContext<CampaignContextType | undefined>(undefined);
+
 const STORAGE_KEY = 'dnd_campaigns';
-const MIGRATION_KEY = 'dnd_campaigns_migration_v1';
+const CHARACTERS_STORAGE_KEY = 'dnd_characters';
 
 export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [campaigns, setCampaigns] = useState<Campaign[]>(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) return [];
+        let parsed: any[] = [];
         try {
-            const parsed = JSON.parse(stored);
-            // Защита: гарантируем наличие characterIds
-            return parsed.map((c: any) => ({
-                ...c,
-                characterIds: Array.isArray(c.characterIds) ? c.characterIds : [],
-            }));
+            parsed = stored ? JSON.parse(stored) : [];
+            if (!Array.isArray(parsed)) parsed = [];
         } catch {
-            return [];
+            parsed = [];
         }
-    });
 
-    // Миграция: перенос character.campaigns → campaign.characterIds
-    useEffect(() => {
-        if (localStorage.getItem(MIGRATION_KEY) === 'done') return;
-
+        // Читаем персонажей чтобы объединить связи character.campaigns → campaign.characterIds
+        let characters: any[] = [];
         try {
-            const charsStored = localStorage.getItem('dnd_characters');
-            if (!charsStored) {
-                localStorage.setItem(MIGRATION_KEY, 'done');
-                return;
-            }
+            const charsRaw = localStorage.getItem(CHARACTERS_STORAGE_KEY);
+            characters = charsRaw ? JSON.parse(charsRaw) : [];
+            if (!Array.isArray(characters)) characters = [];
+        } catch {
+            characters = [];
+        }
 
-            const characters = JSON.parse(charsStored);
-
-            // Собираем map: campaignId → Set<characterId>
-            const campaignToCharacters: Record<string, Set<string>> = {};
-            for (const char of characters) {
-                if (Array.isArray(char.campaigns)) {
-                    for (const camp of char.campaigns) {
-                        if (camp?.id) {
-                            if (!campaignToCharacters[camp.id]) {
-                                campaignToCharacters[camp.id] = new Set();
-                            }
-                            campaignToCharacters[camp.id].add(char.id);
-                        }
+        // Собираем map: campaignId → Set<characterId> из устаревших character.campaigns
+        const legacyMap: Record<string, Set<string>> = {};
+        for (const char of characters) {
+            if (!char || !char.id) continue;
+            if (Array.isArray(char.campaigns)) {
+                for (const camp of char.campaigns) {
+                    if (camp?.id) {
+                        if (!legacyMap[camp.id]) legacyMap[camp.id] = new Set();
+                        legacyMap[camp.id].add(char.id);
                     }
                 }
             }
-
-            // Обновляем кампании, добавляя найденных персонажей
-            setCampaigns(prev =>
-                prev.map(camp => {
-                    const existing = new Set(camp.characterIds || []);
-                    const fromMigration = campaignToCharacters[camp.id];
-                    if (fromMigration) {
-                        fromMigration.forEach(cid => existing.add(cid));
-                    }
-                    return { ...camp, characterIds: Array.from(existing) };
-                })
-            );
-
-            localStorage.setItem(MIGRATION_KEY, 'done');
-        } catch (e) {
-            console.error('Campaign migration failed', e);
         }
-    }, []);
 
-    // Сохранение в localStorage
+        // Объединяем то, что уже есть в characterIds, с тем, что нашли в character.campaigns
+        return parsed.map((c: any) => {
+            const existing = new Set<string>(Array.isArray(c.characterIds) ? c.characterIds : []);
+            const fromLegacy = legacyMap[c.id];
+            if (fromLegacy) {
+                fromLegacy.forEach(id => existing.add(id));
+            }
+            return {
+                ...c,
+                characterIds: Array.from(existing),
+            };
+        });
+    });
+
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
     }, [campaigns]);
 
-    // CRUD
-    const addCampaign = (campaign: Omit<Campaign, 'id' | 'characterIds'>) => {
+    const addCampaign = (campaign: Omit<Campaign, 'id'>): string => {
+        const newId = Date.now().toString();
         const newCampaign: Campaign = {
             ...campaign,
-            id: Date.now().toString(),
-            characterIds: [],
+            id: newId,
+            characterIds: campaign.characterIds ?? [],
             dm: campaign.dm || 'Dungeon Master',
-            players: campaign.players || 4,
-            sessions: campaign.sessions || 0,
+            players: campaign.players ?? 4,
+            sessions: campaign.sessions ?? 0,
         };
         setCampaigns(prev => [...prev, newCampaign]);
+        return newId;
     };
 
     const updateCampaign = (id: string, data: Partial<Campaign>) => {
@@ -132,19 +119,19 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
     const getCampaignsForCharacter = (characterId: string) =>
         campaigns.filter(c => (c.characterIds || []).includes(characterId));
 
+    const value: CampaignContextType = {
+        campaigns,
+        addCampaign,
+        updateCampaign,
+        deleteCampaign,
+        getCampaign,
+        addCharacterToCampaign,
+        removeCharacterFromCampaign,
+        getCampaignsForCharacter,
+    };
+
     return (
-        <CampaignContext.Provider
-            value={{
-                campaigns,
-                addCampaign,
-                updateCampaign,
-                deleteCampaign,
-                getCampaign,
-                addCharacterToCampaign,
-                removeCharacterFromCampaign,
-                getCampaignsForCharacter,
-            }}
-        >
+        <CampaignContext.Provider value={value}>
             {children}
         </CampaignContext.Provider>
     );

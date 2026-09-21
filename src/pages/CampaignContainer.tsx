@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect  } from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCampaigns } from '../context/CampaignContext';
+import { useCharacters } from '../context/CharacterContext';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import CampaignCard from '../components/CampaignCard';
@@ -24,6 +25,7 @@ const CampaignContainer: React.FC = () => {
         deleteCampaign,
         getCampaign,
     } = useCampaigns();
+    const { currentCharacterId } = useCharacters();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -52,7 +54,6 @@ const CampaignContainer: React.FC = () => {
     );
 
     // Обработчики
-
     const handleToggleStatus = (id: string) => {
         const camp = getCampaign(id);
         if (!camp) return;
@@ -77,12 +78,17 @@ const CampaignContainer: React.FC = () => {
 
     const handleFormSubmit = (data: Omit<Campaign, 'id' | 'characterIds'>) => {
         if (editingCampaign) {
+            // Сохраняем существующих участников
             updateCampaign(editingCampaign.id, {
                 ...data,
                 characterIds: editingCampaign.characterIds || [],
             });
         } else {
-            addCampaign(data);
+            // При создании — автоматически добавляем текущего персонажа (если есть)
+            addCampaign({
+                ...data,
+                characterIds: currentCharacterId ? [currentCharacterId] : [],
+            });
         }
         setEditingCampaign(null);
     };
