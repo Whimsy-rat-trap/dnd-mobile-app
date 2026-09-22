@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import {
     rollD20,
     rollDice,
     getPrimaryDiceSides,
+    parseDiceFormula,
     D20RollResult,
     DiceRollResult,
     RollMode,
@@ -51,6 +52,9 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
     const [spinningAttack, setSpinningAttack] = useState(false);
     const [spinningDamage, setSpinningDamage] = useState(false);
 
+    // Явный флаг: был ли крит при последнем броске атаки
+    const [critPending, setCritPending] = useState(false);
+
     const damageSides = getPrimaryDiceSides(damageDice);
 
     const handleOpen = () => setIsOpen(true);
@@ -58,17 +62,34 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         setIsOpen(false);
         setAttackResult(null);
         setDamageResult(null);
+        setCritPending(false);
     };
+
+    // При изменении режима броска — сбрасываем крит, т.к. атаку нужно перекидывать
+    useEffect(() => {
+        setCritPending(false);
+        setAttackResult(null);
+        setDamageResult(null);
+    }, [rollMode]);
+
+    // При изменении бонусов — тоже сбрасываем крит
+    useEffect(() => {
+        setCritPending(false);
+        setAttackResult(null);
+    }, [attackBonusMode, customAttackBonus, defaultAttackBonus]);
 
     const handleRollAttack = () => {
         if (spinningAttack) return;
         setSpinningAttack(true);
         setAttackResult(null);
+        setDamageResult(null);
+
         setTimeout(() => {
             const attackBonus =
                 attackBonusMode === 'custom' ? customAttackBonus : defaultAttackBonus;
             const result = rollD20(rollMode, attackBonus);
             setAttackResult(result);
+            setCritPending(result.isCrit);
             setSpinningAttack(false);
             if (onRollAttack) onRollAttack(result);
         }, 700);
@@ -78,23 +99,29 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         if (spinningDamage || !damageDice) return;
         setSpinningDamage(true);
         setDamageResult(null);
+
         setTimeout(() => {
             const damageBonus =
                 damageBonusMode === 'custom' ? customDamageBonus : defaultDamageBonus;
-            const parsed = damageDice.replace(/\s+/g, '');
-            const hasModifier = /[+-]\d+$/.test(parsed);
-            let formula = parsed;
-            if (damageBonus !== 0) {
-                if (hasModifier) {
-                    formula = parsed.replace(/([+-]\d+)$/, (m) => {
-                        const sign = m[0];
-                        const val = parseInt(m.slice(1), 10);
-                        return `${sign}${val + damageBonus}`;
-                    });
-                } else {
-                    formula = `${parsed}${damageBonus > 0 ? '+' : ''}${damageBonus}`;
-                }
+
+            // Парсим формулу: count d sides [+/- modifier]
+            const parsed = parseDiceFormula(damageDice);
+            if (!parsed) {
+                setSpinningDamage(false);
+                return;
             }
+
+            // При крите удваиваем количество костей (правило D&D 5e)
+            const diceCount = critPending ? parsed.count * 2 : parsed.count;
+            const totalModifier = parsed.modifier + damageBonus;
+
+            // Собираем итоговую формулу для бросателя
+            const formula = `${diceCount}d${parsed.sides}${
+                totalModifier !== 0
+                    ? (totalModifier > 0 ? '+' : '') + totalModifier
+                    : ''
+            }`;
+
             const result = rollDice(formula);
             if (result) {
                 setDamageResult(result);
@@ -111,6 +138,12 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
     );
 
     const isMultiD20 = attackResult && attackResult.rolls.length > 1;
+
+    // Считаем ожидаемое количество костей урона с учётом крита
+    const parsedDamage = damageDice ? parseDiceFormula(damageDice) : null;
+    const expectedDiceCount = parsedDamage
+        ? (critPending ? parsedDamage.count * 2 : parsedDamage.count)
+        : 1;
 
     return (
         <>
@@ -200,7 +233,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                 </button>
                             </div>
 
-                            {/* Кнопка Roll Attack — под кубиками */}
+                            {/* Кнопка Roll Attack */}
                             <button
                                 className="attack-roll-btn"
                                 onClick={handleRollAttack}
@@ -253,16 +286,29 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                             )}
                         </div>
 
-                        {/* Damage roll */}
+                        {/* ===== DAMAGE ROLL ===== */}
                         {!hideDamage && damageDice && (
-                            <div className="attack-block">
+                            <div className={`attack-block ${critPending ? 'attack-block-crit' : ''}`}>
                                 <div className="attack-block-header">
                                     Damage Roll {damageType ? `(${damageType})` : ''}
+                                    {critPending && <span className="attack-crit-badge">CRIT!</span>}
                                 </div>
 
                                 <div className="attack-section">
-                                    <span className="attack-label">Formula</span>
-                                    <span className="attack-formula">{damageDice}</span>
+                                    <span className="attack-label">
+                                        Formula
+                                        {critPending && <span className="attack-crit-hint"> (dice doubled)</span>}
+                                    </span>
+                                    <span className="attack-formula">
+                                        {parsedDamage
+                                            ? `${expectedDiceCount}d${parsedDamage.sides}${
+                                                parsedDamage.modifier + defaultDamageBonus !== 0
+                                                    ? (parsedDamage.modifier + defaultDamageBonus > 0 ? '+' : '') +
+                                                    (parsedDamage.modifier + defaultDamageBonus)
+                                                    : ''
+                                            }`
+                                            : damageDice}
+                                    </span>
                                 </div>
 
                                 <div className="attack-section">
@@ -320,7 +366,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                     disabled={spinningDamage}
                                     type="button"
                                 >
-                                    Roll Damage
+                                    {critPending ? 'Roll Crit Damage' : 'Roll Damage'}
                                 </button>
 
                                 {damageResult && (
@@ -335,8 +381,15 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                 </span>
                                             )}
                                             <span className="attack-equals">=</span>
-                                            <span className="attack-total damage">{damageResult.total}</span>
+                                            <span className={`attack-total damage ${critPending ? 'crit' : ''}`}>
+                                                {damageResult.total}
+                                            </span>
                                         </div>
+                                        {critPending && (
+                                            <div className="attack-result-hint crit-hint">
+                                                Critical damage!
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

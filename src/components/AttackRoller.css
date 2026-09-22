@@ -307,3 +307,48 @@
 .attack-roll-btn.damage-btn:hover:not(:disabled) {
     background: #dc2626;
 }
+
+/* Подсветка блока урона при крите */
+.attack-block-crit {
+    border-color: #fbbf24 !important;
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+}
+
+/* Бейдж CRIT! рядом с заголовком */
+.attack-crit-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: #fbbf24;
+    color: #0f0f0f;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    animation: crit-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes crit-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Подсказка "dice doubled" рядом с формулой */
+.attack-crit-hint {
+    color: #fbbf24;
+    font-size: 10px;
+    font-style: italic;
+    margin-left: 4px;
+}
+
+/* Итоговое значение урона при крите — золотое */
+.attack-total.damage.crit {
+    color: #fbbf24;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+/* Подсказка под результатом крита */
+.attack-result-hint.crit-hint {
+    color: #fbbf24;
+    font-weight: 600;
+}
