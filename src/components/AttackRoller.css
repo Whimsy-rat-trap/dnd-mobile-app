@@ -228,3 +228,82 @@
     color: #9ca3af;
     font-style: italic;
 }
+
+/* Контейнер для кубиков */
+.attack-dice-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 6px 0;
+}
+
+/* Кнопка-кубик, если значений больше одного — расширяем */
+.dice-btn.dice-btn-wide {
+    width: auto;
+    min-width: 58px;
+    padding: 0 14px;
+}
+
+/* Контейнер для значений внутри кубика */
+.dice-btn-values {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Отдельное значение внутри кубика */
+.dice-btn-value {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Подсветка выбранного значения (advantage / disadvantage) */
+.dice-btn-value.chosen {
+    color: #34d399;
+    text-shadow: 0 0 8px rgba(52, 211, 153, 0.7);
+}
+
+/* Крит / крит-провал при одиночном d20 */
+.dice-btn-value.crit {
+    color: #fbbf24;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+}
+
+.dice-btn-value.crit-fail {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+}
+
+/* Кнопки Roll */
+.attack-roll-btn {
+    width: 100%;
+    background: #34d399;
+    color: #0f0f0f;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 4px;
+}
+
+.attack-roll-btn:hover:not(:disabled) {
+    background: #059669;
+}
+
+.attack-roll-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.attack-roll-btn.damage-btn {
+    background: #ef4444;
+    color: #fff;
+}
+
+.attack-roll-btn.damage-btn:hover:not(:disabled) {
+    background: #dc2626;
+}

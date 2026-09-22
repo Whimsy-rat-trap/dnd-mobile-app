@@ -110,6 +110,8 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         </button>
     );
 
+    const isMultiD20 = attackResult && attackResult.rolls.length > 1;
+
     return (
         <>
             <span className={className} onClick={handleOpen}>
@@ -170,24 +172,43 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                 )}
                             </div>
 
-                            <div className="attack-roll-row">
+                            <div className="attack-dice-wrapper">
                                 <button
-                                    className={`dice-btn dice-20 ${spinningAttack ? 'spinning' : ''}`}
+                                    className={`dice-btn dice-20 ${spinningAttack ? 'spinning' : ''} ${isMultiD20 ? 'dice-btn-wide' : ''}`}
                                     onClick={handleRollAttack}
                                     disabled={spinningAttack}
                                     type="button"
+                                    title="Click to roll"
                                 >
-                                    <span>{attackResult ? attackResult.chosen : '20'}</span>
-                                </button>
-                                <button
-                                    className="attack-roll-btn"
-                                    onClick={handleRollAttack}
-                                    disabled={spinningAttack}
-                                    type="button"
-                                >
-                                    Roll Attack
+                                    <span className="dice-btn-values">
+                                        {attackResult
+                                            ? attackResult.rolls.map((r, i) => (
+                                                <span
+                                                    key={i}
+                                                    className={
+                                                        'dice-btn-value' +
+                                                        (isMultiD20 && r === attackResult.chosen ? ' chosen' : '') +
+                                                        (!isMultiD20 && attackResult.isCrit ? ' crit' : '') +
+                                                        (!isMultiD20 && attackResult.isCritFail ? ' crit-fail' : '')
+                                                    }
+                                                >
+                                                    {r}
+                                                </span>
+                                            ))
+                                            : '20'}
+                                    </span>
                                 </button>
                             </div>
+
+                            {/* Кнопка Roll Attack — под кубиками */}
+                            <button
+                                className="attack-roll-btn"
+                                onClick={handleRollAttack}
+                                disabled={spinningAttack}
+                                type="button"
+                            >
+                                Roll Attack
+                            </button>
 
                             {attackResult && (
                                 <div className="attack-result-block">
@@ -195,11 +216,10 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                         {attackResult.rolls.map((r, i) => (
                                             <span
                                                 key={i}
-                                                className={`attack-die ${
-                                                    attackResult.rolls.length > 1 && r === attackResult.chosen
-                                                        ? 'chosen'
-                                                        : ''
-                                                }`}
+                                                className={
+                                                    'attack-die' +
+                                                    (isMultiD20 && r === attackResult.chosen ? ' chosen' : '')
+                                                }
                                             >
                                                 {r}
                                             </span>
@@ -210,7 +230,13 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                             </span>
                                         )}
                                         <span className="attack-equals">=</span>
-                                        <span className={`attack-total ${attackResult.isCrit ? 'crit' : ''} ${attackResult.isCritFail ? 'crit-fail' : ''}`}>
+                                        <span
+                                            className={
+                                                'attack-total' +
+                                                (attackResult.isCrit ? ' crit' : '') +
+                                                (attackResult.isCritFail ? ' crit-fail' : '')
+                                            }
+                                        >
                                             {attackResult.total}
                                         </span>
                                     </div>
@@ -268,24 +294,34 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                     )}
                                 </div>
 
-                                <div className="attack-roll-row">
+                                {/* Кубики урона */}
+                                <div className="attack-dice-wrapper">
                                     <button
-                                        className={`dice-btn dice-${damageSides} ${spinningDamage ? 'spinning' : ''}`}
+                                        className={`dice-btn dice-${damageSides} ${spinningDamage ? 'spinning' : ''} ${damageResult && damageResult.rolls.length > 1 ? 'dice-btn-wide' : ''}`}
                                         onClick={handleRollDamage}
                                         disabled={spinningDamage}
                                         type="button"
+                                        title="Click to roll"
                                     >
-                                        <span>{damageResult ? damageResult.total : `D${damageSides}`}</span>
-                                    </button>
-                                    <button
-                                        className="attack-roll-btn damage-btn"
-                                        onClick={handleRollDamage}
-                                        disabled={spinningDamage}
-                                        type="button"
-                                    >
-                                        Roll Damage
+                                        <span className="dice-btn-values">
+                                            {damageResult
+                                                ? damageResult.rolls.map((r, i) => (
+                                                    <span key={i} className="dice-btn-value">{r}</span>
+                                                ))
+                                                : `D${damageSides}`}
+                                        </span>
                                     </button>
                                 </div>
+
+                                {/* Кнопка Roll Damage */}
+                                <button
+                                    className="attack-roll-btn damage-btn"
+                                    onClick={handleRollDamage}
+                                    disabled={spinningDamage}
+                                    type="button"
+                                >
+                                    Roll Damage
+                                </button>
 
                                 {damageResult && (
                                     <div className="attack-result-block">
