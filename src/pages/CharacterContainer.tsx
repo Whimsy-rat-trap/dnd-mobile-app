@@ -110,15 +110,20 @@ const CharacterContainer: React.FC = () => {
     const getACInfo = (char: typeof character): { total: number; breakdown: string[] } => {
         const dexMod = getModifier('dex');
         const equippedArmor = char.inventory.find(item => item.type === 'armor' && item.equipped);
-        const equippedShield = char.inventory.find(item =>
-            item.equipped && item.name.toLowerCase().includes('shield')
+        const equippedShield = char.inventory.find(item => item.type === 'shield' && item.equipped);
+        const acBonusItems = char.inventory.filter(
+            item =>
+                item.equipped &&
+                item.acBonus &&
+                item.type !== 'armor' &&
+                item.type !== 'shield'
         );
         const raceNaturalArmor = NATURAL_ARMOR[char.race];
 
         let total = 0;
         const breakdown: string[] = [];
 
-        // 1. Определяем базовый AC
+        // 1. Natural armor (race)
         if (raceNaturalArmor) {
             let ac = raceNaturalArmor.base;
             if (raceNaturalArmor.dex) {
@@ -130,38 +135,46 @@ const CharacterContainer: React.FC = () => {
                 breakdown.push(`Natural Armor: ${ac}`);
             }
             total = ac;
-        } else if (equippedArmor) {
-            // Если есть броня, используем character.ac (если задан) или вычисляем 10 + Dex
-            if (char.ac !== undefined && char.ac !== null) {
-                total = char.ac;
-                breakdown.push(`Armor (AC ${total})`);
-            } else {
-                const ac = 10 + dexMod;
-                total = ac;
-                breakdown.push(`Armor (estimated): 10 + Dex = ${ac}`);
+        }
+        // 2. Equipped armor
+        else if (equippedArmor) {
+            const baseAC = equippedArmor.baseAC ?? 10;
+            let ac = baseAC;
+            breakdown.push(`Armor (${equippedArmor.name}): ${baseAC}`);
+
+            if (equippedArmor.dexModifierAllowed) {
+                const maxDex = equippedArmor.maxDexBonus ?? Infinity;
+                const dexBonus = Math.min(dexMod, maxDex);
+                ac += dexBonus;
+                breakdown.push(
+                    `Dex bonus: ${dexBonus >= 0 ? '+' : ''}${dexBonus}` +
+                    (maxDex !== Infinity ? ` (max ${maxDex})` : '')
+                );
             }
-        } else {
-            // Нет ни natural armor, ни брони
-            const ac = 10 + dexMod;
+
             total = ac;
-            breakdown.push(`Base: 10 + Dex = ${ac}`);
+        }
+        // 3. No armor
+        else {
+            total = 10 + dexMod;
+            breakdown.push(`Base: 10 + Dex (${dexMod >= 0 ? '+' : ''}${dexMod}) = ${total}`);
         }
 
-        // 2. Щит (+2 к AC)
+        // 4. Shield
         if (equippedShield) {
-            total += 2;
-            breakdown.push(`Shield: +2`);
+            const shieldBonus = equippedShield.acBonus ?? 2;
+            total += shieldBonus;
+            breakdown.push(`Shield (${equippedShield.name}): +${shieldBonus}`);
         }
 
-        // 3. Если character.ac задан вручную и отличается от вычисленного, используем его
-        if (char.ac !== undefined && char.ac !== null && char.ac !== total) {
-            total = char.ac;
-            breakdown.push(`Manual override: ${total}`);
+        // 5. Магические предметы, дающие бонус к AC (кольца, плащи и т.д.)
+        for (const item of acBonusItems) {
+            total += item.acBonus ?? 0;
+            breakdown.push(`${item.name}: +${item.acBonus}`);
         }
 
         return { total, breakdown };
     };
-    // Конец функции AC
 
     // Skill/tool/save bonuses
     const getSkillBonus = (skill: typeof character.skills[0]) => {
