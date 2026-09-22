@@ -502,3 +502,87 @@
     border-color: #ef4444;
     color: #ef4444;
 }
+
+/* Debuffs */
+.attack-debuffs-section {
+    border-top: 1px dashed #1f2937;
+    padding-top: 10px;
+    margin-top: 6px;
+}
+
+.attack-debuff-select {
+    flex: 1;
+    padding: 6px 10px;
+    background: #0f0f0f;
+    border: 1px solid #7f1d1d;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+.attack-debuff-select:focus {
+    border-color: #ef4444;
+}
+
+.attack-debuff-add-btn {
+    padding: 6px 14px;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.attack-debuff-add-btn:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.attack-debuff-add-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.attack-debuff-item {
+    border-color: #7f1d1d !important;
+    background: rgba(127, 29, 29, 0.15) !important;
+}
+
+.attack-debuff-formula {
+    color: #f87171;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-transform: lowercase;
+}
+
+/* Пометка Effective mode */
+.attack-effective-mode {
+    font-size: 11px;
+    color: #fbbf24;
+    font-style: italic;
+    margin-top: 4px;
+    padding: 4px 8px;
+    background: rgba(251, 191, 36, 0.1);
+    border-left: 3px solid #fbbf24;
+    border-radius: 4px;
+}
+
+.attack-effective-mode strong {
+    color: #fcd34d;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+}
+
+/* Значения штрафов в результате */
+.attack-penalty {
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 600;
+}

@@ -194,3 +194,21 @@ export function rollMultiDice(
 export function combineFormulaParts(parts: string[]): string {
     return parts.filter(Boolean).join('+').replace(/\+\+/g, '+').replace(/\+-/g, '-');
 }
+
+/**
+ * Применяет правило D&D 5e: любое преимущество и любая помеха взаимно уничтожаются до одной.
+ * Источники adv/dis считаются как булевы флаги (есть/нет).
+ */
+export function resolveRollMode(
+    baseMode: RollMode,
+    hasAdvantageSource: boolean,
+    hasDisadvantageSource: boolean
+): RollMode {
+    const advantage = baseMode === 'advantage' || hasAdvantageSource;
+    const disadvantage = baseMode === 'disadvantage' || hasDisadvantageSource;
+
+    if (advantage && disadvantage) return 'normal';
+    if (advantage) return 'advantage';
+    if (disadvantage) return 'disadvantage';
+    return 'normal';
+}
