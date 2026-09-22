@@ -352,3 +352,153 @@
     color: #fbbf24;
     font-weight: 600;
 }
+
+/* ===== Buffs ===== */
+.attack-buffs-section {
+    border-top: 1px dashed #1f2937;
+    padding-top: 10px;
+    margin-top: 6px;
+}
+
+.attack-buff-add-row {
+    display: flex;
+    gap: 6px;
+}
+
+.attack-buff-select {
+    flex: 1;
+    padding: 6px 10px;
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+.attack-buff-select:focus {
+    border-color: #34d399;
+}
+
+.attack-buff-add-btn {
+    padding: 6px 14px;
+    background: #34d399;
+    color: #0f0f0f;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.attack-buff-add-btn:hover:not(:disabled) {
+    background: #059669;
+}
+
+.attack-buff-add-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.attack-buff-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.attack-buff-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: #0f0f0f;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+}
+
+.attack-buff-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.attack-buff-name {
+    font-size: 13px;
+    color: #e5e7eb;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.attack-buff-rank {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.attack-buff-rank-label {
+    font-size: 10px;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.attack-buff-rank-input {
+    width: 50px;
+    padding: 2px 6px;
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+    outline: none;
+    text-align: center;
+}
+
+.attack-buff-rank-input:focus {
+    border-color: #34d399;
+}
+
+.attack-buff-formula {
+    color: #fbbf24;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.attack-buff-remove {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color 0.2s;
+}
+
+.attack-buff-remove:hover {
+    color: #ef4444;
+}
+
+.attack-buff-clear {
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    color: #9ca3af;
+    font-size: 11px;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.attack-buff-clear:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}

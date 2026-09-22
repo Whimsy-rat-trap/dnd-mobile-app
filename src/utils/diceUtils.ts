@@ -110,3 +110,87 @@ export function getPrimaryDiceSides(formula?: string): number {
     const parsed = parseDiceFormula(formula);
     return parsed ? parsed.sides : 6;
 }
+
+/**
+ * Парсит составную формулу вида "1d8+3+2d6+10" или "2d6-1".
+ * Возвращает список групп костей и общий модификатор.
+ */
+export function parseMultiDiceFormula(
+    formula: string
+): { dice: { count: number; sides: number }[]; modifier: number } | null {
+    const cleaned = formula.replace(/\s+/g, '').toLowerCase();
+    if (!cleaned) return null;
+
+    const tokens = cleaned.match(/[+-]?[^+-]+/g);
+    if (!tokens) return null;
+
+    const dice: { count: number; sides: number }[] = [];
+    let modifier = 0;
+
+    for (const token of tokens) {
+        const sign = token[0] === '-' ? -1 : 1;
+        const body = token.replace(/^[+-]/, '');
+
+        if (body.includes('d')) {
+            const match = body.match(/^(\d+)d(\d+)$/);
+            if (!match) return null;
+            const count = parseInt(match[1], 10);
+            const sides = parseInt(match[2], 10);
+            if (count > 0 && sides > 0) {
+                dice.push({ count, sides });
+            }
+        } else {
+            const val = parseInt(body, 10);
+            if (isNaN(val)) return null;
+            modifier += val * sign;
+        }
+    }
+
+    return { dice, modifier };
+}
+
+/**
+ * Бросает составную формулу (несколько групп костей + модификатор).
+ * @param dice — список групп костей
+ * @param modifier — общий модификатор
+ * @param critDouble — если true, все кости удваиваются (правило крита D&D 5e)
+ */
+export function rollMultiDice(
+    dice: { count: number; sides: number }[],
+    modifier: number,
+    critDouble: boolean = false
+): DiceRollResult {
+    const allRolls: number[] = [];
+
+    for (const group of dice) {
+        const count = critDouble ? group.count * 2 : group.count;
+        for (let i = 0; i < count; i++) {
+            allRolls.push(Math.floor(Math.random() * group.sides) + 1);
+        }
+    }
+
+    const total = allRolls.reduce((a, b) => a + b, 0) + modifier;
+
+    const formulaParts: string[] = dice.map(g => {
+        const count = critDouble ? g.count * 2 : g.count;
+        return `${count}d${g.sides}`;
+    });
+    if (modifier !== 0) {
+        formulaParts.push(`${modifier > 0 ? '+' : ''}${modifier}`);
+    }
+
+    return {
+        rolls: allRolls,
+        modifier,
+        total,
+        formula: formulaParts.join('') || '0',
+    };
+}
+
+/**
+ * Собирает формулу из списка частей для отображения.
+ * Пример: combineFormulaParts(['1d8+3', '1d6', '2d8']) → '1d8+3+1d6+2d8'
+ */
+export function combineFormulaParts(parts: string[]): string {
+    return parts.filter(Boolean).join('+').replace(/\+\+/g, '+').replace(/\+-/g, '-');
+}
