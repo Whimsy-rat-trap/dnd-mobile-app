@@ -128,8 +128,12 @@ export interface Feat {
     id: string;
     name: string;
     description: string;
-    source: 'background' | 'class' | 'race' | 'subrace' | 'custom' | 'other';
+    source: 'background' | 'class' | 'race' | 'subrace' | 'custom' | 'level' | 'quest' | 'other';
     prerequisite?: string;
     damageDice?: string;
     damageType?: string;
+    /** Уровень, на котором получен фит (для source: 'level'). */
+    gainedAtLevel?: number;
+    /** Доп. инфа: название квеста, кто дал и т.д. */
+    sourceDetail?: string;
 }

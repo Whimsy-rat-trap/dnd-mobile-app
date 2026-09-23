@@ -9,6 +9,7 @@ import AttackRoller from '../components/AttackRoller';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import { getActivePassiveEffects } from '../utils/racialFeatures';
 import Modal from '../components/Modal';
+import AddFeatModal from '../components/AddFeatModal';
 import './CharacterContainer.css';
 
 // Карта рас с natural armor
@@ -52,10 +53,6 @@ const CharacterContainer: React.FC = () => {
 
     // Состояния для добавления кастомной черты
     const [showAddFeatModal, setShowAddFeatModal] = useState(false);
-    const [newFeatName, setNewFeatName] = useState('');
-    const [newFeatDescription, setNewFeatDescription] = useState('');
-    const [newFeatDamageDice, setNewFeatDamageDice] = useState('');
-    const [newFeatDamageType, setNewFeatDamageType] = useState('');
 
     if (!character) {
         return <div className="cc-page">Character not found</div>;
@@ -396,24 +393,6 @@ const CharacterContainer: React.FC = () => {
     // Расчёт AC для отображения
     const acInfo = getACInfo(character);
 
-    // Feats
-    const handleAddFeat = () => {
-        if (newFeatName.trim() && newFeatDescription.trim()) {
-            addFeat(character.id, {
-                name: newFeatName.trim(),
-                description: newFeatDescription.trim(),
-                source: 'custom',
-                damageDice: newFeatDamageDice.trim() || undefined,
-                damageType: newFeatDamageType.trim() || undefined,
-            });
-            setNewFeatName('');
-            setNewFeatDescription('');
-            setNewFeatDamageDice('');
-            setNewFeatDamageType('');
-            setShowAddFeatModal(false);
-        }
-    };
-
     const handleRemoveFeat = (featId: string) => {
         if (window.confirm('Remove this feat?')) {
             removeFeat(character.id, featId);
@@ -649,31 +628,79 @@ const CharacterContainer: React.FC = () => {
                 {/* Feats */}
                 <div className="cc-feats-section">
                     <div className="cc-feats-header">
-                        <span className="cc-feats-title">Feats</span>
-                        <button className="cc-add-feat-btn" onClick={() => setShowAddFeatModal(true)}>+ Add</button>
+        <span className="cc-feats-title">
+            Feats
+            {(() => {
+                const ASI_LEVELS = [4, 8, 12, 16, 19];
+                const available = ASI_LEVELS.filter(l => l <= character.level);
+                const used = character.feats.filter(
+                    f => f.source === 'level' && f.gainedAtLevel
+                ).length;
+                if (available.length === 0) return null;
+                return (
+                    <span className="cc-feats-slots">
+                        {used} / {available.length} ASI used
+                    </span>
+                );
+            })()}
+        </span>
+                        <button
+                            className="cc-add-feat-btn"
+                            onClick={() => setShowAddFeatModal(true)}
+                        >
+                            + Add
+                        </button>
                     </div>
+
                     <div className="cc-feats-list">
                         {character.feats.length === 0 ? (
                             <div className="cc-feats-empty">No feats</div>
                         ) : (
-                            character.feats.map((feat) => (
-                                <div key={feat.id} className="cc-feat-item">
-                                    <div className="cc-feat-info">
-                                        <span className="cc-feat-name">{feat.name}</span>
-                                        <span className="cc-feat-source">[{feat.source}]</span>
-                                    </div>
-                                    <div className="cc-feat-description">{feat.description}</div>
-                                    {feat.damageDice && (
-                                        <div className="cc-feat-damage">
-                                            Damage: <strong>{feat.damageDice}</strong>
-                                            {feat.damageType ? ` ${feat.damageType}` : ''}
+                            character.feats.map((feat) => {
+                                // Форматируем лейбл источника
+                                let sourceLabel: string;
+                                if (feat.source === 'level' && feat.gainedAtLevel) {
+                                    sourceLabel = `Lv.${feat.gainedAtLevel}`;
+                                } else if (feat.source === 'quest' && feat.sourceDetail) {
+                                    sourceLabel = `Quest: ${feat.sourceDetail}`;
+                                } else {
+                                    sourceLabel = feat.source;
+                                }
+
+                                const isAutoSource = ['background', 'class', 'race', 'subrace'].includes(feat.source);
+
+                                return (
+                                    <div key={feat.id} className={`cc-feat-item cc-feat-source-${feat.source}`}>
+                                        <div className="cc-feat-info">
+                                            <span className="cc-feat-name">{feat.name}</span>
+                                            <span className={`cc-feat-source cc-feat-source-tag-${feat.source}`}>
+                                [{sourceLabel}]
+                            </span>
                                         </div>
-                                    )}
-                                    {feat.source === 'custom' && (
-                                        <button className="cc-feat-remove" onClick={() => handleRemoveFeat(feat.id)}>✕</button>
-                                    )}
-                                </div>
-                            ))
+                                        <div className="cc-feat-description">{feat.description}</div>
+                                        {feat.prerequisite && (
+                                            <div className="cc-feat-prereq">
+                                                Requires: {feat.prerequisite}
+                                            </div>
+                                        )}
+                                        {feat.damageDice && (
+                                            <div className="cc-feat-damage">
+                                                Damage: <strong>{feat.damageDice}</strong>
+                                                {feat.damageType ? ` ${feat.damageType}` : ''}
+                                            </div>
+                                        )}
+                                        {!isAutoSource && (
+                                            <button
+                                                className="cc-feat-remove"
+                                                onClick={() => handleRemoveFeat(feat.id)}
+                                                title="Remove feat"
+                                            >
+                                                ✕
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })
                         )}
                     </div>
                 </div>
@@ -820,31 +847,15 @@ const CharacterContainer: React.FC = () => {
             </Modal>
 
             {/* Add Feat Modal */}
-            <Modal isOpen={showAddFeatModal} onClose={() => setShowAddFeatModal(false)}>
-                <h3>Add Custom Feat</h3>
-                <div className="cc-add-feat-form">
-                    <div className="cc-form-group">
-                        <label>Feat Name</label>
-                        <input type="text" value={newFeatName} onChange={(e) => setNewFeatName(e.target.value)} placeholder="e.g., Dragon Slayer" />
-                    </div>
-                    <div className="cc-form-group">
-                        <label>Description</label>
-                        <textarea value={newFeatDescription} onChange={(e) => setNewFeatDescription(e.target.value)} placeholder="Describe the feat..." rows={3} />
-                    </div>
-                    <div className="cc-form-group">
-                        <label>Damage Dice (optional)</label>
-                        <input type="text" value={newFeatDamageDice} onChange={(e) => setNewFeatDamageDice(e.target.value)} placeholder="e.g., 2d6" />
-                    </div>
-                    <div className="cc-form-group">
-                        <label>Damage Type (optional)</label>
-                        <input type="text" value={newFeatDamageType} onChange={(e) => setNewFeatDamageType(e.target.value)} placeholder="e.g., fire, slashing" />
-                    </div>
-                    <div className="cc-modal-actions">
-                        <button className="cc-modal-btn cancel" onClick={() => setShowAddFeatModal(false)}>Cancel</button>
-                        <button className="cc-modal-btn apply" onClick={handleAddFeat}>Add</button>
-                    </div>
-                </div>
-            </Modal>
+            <AddFeatModal
+                isOpen={showAddFeatModal}
+                onClose={() => setShowAddFeatModal(false)}
+                onAdd={(featData) => {
+                    addFeat(character.id, featData);
+                }}
+                characterLevel={character.level}
+                existingLevelFeats={character.feats.filter(f => f.source === 'level')}
+            />
         </div>
     );
 };
