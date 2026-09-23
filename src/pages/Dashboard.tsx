@@ -555,7 +555,12 @@ const Dashboard: React.FC = () => {
                 <div className="db-campaigns-container">
                     <div className="db-campaigns-header">
                         <span className="db-campaigns-title">Your campaigns</span>
-                        <Link to="/campaigns" className="db-view-all-btn">View all</Link>
+                        <Link
+                            to={`/campaigns?characterId=${character.id}`}
+                            className="db-view-all-btn"
+                        >
+                            View all
+                        </Link>
                     </div>
                     <div className="db-campaigns-scroll">
                         {displayCampaigns.length === 0 ? (
@@ -564,7 +569,7 @@ const Dashboard: React.FC = () => {
                             displayCampaigns.map(campaign => (
                                 <Link
                                     key={campaign.id}
-                                    to="/campaigns"
+                                    to={`/campaigns?characterId=${character.id}`}
                                     className={`db-campaign-card ${campaign.status !== 'active' ? 'db-inactive' : ''}`}
                                     style={{ textDecoration: 'none' }}
                                 >
@@ -576,8 +581,10 @@ const Dashboard: React.FC = () => {
                                 </Link>
                             ))
                         )}
+
+                        {/* Кнопка "Create campaign" — ведёт на страницу кампаний с автооткрытием модалки и привязкой к персонажу */}
                         <Link
-                            to="/campaigns"
+                            to={`/campaigns?characterId=${character.id}&create=true`}
                             className="db-campaign-card db-add-campaign"
                             style={{ textDecoration: 'none' }}
                         >

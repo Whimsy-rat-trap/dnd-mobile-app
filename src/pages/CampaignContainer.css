@@ -447,3 +447,30 @@
     border-radius: 6px;
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
+
+/* Селектор персонажа в форме */
+.cg-locked-character {
+    padding: 8px 12px;
+    background: #0f0f0f;
+    border: 1px solid #34d399;
+    border-radius: 6px;
+    color: #34d399;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cg-locked-character::before {
+    content: '🔒';
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.cg-form-hint {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 2px;
+}

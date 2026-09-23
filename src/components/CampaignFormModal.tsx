@@ -3,12 +3,21 @@ import Modal from './Modal';
 import { Campaign } from '../types/Character';
 import { validateCampaign } from '../utils/campaignUtils';
 
+interface CharacterOption {
+    id: string;
+    name: string;
+}
+
 interface CampaignFormModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: Omit<Campaign, 'id' | 'characterIds'>) => void;
+    onSubmit: (data: Omit<Campaign, 'id'>) => void;
     initialData?: Campaign | null;
     title?: string;
+    /** Список персонажей для выбора. Если undefined — селектор не показывается. */
+    availableCharacters?: CharacterOption[];
+    /** Зафиксированный персонаж — селектор показывается, но disabled. */
+    lockedCharacterId?: string;
 }
 
 const emptyForm = {
@@ -19,6 +28,7 @@ const emptyForm = {
     players: 4,
     sessions: 0,
     lastPlayed: new Date().toISOString().split('T')[0],
+    characterId: '',
 };
 
 const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
@@ -27,29 +37,33 @@ const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
                                                                  onSubmit,
                                                                  initialData,
                                                                  title,
+                                                                 availableCharacters,
+                                                                 lockedCharacterId,
                                                              }) => {
     const [form, setForm] = useState(emptyForm);
     const [error, setError] = useState<string | null>(null);
 
-    // Синхронизация с initialData при открытии
     useEffect(() => {
-        if (isOpen) {
-            if (initialData) {
-                setForm({
-                    name: initialData.name,
-                    description: initialData.description || '',
-                    status: initialData.status,
-                    dm: initialData.dm || '',
-                    players: initialData.players ?? 4,
-                    sessions: initialData.sessions ?? 0,
-                    lastPlayed: initialData.lastPlayed || '',
-                });
-            } else {
-                setForm(emptyForm);
-            }
-            setError(null);
+        if (!isOpen) return;
+        if (initialData) {
+            setForm({
+                name: initialData.name,
+                description: initialData.description || '',
+                status: initialData.status,
+                dm: initialData.dm || '',
+                players: initialData.players ?? 4,
+                sessions: initialData.sessions ?? 0,
+                lastPlayed: initialData.lastPlayed || '',
+                characterId: initialData.characterIds?.[0] || '',
+            });
+        } else {
+            setForm({
+                ...emptyForm,
+                characterId: lockedCharacterId || '',
+            });
         }
-    }, [isOpen, initialData]);
+        setError(null);
+    }, [isOpen, initialData, lockedCharacterId]);
 
     const handleChange = (field: keyof typeof form, value: any) => {
         setForm(prev => ({ ...prev, [field]: value }));
@@ -62,6 +76,21 @@ const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
             return;
         }
 
+        // Определяем characterIds
+        let characterIds: string[];
+        if (initialData) {
+            // Редактирование — сохраняем существующих участников
+            characterIds = initialData.characterIds ?? [];
+        } else if (lockedCharacterId) {
+            // Создание со страницы персонажа — фиксированный персонаж
+            characterIds = [lockedCharacterId];
+        } else if (form.characterId) {
+            // Создание со страницы кампаний — выбранный из дропдауна
+            characterIds = [form.characterId];
+        } else {
+            characterIds = [];
+        }
+
         onSubmit({
             name: form.name.trim(),
             description: form.description.trim(),
@@ -70,12 +99,18 @@ const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
             players: Math.max(0, form.players || 0),
             sessions: Math.max(0, form.sessions || 0),
             lastPlayed: form.lastPlayed || new Date().toISOString().split('T')[0],
+            characterIds,
         });
 
         onClose();
     };
 
     if (!isOpen) return null;
+
+    // Селектор показываем только при создании (не при редактировании) и если есть данные
+    const showCharacterSelector = !initialData && (!!availableCharacters || !!lockedCharacterId);
+    const isCharacterLocked = !!lockedCharacterId;
+    const lockedCharacterName = availableCharacters?.find(c => c.id === lockedCharacterId)?.name;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -100,6 +135,32 @@ const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
                         rows={3}
                     />
                 </div>
+
+                {showCharacterSelector && (
+                    <div className="cg-form-group">
+                        <label>Character</label>
+                        {isCharacterLocked ? (
+                            <div className="cg-locked-character">
+                                {lockedCharacterName || 'Current character'}
+                            </div>
+                        ) : (
+                            <select
+                                value={form.characterId}
+                                onChange={(e) => handleChange('characterId', e.target.value)}
+                            >
+                                <option value="">— None —</option>
+                                {availableCharacters?.map(c => (
+                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                ))}
+                            </select>
+                        )}
+                        <span className="cg-form-hint">
+                            {isCharacterLocked
+                                ? 'Character is fixed (creating from character page)'
+                                : 'Optional — you can add more characters later'}
+                        </span>
+                    </div>
+                )}
 
                 <div className="cg-form-row">
                     <div className="cg-form-group">
