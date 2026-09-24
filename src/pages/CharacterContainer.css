@@ -1,7 +1,21 @@
-/* ============================================
-   Character Container (cc-*) – уникальные стили
-   ============================================ */
+/*====
+   Character Container (cc-*) — общие стили
+   Стили отдельных секций вынесены в:
+   - CharacterInfoSection.css
+   - AbilitiesSection.css
+   - AttacksSection.css
+   - SavingThrowsSection.css
+   - RaceFeaturesSection.css
+   - FeatsSection.css
+   - SkillsSection.css
+   - ToolsSection.css
+   - LanguagesSection.css
+   - SpellcastingSection.css
+   - PassiveEffectsSection.css
+   - HpEditPopup.css
+  ==== */
 
+/* Page */
 .cc-page {
     display: flex;
     flex-direction: column;
@@ -76,7 +90,18 @@
     margin-left: auto;
 }
 
-/* Content */
+.cc-delete-btn {
+    background: #ef4444;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+/* Content wrapper */
 .cc-content {
     flex: 1;
     overflow-y: auto;
@@ -87,56 +112,7 @@
     padding: 0 20px 30px 20px;
 }
 
-/* Info Section */
-.cc-section-info {
-    width: 100%;
-    max-width: 377px;
-    padding: 16px;
-    border-radius: 12px;
-    background: #1f2937;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-.cc-info-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 14px;
-    color: #34d399;
-    text-transform: uppercase;
-}
-
-.cc-info-grid {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-}
-
-.cc-info-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.cc-info-label {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 11px;
-    color: #9ca3af;
-}
-
-.cc-info-value {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 14px;
-    color: #fff;
-}
-
-/* HP Section */
+/* HP Section (inline в CharacterContainer) */
 .cc-section-hp {
     width: 353px;
     padding: 20px;
@@ -194,6 +170,7 @@
     margin-left: 4px;
 }
 
+/* Shared progress bar (HP section + HpEditPopup) */
 .cc-stat-progress {
     border-radius: 4px;
     width: 100%;
@@ -228,194 +205,49 @@
     flex-shrink: 0;
 }
 
-/* Abilities */
-.cc-section-abilities {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-.cc-abilities-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-abilities-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 112px);
-    gap: 8px;
-    justify-content: center;
-    width: 100%;
-}
-
-.cc-ability-card {
-    border-radius: 10px;
-    padding: 12px;
-    width: 112px;
-    height: 94px;
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
-    background: #1f2937;
+/* Shared stat classes
+   Используются в SpellcastingSection и HpEditPopup */
+.cc-stat-item {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    text-align: center;
 }
 
-.cc-ability-name {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 11px;
-    color: #34d399;
-}
-
-.cc-ability-score {
-    font-family: var(--font-family);
-    font-weight: 700;
-    font-size: 24px;
-    color: #fff;
-}
-
-.cc-ability-modifier {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 13px;
-    color: #9ca3af;
-}
-
-/* Saving Throws */
-.cc-section-saving-throws {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-.cc-saving-throws-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-saving-throws-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 112px);
-    gap: 8px;
-    justify-content: center;
-    width: 100%;
-}
-
-.cc-saving-throw-card {
-    border-radius: 10px;
-    padding: 12px;
-    width: 112px;
-    height: 94px;
-    background: #1f2937;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: background 0.2s;
-    cursor: pointer;
-    user-select: none;
-}
-
-.cc-saving-throw-card:hover {
-    background: #2d3748;
-}
-
-.cc-saving-throw-card.cc-proficient {
-    background: rgba(96, 165, 250, 0.15);
-    border: 1px solid rgba(96, 165, 250, 0.3);
-}
-
-.cc-saving-throw-name {
+.cc-stat-label {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 11px;
     color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.cc-saving-throw-bonus {
+.cc-stat-value {
     font-family: var(--font-family);
     font-weight: 700;
-    font-size: 24px;
-    color: #60a5fa;
+    font-size: 18px;
+    color: #3b82f6;
+    margin-top: 2px;
 }
 
-.cc-saving-throw-card.cc-proficient .cc-saving-throw-bonus {
-    color: #60a5fa;
+.cc-stat-value-dashboard {
+    font-size: 16px;
+    font-weight: 700;
 }
 
-.cc-saving-throws-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+.cc-stat-value-hp {
+    color: #ef4444;
 }
 
-.cc-roll-mode-toggle {
-    padding: 4px 12px;
-    border: 1px solid #374957;
-    border-radius: 4px;
-    background: transparent;
-    color: #9ca3af;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.cc-roll-mode-toggle.cc-active {
-    border-color: #34d399;
-    background: rgba(52, 211, 153, 0.15);
-    color: #34d399;
-}
-
-/* Skills & Tools */
+/* Shared skill card styles
+   Используются в SkillsSection и ToolsSection */
 .cc-roll-hint {
     font-size: 12px;
     color: #fbbf24;
     font-style: italic;
-}
-
-.cc-skill-card.cc-rollable,
-.cc-saving-throw-card.cc-rollable {
-    cursor: pointer;
-    transition: transform 0.1s, border-color 0.2s;
-}
-
-.cc-skill-card.cc-rollable:hover,
-.cc-saving-throw-card.cc-rollable:hover {
-    transform: scale(1.02);
-    border-color: #fbbf24;
-}
-
-.cc-section-skills {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    flex-shrink: 0;
-    margin-bottom: 0;
-    padding-bottom: 8px;
-}
-
-.cc-skills-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
 }
 
 .cc-skills-grid {
@@ -435,6 +267,16 @@
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
+}
+
+.cc-skill-card.cc-rollable {
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.2s;
+}
+
+.cc-skill-card.cc-rollable:hover {
+    transform: scale(1.02);
+    border-color: #fbbf24;
 }
 
 .cc-skill-left {
@@ -479,7 +321,7 @@
     border-color: #34d399;
 }
 
-/* Variant Toggle */
+/* Variant toggle */
 .cc-variant-toggle-container {
     width: 353px;
     display: flex;
@@ -532,215 +374,7 @@
     transform: translateX(20px);
 }
 
-/* Tool Proficiencies */
-.cc-section-tools {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.cc-tools-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-tools-empty {
-    color: #6b7280;
-    font-size: 14px;
-    font-style: italic;
-}
-
-/* Languages */
-.cc-section-languages {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.cc-languages-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-languages-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.cc-language-tag {
-    background: #1f2937;
-    border: 1px solid #374957;
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 13px;
-    color: #d1d5db;
-}
-
-.cc-languages-empty {
-    color: #6b7280;
-    font-size: 14px;
-    font-style: italic;
-}
-
-/* Race Features */
-.cc-race-features-section {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 4px;
-}
-
-.cc-race-features-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #374957;
-    user-select: none;
-}
-
-.cc-race-features-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-race-features-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px 0;
-}
-
-.cc-race-feature-tag {
-    background: #1f2937;
-    border: 1px solid #374957;
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 13px;
-    color: #d1d5db;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-}
-
-.cc-race-feature-tag:hover {
-    border-color: #6b7280;
-}
-
-.cc-race-feature-tag.cc-active {
-    border-color: #34d399;
-    background: rgba(52, 211, 153, 0.1);
-}
-
-.cc-race-features-empty {
-    color: #6b7280;
-    font-size: 14px;
-    font-style: italic;
-}
-
-.cc-chevron-icon {
-    transition: transform 0.3s ease;
-}
-.cc-chevron-icon.cc-open {
-    transform: rotate(180deg);
-}
-
-.cc-race-feature-description {
-    margin-top: 8px;
-    padding: 12px;
-    background: #1f2937;
-    border-radius: 6px;
-    border-left: 3px solid #34d399;
-    color: #d1d5db;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-/* Spellcasting */
-.cc-section-spellcasting {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    flex-shrink: 0;
-    padding: 12px;
-    background: #1f2937;
-    border-radius: 12px;
-}
-
-.cc-spellcasting-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.cc-spellcasting-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-view-full-spellbook {
-    font-family: var(--font-family);
-    font-size: 13px;
-    color: #34d399;
-    text-decoration: none;
-    transition: opacity 0.2s;
-}
-
-.cc-view-full-spellbook:hover {
-    opacity: 0.8;
-}
-
-.cc-spell-stats {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-}
-
-.cc-stat-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.cc-stat-label {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 11px;
-    color: #9ca3af;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.cc-stat-value {
-    font-family: var(--font-family);
-    font-weight: 700;
-    font-size: 18px;
-    color: #3b82f6;
-    margin-top: 2px;
-}
-
-/* Roll Result Modal */
+/* Roll Result Modal (inline в CharacterContainer) */
 .cc-roll-modal-title {
     color: #fff;
     font-size: 18px;
@@ -767,7 +401,10 @@
     font-size: 28px;
 }
 
-/* HP Popup */
+/* HP Popup
+   Используется HpEditPopup.
+   Оставлено в CharacterContainer.css, т.к. опирается на общие
+   классы .cc-stat-*, .cc-progress-*, .cc-hp-fill, .cc-temp-fill. */
 .cc-popup-body {
     color: #fff;
     text-align: center;
@@ -804,10 +441,6 @@
 .cc-popup-stat-block .cc-stat-value-dashboard {
     font-size: 16px;
     font-weight: 700;
-}
-
-.cc-stat-value-hp {
-    color: #ef4444;
 }
 
 .cc-control-group {
@@ -858,432 +491,4 @@
 
 .cc-input-group button:hover {
     background: #059669;
-}
-
-.cc-passive-effects-section {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 8px;
-}
-
-.cc-passive-effects-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #374957;
-}
-
-.cc-passive-effects-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-passive-effects-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px 0;
-}
-
-.cc-passive-effect-item {
-    display: flex;
-    flex-direction: column;
-    background: #1f2937;
-    border-radius: 6px;
-    padding: 8px 12px;
-}
-
-.cc-passive-effect-name {
-    font-weight: 600;
-    color: #34d399;
-    font-size: 14px;
-}
-
-.cc-passive-effect-description {
-    color: #d1d5db;
-    font-size: 13px;
-    margin-top: 2px;
-    line-height: 1.4;
-}
-
-.cc-feats-section {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 8px;
-}
-
-.cc-feats-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #374957;
-}
-
-.cc-feats-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-add-feat-btn {
-    background: #34d399;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 12px;
-    color: #0f0f0f;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.cc-feats-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px 0;
-}
-
-.cc-feat-item {
-    background: #1f2937;
-    border-radius: 6px;
-    padding: 8px 12px;
-    position: relative;
-}
-
-.cc-feat-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cc-feat-name {
-    font-weight: 600;
-    color: #34d399;
-    font-size: 14px;
-}
-
-.cc-feat-source {
-    font-size: 11px;
-    color: #6b7280;
-    text-transform: uppercase;
-}
-
-.cc-feat-description {
-    color: #d1d5db;
-    font-size: 13px;
-    margin-top: 2px;
-    line-height: 1.4;
-}
-
-.cc-feat-remove {
-    position: absolute;
-    top: 4px;
-    right: 8px;
-    background: transparent;
-    border: none;
-    color: #ef4444;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.cc-feats-empty {
-    color: #6b7280;
-    font-size: 14px;
-    font-style: italic;
-    padding: 4px 0;
-}
-
-/* Стили для модалки добавления фита */
-.cc-add-feat-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.cc-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.cc-form-group label {
-    font-size: 13px;
-    color: #9ca3af;
-}
-
-.cc-form-group input,
-.cc-form-group textarea {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #374957;
-    background: #0f0f0f;
-    color: #fff;
-    font-size: 14px;
-    font-family: var(--font-family);
-}
-
-.cc-form-group textarea {
-    resize: vertical;
-    min-height: 60px;
-}
-
-.cc-form-group input:focus,
-.cc-form-group textarea:focus {
-    outline: none;
-    border-color: #34d399;
-}
-
-.cc-modal-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.cc-modal-btn {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.cc-modal-btn.cancel {
-    background: #374151;
-    color: #9ca3af;
-}
-
-.cc-modal-btn.cancel:hover {
-    background: #4b5563;
-}
-
-.cc-modal-btn.apply {
-    background: #34d399;
-    color: #0f0f0f;
-}
-
-.cc-modal-btn.apply:hover {
-    background: #059669;
-}
-
-.cc-passive-effect-source {
-    color: #6b7280;
-    font-size: 12px;
-    font-weight: 400;
-    margin-left: 4px;
-}
-
-/* Секция Attacks */
-.cc-attacks-section {
-    width: 353px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 8px;
-}
-
-.cc-attacks-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #374957;
-}
-
-.cc-attacks-title {
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-attacks-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px 0;
-}
-
-.cc-attack-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #1f2937;
-    border-radius: 8px;
-    padding: 8px 12px;
-}
-
-.cc-attack-name {
-    flex: 1;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.cc-attack-source {
-    color: #6b7280;
-    font-size: 11px;
-    font-weight: 400;
-}
-
-.cc-attack-dice {
-    color: #f87171;
-    font-size: 12px;
-    font-weight: 600;
-    background: rgba(248, 113, 113, 0.1);
-    padding: 2px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.cc-feat-damage {
-    color: #d1d5db;
-    font-size: 12px;
-    margin-top: 4px;
-}
-
-.cc-feat-damage strong {
-    color: #f87171;
-}
-
-/* Attack button для feats */
-.cc-attack-btn {
-    background: #ef4444;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.cc-attack-btn:hover {
-    background: #dc2626;
-}
-
-.cc-attack-btn:active {
-    transform: scale(0.96);
-}
-
-/* Заголовок и счётчик ASI */
-.cc-feats-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-family);
-    font-weight: 500;
-    font-size: 16px;
-    color: #fff;
-}
-
-.cc-feats-slots {
-    font-size: 11px;
-    color: #6b7280;
-    font-weight: 400;
-    background: #0f0f0f;
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid #1f2937;
-}
-
-/* Карточка фита — базовая */
-.cc-feat-item {
-    background: #1f2937;
-    border-radius: 6px;
-    padding: 8px 12px;
-    position: relative;
-    border-left: 3px solid #34d399;
-}
-
-/* Цвет левой полосы по источнику */
-.cc-feat-source-level {
-    border-left-color: #34d399;
-}
-
-.cc-feat-source-quest {
-    border-left-color: #fbbf24;
-}
-
-.cc-feat-source-custom {
-    border-left-color: #a855f7;
-}
-
-.cc-feat-source-other {
-    border-left-color: #6b7280;
-}
-
-.cc-feat-source-background {
-    border-left-color: #60a5fa;
-}
-
-.cc-feat-source-race {
-    border-left-color: #22c55e;
-}
-
-.cc-feat-source-subrace {
-    border-left-color: #84cc16;
-}
-
-.cc-feat-source-class {
-    border-left-color: #ef4444;
-}
-
-/* Тег источника */
-.cc-feat-source-tag-level {
-    color: #34d399;
-    border-color: #34d399;
-}
-
-.cc-feat-source-tag-quest {
-    color: #fbbf24;
-    border-color: #fbbf24;
-}
-
-.cc-feat-source-tag-custom {
-    color: #a855f7;
-    border-color: #a855f7;
-}
-
-.cc-feat-source-tag-other {
-    color: #6b7280;
-    border-color: #6b7280;
-}
-
-.cc-feat-source-tag-background {
-    color: #60a5fa;
-    border-color: #60a5fa;
-}
-
-.cc-feat-source-tag-race {
-    color: #22c55e;
-    border-color: #22c55e;
-}
-
-.cc-feat-source-tag-subrace {
-    color: #84cc16;
-    border-color: #84cc16;
-}
-
-.cc-feat-source-tag-class {
-    color: #ef4444;
-    border-color: #ef4444;
-}
-
-/* Пререквизит */
-.cc-feat-prereq {
-    color: #fbbf24;
-    font-size: 11px;
-    font-style: italic;
-    margin-top: 3px;
 }

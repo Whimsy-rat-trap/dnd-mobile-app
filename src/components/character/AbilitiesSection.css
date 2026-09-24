@@ -1,0 +1,58 @@
+.cc-section-abilities {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.cc-abilities-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.cc-abilities-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 112px);
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+}
+
+.cc-ability-card {
+    border-radius: 10px;
+    padding: 12px;
+    width: 112px;
+    height: 94px;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+    background: #1f2937;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.cc-ability-name {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 11px;
+    color: #34d399;
+}
+
+.cc-ability-score {
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 24px;
+    color: #fff;
+}
+
+.cc-ability-modifier {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 13px;
+    color: #9ca3af;
+}

@@ -1,0 +1,24 @@
+.cc-section-skills {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+    padding-bottom: 8px;
+}
+
+.cc-skills-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.cc-skills-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}

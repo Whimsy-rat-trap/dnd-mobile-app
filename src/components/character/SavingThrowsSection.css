@@ -1,0 +1,97 @@
+.cc-section-saving-throws {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.cc-saving-throws-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.cc-saving-throws-title {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 16px;
+    color: #fff;
+}
+
+.cc-saving-throws-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 112px);
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+}
+
+.cc-saving-throw-card {
+    border-radius: 10px;
+    padding: 12px;
+    width: 112px;
+    height: 94px;
+    background: #1f2937;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s;
+    cursor: pointer;
+    user-select: none;
+}
+
+.cc-saving-throw-card:hover {
+    background: #2d3748;
+}
+
+.cc-saving-throw-card.cc-proficient {
+    background: rgba(96, 165, 250, 0.15);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.cc-saving-throw-card.cc-rollable {
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.2s;
+}
+
+.cc-saving-throw-card.cc-rollable:hover {
+    transform: scale(1.02);
+    border-color: #fbbf24;
+}
+
+.cc-saving-throw-name {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.cc-saving-throw-bonus {
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 24px;
+    color: #60a5fa;
+}
+
+.cc-roll-mode-toggle {
+    padding: 4px 12px;
+    border: 1px solid #374957;
+    border-radius: 4px;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cc-roll-mode-toggle.cc-active {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+}
