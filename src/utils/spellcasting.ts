@@ -112,13 +112,29 @@ export function getSpellSlots(character: Character): number[] {
     return slots;
 }
 
+// Список классов-заклинателей
+const SPELLCASTING_CLASSES = [
+    'Bard', 'Cleric', 'Druid', 'Sorcerer', 'Wizard',
+    'Paladin', 'Ranger', 'Artificer', 'Warlock',
+];
+
+export function isSpellcastingClass(className: string): boolean {
+    return SPELLCASTING_CLASSES.includes(className);
+}
+
 // Получение максимума подготовленных заклинаний (для классов, которые готовят)
 export function getMaxPrepared(character: Character): number {
     if (!character.classLevels || character.classLevels.length === 0) return 0;
+
     const mainClass = character.classLevels[0];
-    const level = mainClass.level;
-    let mod = 0;
     const className = mainClass.className;
+    const level = mainClass.level;
+
+    // Не-заклинатели (Barbarian, Fighter, Monk, Rogue без архетипа-кастера)
+    // имеют 0 подготовленных заклинаний
+    if (!isSpellcastingClass(className)) return 0;
+
+    let mod = 0;
     if (['Wizard', 'Artificer'].includes(className)) {
         mod = Math.floor((character.abilities.int - 10) / 2);
     } else if (['Cleric', 'Druid', 'Ranger'].includes(className)) {
@@ -126,6 +142,7 @@ export function getMaxPrepared(character: Character): number {
     } else if (['Bard', 'Sorcerer', 'Warlock', 'Paladin'].includes(className)) {
         mod = Math.floor((character.abilities.cha - 10) / 2);
     }
+
     return Math.max(level + mod, 1);
 }
 

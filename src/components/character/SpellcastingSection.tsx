@@ -1,22 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Character } from '../../types/Character';
-import { getSpellSlots, getMaxPrepared } from '../../utils/spellcasting';
+import { getSpellSlots, getMaxPrepared, isSpellcastingClass } from '../../utils/spellcasting';
 import './SpellcastingSection.css';
 
 interface SpellcastingSectionProps {
     character: Character;
 }
 
-const SPELLCASTING_CLASSES = [
-    'Bard', 'Cleric', 'Druid', 'Sorcerer', 'Wizard',
-    'Paladin', 'Ranger', 'Artificer', 'Warlock',
-];
-
 const SpellcastingSection: React.FC<SpellcastingSectionProps> = ({ character }) => {
     const isSpellcaster = character.classLevels?.some(cl =>
-        SPELLCASTING_CLASSES.includes(cl.className)
-    );
+        isSpellcastingClass(cl.className)
+    ) ?? false;
     const hasSpells = character.spells.length > 0;
 
     if (!isSpellcaster && !hasSpells) return null;
@@ -37,20 +32,28 @@ const SpellcastingSection: React.FC<SpellcastingSectionProps> = ({ character }) 
                 </Link>
             </div>
             <div className="cc-spell-stats">
-                <div className="cc-stat-item">
-                    <span className="cc-stat-label">Spell Slots</span>
-                    <span className="cc-stat-value">{totalSlots}</span>
-                </div>
-                <div className="cc-stat-item">
-                    <span className="cc-stat-label">Prepared</span>
-                    <span className="cc-stat-value">
-                        {preparedCount} / {maxPrepared}
-                    </span>
-                </div>
-                <div className="cc-stat-item">
-                    <span className="cc-stat-label">Racial</span>
-                    <span className="cc-stat-value">{racialCount}</span>
-                </div>
+                {isSpellcaster && (
+                    <>
+                        <div className="cc-stat-item">
+                            <span className="cc-stat-label">Spell Slots</span>
+                            <span className="cc-stat-value">{totalSlots}</span>
+                        </div>
+                        <div className="cc-stat-item">
+                            <span className="cc-stat-label">Prepared</span>
+                            <span className="cc-stat-value">
+                                {preparedCount} / {maxPrepared}
+                            </span>
+                        </div>
+                    </>
+                )}
+
+                {racialCount > 0 && (
+                    <div className="cc-stat-item">
+                        <span className="cc-stat-label">Racial</span>
+                        <span className="cc-stat-value">{racialCount}</span>
+                    </div>
+                )}
+
                 <div className="cc-stat-item">
                     <span className="cc-stat-label">Known</span>
                     <span className="cc-stat-value">{knownCount}</span>

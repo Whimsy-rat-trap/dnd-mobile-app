@@ -1,4 +1,4 @@
-/*====
+/*
    Character Container (cc-*) — общие стили
    Стили отдельных секций вынесены в:
    - CharacterInfoSection.css
@@ -13,7 +13,7 @@
    - SpellcastingSection.css
    - PassiveEffectsSection.css
    - HpEditPopup.css
-  ==== */
+*/
 
 /* Page */
 .cc-page {
