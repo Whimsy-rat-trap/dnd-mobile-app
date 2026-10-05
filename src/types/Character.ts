@@ -1,11 +1,21 @@
+export interface ClassLevel {
+    className: string;
+    level: number;
+    /** Подкласс, выбранный для этого класса (Eldritch Knight и тп) */
+    subclass?: string;
+}
+
 export interface Character {
     id: string;
     name: string;
+    /** @deprecated Основной класс теперь используют classLevels[0].className */
     class: string;
+    /** @deprecated Все классы теперь используют classLevels.map(cl => cl.className) */
     classes: string[];
+    /** @deprecated Подклассы основного класса теперь используют classLevels[0].subclass */
     subclass?: string;
     level: number;
-    classLevels: { className: string; level: number }[];
+    classLevels: ClassLevel[];
     race: string;
     subrace?: string;
     background: string;

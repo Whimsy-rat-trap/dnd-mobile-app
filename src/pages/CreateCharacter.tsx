@@ -28,6 +28,12 @@ import { buildCharacter } from '../utils/characterCreationUtils';
 
 import './CreateCharacter.css';
 
+interface ClassLevelState {
+    className: string;
+    level: number;
+    subclass?: string;
+}
+
 const CreateCharacter: React.FC = () => {
     const navigate = useNavigate();
     const { addCharacter } = useCharacters();
@@ -54,7 +60,9 @@ const CreateCharacter: React.FC = () => {
         size: 'Medium',
     });
 
-    const [classLevels, setClassLevels] = useState([{ className: DND_CLASSES[0], level: 1 }]);
+    const [classLevels, setClassLevels] = useState<ClassLevelState[]>([
+        { className: DND_CLASSES[0], level: 1, subclass: '' },
+    ]);
     const [selectedBonusAttrs, setSelectedBonusAttrs] = useState<(string | null)[]>([]);
 
     // Для расовых навыков и инструментов
@@ -96,43 +104,71 @@ const CreateCharacter: React.FC = () => {
         [raceDetails]
     );
 
-    // Синхронизация classLevels
+    // Синхронизация classLevels с основным классом/уровнем/подклассом
     useEffect(() => {
         setClassLevels(prev => {
             const newList = [...prev];
-            if (newList.length === 0) newList.push({ className: formData.class, level: formData.level });
-            else {
-                newList[0].className = formData.class;
-                newList[0].level = formData.level;
+            if (newList.length === 0) {
+                newList.push({ className: formData.class, level: formData.level, subclass: formData.subclass });
+            } else {
+                newList[0] = {
+                    ...newList[0],
+                    className: formData.class,
+                    level: formData.level,
+                    subclass: formData.subclass,
+                };
             }
             return newList;
         });
-    }, [formData.class, formData.level]);
+    }, [formData.class, formData.level, formData.subclass]);
 
     // Обновление уровня при изменении classLevels
-    const updateTotalLevel = () => {
-        const total = classLevels.reduce((sum, cl) => sum + cl.level, 0);
+    const updateTotalLevel = (list: ClassLevelState[]) => {
+        const total = list.reduce((sum, cl) => sum + cl.level, 0);
         setFormData(prev => ({ ...prev, level: total }));
     };
 
     const addExtraClass = () => {
-        setClassLevels([...classLevels, { className: DND_CLASSES[0], level: 1 }]);
-        // Обновляем общий уровень
-        updateTotalLevel();
+        const newList: ClassLevelState[] = [
+            ...classLevels,
+            { className: DND_CLASSES[0], level: 1, subclass: '' },
+        ];
+        setClassLevels(newList);
+        updateTotalLevel(newList);
     };
 
     const removeExtraClass = (index: number) => {
         if (index === 0) return;
-        setClassLevels(classLevels.filter((_, i) => i !== index));
-        updateTotalLevel();
+        const newList = classLevels.filter((_, i) => i !== index);
+        setClassLevels(newList);
+        updateTotalLevel(newList);
     };
 
-    const updateExtraClass = (index: number, field: 'className' | 'level', value: string | number) => {
+    const updateExtraClass = (
+        index: number,
+        field: 'className' | 'level' | 'subclass',
+        value: string | number
+    ) => {
         const newList = [...classLevels];
-        if (field === 'className') newList[index].className = value as string;
-        else newList[index].level = Math.max(1, Math.min(20, Number(value)));
+        if (field === 'className') {
+            newList[index] = {
+                ...newList[index],
+                className: value as string,
+                subclass: '',
+            };
+        } else if (field === 'level') {
+            newList[index] = {
+                ...newList[index],
+                level: Math.max(1, Math.min(20, Number(value))),
+            };
+        } else {
+            newList[index] = {
+                ...newList[index],
+                subclass: value as string,
+            };
+        }
         setClassLevels(newList);
-        updateTotalLevel();
+        updateTotalLevel(newList);
     };
 
     // При изменении расы сбрасываем подрасу и бонусы
@@ -165,7 +201,7 @@ const CreateCharacter: React.FC = () => {
         } else setSelectedRacialTools([]);
     }, [formData.race, raceDetails, raceBonuses, racialSkillData, racialToolData]);
 
-    // При смене класса сбрасываем подкласс
+    // При смене основного класса сбрасываем подкласс
     useEffect(() => {
         setFormData(prev => ({ ...prev, subclass: '' }));
     }, [formData.class]);
@@ -287,9 +323,25 @@ const CreateCharacter: React.FC = () => {
             finalData.speed = 30;
         }
 
+        // Гарантируем, что первый класс в classLevels синхронизирован с formData
+        const normalizedClassLevels: ClassLevelState[] = classLevels.map((cl, idx) => {
+            if (idx === 0) {
+                return {
+                    className: finalData.class,
+                    level: finalData.level,
+                    subclass: finalData.subclass || '',
+                };
+            }
+            return {
+                className: cl.className,
+                level: cl.level,
+                subclass: cl.subclass || '',
+            };
+        });
+
         const newCharacter = buildCharacter(
             finalData,
-            classLevels,
+            normalizedClassLevels,
             selectedBonusAttrs,
             selectedRacialSkills,
             selectedRacialTools,

@@ -1,4 +1,4 @@
-import { Character } from '../types/Character';
+import { Character, ClassLevel } from '../types/Character';
 
 // Классы по типу кастера
 
@@ -24,48 +24,56 @@ const THIRD_CASTER_SUBCLASSES: Record<string, string[]> = {
 };
 
 /**
- * Является ли класс (с учётом подкласса) заклинателем.
+ * Является ли конкретный класс (с его подклассом и уровнем) заклинателем.
  * @param className — название класса
- * @param subclass — название подкласса (для проверки третьих кастеров)
- * @param classLevel — уровень в этом классе (нужно для третьих кастеров, они начинают с 3-го)
+ * @param subclass — подкласс этого класса (для проверки третьих кастеров)
+ * @param classLevel — уровень в этом классе (для третьих кастеров нужно >= 3)
  */
-export function isSpellcastingClass(
+export function isClassSpellcaster(
     className: string,
-    subclass?: string,
-    classLevel?: number
+    subclass: string | undefined,
+    classLevel: number
 ): boolean {
     if (FULL_CASTER_CLASSES.includes(className)) return true;
     if (HALF_CASTER_CLASSES.includes(className)) return true;
     if (className === ARTIFICER_CLASS) return true;
     if (className === WARLOCK_CLASS) return true;
 
-    // Третьи кастеры доступны только с 3-го уровня
     if (subclass && THIRD_CASTER_SUBCLASSES[className]?.includes(subclass)) {
-        if (classLevel === undefined || classLevel >= 3) return true;
+        return classLevel >= 3;
     }
 
     return false;
 }
 
 /**
- * Возвращает уровень кастера для одного класса.
- * Для третьих кастеров не используется — они считаются отдельно.
+ * Является ли персонаж заклинателем хотя бы по одному классу.
  */
-function getCasterLevel(className: string, classLevel: number): number {
-    if (FULL_CASTER_CLASSES.includes(className)) return classLevel;
-    if (HALF_CASTER_CLASSES.includes(className)) return Math.floor(classLevel / 2);
-    if (className === ARTIFICER_CLASS) return Math.ceil(classLevel / 2);
-    if (className === WARLOCK_CLASS) return classLevel;
-    return 0;
+export function isSpellcastingClass(character: Character): boolean {
+    if (!character.classLevels || character.classLevels.length === 0) return false;
+    return character.classLevels.some(cl =>
+        isClassSpellcaster(cl.className, cl.subclass, cl.level)
+    );
 }
 
 /**
- * Уровень третьего кастера (Eldritch Knight, Arcane Trickster).
- * Прогрессия: floor(level / 3), минимально 1 на 3-м уровне.
+ * Вклад одного класса в общий уровень кастера.
+ * Варлок считается отдельно и здесь возвращает 0.
+ * Третьи кастеры (EK/AT) считаются как floor(level / 3).
  */
-function getThirdCasterLevel(className: string, classLevel: number): number {
-    if (classLevel < 3) return 0;
-    return Math.floor(classLevel / 3);
+function getCasterLevelContribution(cl: ClassLevel): number {
+    const { className, level, subclass } = cl;
+
+    if (FULL_CASTER_CLASSES.includes(className)) return level;
+    if (HALF_CASTER_CLASSES.includes(className)) return Math.floor(level / 2);
+    if (className === ARTIFICER_CLASS) return Math.ceil(level / 2);
+    if (className === WARLOCK_CLASS) return 0;
+
+    if (subclass && THIRD_CASTER_SUBCLASSES[className]?.includes(subclass)) {
+        return level >= 3 ? Math.floor(level / 3) : 0;
+    }
+
+    return 0;
 }
 
 /** Слоты полного кастера (по уровню кастера 1–20). */
@@ -144,96 +152,80 @@ function getThirdCasterSlots(casterLevel: number): number[] {
 // Основные функции
 
 /**
- * Возвращает массив слотов заклинаний для персонажа.
- * Учитывает полных, половинных, третьих кастеров и варлока.
+ * Возвращает массив слотов заклинаний для персонажа с учётом мультикласса.
+ * По правилам D&D 5e:
+ * - полные и половинные кастеры складываются в общий уровень кастера;
+ * - третьи кастеры (EK/AT) добавляют floor(level / 3) к общему уровню;
+ * - варлок имеет отдельный пул слотов, который не складывается с обычным
+ *   (в этой реализации мы суммируем массивы, что даёт корректный итог по количеству).
  */
 export function getSpellSlots(character: Character): number[] {
     const classLevels = character.classLevels || [];
-    const subclass = character.subclass;
 
     let totalCasterLevel = 0;
-    let thirdCasterLevel = 0;
     let warlockLevel = 0;
 
     for (const cl of classLevels) {
-        // Третьи кастеры (EK/AT) — только для основного класса с подклассом
-        if (
-            subclass &&
-            THIRD_CASTER_SUBCLASSES[cl.className]?.includes(subclass)
-        ) {
-            thirdCasterLevel += getThirdCasterLevel(cl.className, cl.level);
-            continue;
-        }
-
         if (cl.className === WARLOCK_CLASS) {
             warlockLevel += cl.level;
         } else {
-            totalCasterLevel += getCasterLevel(cl.className, cl.level);
+            totalCasterLevel += getCasterLevelContribution(cl);
         }
     }
 
     const slots = Array(9).fill(0);
 
-    // Слоты обычных кастеров
     if (totalCasterLevel > 0) {
         const casterSlots = getFullCasterSlots(totalCasterLevel);
         for (let i = 0; i < 9; i++) slots[i] += casterSlots[i];
     }
 
-    // Слоты варлока (складываются с обычными, но по правилам 5e выбирается один пул)
     if (warlockLevel > 0) {
         const wSlots = getWarlockSlots(warlockLevel);
         for (let i = 0; i < 9; i++) slots[i] += wSlots[i];
-    }
-
-    // Слоты третьего кастера
-    if (thirdCasterLevel > 0) {
-        const tSlots = getThirdCasterSlots(thirdCasterLevel);
-        for (let i = 0; i < 9; i++) slots[i] += tSlots[i];
     }
 
     return slots;
 }
 
 /**
- * Количество подготовленных заклинаний, доступных персонажу.
- * Для "known" кастеров (Bard, Sorcerer, Warlock, EK, AT) возвращает 0 —
- * они не готовят заклинания, а знают их.
+ * Максимум подготовленных заклинаний с учётом мультикласса.
+ *
+ * Суммируется по всем классам, которые готовят заклинания:
+ * - Wizard: level + INT (min 1)
+ * - Cleric / Druid: level + WIS (min 1)
+ * - Paladin: floor(level / 2) + CHA (min 1)
+ * - Artificer: ceil(level / 2) + INT (min 1)
+ *
+ * Known casters (Bard, Sorcerer, Warlock, Ranger) и третьи кастеры (EK, AT)
+ * не готовят заклинания — их вклад 0.
  */
 export function getMaxPrepared(character: Character): number {
     if (!character.classLevels || character.classLevels.length === 0) return 0;
 
-    const mainClass = character.classLevels[0];
-    const className = mainClass.className;
-    const level = mainClass.level;
-    const subclass = character.subclass;
+    let total = 0;
 
-    // Prepared casters
-    if (className === 'Wizard') {
-        const mod = Math.floor((character.abilities.int - 10) / 2);
-        return Math.max(level + mod, 1);
-    }
-    if (['Cleric', 'Druid'].includes(className)) {
-        const mod = Math.floor((character.abilities.wis - 10) / 2);
-        return Math.max(level + mod, 1);
-    }
-    if (className === 'Paladin') {
-        const mod = Math.floor((character.abilities.cha - 10) / 2);
-        return Math.max(Math.floor(level / 2) + mod, 1);
-    }
-    if (className === ARTIFICER_CLASS) {
-        const mod = Math.floor((character.abilities.int - 10) / 2);
-        return Math.max(Math.ceil(level / 2) + mod, 1);
+    for (const cl of character.classLevels) {
+        const { className, level, subclass } = cl;
+
+        if (className === 'Wizard') {
+            const mod = Math.floor((character.abilities.int - 10) / 2);
+            total += Math.max(level + mod, 1);
+        } else if (['Cleric', 'Druid'].includes(className)) {
+            const mod = Math.floor((character.abilities.wis - 10) / 2);
+            total += Math.max(level + mod, 1);
+        } else if (className === 'Paladin') {
+            const mod = Math.floor((character.abilities.cha - 10) / 2);
+            total += Math.max(Math.floor(level / 2) + mod, 1);
+        } else if (className === ARTIFICER_CLASS) {
+            const mod = Math.floor((character.abilities.int - 10) / 2);
+            total += Math.max(Math.ceil(level / 2) + mod, 1);
+        } else if (subclass && THIRD_CASTER_SUBCLASSES[className]?.includes(subclass)) {
+            // EK / AT — known casters, вклад 0
+        }
     }
 
-    // Known casters
-    if (['Bard', 'Sorcerer', 'Warlock', 'Ranger'].includes(className)) return 0;
-
-    // Третьи кастеры (EK, AT) — known, не prepared
-    if (subclass && THIRD_CASTER_SUBCLASSES[className]?.includes(subclass)) return 0;
-
-    // Обычные не-кастеры (Barbarian, Fighter без EK, Monk, Rogue без AT)
-    return 0;
+    return total;
 }
 
 /**

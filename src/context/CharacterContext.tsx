@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Character, InventoryItem, Spell, Quest, Campaign, Feat } from '../types/Character';
+import { Character, InventoryItem, Spell, Quest, Campaign, Feat, ClassLevel } from '../types/Character';
 import { getNaturalWeapons } from '../utils/racialFeatures';
 import { recalculateAC } from '../utils/armorUtils';
 import { getRacialSpells } from '../constants/racialSpells';
 import { getFeatsForCharacter } from '../constants/feats';
 import { ALL_ITEMS } from '../constants/items';
 
+// Default skills
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
     { name: 'Animal Handling', attribute: 'WIS', proficient: false },
@@ -27,7 +28,7 @@ const defaultSkills = [
     { name: 'Survival', attribute: 'WIS', proficient: false },
 ];
 
-// Интерфейс контекста
+// Context type
 interface CharacterContextType {
     characters: Character[];
     currentCharacterId: string | null;
@@ -37,46 +38,58 @@ interface CharacterContextType {
     deleteCharacter: (id: string) => void;
     getCharacter: (id: string) => Character | undefined;
     setCurrentCharacterId: (id: string | null) => void;
+
+    // Инвентарь
     addItemToInventory: (characterId: string, item: Omit<InventoryItem, 'id'>) => void;
     removeItemFromInventory: (characterId: string, itemId: string) => void;
     updateItemInInventory: (characterId: string, itemId: string, updates: Partial<InventoryItem>) => void;
+
+    // Заклинания
     addSpellToCharacter: (characterId: string, spell: Omit<Spell, 'id'>) => void;
     removeSpellFromCharacter: (characterId: string, spellId: string) => void;
     updateSpell: (characterId: string, spellId: string, updates: Partial<Spell>) => void;
+
+    // Квесты
     addQuestToCharacter: (characterId: string, quest: Omit<Quest, 'id'>) => void;
     removeQuestFromCharacter: (characterId: string, questId: string) => void;
     updateQuest: (characterId: string, questId: string, updates: Partial<Quest>) => void;
+
+    // Кампании
     addCampaignToCharacter: (characterId: string, campaign: Omit<Campaign, 'id'>) => void;
     removeCampaignFromCharacter: (characterId: string, campaignId: string) => void;
     updateCampaign: (characterId: string, campaignId: string, updates: Partial<Campaign>) => void;
+
+    // Кости
     addDiceLog: (characterId: string, sides: number, result: number) => void;
+
     // Концентрация
     startConcentration: (characterId: string, spellId: string) => void;
     endConcentration: (characterId: string) => void;
     makeConcentrationCheck: (characterId: string, damage: number) => void;
     resolveConcentrationCheck: (characterId: string, success: boolean) => void;
+
     // Feats
     addFeat: (characterId: string, feat: Omit<Feat, 'id'>) => void;
     removeFeat: (characterId: string, featId: string) => void;
-    // Currency
+
+    // Валюта
     updateCurrency: (characterId: string, currency: { gp: number; sp: number; cp: number }) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
 const STORAGE_KEY = 'dnd_characters';
 
+// Provider
 export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [characters, setCharacters] = useState<Character[]>(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (!stored) return [];
         try {
             const parsed = JSON.parse(stored);
-            return parsed
-                .filter((char: any) => char && typeof char === 'object')
-                .map((char: any) => {
-                    const updated = { ...char };
+            return parsed.map((char: any) => {
+                const updated = { ...char };
 
-                // Миграция class -> classes
+                // Миграция class → classes
                 if (typeof updated.class === 'string' && !updated.classes) {
                     updated.classes = [updated.class];
                 } else if (!updated.classes) {
@@ -89,16 +102,39 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 // Миграция classLevels
                 if (!updated.classLevels || updated.classLevels.length === 0) {
                     if (updated.classes && updated.level) {
-                        updated.classLevels = updated.classes.map((cls: string) => ({ className: cls, level: updated.level }));
+                        updated.classLevels = updated.classes.map((cls: string) => ({
+                            className: cls,
+                            level: updated.level,
+                        }));
                     } else if (updated.class) {
                         updated.classLevels = [{ className: updated.class, level: updated.level || 1 }];
                     } else {
                         updated.classLevels = [{ className: 'Fighter', level: 1 }];
                     }
                 }
-                // Пересчитываем общий уровень для обратной совместимости
+
+                // Миграция subclass → classLevels[0].subclass
+                if (Array.isArray(updated.classLevels) && updated.classLevels.length > 0) {
+                    updated.classLevels = updated.classLevels.map((cl: any, idx: number) => {
+                        // Первый класс получает подкласс из character.subclass, если у него ещё нет своего
+                        if (idx === 0 && !cl.subclass && updated.subclass) {
+                            return { ...cl, subclass: updated.subclass };
+                        }
+                        return cl;
+                    });
+                }
+
+                // Синхронизация character.subclass с первым классом
+                if (updated.classLevels?.[0]?.subclass) {
+                    updated.subclass = updated.classLevels[0].subclass;
+                }
+
+                // Пересчёт общего уровня
                 if (updated.classLevels.length > 0) {
-                    updated.level = updated.classLevels.reduce((sum: number, cl: any) => sum + cl.level, 0);
+                    updated.level = updated.classLevels.reduce(
+                        (sum: number, cl: ClassLevel) => sum + cl.level,
+                        0
+                    );
                 }
 
                 // Навыки
@@ -146,7 +182,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.activeConcentrationSpellId = null;
                 }
 
-                // Feats (новая миграция)
+                // Feats
                 if (!updated.feats) {
                     updated.feats = [];
                 }
@@ -156,30 +192,24 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.currency = { gp: 0, sp: 0, cp: 0 };
                 }
 
+                // Inventory migration: enrich items with data from ALL_ITEMS
                 if (updated.inventory && Array.isArray(updated.inventory)) {
                     updated.inventory = updated.inventory.map((invItem: any) => {
-                        // Если уже есть хотя бы одно из новых полей – пропускаем
-                        if (invItem.baseAC !== undefined || invItem.acBonus !== undefined || invItem.damageDice || invItem.healingDice || invItem.uses) {
-                            return invItem;
-                        }
-                        // Ищем предмет в библиотеке по имени
                         const libraryItem = ALL_ITEMS.find((li: any) => li.name === invItem.name);
-                        if (libraryItem) {
-                            return {
-                                ...invItem,
-                                damageDice: libraryItem.damageDice,
-                                damageType: libraryItem.damageType,
-                                healingDice: libraryItem.healingDice,
-                                uses: libraryItem.uses,
-                                baseAC: libraryItem.baseAC,
-                                acBonus: libraryItem.acBonus,
-                                dexModifierAllowed: libraryItem.dexModifierAllowed,
-                                maxDexBonus: libraryItem.maxDexBonus,
-                                strengthRequirement: libraryItem.strengthRequirement,
-                                stealthDisadvantage: libraryItem.stealthDisadvantage,
-                            };
-                        }
-                        return invItem;
+                        if (!libraryItem) return invItem;
+                        return {
+                            ...invItem,
+                            damageDice: invItem.damageDice ?? libraryItem.damageDice,
+                            damageType: invItem.damageType ?? libraryItem.damageType,
+                            healingDice: invItem.healingDice ?? libraryItem.healingDice,
+                            uses: invItem.uses ?? libraryItem.uses,
+                            baseAC: invItem.baseAC ?? libraryItem.baseAC,
+                            acBonus: invItem.acBonus ?? libraryItem.acBonus,
+                            dexModifierAllowed: invItem.dexModifierAllowed ?? libraryItem.dexModifierAllowed,
+                            maxDexBonus: invItem.maxDexBonus ?? libraryItem.maxDexBonus,
+                            strengthRequirement: invItem.strengthRequirement ?? libraryItem.strengthRequirement,
+                            stealthDisadvantage: invItem.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
+                        };
                     });
                 }
 
@@ -192,9 +222,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     });
 
     const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
-    const [concentrationCheck, setConcentrationCheck] = useState<{ spellId: string; dc: number; conMod: number } | null>(null);
+    const [concentrationCheck, setConcentrationCheck] = useState<{
+        spellId: string;
+        dc: number;
+        conMod: number;
+    } | null>(null);
 
-    // Сохранение в localStorage при каждом изменении
+    // Save to localStorage
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
@@ -245,10 +279,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             character.subrace,
             character.background
         );
-        const customFeats = character.feats.filter(f => f.source === 'custom');
+        const customFeats = character.feats.filter(f => f.source !== 'race' && f.source !== 'subrace' && f.source !== 'class' && f.source !== 'background');
         const allFeats = [...autoFeats, ...customFeats];
-        const uniqueFeats = allFeats.filter((feat, index, self) =>
-            index === self.findIndex(f => f.id === feat.id)
+        const uniqueFeats = allFeats.filter(
+            (feat, index, self) => index === self.findIndex(f => f.id === feat.id)
         );
         return {
             ...character,
@@ -257,20 +291,33 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     const recalculateCharacterStats = (character: Character): Character => {
-        let updated = { ...character };
+        const updated = { ...character };
         updated.ac = recalculateAC(updated);
         return updated;
     };
 
     // CRUD
     const addCharacter = (character: Omit<Character, 'id'>) => {
+        // Формируем classLevels с поддержкой subclass у каждого класса
+        const classLevels = (character.classLevels || []).map((cl: any) => ({
+            className: cl.className,
+            level: cl.level,
+            subclass: cl.subclass || '',
+        }));
+
+        const mainClass = classLevels[0]?.className || character.class || 'Fighter';
+        const mainSubclass = classLevels[0]?.subclass || character.subclass || '';
+
         let newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
-            class: character.class || character.classLevels?.[0]?.className || 'Fighter',
-            classes: character.classes || character.classLevels?.map(cl => cl.className) || ['Fighter'],
-            level: character.level || character.classLevels?.reduce((sum, cl) => sum + cl.level, 0) || 1,
-            classLevels: character.classLevels || [{ className: character.class || 'Fighter', level: character.level || 1 }],
+            class: mainClass,
+            classes: classLevels.map(cl => cl.className) || ['Fighter'],
+            level: classLevels.reduce((sum, cl) => sum + cl.level, 0) || 1,
+            classLevels: classLevels.length > 0
+                ? classLevels
+                : [{ className: 'Fighter', level: 1, subclass: '' }],
+            subclass: mainSubclass,
             skills: (character.skills && character.skills.length > 0) ? character.skills : defaultSkills,
             toolProficiencies: character.toolProficiencies?.map((tool: any) => ({
                 name: tool.name || tool,
@@ -287,8 +334,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             subrace: character.subrace || '',
             savingThrowProficiencies: character.savingThrowProficiencies || [],
             activeConcentrationSpellId: null,
-            feats: [],
-            currency: { gp: 0, sp: 0, cp: 0 },
+            feats: character.feats || [],
+            currency: character.currency || { gp: 0, sp: 0, cp: 0 },
         };
 
         newCharacter = addNaturalWeaponsToCharacter(newCharacter);
@@ -306,19 +353,36 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 if (char.id !== id) return char;
                 let updated = { ...char, ...data };
 
-                // Добавляем валюту, если её нет
+                // Синхронизация character.subclass с первым классом
+                if (data.classLevels !== undefined) {
+                    updated.subclass = data.classLevels[0]?.subclass || '';
+                }
+                // Если подкласс обновляется напрямую, синхронизируем classLevels[0].subclass
+                if (data.subclass !== undefined && data.classLevels === undefined) {
+                    updated.classLevels = updated.classLevels.map((cl, idx) =>
+                        idx === 0 ? { ...cl, subclass: data.subclass } : cl
+                    );
+                }
+
+                // Currency fallback
                 if (!updated.currency) {
                     updated.currency = { gp: 0, sp: 0, cp: 0 };
                 }
 
-                // Если изменились поля, влияющие на черты, natural weapons или расовые заклинания
-                if (data.race !== undefined || data.subrace !== undefined || data.class !== undefined || data.background !== undefined) {
+                // Feats/natural weapons/racial spells при изменении расы/подрасы/класса/фона
+                if (
+                    data.race !== undefined ||
+                    data.subrace !== undefined ||
+                    data.class !== undefined ||
+                    data.classLevels !== undefined ||
+                    data.background !== undefined
+                ) {
                     updated = addNaturalWeaponsToCharacter(updated);
                     updated = addRacialSpellsToCharacter(updated);
                     updated = updateFeatsForCharacter(updated);
                 }
 
-                // Если изменился инвентарь или способности, пересчитываем AC
+                // Recalculate AC при изменении инвентаря или способностей
                 if (data.inventory !== undefined || data.abilities !== undefined) {
                     updated = recalculateCharacterStats(updated);
                 }
@@ -346,10 +410,16 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeItemFromInventory = (characterId: string, itemId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { inventory: char.inventory.filter(item => item.id !== itemId) });
+        updateCharacter(characterId, {
+            inventory: char.inventory.filter(item => item.id !== itemId),
+        });
     };
 
-    const updateItemInInventory = (characterId: string, itemId: string, updates: Partial<InventoryItem>) => {
+    const updateItemInInventory = (
+        characterId: string,
+        itemId: string,
+        updates: Partial<InventoryItem>
+    ) => {
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
@@ -363,17 +433,27 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const addSpellToCharacter = (characterId: string, spell: Omit<Spell, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const newSpell: Spell = { ...spell, id: Date.now().toString(), prepared: spell.prepared || false };
+        const newSpell: Spell = {
+            ...spell,
+            id: Date.now().toString(),
+            prepared: spell.prepared || false,
+        };
         updateCharacter(characterId, { spells: [...char.spells, newSpell] });
     };
 
     const removeSpellFromCharacter = (characterId: string, spellId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { spells: char.spells.filter(spell => spell.id !== spellId) });
+        updateCharacter(characterId, {
+            spells: char.spells.filter(spell => spell.id !== spellId),
+        });
     };
 
-    const updateSpell = (characterId: string, spellId: string, updates: Partial<Spell>) => {
+    const updateSpell = (
+        characterId: string,
+        spellId: string,
+        updates: Partial<Spell>
+    ) => {
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
@@ -384,6 +464,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     // Квесты
+
     const addQuestToCharacter = (characterId: string, quest: Omit<Quest, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -394,10 +475,16 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeQuestFromCharacter = (characterId: string, questId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { quests: char.quests.filter(q => q.id !== questId) });
+        updateCharacter(characterId, {
+            quests: char.quests.filter(q => q.id !== questId),
+        });
     };
 
-    const updateQuest = (characterId: string, questId: string, updates: Partial<Quest>) => {
+    const updateQuest = (
+        characterId: string,
+        questId: string,
+        updates: Partial<Quest>
+    ) => {
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
@@ -408,7 +495,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     // Кампании
-    const addCampaignToCharacter = (characterId: string, campaign: Omit<Campaign, 'id'>) => {
+
+    const addCampaignToCharacter = (
+        characterId: string,
+        campaign: Omit<Campaign, 'id'>
+    ) => {
         const char = getCharacter(characterId);
         if (!char) return;
         const newCampaign: Campaign = { ...campaign, id: Date.now().toString() };
@@ -418,10 +509,16 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeCampaignFromCharacter = (characterId: string, campaignId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { campaigns: char.campaigns.filter(c => c.id !== campaignId) });
+        updateCharacter(characterId, {
+            campaigns: char.campaigns.filter(c => c.id !== campaignId),
+        });
     };
 
-    const updateCampaign = (characterId: string, campaignId: string, updates: Partial<Campaign>) => {
+    const updateCampaign = (
+        characterId: string,
+        campaignId: string,
+        updates: Partial<Campaign>
+    ) => {
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
@@ -431,7 +528,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    // Dice Logs
+    // Dice logs
     const addDiceLog = (characterId: string, sides: number, result: number) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -448,10 +545,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const startConcentration = (characterId: string, spellId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        // Если уже есть активная концентрация, сбрасываем её (можно также уведомить пользователя)
-        if (char.activeConcentrationSpellId) {
-            // Нужно добавить уведомление
-        }
+        // Если уже есть активная концентрация — она будет перезаписана (можно уведомить пользователя)
         updateCharacter(characterId, { activeConcentrationSpellId: spellId });
     };
 
@@ -464,7 +558,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!char || !char.activeConcentrationSpellId) return;
         const dc = Math.max(10, Math.floor(damage / 2));
         const conMod = Math.floor((char.abilities.con - 10) / 2);
-        setConcentrationCheck({ spellId: char.activeConcentrationSpellId, dc, conMod });
+        setConcentrationCheck({
+            spellId: char.activeConcentrationSpellId,
+            dc,
+            conMod,
+        });
     };
 
     const resolveConcentrationCheck = (characterId: string, success: boolean) => {
@@ -473,6 +571,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     // Feats
+
     const addFeat = (characterId: string, feat: Omit<Feat, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -483,11 +582,17 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeFeat = (characterId: string, featId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { feats: char.feats.filter(f => f.id !== featId) });
+        updateCharacter(characterId, {
+            feats: char.feats.filter(f => f.id !== featId),
+        });
     };
 
     // Currency
-    const updateCurrency = (characterId: string, currency: { gp: number; sp: number; cp: number }) => {
+
+    const updateCurrency = (
+        characterId: string,
+        currency: { gp: number; sp: number; cp: number }
+    ) => {
         updateCharacter(characterId, { currency });
     };
 
