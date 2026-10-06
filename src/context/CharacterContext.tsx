@@ -370,6 +370,12 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         newCharacter = updateFeatsForCharacter(newCharacter);
         newCharacter = recalculateCharacterStats(newCharacter);
 
+        // Гарантируем, что у каждого предмета есть уникальный id
+        newCharacter.inventory = newCharacter.inventory.map(item => ({
+            ...item,
+            id: item.id || `item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        }));
+
         setCharacters(prev => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);
     };
@@ -445,6 +451,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     const removeItemFromInventory = (characterId: string, itemId: string) => {
+        if (!itemId) return;
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
@@ -457,6 +464,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         itemId: string,
         updates: Partial<InventoryItem>
     ) => {
+        if (!itemId) return; // защита от undefined id
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
