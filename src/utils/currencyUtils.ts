@@ -53,3 +53,37 @@ export const parseCurrencyString = (value?: string): Currency | null => {
 
     return found ? result : null;
 };
+
+/**
+ * Пытается извлечь валюту из описания предмета.
+ * Ловит паттерны вида:
+ *   "with 10 gp", "contains 25 gp", "holds 5 sp",
+ *   "50 gp worth", "10 gp."
+ */
+export const extractCurrencyFromDescription = (description?: string): Currency | null => {
+    if (!description) return null;
+
+    const result: Currency = { gp: 0, sp: 0, cp: 0 };
+    let found = false;
+
+    // Разбиваем на токены вида "10 gp", "5 sp", "100 cp"
+    const re = /(\d+)\s*(gp|sp|cp)/gi;
+    let match: RegExpExecArray | null;
+
+    while ((match = re.exec(description)) !== null) {
+        const amount = parseInt(match[1], 10);
+        const unit = match[2].toLowerCase();
+
+        // Отсекаем контексты, где "gp" — не валюта, а часть цены предмета.
+        // Например: "costs 50 gp", "worth 100 gp" — тоже валидные награды.
+        // Оставляем как есть, потому что в стартовом снаряжении это всегда награда.
+
+        if (unit === 'gp') result.gp += amount;
+        else if (unit === 'sp') result.sp += amount;
+        else if (unit === 'cp') result.cp += amount;
+
+        found = true;
+    }
+
+    return found ? result : null;
+};

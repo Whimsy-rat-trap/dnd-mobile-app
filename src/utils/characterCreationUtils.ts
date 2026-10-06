@@ -10,7 +10,12 @@ import { LibraryItem, ALL_ITEMS } from '../constants/items';
 import { getFeatsForCharacter } from '../constants/feats';
 import { Character, InventoryItem, ClassLevel } from '../types/Character';
 import { getRacialEffects } from './racialFeatures';
-import { Currency, EMPTY_CURRENCY, addCurrency } from './currencyUtils';
+import {
+    Currency,
+    EMPTY_CURRENCY,
+    addCurrency,
+    extractCurrencyFromDescription,
+} from './currencyUtils';
 
 export const POINT_BUY_POINTS = 27;
 export const DEFAULT_SKILLS = [
@@ -141,7 +146,24 @@ export function buildStartingItems(
 
     const enrichItem = (item: Omit<LibraryItem, 'id'>): Omit<LibraryItem, 'id'> => {
         const libraryItem = ALL_ITEMS.find(li => li.name === item.name);
-        if (!libraryItem) return item;
+
+        // Определяем итоговую валюту:
+        // 1) явное поле у исходного предмета,
+        // 2) поле из библиотеки,
+        // 3) парсинг описания
+        const finalCurrency =
+            item.currency ??
+            libraryItem?.currency ??
+            extractCurrencyFromDescription(item.description) ??
+            undefined;
+
+        if (!libraryItem) {
+            return {
+                ...item,
+                currency: finalCurrency,
+            };
+        }
+
         return {
             ...item,
             damageDice: item.damageDice ?? libraryItem.damageDice,
@@ -154,7 +176,7 @@ export function buildStartingItems(
             maxDexBonus: item.maxDexBonus ?? libraryItem.maxDexBonus,
             strengthRequirement: item.strengthRequirement ?? libraryItem.strengthRequirement,
             stealthDisadvantage: item.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
-            currency: item.currency ?? libraryItem.currency,
+            currency: finalCurrency,
         };
     };
 
