@@ -6,25 +6,21 @@ export interface LibraryItem {
     description: string;
     attunement?: boolean;
     value?: string;
-    // Оружие
     damageDice?: string;
     damageType?: string;
-    // Исцеление
     healingDice?: string;
-    // Заряды
     uses?: { current: number; max: number };
-    // Броня / щит
     baseAC?: number;
     acBonus?: number;
     dexModifierAllowed?: boolean;
     maxDexBonus?: number;
     strengthRequirement?: number;
     stealthDisadvantage?: boolean;
+    currency?: { gp: number; sp: number; cp: number };
 }
 
 export const ALL_ITEMS: LibraryItem[] = [
-    // Weapons
-    // Simple melee
+    // Weapons — simple melee
     { id: 'w-dagger', name: 'Dagger', type: 'weapon', rarity: 'common', description: 'A small, light blade. Finesse, light, thrown.', damageDice: '1d4', damageType: 'piercing' },
     { id: 'w-handaxe', name: 'Handaxe', type: 'weapon', rarity: 'common', description: 'A light axe for one-handed use. Light, thrown.', damageDice: '1d6', damageType: 'slashing' },
     { id: 'w-javelin', name: 'Javelin', type: 'weapon', rarity: 'common', description: 'A light spear for throwing.', damageDice: '1d6', damageType: 'piercing' },
@@ -37,14 +33,14 @@ export const ALL_ITEMS: LibraryItem[] = [
     { id: 'w-longbow', name: 'Longbow', type: 'weapon', rarity: 'common', description: 'A powerful bow. Heavy, two-handed.', damageDice: '1d8', damageType: 'piercing' },
     { id: 'w-small-knife', name: 'Small Knife', type: 'weapon', rarity: 'common', description: 'A small utility knife.', damageDice: '1d4', damageType: 'piercing' },
 
-    // Simple/martial melee
+    // Weapons — martial melee
     { id: 'w-greataxe', name: 'Greataxe', type: 'weapon', rarity: 'common', description: 'A two-handed axe.', damageDice: '1d12', damageType: 'slashing' },
     { id: 'w-battleaxe', name: 'Battleaxe', type: 'weapon', rarity: 'common', description: 'A one- or two-handed axe.', damageDice: '1d8', damageType: 'slashing' },
     { id: 'w-longsword', name: 'Longsword', type: 'weapon', rarity: 'common', description: 'A versatile one-handed sword.', damageDice: '1d8', damageType: 'slashing' },
     { id: 'w-shortsword', name: 'Shortsword', type: 'weapon', rarity: 'common', description: 'A light, finesse short blade.', damageDice: '1d6', damageType: 'piercing' },
     { id: 'w-rapier', name: 'Rapier', type: 'weapon', rarity: 'common', description: 'A finely balanced, finesse sword.', damageDice: '1d8', damageType: 'piercing' },
 
-    // Magic weapons
+    // Weapons — magic
     { id: 'w1', name: 'Longsword +1', type: 'weapon', rarity: 'uncommon', description: 'A finely crafted longsword with a faint magical aura.', damageDice: '1d8+1', damageType: 'slashing' },
     { id: 'w2', name: 'Dagger of Venom', type: 'weapon', rarity: 'rare', description: 'On a hit, you can activate the dagger to deal an extra 2d10 poison damage.', attunement: true, damageDice: '1d4', damageType: 'piercing' },
     { id: 'w3', name: 'Flame Tongue', type: 'weapon', rarity: 'rare', description: 'While ignited, this sword deals an extra 2d6 fire damage on a hit.', attunement: true, damageDice: '1d8 + 2d6', damageType: 'fire' },
@@ -60,26 +56,25 @@ export const ALL_ITEMS: LibraryItem[] = [
     { id: 'am1', name: 'Arrows (20)', type: 'other', rarity: 'common', description: '20 arrows for a bow.' },
     { id: 'am2', name: 'Bolts (20)', type: 'other', rarity: 'common', description: '20 bolts for a crossbow.' },
 
-    // Armour
-    // Light armor
+    // Armor — light
     { id: 'a1', name: 'Leather Armor', type: 'armor', rarity: 'common', description: 'Standard leather armor.', baseAC: 11, dexModifierAllowed: true },
     { id: 'a8', name: 'Studded Leather +1', type: 'armor', rarity: 'uncommon', description: 'Studded leather armor with a +1 bonus to AC.', baseAC: 13, dexModifierAllowed: true },
 
-    // Medium armor
+    // Armor — medium
     { id: 'a9', name: 'Hide Armor', type: 'armor', rarity: 'common', description: 'Armor made from thick hide.', baseAC: 12, dexModifierAllowed: true, maxDexBonus: 2 },
     { id: 'a10', name: 'Chain Shirt', type: 'armor', rarity: 'common', description: 'A chain shirt.', baseAC: 13, dexModifierAllowed: true, maxDexBonus: 2 },
     { id: 'a11', name: 'Scale Mail', type: 'armor', rarity: 'common', description: 'Scale mail armor.', baseAC: 14, dexModifierAllowed: true, maxDexBonus: 2, stealthDisadvantage: true },
     { id: 'a12', name: 'Breastplate', type: 'armor', rarity: 'common', description: 'A breastplate.', baseAC: 14, dexModifierAllowed: true, maxDexBonus: 2 },
     { id: 'a13', name: 'Half Plate', type: 'armor', rarity: 'common', description: 'Half plate armor.', baseAC: 15, dexModifierAllowed: true, maxDexBonus: 2, stealthDisadvantage: true },
 
-    // Heavy armor
+    // Armor — heavy
     { id: 'a14', name: 'Ring Mail', type: 'armor', rarity: 'common', description: 'Ring mail armor.', baseAC: 14, dexModifierAllowed: false, stealthDisadvantage: true },
     { id: 'a15', name: 'Chain Mail', type: 'armor', rarity: 'common', description: 'Chain mail armor.', baseAC: 16, dexModifierAllowed: false, strengthRequirement: 13, stealthDisadvantage: true },
     { id: 'a16', name: 'Splint Armor', type: 'armor', rarity: 'common', description: 'Splint armor.', baseAC: 17, dexModifierAllowed: false, strengthRequirement: 15, stealthDisadvantage: true },
     { id: 'a17', name: 'Plate Armor', type: 'armor', rarity: 'common', description: 'Plate armor.', baseAC: 18, dexModifierAllowed: false, strengthRequirement: 15, stealthDisadvantage: true },
     { id: 'a2', name: 'Plate Armor +2', type: 'armor', rarity: 'very rare', description: 'Shining plate armor with a +2 bonus to AC.', baseAC: 20, dexModifierAllowed: false, strengthRequirement: 15, stealthDisadvantage: true },
 
-    // Magic armor / accessories
+    // Armor — magic / accessories
     { id: 'a3', name: 'Cloak of Protection', type: 'armor', rarity: 'uncommon', description: 'You gain a +1 bonus to AC and saving throws while wearing this cloak.', acBonus: 1, attunement: true },
     { id: 'a5', name: 'Elven Chain', type: 'armor', rarity: 'rare', description: 'A fine chain shirt that can be worn under clothing.', baseAC: 13, dexModifierAllowed: true },
     { id: 'a6', name: 'Dragon Scale Mail', type: 'armor', rarity: 'very rare', description: 'Armor made from the scales of a dragon. You have resistance to the dragon\'s damage type.', baseAC: 14, dexModifierAllowed: true, maxDexBonus: 2, attunement: true },
@@ -172,7 +167,14 @@ export const ALL_ITEMS: LibraryItem[] = [
     { id: 'g23', name: 'Map of the Region', type: 'other', rarity: 'common', description: 'A map of the region you have traveled.' },
     { id: 'g24', name: 'Lute', type: 'other', rarity: 'common', description: 'A stringed musical instrument.' },
 
-    // Other magical weapons
+    // Currency
+    { id: 'c1', name: 'Pouch of Gold (50 gp)', type: 'other', rarity: 'common', description: 'A small pouch containing 50 gold pieces.', currency: { gp: 50, sp: 0, cp: 0 } },
+    { id: 'c2', name: 'Coin Purse (10 gp, 5 sp)', type: 'other', rarity: 'common', description: 'A leather purse with coins.', currency: { gp: 10, sp: 5, cp: 0 } },
+    { id: 'c3', name: 'Stash of Copper (100 cp)', type: 'other', rarity: 'common', description: 'A stash of copper coins.', currency: { gp: 0, sp: 0, cp: 100 } },
+    { id: 'c4', name: 'Bag of Silver (100 sp)', type: 'other', rarity: 'common', description: 'A bag filled with silver coins.', currency: { gp: 0, sp: 100, cp: 0 } },
+    { id: 'c5', name: 'Treasure Chest (500 gp)', type: 'other', rarity: 'uncommon', description: 'A small chest filled with gold pieces.', currency: { gp: 500, sp: 0, cp: 0 } },
+
+    // Other magic items
     { id: 'o1', name: 'Bag of Holding', type: 'other', rarity: 'uncommon', description: 'A bag that can hold up to 500 pounds of items.' },
     { id: 'o2', name: 'Portable Hole', type: 'other', rarity: 'very rare', description: 'A 6-foot diameter hole that creates a temporary extra-dimensional space.' },
     { id: 'o3', name: 'Cubic Gate', type: 'other', rarity: 'legendary', description: 'A cube that can be used to travel to other planes of existence.', attunement: true },

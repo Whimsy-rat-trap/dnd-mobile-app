@@ -5,6 +5,7 @@ import { recalculateAC } from '../utils/armorUtils';
 import { getRacialSpells } from '../constants/racialSpells';
 import { getFeatsForCharacter } from '../constants/feats';
 import { ALL_ITEMS } from '../constants/items';
+import { Currency, addCurrency, EMPTY_CURRENCY } from '../utils/currencyUtils';
 
 // Default skills
 const defaultSkills = [
@@ -73,7 +74,8 @@ interface CharacterContextType {
     removeFeat: (characterId: string, featId: string) => void;
 
     // Валюта
-    updateCurrency: (characterId: string, currency: { gp: number; sp: number; cp: number }) => void;
+    updateCurrency: (characterId: string, currency: Currency) => void;
+    addCurrencyToCharacter: (characterId: string, amount: Currency) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -209,6 +211,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                             maxDexBonus: invItem.maxDexBonus ?? libraryItem.maxDexBonus,
                             strengthRequirement: invItem.strengthRequirement ?? libraryItem.strengthRequirement,
                             stealthDisadvantage: invItem.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
+                            currency: invItem.currency ?? libraryItem.currency,
                         };
                     });
                 }
@@ -279,7 +282,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             character.subrace,
             character.background
         );
-        const customFeats = character.feats.filter(f => f.source !== 'race' && f.source !== 'subrace' && f.source !== 'class' && f.source !== 'background');
+        const customFeats = character.feats.filter(
+            f =>
+                f.source !== 'race' &&
+                f.source !== 'subrace' &&
+                f.source !== 'class' &&
+                f.source !== 'background'
+        );
         const allFeats = [...autoFeats, ...customFeats];
         const uniqueFeats = allFeats.filter(
             (feat, index, self) => index === self.findIndex(f => f.id === feat.id)
@@ -298,7 +307,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     // CRUD
     const addCharacter = (character: Omit<Character, 'id'>) => {
-        // Формируем classLevels с поддержкой subclass у каждого класса
         const classLevels = (character.classLevels || []).map((cl: any) => ({
             className: cl.className,
             level: cl.level,
@@ -308,22 +316,40 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const mainClass = classLevels[0]?.className || character.class || 'Fighter';
         const mainSubclass = classLevels[0]?.subclass || character.subclass || '';
 
+        // Разделяем инвентарь: предметы с currency уходят в кошелёк, остальные — в инвентарь
+        const rawInventory = character.inventory || [];
+        const cleanInventory: InventoryItem[] = [];
+        let startingCurrency: Currency = { ...(character.currency || EMPTY_CURRENCY) };
+
+        for (const item of rawInventory) {
+            if (item.currency && (item.currency.gp || item.currency.sp || item.currency.cp)) {
+                startingCurrency = addCurrency(startingCurrency, item.currency);
+                continue;
+            }
+            cleanInventory.push(item);
+        }
+
         let newCharacter: Character = {
             ...character,
             id: Date.now().toString(),
             class: mainClass,
             classes: classLevels.map(cl => cl.className) || ['Fighter'],
             level: classLevels.reduce((sum, cl) => sum + cl.level, 0) || 1,
-            classLevels: classLevels.length > 0
-                ? classLevels
-                : [{ className: 'Fighter', level: 1, subclass: '' }],
+            classLevels:
+                classLevels.length > 0
+                    ? classLevels
+                    : [{ className: 'Fighter', level: 1, subclass: '' }],
             subclass: mainSubclass,
-            skills: (character.skills && character.skills.length > 0) ? character.skills : defaultSkills,
-            toolProficiencies: character.toolProficiencies?.map((tool: any) => ({
-                name: tool.name || tool,
-                attribute: tool.attribute || 'DEX',
-                proficient: tool.proficient !== undefined ? tool.proficient : true,
-            })) || [],
+            skills:
+                character.skills && character.skills.length > 0
+                    ? character.skills
+                    : defaultSkills,
+            toolProficiencies:
+                character.toolProficiencies?.map((tool: any) => ({
+                    name: tool.name || tool,
+                    attribute: tool.attribute || 'DEX',
+                    proficient: tool.proficient !== undefined ? tool.proficient : true,
+                })) || [],
             diceLogs: character.diceLogs || {},
             deathSuccesses: character.deathSuccesses ?? 0,
             deathFailures: character.deathFailures ?? 0,
@@ -335,7 +361,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             savingThrowProficiencies: character.savingThrowProficiencies || [],
             activeConcentrationSpellId: null,
             feats: character.feats || [],
-            currency: character.currency || { gp: 0, sp: 0, cp: 0 },
+            currency: startingCurrency,
+            inventory: cleanInventory,
         };
 
         newCharacter = addNaturalWeaponsToCharacter(newCharacter);
@@ -403,6 +430,16 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const addItemToInventory = (characterId: string, item: Omit<InventoryItem, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
+
+        // Если предмет содержит валюту — прибавляем её к кошельку, не кладём в инвентарь
+        if (item.currency && (item.currency.gp || item.currency.sp || item.currency.cp)) {
+            const current = char.currency || EMPTY_CURRENCY;
+            updateCharacter(characterId, {
+                currency: addCurrency(current, item.currency),
+            });
+            return;
+        }
+
         const newItem: InventoryItem = { ...item, id: Date.now().toString() };
         updateCharacter(characterId, { inventory: [...char.inventory, newItem] });
     };
@@ -470,6 +507,18 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!char) return;
         const newQuest: Quest = { ...quest, id: Date.now().toString() };
         updateCharacter(characterId, { quests: [...char.quests, newQuest] });
+
+        // Если квест сразу создан как completed с валютной наградой — начисляем
+        if (
+            newQuest.status === 'completed' &&
+            newQuest.rewardType === 'currency' &&
+            newQuest.rewardCurrency
+        ) {
+            const current = char.currency || EMPTY_CURRENCY;
+            updateCharacter(characterId, {
+                currency: addCurrency(current, newQuest.rewardCurrency),
+            });
+        }
     };
 
     const removeQuestFromCharacter = (characterId: string, questId: string) => {
@@ -487,11 +536,34 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     ) => {
         const char = getCharacter(characterId);
         if (!char) return;
+
+        const existingQuest = char.quests.find(q => q.id === questId);
+        const wasCompleted = existingQuest?.status === 'completed';
+        const willBeCompleted = updates.status === 'completed';
+        const becameCompleted = !wasCompleted && willBeCompleted;
+
         updateCharacter(characterId, {
             quests: char.quests.map(q =>
                 q.id === questId ? { ...q, ...updates } : q
             ),
         });
+
+        // Если квест переведён в completed и имеет валютную награду — начисляем её
+        if (becameCompleted) {
+            const mergedQuest = { ...existingQuest, ...updates } as Quest;
+            if (
+                mergedQuest.rewardType === 'currency' &&
+                mergedQuest.rewardCurrency &&
+                (mergedQuest.rewardCurrency.gp ||
+                    mergedQuest.rewardCurrency.sp ||
+                    mergedQuest.rewardCurrency.cp)
+            ) {
+                const current = char.currency || EMPTY_CURRENCY;
+                updateCharacter(characterId, {
+                    currency: addCurrency(current, mergedQuest.rewardCurrency),
+                });
+            }
+        }
     };
 
     // Кампании
@@ -545,7 +617,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const startConcentration = (characterId: string, spellId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        // Если уже есть активная концентрация — она будет перезаписана (можно уведомить пользователя)
         updateCharacter(characterId, { activeConcentrationSpellId: spellId });
     };
 
@@ -589,11 +660,23 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     // Currency
 
-    const updateCurrency = (
-        characterId: string,
-        currency: { gp: number; sp: number; cp: number }
-    ) => {
-        updateCharacter(characterId, { currency });
+    const updateCurrency = (characterId: string, currency: Currency) => {
+        updateCharacter(characterId, {
+            currency: {
+                gp: Math.max(0, currency.gp || 0),
+                sp: Math.max(0, currency.sp || 0),
+                cp: Math.max(0, currency.cp || 0),
+            },
+        });
+    };
+
+    const addCurrencyToCharacter = (characterId: string, amount: Currency) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+        const current = char.currency || EMPTY_CURRENCY;
+        updateCharacter(characterId, {
+            currency: addCurrency(current, amount),
+        });
     };
 
     const value: CharacterContextType = {
@@ -625,6 +708,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         addFeat,
         removeFeat,
         updateCurrency,
+        addCurrencyToCharacter,
     };
 
     return (

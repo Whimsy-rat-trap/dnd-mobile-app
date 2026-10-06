@@ -10,6 +10,7 @@ import CharacterStats from '../components/dashboard/CharacterStats';
 import DeathSaves from '../components/dashboard/DeathSaves';
 import DiceRollerSection from '../components/dashboard/DiceRollerSection';
 import QuickActions from '../components/dashboard/QuickActions';
+import CurrencyEditModal from '../components/CurrencyEditModal';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
@@ -34,7 +35,6 @@ const Dashboard: React.FC = () => {
         concentrationCheck,
     } = useCharacters();
 
-    // Защита от undefined/null в массиве characters
     const safeCharacters = React.useMemo(
         () => (characters || []).filter(c => c != null),
         [characters]
@@ -42,16 +42,14 @@ const Dashboard: React.FC = () => {
 
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
-    // Состояния для попапов и ввода
     const [popupType, setPopupType] = useState<'hp' | 'exp' | 'settings' | 'profile' | null>(null);
     const [inputValue, setInputValue] = useState<number>(0);
     const [tempInputValue, setTempInputValue] = useState<number>(0);
     const [expInputValue, setExpInputValue] = useState<number>(0);
 
-    // Состояние для попапа выбора режима создания персонажа
     const [showCreatePopup, setShowCreatePopup] = useState(false);
+    const [currencyPopupOpen, setCurrencyPopupOpen] = useState(false);
 
-    // Поиск и фильтры
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [filters, setFilters] = useState({
@@ -68,7 +66,6 @@ const Dashboard: React.FC = () => {
         status: 'all' as 'all' | 'active' | 'archived',
     });
 
-    // Dice roller состояния
     const diceTypes = [4, 6, 8, 10, 12, 20];
     const [openSections, setOpenSections] = useState<Record<number, boolean>>({
         4: false,
@@ -79,7 +76,6 @@ const Dashboard: React.FC = () => {
         20: false,
     });
 
-    // Автоматическое открытие модалки создания при ?create=true
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get('create') === 'true') {
@@ -88,16 +84,13 @@ const Dashboard: React.FC = () => {
         }
     }, [location, navigate]);
 
-    // Обработчик изменения фильтров
     const handleFilterChange = (newFilters: Record<string, any>) => {
-        // Если изменился класс – сбрасываем сабкласс
         if (newFilters.class !== filters.class) {
             newFilters.subclass = '';
         }
         setFilters(newFilters as any);
     };
 
-    // Поля для фильтрации
     const filterFields: FilterField[] = React.useMemo(() => {
         let subclassOptions: { value: string; label: string }[] = [{ value: '', label: 'All' }];
         if (filters.class && SUBCLASSES[filters.class]) {
@@ -107,7 +100,6 @@ const Dashboard: React.FC = () => {
             ];
         }
 
-        // Защита от undefined при сборе подрас
         const subraceOptions = Array.from(new Set(
             safeCharacters.flatMap(c => (c && c.subrace) ? [c.subrace] : [])
         )).map(s => ({ value: s, label: s }));
@@ -165,7 +157,6 @@ const Dashboard: React.FC = () => {
         ];
     }, [filters.class, safeCharacters]);
 
-    // Фильтрация персонажей с защитой от undefined
     const filteredCharacters = safeCharacters.filter(char => {
         if (!char) return false;
         const matchesSearch = char.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -183,7 +174,6 @@ const Dashboard: React.FC = () => {
         return matchesSearch && matchesClass && matchesSubclass && matchesRace && matchesSubrace && matchesLevel && matchesAlive && matchesCreatedAfter && matchesCreatedBefore && matchesLastUsedAfter && matchesLastUsedBefore && matchesStatus;
     });
 
-    // Обработчик удаления персонажа
     const handleDeleteCharacter = (id: string, name: string, e: React.MouseEvent) => {
         e.stopPropagation();
         if (window.confirm(`Delete "${name}"? This action cannot be undone.`)) {
@@ -193,7 +183,6 @@ const Dashboard: React.FC = () => {
 
     const { getCampaignsForCharacter } = useCampaigns();
 
-    // Реальные кампании, в которых состоит персонаж
     const characterCampaigns = React.useMemo(
         () => (character ? getCampaignsForCharacter(character.id) : []),
         [character, getCampaignsForCharacter]
@@ -201,7 +190,6 @@ const Dashboard: React.FC = () => {
 
     const displayCampaigns = characterCampaigns;
 
-    // Экран выбора персонажа
     if (!character) {
         return (
             <div className="db-page">
@@ -238,7 +226,6 @@ const Dashboard: React.FC = () => {
                                 />
                             );
                         })}
-                        {/* Заменяем Link на div с onClick */}
                         <div
                             className="db-character-select-card db-add-card"
                             onClick={() => setShowCreatePopup(true)}
@@ -254,7 +241,6 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Модалка фильтрации */}
                 <FilterModal
                     isOpen={showFilterModal}
                     onClose={() => setShowFilterModal(false)}
@@ -279,7 +265,6 @@ const Dashboard: React.FC = () => {
                     title="Filter Characters"
                 />
 
-                {/* Модалка выбора режима создания */}
                 {showCreatePopup && (
                     <CreateModePopup
                         onSelect={(mode) => {
@@ -293,7 +278,6 @@ const Dashboard: React.FC = () => {
         );
     }
 
-    // Функции для работы с HP и EXP
     const updateChar = (updates: Partial<typeof character>) => {
         updateCharacter(character.id, updates);
     };
@@ -328,7 +312,6 @@ const Dashboard: React.FC = () => {
         }
     };
 
-    // Сброс death saves при восстановлении HP > 0
     const resetDeathSaves = () => {
         if (character.hp > 0) {
             updateCharacter(character.id, {
@@ -350,7 +333,6 @@ const Dashboard: React.FC = () => {
         if (amount <= 0) return;
         const newHp = Math.max(hp - amount, 0);
         updateChar({ hp: newHp });
-        // Проверка концентрации при получении урона (если персонаж концентрируется)
         if (character.activeConcentrationSpellId) {
             makeConcentrationCheck(character.id, amount);
         }
@@ -379,7 +361,6 @@ const Dashboard: React.FC = () => {
         updateChar({ exp: newExp });
     };
 
-    // Death Saving Throws
     const rollDeathSave = () => {
         if (character.isStable || character.status === 'dead') return;
         const roll = Math.floor(Math.random() * 20) + 1;
@@ -440,14 +421,12 @@ const Dashboard: React.FC = () => {
         addDiceLog(character.id, 20, roll);
     };
 
-    // Popups
     const openPopup = (type: 'hp' | 'exp' | 'settings' | 'profile') => setPopupType(type);
     const closePopup = () => {
         if (popupType === 'exp') levelUpIfNeeded();
         setPopupType(null);
     };
 
-    // Dice roller logs
     const logs = character.diceLogs || {};
 
     const toggleSection = (diceType: number) => {
@@ -466,7 +445,6 @@ const Dashboard: React.FC = () => {
         setCurrentCharacterId(null);
     };
 
-    // Активное заклинание с концентрацией
     const activeConcentrationSpell = character.activeConcentrationSpellId
         ? character.spells.find(s => s.id === character.activeConcentrationSpellId)
         : null;
@@ -514,8 +492,12 @@ const Dashboard: React.FC = () => {
                     onProfileClick={() => openPopup('profile')}
                 />
 
-                {/* Currency */}
-                <div className="db-currency-display">
+                <div
+                    className="db-currency-display"
+                    onClick={() => setCurrencyPopupOpen(true)}
+                    style={{ cursor: 'pointer' }}
+                    title="Click to edit currency"
+                >
                     <span className="db-currency-label">Currency</span>
                     <div className="db-currency-values">
                         <span className="db-currency-gp">{currency.gp} gp</span>
@@ -754,6 +736,13 @@ const Dashboard: React.FC = () => {
                     </div>
                 </Modal>
             )}
+
+            <CurrencyEditModal
+                isOpen={currencyPopupOpen}
+                onClose={() => setCurrencyPopupOpen(false)}
+                current={character.currency || { gp: 0, sp: 0, cp: 0 }}
+                onSave={(newCurrency) => updateCharacter(character.id, { currency: newCurrency })}
+            />
         </div>
     );
 };

@@ -73,9 +73,9 @@ export interface InventoryItem {
     rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
     description: string;
     equipped: boolean;
-    damageDice?: string;    // например 2d6
-    damageType?: string;    // fire, slashing
-    healingDice?: string;   // 2d4+2
+    damageDice?: string;
+    damageType?: string;
+    healingDice?: string;
     uses?: { current: number; max: number };
     baseAC?: number;
     acBonus?: number;
@@ -83,6 +83,7 @@ export interface InventoryItem {
     maxDexBonus?: number;
     strengthRequirement?: number;
     stealthDisadvantage?: boolean;
+    currency?: { gp: number; sp: number; cp: number };
 }
 
 export interface Spell {
@@ -111,7 +112,7 @@ export interface Quest {
     name: string;
     description: string;
     status: 'active' | 'completed' | 'failed';
-    rewardType: 'text' | 'item' | 'currency';
+    rewardType?: 'text' | 'item' | 'currency';
     rewardText?: string;
     rewardItemId?: string;  // ID предмета из LibraryItem или custom
     rewardCurrency?: {

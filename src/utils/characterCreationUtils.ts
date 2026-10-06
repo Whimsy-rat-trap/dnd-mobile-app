@@ -8,8 +8,9 @@ import { CLASS_SAVING_THROWS } from '../constants/classSavingThrows';
 import { RACE_DETAILS } from '../constants/raceDetails';
 import { LibraryItem, ALL_ITEMS } from '../constants/items';
 import { getFeatsForCharacter } from '../constants/feats';
-import { Character, InventoryItem } from '../types/Character';
+import { Character, InventoryItem, ClassLevel } from '../types/Character';
 import { getRacialEffects } from './racialFeatures';
+import { Currency, EMPTY_CURRENCY, addCurrency } from './currencyUtils';
 
 export const POINT_BUY_POINTS = 27;
 export const DEFAULT_SKILLS = [
@@ -114,11 +115,16 @@ export function applyBonuses(
     return result;
 }
 
-// Создание инвентаря из стартового снаряжения
+export interface StartingEquipmentResult {
+    items: Omit<InventoryItem, 'id'>[];
+    currency: Currency;
+}
+
+// Создание инвентаря из стартового снаряжения с разделением денег и вещей
 export function buildStartingItems(
     characterClass: string,
     background: string
-): Omit<InventoryItem, 'id'>[] {
+): StartingEquipmentResult {
     const classEquipData = CLASS_STARTING_EQUIPMENT[characterClass];
     const classItems: Omit<LibraryItem, 'id'>[] = [];
     if (classEquipData) {
@@ -148,18 +154,28 @@ export function buildStartingItems(
             maxDexBonus: item.maxDexBonus ?? libraryItem.maxDexBonus,
             strengthRequirement: item.strengthRequirement ?? libraryItem.strengthRequirement,
             stealthDisadvantage: item.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
+            currency: item.currency ?? libraryItem.currency,
         };
     };
 
-    return [...classItems, ...bgItems].map(rawItem => {
+    const items: Omit<InventoryItem, 'id'>[] = [];
+    let currency: Currency = { ...EMPTY_CURRENCY };
+
+    [...classItems, ...bgItems].forEach(rawItem => {
         const item = enrichItem(rawItem);
-        return {
-            id: `start-${Date.now()}-${Math.random()}`,
+
+        // Если предмет — это деньги, складываем в кошелёк, в инвентарь не кладём
+        if (item.currency) {
+            currency = addCurrency(currency, item.currency);
+            return;
+        }
+
+        items.push({
             name: item.name,
             type: item.type,
             rarity: item.rarity,
             description: item.description,
-            equipped: item.type === 'armor' || item.type === 'shield' ? true : false,
+            equipped: item.type === 'armor' || item.type === 'shield',
             damageDice: item.damageDice,
             damageType: item.damageType,
             healingDice: item.healingDice,
@@ -170,14 +186,16 @@ export function buildStartingItems(
             maxDexBonus: item.maxDexBonus,
             strengthRequirement: item.strengthRequirement,
             stealthDisadvantage: item.stealthDisadvantage,
-        };
+        });
     });
+
+    return { items, currency };
 }
 
 // Основная функция построения объекта персонажа
 export function buildCharacter(
     formData: any,
-    classLevels: { className: string; level: number }[],
+    classLevels: ClassLevel[],
     selectedBonusAttrs: (string | null)[],
     selectedRacialSkills: string[],
     selectedRacialTools: string[],
@@ -197,7 +215,7 @@ export function buildCharacter(
     const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
     const raceDetails = RACE_DETAILS[formData.race];
 
-    // Применяем бонусы с учётом подрасы (subrace вместо formData.subrace)
+    // Применяем бонусы с учётом подрасы
     const abilities = applyBonuses(
         formData.abilities,
         formData.race,
@@ -248,7 +266,10 @@ export function buildCharacter(
         });
     const allLanguages = Array.from(new Set([...bgLanguages, ...racialLanguages]));
 
-    const mainClass = classLevels[0]?.className || formData.class;
+    const mainClassLevel = classLevels[0];
+    const mainClass = mainClassLevel?.className || formData.class;
+    const mainSubclass = mainClassLevel?.subclass || formData.subclass || '';
+
     const creatureType = raceDetails?.creatureType || 'Humanoid';
     const size = formData.size || (typeof raceDetails?.size === 'string' ? raceDetails.size : 'Medium');
 
@@ -259,13 +280,20 @@ export function buildCharacter(
         formData.background
     );
 
+    // Стартовое снаряжение: предметы + валюта
+    const startingEquipment = buildStartingItems(formData.class, formData.background);
+
     return {
         ...formData,
         class: mainClass,
         classes: classLevels.map(cl => cl.className),
         level: formData.level,
-        classLevels: classLevels.map(cl => ({ className: cl.className, level: cl.level })),
-        subclass: subrace,
+        classLevels: classLevels.map(cl => ({
+            className: cl.className,
+            level: cl.level,
+            subclass: cl.subclass || '',
+        })),
+        subclass: mainSubclass,
         abilities,
         skills,
         toolProficiencies,
@@ -282,7 +310,8 @@ export function buildCharacter(
         deathSuccesses: 0,
         deathFailures: 0,
         isStable: false,
-        inventory: buildStartingItems(formData.class, formData.background),
+        inventory: startingEquipment.items,
+        currency: startingEquipment.currency,
         spells: [],
         quests: [],
         campaigns: [],

@@ -13,7 +13,15 @@ type RewardType = 'text' | 'item' | 'currency';
 
 const Quest: React.FC = () => {
     const navigate = useNavigate();
-    const { currentCharacterId, getCharacter, addQuestToCharacter, removeQuestFromCharacter, updateQuest, updateCurrency } = useCharacters();
+    const {
+        currentCharacterId,
+        getCharacter,
+        addQuestToCharacter,
+        removeQuestFromCharacter,
+        updateQuest,
+        updateCurrency,
+        addItemToInventory,
+    } = useCharacters();
     const { customItems } = useItems();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
@@ -135,8 +143,74 @@ const Quest: React.FC = () => {
         setShowAddModal(false);
     };
 
+    // Начисление награды за квест
+    const awardQuestReward = (quest: typeof character.quests[0]) => {
+        // Награда валютой
+        if (quest.rewardType === 'currency' && quest.rewardCurrency) {
+            const current = character.currency || { gp: 0, sp: 0, cp: 0 };
+            const reward = quest.rewardCurrency;
+            if (reward.gp || reward.sp || reward.cp) {
+                updateCurrency(character.id, {
+                    gp: current.gp + (reward.gp || 0),
+                    sp: current.sp + (reward.sp || 0),
+                    cp: current.cp + (reward.cp || 0),
+                });
+                const parts: string[] = [];
+                if (reward.gp) parts.push(`${reward.gp} gp`);
+                if (reward.sp) parts.push(`${reward.sp} sp`);
+                if (reward.cp) parts.push(`${reward.cp} cp`);
+                alert(`Reward collected: ${parts.join(' ')}`);
+            }
+            return;
+        }
+
+        // Награда предметом
+        if (quest.rewardType === 'item' && quest.rewardItemId) {
+            const item = allItems.find(i => i.id === quest.rewardItemId);
+            if (!item) return;
+
+            // Если предмет — деньги, addItemToInventory сам направит их в кошелёк
+            addItemToInventory(character.id, {
+                name: item.name,
+                type: item.type,
+                rarity: item.rarity,
+                description: item.description,
+                equipped: false,
+                damageDice: item.damageDice,
+                damageType: item.damageType,
+                healingDice: item.healingDice,
+                uses: item.uses,
+                baseAC: item.baseAC,
+                acBonus: item.acBonus,
+                dexModifierAllowed: item.dexModifierAllowed,
+                maxDexBonus: item.maxDexBonus,
+                strengthRequirement: item.strengthRequirement,
+                stealthDisadvantage: item.stealthDisadvantage,
+                currency: item.currency,
+            });
+
+            const isCurrencyItem = !!item.currency;
+            alert(
+                isCurrencyItem
+                    ? `Currency added to your wallet from "${item.name}".`
+                    : `Item "${item.name}" added to inventory.`
+            );
+        }
+    };
+
     // Изменение статуса
     const handleStatusChange = (questId: string, newStatus: 'active' | 'completed' | 'failed') => {
+        const quest = character.quests.find(q => q.id === questId);
+        if (!quest) return;
+
+        const wasCompleted = quest.status === 'completed';
+        const becomingCompleted = newStatus === 'completed';
+
+        // Начисляем награду только при первом переходе в completed
+        if (!wasCompleted && becomingCompleted) {
+            awardQuestReward(quest);
+        }
+
         updateQuest(character.id, questId, { status: newStatus });
     };
 
@@ -321,7 +395,7 @@ const Quest: React.FC = () => {
                 </div>
             </div>
 
-            {/* Модалка фильтрации (расширенная) */}
+            {/* Модалка фильтрации */}
             {showFilterModal && (
                 <FilterModal
                     isOpen={showFilterModal}

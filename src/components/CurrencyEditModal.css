@@ -1,0 +1,88 @@
+.cem-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: #fff;
+}
+
+.cem-title {
+    margin: 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+.cem-mode-tabs {
+    display: flex;
+    gap: 6px;
+    background: #0f0f0f;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid #1f2937;
+}
+
+.cem-mode-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #9ca3af;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cem-mode-btn.active {
+    background: #34d399;
+    color: #0f0f0f;
+}
+
+.cem-current,
+.cem-preview {
+    font-size: 13px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.cem-current strong,
+.cem-preview strong {
+    color: #fbbf24;
+}
+
+.cem-inputs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.cem-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    flex: 1;
+}
+
+.cem-input-group label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cem-input-group input {
+    width: 100%;
+    padding: 8px 10px;
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+}
+
+.cem-input-group input:focus {
+    border-color: #34d399;
+}

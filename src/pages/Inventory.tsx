@@ -4,6 +4,7 @@ import { useCharacters } from '../context/CharacterContext';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import InventoryItemCard from '../components/InventoryItemCard';
+import CurrencyEditModal from '../components/CurrencyEditModal';
 import { Character, InventoryItem } from '../types/Character';
 import {
     getTypes,
@@ -56,12 +57,10 @@ const computeAttackBonus = (item: InventoryItem, character: Character): number =
     const strMod = getModifier(character.abilities.str);
     const dexMod = getModifier(character.abilities.dex);
 
-    // Natural weapon — обычно STR
     if (item.type === 'natural weapon') {
         return profBonus + strMod;
     }
 
-    // Finesse — максимум из STR/DEX; Ranged — DEX; иначе STR
     const abilityMod = isFinesse(item.name)
         ? Math.max(strMod, dexMod)
         : isRanged(item.name)
@@ -91,6 +90,7 @@ const Inventory: React.FC = () => {
         getCharacter,
         removeItemFromInventory,
         updateItemInInventory,
+        updateCharacter,
         addDiceLog,
     } = useCharacters();
 
@@ -98,12 +98,12 @@ const Inventory: React.FC = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
+    const [currencyPopupOpen, setCurrencyPopupOpen] = useState(false);
     const [filters, setFilters] = useState({
         type: '',
         rarity: '',
     });
 
-    // Хуки должны вызываться всегда, до early return
     const types = useMemo(
         () => (character ? getTypes(character.inventory) : []),
         [character]
@@ -151,7 +151,6 @@ const Inventory: React.FC = () => {
         [character, searchQuery, filters]
     );
 
-    // Early return после всех хуков
     if (!character) {
         return (
             <div className="inv-page">
@@ -180,7 +179,6 @@ const Inventory: React.FC = () => {
         }
     };
 
-    // Логирование бросков атаки в diceLogs персонажа
     const handleAttackRoll = (
         attackRoll: number,
         damageRoll: number | null,
@@ -188,8 +186,6 @@ const Inventory: React.FC = () => {
     ) => {
         addDiceLog(character.id, 20, attackRoll);
         if (damageRoll !== null) {
-            // Логируем урон как бросок d20 с результатом (показываем в общем логе)
-            // В будущем можно расширить diceLogs для произвольных кубиков
             addDiceLog(character.id, 20, damageRoll);
         }
     };
@@ -217,8 +213,12 @@ const Inventory: React.FC = () => {
             </div>
 
             <div className="inv-content">
-                {/* Блок с деньгами */}
-                <div className="inv-currency">
+                <div
+                    className="inv-currency"
+                    onClick={() => setCurrencyPopupOpen(true)}
+                    style={{ cursor: 'pointer' }}
+                    title="Click to edit currency"
+                >
                     <span className="inv-currency-label">Currency:</span>
                     <span className="inv-currency-gp">{character.currency?.gp ?? 0} gp</span>
                     <span className="inv-currency-sp">{character.currency?.sp ?? 0} sp</span>
@@ -285,6 +285,13 @@ const Inventory: React.FC = () => {
                     title="Filter Inventory"
                 />
             )}
+
+            <CurrencyEditModal
+                isOpen={currencyPopupOpen}
+                onClose={() => setCurrencyPopupOpen(false)}
+                current={character.currency || { gp: 0, sp: 0, cp: 0 }}
+                onSave={(newCurrency) => updateCharacter(character.id, { currency: newCurrency })}
+            />
         </div>
     );
 };
