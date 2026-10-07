@@ -14,7 +14,7 @@ import {
     Currency,
     EMPTY_CURRENCY,
     addCurrency,
-    extractCurrencyFromDescription,
+    resolveItemCurrency,
 } from './currencyUtils';
 
 export const POINT_BUY_POINTS = 27;
@@ -125,7 +125,37 @@ export interface StartingEquipmentResult {
     currency: Currency;
 }
 
-// Создание инвентаря из стартового снаряжения с разделением денег и вещей
+/**
+ * Обогащает предмет данными из библиотеки по имени.
+ * Возвращает объект с недостающими полями (damage/AC/uses/currency).
+ */
+function enrichItem(item: Omit<LibraryItem, 'id'>): Omit<LibraryItem, 'id'> {
+    const libraryItem = ALL_ITEMS.find(li => li.name === item.name);
+    if (!libraryItem) return item;
+
+    return {
+        ...item,
+        damageDice: item.damageDice ?? libraryItem.damageDice,
+        damageType: item.damageType ?? libraryItem.damageType,
+        healingDice: item.healingDice ?? libraryItem.healingDice,
+        uses: item.uses ?? libraryItem.uses,
+        baseAC: item.baseAC ?? libraryItem.baseAC,
+        acBonus: item.acBonus ?? libraryItem.acBonus,
+        dexModifierAllowed: item.dexModifierAllowed ?? libraryItem.dexModifierAllowed,
+        maxDexBonus: item.maxDexBonus ?? libraryItem.maxDexBonus,
+        strengthRequirement: item.strengthRequirement ?? libraryItem.strengthRequirement,
+        stealthDisadvantage: item.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
+        currency: item.currency ?? libraryItem.currency,
+    };
+}
+
+/**
+ * Собирает стартовое снаряжение класса и фона.
+ * Предметы-деньги (у которых есть currency или она вычисляется из описания)
+ * автоматически суммируются в кошелёк, а не попадают в инвентарь.
+ *
+ * Предметы возвращаются БЕЗ id — id присвоит addCharacter в контексте.
+ */
 export function buildStartingItems(
     characterClass: string,
     background: string
@@ -141,44 +171,9 @@ export function buildStartingItems(
             });
         }
     }
+
     const bg = DND_BACKGROUNDS.find(b => b.name === background);
     const bgItems = bg?.startingEquipment || [];
-
-    const enrichItem = (item: Omit<LibraryItem, 'id'>): Omit<LibraryItem, 'id'> => {
-        const libraryItem = ALL_ITEMS.find(li => li.name === item.name);
-
-        // Определяем итоговую валюту:
-        // 1) явное поле у исходного предмета,
-        // 2) поле из библиотеки,
-        // 3) парсинг описания
-        const finalCurrency =
-            item.currency ??
-            libraryItem?.currency ??
-            extractCurrencyFromDescription(item.description) ??
-            undefined;
-
-        if (!libraryItem) {
-            return {
-                ...item,
-                currency: finalCurrency,
-            };
-        }
-
-        return {
-            ...item,
-            damageDice: item.damageDice ?? libraryItem.damageDice,
-            damageType: item.damageType ?? libraryItem.damageType,
-            healingDice: item.healingDice ?? libraryItem.healingDice,
-            uses: item.uses ?? libraryItem.uses,
-            baseAC: item.baseAC ?? libraryItem.baseAC,
-            acBonus: item.acBonus ?? libraryItem.acBonus,
-            dexModifierAllowed: item.dexModifierAllowed ?? libraryItem.dexModifierAllowed,
-            maxDexBonus: item.maxDexBonus ?? libraryItem.maxDexBonus,
-            strengthRequirement: item.strengthRequirement ?? libraryItem.strengthRequirement,
-            stealthDisadvantage: item.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
-            currency: finalCurrency,
-        };
-    };
 
     const items: Omit<InventoryItem, 'id'>[] = [];
     let currency: Currency = { ...EMPTY_CURRENCY };
@@ -186,12 +181,17 @@ export function buildStartingItems(
     [...classItems, ...bgItems].forEach(rawItem => {
         const item = enrichItem(rawItem);
 
-        // Если предмет — это деньги, складываем в кошелёк, в инвентарь не кладём
-        if (item.currency) {
-            currency = addCurrency(currency, item.currency);
+        // Определяем: предмет — это деньги?
+        // resolveItemCurrency проверяет в порядке:
+        //   1) явное поле currency
+        //   2) парсинг описания ("with 10 gp", "contains 25 sp", ...)
+        const money = resolveItemCurrency(item);
+        if (money) {
+            currency = addCurrency(currency, money);
             return;
         }
 
+        // Обычный предмет — идёт в инвентарь
         items.push({
             name: item.name,
             type: item.type,

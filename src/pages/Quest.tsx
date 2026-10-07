@@ -6,6 +6,7 @@ import Modal from '../components/Modal';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import { ALL_ITEMS } from '../constants/items';
+import { formatCurrency, resolveItemCurrency } from '../utils/currencyUtils';
 import './Quest.css';
 
 type StatusFilter = 'all' | 'active' | 'completed' | 'failed';
@@ -19,20 +20,18 @@ const Quest: React.FC = () => {
         addQuestToCharacter,
         removeQuestFromCharacter,
         updateQuest,
-        updateCurrency,
+        addCurrency,
         addItemToInventory,
     } = useCharacters();
     const { customItems } = useItems();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
-    // Фильтры и поиск
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingQuestId, setEditingQuestId] = useState<string | null>(null);
 
-    // Форма квеста
     const [questName, setQuestName] = useState('');
     const [questDescription, setQuestDescription] = useState('');
     const [questStatus, setQuestStatus] = useState<'active' | 'completed' | 'failed'>('active');
@@ -42,11 +41,9 @@ const Quest: React.FC = () => {
     const [rewardCurrency, setRewardCurrency] = useState({ gp: 0, sp: 0, cp: 0 });
     const [rewardVisible, setRewardVisible] = useState(false);
 
-    // Модалка выбора предмета
     const [showItemSelector, setShowItemSelector] = useState(false);
     const [itemSearchQuery, setItemSearchQuery] = useState('');
 
-    // Все предметы (стандартные + кастомные)
     const allItems = [...ALL_ITEMS, ...customItems];
 
     if (!character) {
@@ -62,7 +59,6 @@ const Quest: React.FC = () => {
 
     const handleBack = () => navigate(-1);
 
-    // Фильтрация квестов
     const filteredQuests = character.quests.filter(quest => {
         const matchesSearch = quest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             quest.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -71,7 +67,6 @@ const Quest: React.FC = () => {
         return matchesSearch && matchesStatus;
     });
 
-    // Сброс формы
     const resetForm = () => {
         setQuestName('');
         setQuestDescription('');
@@ -84,7 +79,6 @@ const Quest: React.FC = () => {
         setEditingQuestId(null);
     };
 
-    // Открытие модалки для редактирования
     const handleEdit = (questId: string) => {
         const quest = character.quests.find(q => q.id === questId);
         if (!quest) return;
@@ -100,14 +94,12 @@ const Quest: React.FC = () => {
         setShowAddModal(true);
     };
 
-    // Сохранение (добавление или обновление)
     const handleSaveQuest = () => {
         if (!questName.trim()) {
             alert('Please enter a quest name.');
             return;
         }
 
-        // Валидация награды
         if (rewardType === 'item' && !rewardItemId) {
             alert('Please select an item reward.');
             return;
@@ -143,33 +135,34 @@ const Quest: React.FC = () => {
         setShowAddModal(false);
     };
 
-    // Начисление награды за квест
+    /**
+     * Начисляет награду за завершённый квест.
+     * - Currency: addCurrency из контекста (с автонормализацией 10 sp → 1 gp и т.п.).
+     * - Item: addItemToInventory. Если предмет — это деньги (поле currency
+     *   или валюта из описания), контекст сам направит их в кошелёк.
+     */
     const awardQuestReward = (quest: typeof character.quests[0]) => {
-        // Награда валютой
         if (quest.rewardType === 'currency' && quest.rewardCurrency) {
-            const current = character.currency || { gp: 0, sp: 0, cp: 0 };
             const reward = quest.rewardCurrency;
-            if (reward.gp || reward.sp || reward.cp) {
-                updateCurrency(character.id, {
-                    gp: current.gp + (reward.gp || 0),
-                    sp: current.sp + (reward.sp || 0),
-                    cp: current.cp + (reward.cp || 0),
-                });
-                const parts: string[] = [];
-                if (reward.gp) parts.push(`${reward.gp} gp`);
-                if (reward.sp) parts.push(`${reward.sp} sp`);
-                if (reward.cp) parts.push(`${reward.cp} cp`);
-                alert(`Reward collected: ${parts.join(' ')}`);
-            }
+            if (!reward.gp && !reward.sp && !reward.cp) return;
+
+            addCurrency(character.id, reward);
+            alert(`Reward collected: ${formatCurrency(reward)}`);
             return;
         }
 
-        // Награда предметом
         if (quest.rewardType === 'item' && quest.rewardItemId) {
             const item = allItems.find(i => i.id === quest.rewardItemId);
             if (!item) return;
 
-            // Если предмет — деньги, addItemToInventory сам направит их в кошелёк
+            // Если предмет — деньги, обрабатываем отдельно, чтобы показать корректный alert
+            const money = resolveItemCurrency(item);
+            if (money) {
+                addCurrency(character.id, money);
+                alert(`Reward collected: ${formatCurrency(money)}`);
+                return;
+            }
+
             addItemToInventory(character.id, {
                 name: item.name,
                 type: item.type,
@@ -188,17 +181,10 @@ const Quest: React.FC = () => {
                 stealthDisadvantage: item.stealthDisadvantage,
                 currency: item.currency,
             });
-
-            const isCurrencyItem = !!item.currency;
-            alert(
-                isCurrencyItem
-                    ? `Currency added to your wallet from "${item.name}".`
-                    : `Item "${item.name}" added to inventory.`
-            );
+            alert(`Item "${item.name}" added to inventory.`);
         }
     };
 
-    // Изменение статуса
     const handleStatusChange = (questId: string, newStatus: 'active' | 'completed' | 'failed') => {
         const quest = character.quests.find(q => q.id === questId);
         if (!quest) return;
@@ -214,14 +200,12 @@ const Quest: React.FC = () => {
         updateQuest(character.id, questId, { status: newStatus });
     };
 
-    // Удаление квеста
     const handleDelete = (questId: string, questName: string) => {
         if (window.confirm(`Delete quest "${questName}"?`)) {
             removeQuestFromCharacter(character.id, questId);
         }
     };
 
-    // Выбор предмета
     const handleSelectItem = (itemId: string) => {
         setRewardItemId(itemId);
         setShowItemSelector(false);
@@ -258,31 +242,25 @@ const Quest: React.FC = () => {
         }
     };
 
-    // Получение названия предмета по ID
     const getItemName = (itemId: string) => {
         const item = allItems.find(i => i.id === itemId);
         return item ? item.name : 'Unknown Item';
     };
 
-    // Отображение награды в списке
     const renderReward = (quest: any) => {
         if (!quest.rewardType) return null;
         let rewardDisplay = '';
-        let extraClass = '';
+
         if (quest.rewardType === 'text' && quest.rewardText) {
             rewardDisplay = quest.rewardText;
         } else if (quest.rewardType === 'item' && quest.rewardItemId) {
             rewardDisplay = `Item: ${getItemName(quest.rewardItemId)}`;
         } else if (quest.rewardType === 'currency' && quest.rewardCurrency) {
-            const { gp, sp, cp } = quest.rewardCurrency;
-            const parts = [];
-            if (gp) parts.push(`${gp} gp`);
-            if (sp) parts.push(`${sp} sp`);
-            if (cp) parts.push(`${cp} cp`);
-            rewardDisplay = parts.join(' ') || '0 gp';
+            rewardDisplay = formatCurrency(quest.rewardCurrency);
         } else {
             return null;
         }
+
         return (
             <div className="quest-item-reward">
                 <span className="quest-reward-label">Reward: </span>
@@ -314,7 +292,6 @@ const Quest: React.FC = () => {
                 </button>
             </header>
 
-            {/* Контент */}
             <div className="quest-content">
                 <div className="quest-controls">
                     <SearchBar
@@ -395,7 +372,6 @@ const Quest: React.FC = () => {
                 </div>
             </div>
 
-            {/* Модалка фильтрации */}
             {showFilterModal && (
                 <FilterModal
                     isOpen={showFilterModal}
@@ -444,7 +420,6 @@ const Quest: React.FC = () => {
                         </select>
                     </div>
 
-                    {/* Блок награды */}
                     <div className="quest-form-group quest-reward-type-group">
                         <label>Reward Type</label>
                         <div className="quest-reward-type-options">
@@ -570,7 +545,6 @@ const Quest: React.FC = () => {
                 </div>
             </Modal>
 
-            {/* Модалка выбора предмета */}
             <Modal isOpen={showItemSelector} onClose={() => setShowItemSelector(false)}>
                 <h3>Select Reward Item</h3>
                 <div className="quest-item-selector-modal">
