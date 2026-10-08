@@ -1,0 +1,177 @@
+.csm-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: #fff;
+    min-width: 320px;
+}
+
+.csm-title {
+    margin: 0;
+    font-size: 18px;
+    text-align: center;
+    color: #fff;
+}
+
+.csm-meta {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.csm-tag {
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.csm-tag-conc {
+    border-color: #fbbf24;
+    color: #fbbf24;
+}
+
+.csm-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.csm-label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.csm-levels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.csm-level-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 12px;
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 90px;
+}
+
+.csm-level-btn:hover {
+    border-color: #6b7280;
+    color: #e5e7eb;
+}
+
+.csm-level-btn.active {
+    background: rgba(52, 211, 153, 0.15);
+    border-color: #34d399;
+    color: #34d399;
+}
+
+.csm-level-num {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.csm-level-slots {
+    font-size: 11px;
+    opacity: 0.75;
+}
+
+.csm-hint {
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    line-height: 1.4;
+}
+
+.csm-hint-info {
+    background: rgba(96, 165, 250, 0.1);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    color: #93c5fd;
+}
+
+.csm-hint-pact {
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #c4b5fd;
+}
+
+.csm-hint-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.csm-ritual-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #d1d5db;
+    cursor: pointer;
+    padding: 8px 12px;
+    background: #0f0f0f;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+}
+
+.csm-ritual-toggle input[type="checkbox"] {
+    accent-color: #34d399;
+    width: 16px;
+    height: 16px;
+}
+
+.csm-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.csm-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.csm-btn-cancel {
+    background: #374151;
+    color: #9ca3af;
+}
+
+.csm-btn-cancel:hover {
+    background: #4b5563;
+}
+
+.csm-btn-cast {
+    background: #34d399;
+    color: #0f0f0f;
+}
+
+.csm-btn-cast:hover:not(:disabled) {
+    background: #059669;
+}
+
+.csm-btn-cast:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

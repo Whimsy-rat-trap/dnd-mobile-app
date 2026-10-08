@@ -4,10 +4,12 @@ import { useCharacters } from '../context/CharacterContext';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
 import SkillCheck from '../components/SkillCheck';
+import CastSpellModal from '../components/CastSpellModal';
 import { getSpellSlots, getMaxPrepared } from '../utils/spellcasting';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import { SCHOOLS, getElementFromSpell } from '../utils/spellUtils';
 import { COMPONENT_OPTIONS } from '../constants/spellOptions';
+import { Spell } from '../types/Character';
 import './SpellbookContainer.css';
 
 type FilterType = 'all' | 'prepared' | 'notPrepared';
@@ -16,7 +18,15 @@ type ConcentrationFilter = 'all' | 'concentration' | 'noConcentration';
 
 const SpellbookContainer: React.FC = () => {
     const navigate = useNavigate();
-    const { currentCharacterId, getCharacter, updateSpell, startConcentration, endConcentration } = useCharacters();
+    const {
+        currentCharacterId,
+        getCharacter,
+        updateSpell,
+        startConcentration,
+        endConcentration,
+        spendSpellSlot,
+        spendPactSlot,
+    } = useCharacters();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
     const [activeLevel, setActiveLevel] = useState<number>(0);
@@ -29,9 +39,10 @@ const SpellbookContainer: React.FC = () => {
     const [elementFilter, setElementFilter] = useState('');
     const [componentsFilter, setComponentsFilter] = useState<string[]>([]);
 
-    // Состояние для предупреждения о превышении количества подготовленных
     const [isPreparedWarning, setIsPreparedWarning] = useState(false);
     let warningTimeout: NodeJS.Timeout | null = null;
+
+    const [castingSpell, setCastingSpell] = useState<Spell | null>(null);
 
     if (!character) {
         return (
@@ -44,12 +55,10 @@ const SpellbookContainer: React.FC = () => {
         );
     }
 
-    // Получение заклинаний по уровню
     const getSpellsByLevel = (level: number) => {
         return character.spells.filter(spell => spell.level === level);
     };
 
-    // Применение фильтрации по статусу подготовки
     const applyFilter = (spells: typeof character.spells) => {
         if (filterType === 'all') return spells;
         if (filterType === 'prepared') return spells.filter(s => s.prepared);
@@ -57,7 +66,6 @@ const SpellbookContainer: React.FC = () => {
         return spells;
     };
 
-    // Поиск и расширенные фильтры (школа, элемент, тип, компоненты)
     const applySearchAndFilters = (spells: typeof character.spells) => {
         let result = spells;
         if (searchQuery.trim()) {
@@ -86,7 +94,6 @@ const SpellbookContainer: React.FC = () => {
                 result = result.filter(s => s.isRacial);
             }
         }
-        // Фильтр по концентрации
         if (concentrationFilter !== 'all') {
             if (concentrationFilter === 'concentration') {
                 result = result.filter(s => s.requiresConcentration === true);
@@ -99,13 +106,11 @@ const SpellbookContainer: React.FC = () => {
 
     const currentSpells = applySearchAndFilters(applyFilter(getSpellsByLevel(activeLevel)));
 
-    // Формирование заголовка вкладки
     const getTabLabel = (level: number) => {
         if (level === 0) return 'Cantrips';
         return `Level ${level}`;
     };
 
-    // Подсчёт количества заклинаний для каждого уровня (для отображения в скобках)
     const getLevelCount = (level: number) => {
         return character.spells.filter(s => s.level === level).length;
     };
@@ -113,12 +118,15 @@ const SpellbookContainer: React.FC = () => {
     const togglePrepared = (spellId: string) => {
         const spell = character.spells.find(s => s.id === spellId);
         if (!spell) return;
-        if (spell.isRacial) return;
+
+        if (spell.isRacial) {
+            return;
+        }
+
         if (!spell.prepared) {
             const maxPrepared = getMaxPrepared(character);
             const nonRacialPrepared = character.spells.filter(s => !s.isRacial && s.prepared).length;
             if (nonRacialPrepared >= maxPrepared) {
-                // Визуальное предупреждение
                 if (warningTimeout) clearTimeout(warningTimeout);
                 setIsPreparedWarning(true);
                 warningTimeout = setTimeout(() => setIsPreparedWarning(false), 2000);
@@ -133,13 +141,11 @@ const SpellbookContainer: React.FC = () => {
         const spell = character.spells.find(s => s.id === spellId);
         if (!spell || !spell.requiresConcentration) return;
 
-        // Если это заклинание уже активное – завершаем концентрацию
         if (character.activeConcentrationSpellId === spellId) {
             endConcentration(character.id);
             return;
         }
 
-        // Если активно другое заклинание – спрашиваем
         if (character.activeConcentrationSpellId) {
             if (!window.confirm('You are already concentrating on another spell. End it and concentrate on this one?')) {
                 return;
@@ -149,10 +155,45 @@ const SpellbookContainer: React.FC = () => {
         startConcentration(character.id, spellId);
     };
 
+    const handleCastSpell = (
+        level: number,
+        options: { usePact: boolean; asRitual: boolean }
+    ) => {
+        if (!castingSpell) return;
+
+        // Кантрипы и ритуалы не тратят слот
+        if (!options.asRitual && castingSpell.level > 0) {
+            const success = options.usePact
+                ? spendPactSlot(character.id)
+                : spendSpellSlot(character.id, level);
+
+            if (!success) {
+                alert('No spell slot available.');
+                return;
+            }
+        }
+
+        // Если заклинание требует концентрации — начинаем её
+        if (castingSpell.requiresConcentration) {
+            if (
+                character.activeConcentrationSpellId &&
+                character.activeConcentrationSpellId !== castingSpell.id
+            ) {
+                const confirmed = window.confirm(
+                    'You are already concentrating on another spell. End it and start a new one?'
+                );
+                if (!confirmed) return;
+                endConcentration(character.id);
+            }
+            startConcentration(character.id, castingSpell.id);
+        }
+
+        setCastingSpell(null);
+    };
+
     const handleBack = () => navigate(-1);
     const handleAddFromLibrary = () => navigate('/spells');
 
-    // Статистика
     const spellSlotsArray = getSpellSlots(character);
     const totalSlots = spellSlotsArray.reduce((a: number, b: number) => a + b, 0);
     const maxPrepared = getMaxPrepared(character);
@@ -160,12 +201,10 @@ const SpellbookContainer: React.FC = () => {
     const knownCount = character.spells.length;
     const racialCount = character.spells.filter(s => s.isRacial).length;
 
-    // Активная концентрация
     const activeSpell = character.activeConcentrationSpellId
         ? character.spells.find(s => s.id === character.activeConcentrationSpellId)
         : null;
 
-    // Фильтры для модалки (без поля концентрации)
     const filterFields: FilterField[] = [
         {
             key: 'school',
@@ -232,7 +271,19 @@ const SpellbookContainer: React.FC = () => {
                 </div>
             </div>
 
-            {/* Выпадающий список для выбора уровня */}
+            {activeSpell && (
+                <div className="sb-active-concentration">
+                    <span className="sb-concentration-label">Concentrating: </span>
+                    <span className="sb-concentration-spell-name">{activeSpell.name}</span>
+                    <button
+                        className="sb-end-concentration-btn"
+                        onClick={() => endConcentration(character.id)}
+                    >
+                        End
+                    </button>
+                </div>
+            )}
+
             <div className="sb-level-selector">
                 <label htmlFor="level-select">Spell level:</label>
                 <select
@@ -302,7 +353,7 @@ const SpellbookContainer: React.FC = () => {
                             Racial
                         </button>
                     </div>
-                    {/* Новый ряд фильтров по концентрации */}
+                    {/* Фильтры концентрации */}
                     <div className="sb-filter-buttons sb-concentration-filters">
                         <button
                             className={`sb-filter-btn ${concentrationFilter === 'all' ? 'sb-active' : ''}`}
@@ -351,6 +402,8 @@ const SpellbookContainer: React.FC = () => {
                                 isConcentrating={character.activeConcentrationSpellId === spell.id}
                                 onToggleConcentration={() => handleToggleConcentration(spell.id)}
                                 showConcentrationControl={!!spell.requiresConcentration}
+                                showCastButton={true}
+                                onCastClick={() => setCastingSpell(spell)}
                             />
                         ))}
                     </div>
@@ -372,6 +425,14 @@ const SpellbookContainer: React.FC = () => {
                     title="Filter Spells"
                 />
             )}
+
+            <CastSpellModal
+                isOpen={castingSpell !== null}
+                onClose={() => setCastingSpell(null)}
+                spell={castingSpell}
+                character={character}
+                onCast={handleCastSpell}
+            />
         </div>
     );
 };

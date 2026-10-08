@@ -27,6 +27,11 @@ interface SpellCardProps {
     spellDamageBonus?: number;
     /** Колбэк для логирования броска. */
     onAttackRoll?: (attackTotal: number, damageTotal: number | null, sourceName: string) => void;
+
+    /** Показывать ли кнопку Cast. */
+    showCastButton?: boolean;
+    /** Колбэк при клике на Cast — обычно открывает модалку. */
+    onCastClick?: () => void;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -49,8 +54,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  spellAttackBonus = 0,
                                                  spellDamageBonus = 0,
                                                  onAttackRoll,
+                                                 showCastButton = false,
+                                                 onCastClick,
                                              }) => {
-    // Цвета элементов (совпадают с Hub)
     const elementColors: Record<string, string> = {
         fire: '#ef4444',
         force: '#a855f7',
@@ -70,11 +76,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
         return elementColors[element.toLowerCase()] || '#6b7280';
     };
 
-    // Определяем, какой бросок показывать
     const displayRoll = spell.damageRoll || spell.diceRoll;
     const elementColor = getElementColor(spell.element);
 
-    // Показывать ли кнопку атаки: есть формула урона и это не лечение
     const canRollAttack =
         Boolean(displayRoll) &&
         spell.damageType !== 'healing' &&
@@ -82,7 +86,6 @@ const SpellCard: React.FC<SpellCardProps> = ({
 
     return (
         <div className="spell-card">
-            {/* Верхняя часть: заголовок с названием и действиями */}
             <div className="spell-card-header">
                 <div className="spell-card-left">
                     <div className="spell-card-icon"></div>
@@ -113,7 +116,6 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 </div>
             </div>
 
-            {/* Детали заклинания */}
             <div className="spell-card-details">
                 <div className="spell-card-row">
                     <div className="spell-detail-item">
@@ -131,7 +133,6 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 </div>
             </div>
 
-            {/* Теги */}
             <div className="spell-card-tags spell-card-tags-hub">
                 <span className="spell-tag-level">
                     {spell.level === 0 ? 'Cantrip' : `Lv.${spell.level}`}
@@ -143,37 +144,47 @@ const SpellCard: React.FC<SpellCardProps> = ({
                     </span>
                 )}
                 {displayRoll && (
-                    <span
-                        className="spell-tag-dice"
-                        style={{ color: spell.element ? elementColor : '#fff' }}
-                    >
+                    <span className="spell-tag-dice" style={{ color: spell.element ? elementColor : '#fff' }}>
                         {displayRoll}
                     </span>
                 )}
                 {spell.damageType && spell.damageType !== spell.element && (
                     <span className="spell-tag-damage-type">{spell.damageType}</span>
                 )}
+                {spell.isRitual && (
+                    <span className="spell-tag-ritual">Ritual</span>
+                )}
                 {isCustom && <span className="spell-tag-custom">Custom</span>}
                 {spell.isRacial && <span className="spell-tag-racial">Racial</span>}
             </div>
 
-            {/* Кнопка атаки/урона */}
-            {canRollAttack && (
+            {(canRollAttack || showCastButton) && (
                 <div className="spell-card-attack-row">
-                    <AttackRoller
-                        sourceName={spell.name}
-                        damageDice={displayRoll}
-                        damageType={spell.damageType || spell.element}
-                        defaultAttackBonus={spellAttackBonus}
-                        defaultDamageBonus={spellDamageBonus}
-                        onRollAttack={(result) => onAttackRoll?.(result.total, null, spell.name)}
-                        onRollDamage={(result) => onAttackRoll?.(0, result.total, spell.name)}
-                        trigger={
-                            <button className="spell-attack-btn" type="button">
-                                Attack
-                            </button>
-                        }
-                    />
+                    {showCastButton && onCastClick && (
+                        <button
+                            className="spell-cast-btn"
+                            onClick={onCastClick}
+                            type="button"
+                        >
+                            Cast
+                        </button>
+                    )}
+                    {canRollAttack && (
+                        <AttackRoller
+                            sourceName={spell.name}
+                            damageDice={displayRoll}
+                            damageType={spell.damageType || spell.element}
+                            defaultAttackBonus={spellAttackBonus}
+                            defaultDamageBonus={spellDamageBonus}
+                            onRollAttack={(result) => onAttackRoll?.(result.total, null, spell.name)}
+                            onRollDamage={(result) => onAttackRoll?.(0, result.total, spell.name)}
+                            trigger={
+                                <button className="spell-attack-btn" type="button">
+                                    Attack
+                                </button>
+                            }
+                        />
+                    )}
                 </div>
             )}
 

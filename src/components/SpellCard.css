@@ -330,3 +330,38 @@
 .spell-attack-btn:hover {
     background: #dc2626;
 }
+
+.spell-cast-btn {
+    background: #60a5fa;
+    color: #0f0f0f;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.spell-cast-btn:hover {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.spell-tag-ritual {
+    background: rgba(96, 165, 250, 0.15);
+    border: 1px solid #60a5fa;
+    color: #60a5fa;
+    padding: 0 6px;
+    border-radius: 4px;
+    line-height: 18px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.spell-card-attack-row {
+    display: flex;
+    gap: 8px;
+    margin: 6px 0;
+    flex-wrap: wrap;
+}

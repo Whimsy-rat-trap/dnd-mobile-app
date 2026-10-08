@@ -109,6 +109,8 @@ export interface Spell {
     diceRoll?: string;
     damageRoll?: string;
     damageType?: string;
+    /** Можно ли кастовать как ритуал (не тратит слот). */
+    isRitual?: boolean;
 }
 
 export interface Quest {
