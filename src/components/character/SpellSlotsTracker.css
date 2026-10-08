@@ -1,0 +1,108 @@
+.sst-container {
+    width: 353px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: #1f2937;
+    border-radius: 12px;
+    box-sizing: border-box;
+}
+
+.sst-header {
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 14px;
+    color: #34d399;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sst-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sst-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sst-row-pact {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px dashed #374957;
+}
+
+.sst-label {
+    font-family: var(--font-family);
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 500;
+    min-width: 62px;
+}
+
+.sst-dots {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.sst-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #374957;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.sst-dot.available {
+    background: #34d399;
+    border-color: #34d399;
+}
+
+.sst-dot.available:hover {
+    background: #059669;
+    border-color: #059669;
+    transform: scale(1.2);
+}
+
+.sst-dot.used {
+    background: #0f0f0f;
+    border-color: #374957;
+}
+
+.sst-dot.used:hover {
+    border-color: #ef4444;
+}
+
+.sst-dot.pact.available {
+    background: #a855f7;
+    border-color: #a855f7;
+}
+
+.sst-dot.pact.available:hover {
+    background: #7e22ce;
+    border-color: #7e22ce;
+}
+
+.sst-count {
+    font-family: var(--font-family);
+    font-size: 12px;
+    color: #d1d5db;
+    font-weight: 600;
+    min-width: 34px;
+    text-align: right;
+}
+
+.sst-hint {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+}

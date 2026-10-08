@@ -234,3 +234,82 @@ export function getMaxPrepared(character: Character): number {
 export function getKnownSpells(character: Character): number {
     return character.spells.length;
 }
+
+/**
+ * Возвращает слоты только обычных кастеров (без Warlock).
+ * Pact Magic учитывается отдельно.
+ */
+export function getNonPactSpellSlots(character: Character): number[] {
+    const classLevels = character.classLevels || [];
+    let totalCasterLevel = 0;
+
+    for (const cl of classLevels) {
+        if (cl.className !== WARLOCK_CLASS) {
+            totalCasterLevel += getCasterLevelContribution(cl);
+        }
+    }
+
+    if (totalCasterLevel === 0) return Array(9).fill(0);
+    return getFullCasterSlots(totalCasterLevel);
+}
+
+export interface PactMagicInfo {
+    slotLevel: number;
+    total: number;
+    used: number;
+    available: number;
+}
+
+/**
+ * Возвращает информацию о Pact Magic (Warlock).
+ * null, если персонаж не имеет уровней Warlock.
+ */
+export function getPactMagicInfo(character: Character): PactMagicInfo | null {
+    const classLevels = character.classLevels || [];
+    const warlockLevel = classLevels
+        .filter(cl => cl.className === WARLOCK_CLASS)
+        .reduce((sum, cl) => sum + cl.level, 0);
+
+    if (warlockLevel === 0) return null;
+
+    const slots = getWarlockSlots(warlockLevel);
+    const idx = slots.findIndex(n => n > 0);
+    if (idx === -1) return null;
+
+    const total = slots[idx];
+    const used = Math.min(character.usedPactSlots || 0, total);
+
+    return {
+        slotLevel: idx + 1,
+        total,
+        used,
+        available: total - used,
+    };
+}
+
+/**
+ * Возвращает массив использованных слотов (индекс 0 = 1-й уровень).
+ * Если поле отсутствует — возвращает нули.
+ */
+export function getUsedSpellSlots(character: Character): number[] {
+    const base = character.usedSpellSlots || [];
+    return Array.from({ length: 9 }, (_, i) => base[i] || 0);
+}
+
+/**
+ * Возвращает доступные слоты обычных кастеров (total - used).
+ */
+export function getAvailableSpellSlots(character: Character): number[] {
+    const total = getNonPactSpellSlots(character);
+    const used = getUsedSpellSlots(character);
+    return total.map((t, i) => Math.max(0, t - used[i]));
+}
+
+/**
+ * Есть ли у персонажа хоть какие-то слоты (обычные или pact).
+ */
+export function hasAnySpellSlots(character: Character): boolean {
+    const regular = getNonPactSpellSlots(character).some(n => n > 0);
+    const pact = getPactMagicInfo(character);
+    return regular || !!pact;
+}

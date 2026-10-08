@@ -15,19 +15,30 @@ import ToolsSection from '../components/character/ToolsSection';
 import LanguagesSection from '../components/character/LanguagesSection';
 import PassiveEffectsSection from '../components/character/PassiveEffectsSection';
 import SpellcastingSection from '../components/character/SpellcastingSection';
+import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
 import HpEditPopup from '../components/character/HpEditPopup';
 import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { getActivePassiveEffects } from '../utils/racialFeatures';
-import {getProficiencyBonus, getModifier, getACInfo, getAttackBonuses,} from '../utils/characterUtils';
+import { getProficiencyBonus, getModifier, getACInfo, getAttackBonuses } from '../utils/characterUtils';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const {
-        getCharacter, updateCharacter, setCurrentCharacterId,
-        deleteCharacter, addFeat, removeFeat,
+        getCharacter,
+        updateCharacter,
+        setCurrentCharacterId,
+        deleteCharacter,
+        addFeat,
+        removeFeat,
+        spendSpellSlot,
+        restoreSpellSlot,
+        spendPactSlot,
+        restorePactSlot,
+        longRest,
+        shortRest,
     } = useCharacters();
 
     const character = id ? getCharacter(id) : undefined;
@@ -186,6 +197,28 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Rest actions */}
+                <div className="cc-rest-actions">
+                    <button
+                        className="cc-rest-btn"
+                        onClick={() => shortRest(character.id)}
+                        title="Restores Pact Magic slots (Warlock)"
+                    >
+                        Short Rest
+                    </button>
+                    <button
+                        className="cc-rest-btn cc-rest-btn-long"
+                        onClick={() => {
+                            if (window.confirm('Take a Long Rest? This restores all spell slots, HP, and resets death saves.')) {
+                                longRest(character.id);
+                            }
+                        }}
+                        title="Restores HP, spell slots, and resets death saves"
+                    >
+                        Long Rest
+                    </button>
+                </div>
+
                 <AbilitiesSection abilities={character.abilities} />
 
                 <AttacksSection
@@ -196,6 +229,14 @@ const CharacterContainer: React.FC = () => {
                 />
 
                 <SpellcastingSection character={character} />
+
+                <SpellSlotsTracker
+                    character={character}
+                    onUseSlot={(level) => spendSpellSlot(character.id, level)}
+                    onRestoreSlot={(level) => restoreSpellSlot(character.id, level)}
+                    onUsePact={() => spendPactSlot(character.id)}
+                    onRestorePact={() => restorePactSlot(character.id)}
+                />
 
                 <SavingThrowsSection
                     abilities={character.abilities}

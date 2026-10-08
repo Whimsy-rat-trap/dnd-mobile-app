@@ -64,6 +64,10 @@ export interface Character {
     deathFailures: number;
     isStable: boolean;
     activeConcentrationSpellId?: string | null;
+    /** Сколько слотов потрачено на каждом уровне (индекс 0 = 1-й уровень, 8 = 9-й). */
+    usedSpellSlots?: number[];
+    /** Сколько слотов Pact Magic потрачено (для Warlock). */
+    usedPactSlots?: number;
 }
 
 export interface InventoryItem {

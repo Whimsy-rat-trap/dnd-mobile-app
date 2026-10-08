@@ -6,6 +6,11 @@ import { getRacialSpells } from '../constants/racialSpells';
 import { getFeatsForCharacter } from '../constants/feats';
 import { ALL_ITEMS } from '../constants/items';
 import {
+    getNonPactSpellSlots,
+    getUsedSpellSlots,
+    getPactMagicInfo,
+} from '../utils/spellcasting';
+import {
     Currency,
     EMPTY_CURRENCY,
     addCurrency as addCurrencyPure,
@@ -66,6 +71,12 @@ interface CharacterContextType {
     updateCurrency: (characterId: string, currency: Currency) => void;
     addCurrency: (characterId: string, amount: Currency) => void;
     subtractCurrency: (characterId: string, amount: Currency) => { ok: boolean; result: Currency };
+    spendSpellSlot: (characterId: string, level: number) => boolean;
+    restoreSpellSlot: (characterId: string, level: number) => void;
+    spendPactSlot: (characterId: string) => boolean;
+    restorePactSlot: (characterId: string) => void;
+    longRest: (characterId: string) => void;
+    shortRest: (characterId: string) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -160,6 +171,14 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.currency = { gp: 0, sp: 0, cp: 0 };
                 } else {
                     updated.currency = normalizeCurrency(updated.currency);
+                }
+
+                // Миграция слотов заклинаний
+                if (!Array.isArray(updated.usedSpellSlots) || updated.usedSpellSlots.length !== 9) {
+                    updated.usedSpellSlots = Array(9).fill(0);
+                }
+                if (typeof updated.usedPactSlots !== 'number') {
+                    updated.usedPactSlots = 0;
                 }
 
                 // Гарантируем id у всех предметов инвентаря
@@ -291,9 +310,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             activeConcentrationSpellId: null,
             feats: character.feats || [],
             currency: normalizeCurrency(character.currency || EMPTY_CURRENCY),
+            usedSpellSlots: Array(9).fill(0),
+            usedPactSlots: 0,
         };
 
-        // Гарантируем id у всех предметов инвентаря
         newCharacter.inventory = newCharacter.inventory.map(item => ({
             ...item,
             id: item.id || `item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -539,6 +559,86 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         return { ok, result };
     };
 
+    // Работа со слотами заклинаний
+    const spendSpellSlot = (characterId: string, level: number): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const levelIdx = level - 1;
+        if (levelIdx < 0 || levelIdx > 8) return false;
+
+        const total = getNonPactSpellSlots(char);
+        const used = getUsedSpellSlots(char);
+
+        if (total[levelIdx] === 0) return false;
+        if (used[levelIdx] >= total[levelIdx]) return false;
+
+        const newUsed = [...used];
+        newUsed[levelIdx] += 1;
+        updateCharacter(characterId, { usedSpellSlots: newUsed });
+        return true;
+    };
+
+    const restoreSpellSlot = (characterId: string, level: number) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        const levelIdx = level - 1;
+        if (levelIdx < 0 || levelIdx > 8) return;
+
+        const used = getUsedSpellSlots(char);
+        if (used[levelIdx] === 0) return;
+
+        const newUsed = [...used];
+        newUsed[levelIdx] -= 1;
+        updateCharacter(characterId, { usedSpellSlots: newUsed });
+    };
+
+    const spendPactSlot = (characterId: string): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const pact = getPactMagicInfo(char);
+        if (!pact || pact.available <= 0) return false;
+
+        updateCharacter(characterId, { usedPactSlots: (char.usedPactSlots || 0) + 1 });
+        return true;
+    };
+
+    const restorePactSlot = (characterId: string) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        const current = char.usedPactSlots || 0;
+        if (current === 0) return;
+
+        updateCharacter(characterId, { usedPactSlots: current - 1 });
+    };
+
+    const longRest = (characterId: string) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        updateCharacter(characterId, {
+            usedSpellSlots: Array(9).fill(0),
+            usedPactSlots: 0,
+            hp: char.maxHp,
+            tempHp: 0,
+            deathSuccesses: 0,
+            deathFailures: 0,
+            isStable: false,
+        });
+    };
+
+    const shortRest = (characterId: string) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        updateCharacter(characterId, {
+            usedPactSlots: 0,
+        });
+    };
+
     const value: CharacterContextType = {
         characters,
         currentCharacterId,
@@ -570,6 +670,12 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCurrency,
         addCurrency,
         subtractCurrency,
+        spendSpellSlot,
+        restoreSpellSlot,
+        spendPactSlot,
+        restorePactSlot,
+        longRest,
+        shortRest,
     };
 
     return (

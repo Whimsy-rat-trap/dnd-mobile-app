@@ -11,6 +11,7 @@ import DeathSaves from '../components/dashboard/DeathSaves';
 import DiceRollerSection from '../components/dashboard/DiceRollerSection';
 import QuickActions from '../components/dashboard/QuickActions';
 import CurrencyEditModal from '../components/CurrencyEditModal';
+import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
@@ -33,6 +34,12 @@ const Dashboard: React.FC = () => {
         makeConcentrationCheck,
         resolveConcentrationCheck,
         concentrationCheck,
+        spendSpellSlot,
+        restoreSpellSlot,
+        spendPactSlot,
+        restorePactSlot,
+        longRest,
+        shortRest,
     } = useCharacters();
 
     const safeCharacters = React.useMemo(
@@ -525,6 +532,33 @@ const Dashboard: React.FC = () => {
                         </button>
                     </div>
                 )}
+
+                <SpellSlotsTracker
+                    character={character}
+                    onUseSlot={(level) => spendSpellSlot(character.id, level)}
+                    onRestoreSlot={(level) => restoreSpellSlot(character.id, level)}
+                    onUsePact={() => spendPactSlot(character.id)}
+                    onRestorePact={() => restorePactSlot(character.id)}
+                />
+
+                <div className="db-rest-actions">
+                    <button
+                        className="db-rest-btn"
+                        onClick={() => shortRest(character.id)}
+                    >
+                        Short Rest
+                    </button>
+                    <button
+                        className="db-rest-btn db-rest-btn-long"
+                        onClick={() => {
+                            if (window.confirm('Take a Long Rest? This will restore HP, spell slots, and death saves.')) {
+                                longRest(character.id);
+                            }
+                        }}
+                    >
+                        Long Rest
+                    </button>
+                </div>
 
                 <QuickActions
                     characterId={character.id}
