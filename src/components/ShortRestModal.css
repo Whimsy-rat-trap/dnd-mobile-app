@@ -1,0 +1,246 @@
+.srm-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #fff;
+    min-width: 320px;
+}
+
+.srm-title {
+    font-family: var(--font-family);
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    text-align: center;
+}
+
+.srm-subtitle {
+    font-family: var(--font-family);
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    margin: 0 0 4px 0;
+    line-height: 1.4;
+}
+
+.srm-hp-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1f2937;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.srm-hp-label {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.srm-hp-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ef4444;
+}
+
+.srm-temp-hp {
+    font-weight: 600;
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+.srm-pools {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #1f2937;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.srm-pool-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.srm-pool-label {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 600;
+    min-width: 32px;
+    text-transform: uppercase;
+}
+
+.srm-pool-dots {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.srm-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    border: 1px solid #374957;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.srm-dot.available {
+    background: #fbbf24;
+    border-color: #fbbf24;
+}
+
+.srm-dot.available:hover {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    transform: scale(1.2);
+}
+
+.srm-dot.used {
+    background: #0f0f0f;
+    border-color: #374957;
+    cursor: not-allowed;
+}
+
+.srm-pool-count {
+    font-size: 12px;
+    color: #d1d5db;
+    font-weight: 600;
+    min-width: 34px;
+    text-align: right;
+}
+
+.srm-empty {
+    font-size: 13px;
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+    padding: 12px;
+    background: #1f2937;
+    border-radius: 10px;
+}
+
+.srm-log {
+    background: #111827;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.srm-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2a3747;
+    padding-bottom: 6px;
+}
+
+.srm-log-title {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.srm-log-total {
+    font-size: 13px;
+    color: #34d399;
+    font-weight: 700;
+}
+
+.srm-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.srm-log-list::-webkit-scrollbar {
+    width: 4px;
+}
+.srm-log-list::-webkit-scrollbar-thumb {
+    background: #374957;
+    border-radius: 2px;
+}
+
+.srm-log-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: #1f2937;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 13px;
+}
+
+.srm-log-die {
+    color: #fbbf24;
+    font-weight: 700;
+    min-width: 28px;
+}
+
+.srm-log-formula {
+    color: #d1d5db;
+    flex: 1;
+}
+
+.srm-log-formula strong {
+    color: #34d399;
+}
+
+.srm-log-hp {
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.srm-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.srm-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    border: 1px solid transparent;
+}
+
+.srm-btn-secondary {
+    background: transparent;
+    border-color: #374957;
+    color: #d1d5db;
+}
+
+.srm-btn-secondary:hover {
+    background: #374151;
+    border-color: #6b7280;
+}
+
+.srm-btn-primary {
+    background: #34d399;
+    border-color: #34d399;
+    color: #0f0f0f;
+}
+
+.srm-btn-primary:hover {
+    background: #059669;
+    border-color: #059669;
+}

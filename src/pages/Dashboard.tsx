@@ -12,6 +12,7 @@ import DiceRollerSection from '../components/dashboard/DiceRollerSection';
 import QuickActions from '../components/dashboard/QuickActions';
 import CurrencyEditModal from '../components/CurrencyEditModal';
 import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
+import ShortRestModal from '../components/ShortRestModal'; // [SHORT REST]
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
@@ -56,6 +57,7 @@ const Dashboard: React.FC = () => {
 
     const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [currencyPopupOpen, setCurrencyPopupOpen] = useState(false);
+    const [shortRestOpen, setShortRestOpen] = useState(false); // [SHORT REST]
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -542,9 +544,10 @@ const Dashboard: React.FC = () => {
                 />
 
                 <div className="db-rest-actions">
+                    {/* Short rest */}
                     <button
                         className="db-rest-btn"
-                        onClick={() => shortRest(character.id)}
+                        onClick={() => setShortRestOpen(true)}
                     >
                         Short Rest
                     </button>
@@ -776,6 +779,13 @@ const Dashboard: React.FC = () => {
                 onClose={() => setCurrencyPopupOpen(false)}
                 current={character.currency || { gp: 0, sp: 0, cp: 0 }}
                 onSave={(newCurrency) => updateCharacter(character.id, { currency: newCurrency })}
+            />
+
+            {/* Short Rest */}
+            <ShortRestModal
+                isOpen={shortRestOpen}
+                onClose={() => setShortRestOpen(false)}
+                characterId={character.id}
             />
         </div>
     );
