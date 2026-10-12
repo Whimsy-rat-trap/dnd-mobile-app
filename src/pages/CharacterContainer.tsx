@@ -4,6 +4,7 @@ import { useCharacters } from '../context/CharacterContext';
 import DiceRoller from '../components/DiceRoller';
 import Modal from '../components/Modal';
 import AddFeatModal from '../components/AddFeatModal';
+import AttackRoller from '../components/AttackRoller';
 import CharacterInfoSection from '../components/character/CharacterInfoSection';
 import AbilitiesSection from '../components/character/AbilitiesSection';
 import AttacksSection from '../components/character/AttacksSection';
@@ -16,11 +17,14 @@ import LanguagesSection from '../components/character/LanguagesSection';
 import PassiveEffectsSection from '../components/character/PassiveEffectsSection';
 import SpellcastingSection from '../components/character/SpellcastingSection';
 import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
+import HitDiceTracker from '../components/character/HitDiceTracker';
 import HpEditPopup from '../components/character/HpEditPopup';
 import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { getActivePassiveEffects } from '../utils/racialFeatures';
-import { getProficiencyBonus, getModifier, getACInfo, getAttackBonuses } from '../utils/characterUtils';
+import {
+    getProficiencyBonus, getModifier, getACInfo, getAttackBonuses,
+} from '../utils/characterUtils';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -37,6 +41,8 @@ const CharacterContainer: React.FC = () => {
         restoreSpellSlot,
         spendPactSlot,
         restorePactSlot,
+        spendHitDie,
+        restoreHitDie,
         longRest,
         shortRest,
     } = useCharacters();
@@ -147,6 +153,18 @@ const CharacterContainer: React.FC = () => {
         update({ savingThrowProficiencies: updated });
     };
 
+    const handleSpendHitDie = (sides: number) => {
+        const result = spendHitDie(character.id, sides);
+        if (!result) return;
+
+        const newHp = Math.min(character.hp + result.heal, character.maxHp);
+        updateCharacter(character.id, { hp: newHp });
+
+        alert(
+            `Rolled d${result.sides}: ${result.roll} + CON ${result.conMod >= 0 ? '+' : ''}${result.conMod} = ${result.heal} HP restored.`
+        );
+    };
+
     const hp = character.hp;
     const maxHp = character.maxHp;
     const tempHp = character.tempHp || 0;
@@ -197,28 +215,6 @@ const CharacterContainer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Rest actions */}
-                <div className="cc-rest-actions">
-                    <button
-                        className="cc-rest-btn"
-                        onClick={() => shortRest(character.id)}
-                        title="Restores Pact Magic slots (Warlock)"
-                    >
-                        Short Rest
-                    </button>
-                    <button
-                        className="cc-rest-btn cc-rest-btn-long"
-                        onClick={() => {
-                            if (window.confirm('Take a Long Rest? This restores all spell slots, HP, and resets death saves.')) {
-                                longRest(character.id);
-                            }
-                        }}
-                        title="Restores HP, spell slots, and resets death saves"
-                    >
-                        Long Rest
-                    </button>
-                </div>
-
                 <AbilitiesSection abilities={character.abilities} />
 
                 <AttacksSection
@@ -237,6 +233,33 @@ const CharacterContainer: React.FC = () => {
                     onUsePact={() => spendPactSlot(character.id)}
                     onRestorePact={() => restorePactSlot(character.id)}
                 />
+
+                <HitDiceTracker
+                    character={character}
+                    onSpendDie={handleSpendHitDie}
+                    onRestoreDie={(sides) => restoreHitDie(character.id, sides)}
+                />
+
+                <div className="cc-rest-actions">
+                    <button
+                        className="cc-rest-btn"
+                        onClick={() => shortRest(character.id)}
+                        title="Restores Pact Magic slots (Warlock)"
+                    >
+                        Short Rest
+                    </button>
+                    <button
+                        className="cc-rest-btn cc-rest-btn-long"
+                        onClick={() => {
+                            if (window.confirm('Take a Long Rest? This will restore HP, spell slots, hit dice, and death saves.')) {
+                                longRest(character.id);
+                            }
+                        }}
+                        title="Restores HP, spell slots, and resets death saves"
+                    >
+                        Long Rest
+                    </button>
+                </div>
 
                 <SavingThrowsSection
                     abilities={character.abilities}

@@ -18,6 +18,11 @@ import {
     normalizeCurrency,
     resolveItemCurrency,
 } from '../utils/currencyUtils';
+import {
+    rollHitDie,
+    restoreHitDiceOnLongRest,
+    HitDieRollResult,
+} from '../utils/hitDice';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -75,6 +80,8 @@ interface CharacterContextType {
     restoreSpellSlot: (characterId: string, level: number) => void;
     spendPactSlot: (characterId: string) => boolean;
     restorePactSlot: (characterId: string) => void;
+    spendHitDie: (characterId: string, sides: number) => HitDieRollResult | null;
+    restoreHitDie: (characterId: string, sides: number) => void;
     longRest: (characterId: string) => void;
     shortRest: (characterId: string) => void;
 }
@@ -104,9 +111,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     if (updated.classes && updated.level) {
                         updated.classLevels = updated.classes.map((cls: string) => ({ className: cls, level: updated.level }));
                     } else if (updated.class) {
-                        updated.classLevels = [{ className: updated.class, level: updated.level || 1 }];
+                        updated.classLevels = [{ className: updated.class, level: updated.level || 1, subclass: '' }];
                     } else {
-                        updated.classLevels = [{ className: 'Fighter', level: 1 }];
+                        updated.classLevels = [{ className: 'Fighter', level: 1, subclass: '' }];
                     }
                 }
                 if (updated.classLevels.length > 0) {
@@ -129,10 +136,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 if (!updated.skills || updated.skills.length === 0) {
                     updated.skills = defaultSkills;
                 }
-
-                if (!updated.diceLogs) {
-                    updated.diceLogs = {};
-                }
+                if (!updated.diceLogs) updated.diceLogs = {};
 
                 if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
                 if (updated.deathFailures === undefined) updated.deathFailures = 0;
@@ -181,7 +185,12 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.usedPactSlots = 0;
                 }
 
-                // Гарантируем id у всех предметов инвентаря
+                // Миграция hit dice
+                if (!updated.hitDiceUsed || typeof updated.hitDiceUsed !== 'object') {
+                    updated.hitDiceUsed = {};
+                }
+
+                // Гарантируем id у предметов инвентаря
                 if (Array.isArray(updated.inventory)) {
                     updated.inventory = updated.inventory.map((item: any) => {
                         const withId = {
@@ -272,10 +281,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const uniqueFeats = allFeats.filter((feat, index, self) =>
             index === self.findIndex(f => f.id === feat.id)
         );
-        return {
-            ...character,
-            feats: uniqueFeats,
-        };
+        return { ...character, feats: uniqueFeats };
     };
 
     const recalculateCharacterStats = (character: Character): Character => {
@@ -312,6 +318,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             currency: normalizeCurrency(character.currency || EMPTY_CURRENCY),
             usedSpellSlots: Array(9).fill(0),
             usedPactSlots: 0,
+            hitDiceUsed: {},
         };
 
         newCharacter.inventory = newCharacter.inventory.map(item => ({
@@ -559,7 +566,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         return { ok, result };
     };
 
-    // Работа со слотами заклинаний
+    // Spell slots
     const spendSpellSlot = (characterId: string, level: number): boolean => {
         const char = getCharacter(characterId);
         if (!char) return false;
@@ -582,13 +589,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const restoreSpellSlot = (characterId: string, level: number) => {
         const char = getCharacter(characterId);
         if (!char) return;
-
         const levelIdx = level - 1;
         if (levelIdx < 0 || levelIdx > 8) return;
-
         const used = getUsedSpellSlots(char);
         if (used[levelIdx] === 0) return;
-
         const newUsed = [...used];
         newUsed[levelIdx] -= 1;
         updateCharacter(characterId, { usedSpellSlots: newUsed });
@@ -597,10 +601,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const spendPactSlot = (characterId: string): boolean => {
         const char = getCharacter(characterId);
         if (!char) return false;
-
         const pact = getPactMagicInfo(char);
         if (!pact || pact.available <= 0) return false;
-
         updateCharacter(characterId, { usedPactSlots: (char.usedPactSlots || 0) + 1 });
         return true;
     };
@@ -608,13 +610,51 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const restorePactSlot = (characterId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-
         const current = char.usedPactSlots || 0;
         if (current === 0) return;
-
         updateCharacter(characterId, { usedPactSlots: current - 1 });
     };
 
+    // Hit dice
+    const spendHitDie = (characterId: string, sides: number): HitDieRollResult | null => {
+        const char = getCharacter(characterId);
+        if (!char) return null;
+
+        const result = rollHitDie(char, sides);
+        if (!result) return null;
+
+        const usedMap = char.hitDiceUsed || {};
+        const currentUsed = usedMap[sides] || 0;
+
+        updateCharacter(characterId, {
+            hitDiceUsed: {
+                ...usedMap,
+                [sides]: currentUsed + 1,
+            },
+        });
+
+        return result;
+    };
+
+    const restoreHitDie = (characterId: string, sides: number) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+        const usedMap = char.hitDiceUsed || {};
+        const currentUsed = usedMap[sides] || 0;
+        if (currentUsed === 0) return;
+        updateCharacter(characterId, {
+            hitDiceUsed: {
+                ...usedMap,
+                [sides]: currentUsed - 1,
+            },
+        });
+    };
+
+    // Rests
+    /**
+     * Длинный отдых: восстанавливает HP до максимума, все spell slots,
+     * все Pact slots, половину hit dice, temp HP в 0, сбрасывает death saves.
+     */
     const longRest = (characterId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -622,6 +662,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCharacter(characterId, {
             usedSpellSlots: Array(9).fill(0),
             usedPactSlots: 0,
+            hitDiceUsed: restoreHitDiceOnLongRest(char),
             hp: char.maxHp,
             tempHp: 0,
             deathSuccesses: 0,
@@ -630,10 +671,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    /**
+     * Короткий отдых: восстанавливает только Pact Magic.
+     * Восстановление HP через hit dice — вручную, через spendHitDie.
+     */
     const shortRest = (characterId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-
         updateCharacter(characterId, {
             usedPactSlots: 0,
         });
@@ -674,6 +718,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         restoreSpellSlot,
         spendPactSlot,
         restorePactSlot,
+        spendHitDie,
+        restoreHitDie,
         longRest,
         shortRest,
     };
