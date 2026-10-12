@@ -19,6 +19,7 @@ import SpellcastingSection from '../components/character/SpellcastingSection';
 import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
 import HitDiceTracker from '../components/character/HitDiceTracker';
 import HpEditPopup from '../components/character/HpEditPopup';
+import ShortRestModal from '../components/ShortRestModal';
 import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { getActivePassiveEffects } from '../utils/racialFeatures';
@@ -55,6 +56,7 @@ const CharacterContainer: React.FC = () => {
     const [rollResultModal, setRollResultModal] = useState<{ name: string; modifier: number; result?: number } | null>(null);
     const [hpPopupOpen, setHpPopupOpen] = useState(false);
     const [showAddFeatModal, setShowAddFeatModal] = useState(false);
+    const [shortRestOpen, setShortRestOpen] = useState(false);
 
     // backup attributes for variant rule
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
@@ -241,10 +243,11 @@ const CharacterContainer: React.FC = () => {
                 />
 
                 <div className="cc-rest-actions">
+                    {/* [SHORT REST] Кнопка теперь открывает модалку */}
                     <button
                         className="cc-rest-btn"
-                        onClick={() => shortRest(character.id)}
-                        title="Restores Pact Magic slots (Warlock)"
+                        onClick={() => setShortRestOpen(true)}
+                        title="Spend hit dice to recover HP and restore Pact Magic slots (Warlock)"
                     >
                         Short Rest
                     </button>
@@ -351,6 +354,13 @@ const CharacterContainer: React.FC = () => {
                 onAdd={(feat) => addFeat(character.id, feat)}
                 characterLevel={character.level}
                 existingLevelFeats={character.feats.filter(f => f.source === 'level')}
+            />
+
+            {/* Short rest */}
+            <ShortRestModal
+                isOpen={shortRestOpen}
+                onClose={() => setShortRestOpen(false)}
+                characterId={character.id}
             />
         </div>
     );
