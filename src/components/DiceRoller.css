@@ -104,3 +104,34 @@
     border-radius: 10px;
     background: linear-gradient(315deg, #3b82f6 0%, #1e40af 100%);
 }
+
+/* Кнопка переброса через Inspiration */
+.dice-inspiration-reroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid #fbbf24;
+    color: #fbbf24;
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+}
+
+.dice-inspiration-reroll:hover {
+    background: rgba(251, 191, 36, 0.25);
+}
+
+.dice-inspiration-reroll:active {
+    transform: scale(0.95);
+}
+
+.dice-inspiration-star {
+    font-size: 14px;
+    line-height: 1;
+}

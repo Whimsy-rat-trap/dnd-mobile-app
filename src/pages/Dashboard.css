@@ -1085,3 +1085,9 @@
     background: #374151;
     border-color: #6b7280;
 }
+
+.db-character-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

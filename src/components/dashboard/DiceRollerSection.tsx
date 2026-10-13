@@ -9,6 +9,10 @@ interface DiceRollerSectionProps {
     getResultColor: (diceType: number, result: number) => string;
     addDiceLog: (characterId: string, sides: number, result: number) => void;
     characterId: string;
+    /** Есть ли у персонажа Inspiration. */
+    inspirationAvailable?: boolean;
+    /** Колбэк — тратит inspiration, возвращает true при успехе. */
+    onSpendInspiration?: () => boolean;
 }
 
 const DiceRollerSection: React.FC<DiceRollerSectionProps> = ({
@@ -19,16 +23,20 @@ const DiceRollerSection: React.FC<DiceRollerSectionProps> = ({
                                                                  getResultColor,
                                                                  addDiceLog,
                                                                  characterId,
+                                                                 inspirationAvailable = false,
+                                                                 onSpendInspiration,
                                                              }) => {
     return (
         <div className="db-dice-roller">
             <div className="db-dice-title">Dice Roller</div>
             <div className="db-dice-grid">
-                {diceTypes.map((sides, index) => (
+                {diceTypes.map((sides) => (
                     <DiceRoller
                         key={sides}
                         sides={sides}
                         onRoll={(result) => addDiceLog(characterId, sides, result)}
+                        rerollAvailable={inspirationAvailable}
+                        onRerollRequest={onSpendInspiration}
                     />
                 ))}
             </div>

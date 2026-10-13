@@ -19,6 +19,7 @@ import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
 import { useCampaigns } from '../context/CampaignContext';
 import PassiveScoresSection from '../components/character/PassiveScoresSection';
+import InspirationBadge from '../components/InspirationBadge';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -43,6 +44,8 @@ const Dashboard: React.FC = () => {
         restorePactSlot,
         longRest,
         shortRest,
+        grantInspiration,
+        spendInspiration,
     } = useCharacters();
 
     const safeCharacters = React.useMemo(
@@ -473,6 +476,12 @@ const Dashboard: React.FC = () => {
                         <span className="db-title">Arcane Realms</span>
                     </div>
                     <div className="db-header-actions">
+                        <InspirationBadge
+                            hasInspiration={!!character.inspiration}
+                            onGrant={() => grantInspiration(character.id)}
+                            onSpend={() => spendInspiration(character.id)}
+                            size="sm"
+                        />
                         <button className="db-switch-char-btn" onClick={switchCharacter}>
                             Switch
                         </button>
@@ -502,6 +511,8 @@ const Dashboard: React.FC = () => {
                     onHpClick={() => openPopup('hp')}
                     onExpClick={() => openPopup('exp')}
                     onProfileClick={() => openPopup('profile')}
+                    onGrantInspiration={() => grantInspiration(character.id)}
+                    onSpendInspiration={() => spendInspiration(character.id)}
                 />
 
                 <PassiveScoresSection character={character} />
@@ -624,6 +635,8 @@ const Dashboard: React.FC = () => {
                     getResultColor={getResultColor}
                     addDiceLog={addDiceLog}
                     characterId={character.id}
+                    inspirationAvailable={!!character.inspiration}
+                    onSpendInspiration={() => spendInspiration(character.id)}
                 />
             </div>
 

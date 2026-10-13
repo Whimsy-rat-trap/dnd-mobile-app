@@ -28,6 +28,7 @@ import { getActivePassiveEffects } from '../utils/racialFeatures';
 import {
     getProficiencyBonus, getModifier, getACInfo, getAttackBonuses,
 } from '../utils/characterUtils';
+import InspirationBadge from '../components/InspirationBadge';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -48,6 +49,8 @@ const CharacterContainer: React.FC = () => {
         restoreHitDie,
         longRest,
         shortRest,
+        grantInspiration,
+        spendInspiration,
     } = useCharacters();
 
     const character = id ? getCharacter(id) : undefined;
@@ -95,6 +98,14 @@ const CharacterContainer: React.FC = () => {
             deleteCharacter(character.id);
             navigate('/hub');
         }
+    };
+
+    const handleRerollResult = (): boolean => {
+        const ok = spendInspiration(character.id);
+        if (!ok) return false;
+        const newRoll = Math.floor(Math.random() * 20) + 1;
+        setRollResultModal(prev => prev ? { ...prev, result: newRoll } : null);
+        return true;
     };
 
     const handleSavingThrowRoll = (attr: string) => {
@@ -188,6 +199,12 @@ const CharacterContainer: React.FC = () => {
                     <div className="cc-title">Character Sheet</div>
                     <div className="cc-subtitle">{character.name}</div>
                 </div>
+                <InspirationBadge
+                    hasInspiration={!!character.inspiration}
+                    onGrant={() => grantInspiration(character.id)}
+                    onSpend={() => spendInspiration(character.id)}
+                    size="sm"
+                />
                 <button className="cc-set-current-btn"
                         onClick={() => { setCurrentCharacterId(character.id); navigate('/dashboard'); }}>
                     Set as current
@@ -326,7 +343,15 @@ const CharacterContainer: React.FC = () => {
                     <>
                         <h3 className="cc-roll-modal-title">{rollResultModal.name}</h3>
                         <div className="cc-roll-modal-dice">
-                            <DiceRoller sides={20} initialResult={rollResultModal.result} autoRoll displayOnly />
+                            <DiceRoller
+                                key={rollResultModal.result ?? 0}
+                                sides={20}
+                                initialResult={rollResultModal.result}
+                                autoRoll
+                                displayOnly
+                                rerollAvailable={!!character.inspiration}
+                                onRerollRequest={handleRerollResult}
+                            />
                         </div>
                         <div className="cc-roll-modal-modifier">
                             Modifier: {rollResultModal.modifier >= 0 ? '+' : ''}{rollResultModal.modifier}

@@ -84,6 +84,8 @@ interface CharacterContextType {
     restoreHitDie: (characterId: string, sides: number) => void;
     longRest: (characterId: string) => void;
     shortRest: (characterId: string) => void;
+    grantInspiration: (characterId: string) => void;
+    spendInspiration: (characterId: string) => boolean;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -168,6 +170,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 if (updated.activeConcentrationSpellId === undefined) {
                     updated.activeConcentrationSpellId = null;
                 }
+
+                if (updated.inspiration === undefined) updated.inspiration = false;
 
                 if (!updated.feats) updated.feats = [];
 
@@ -513,6 +517,17 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCharacter(characterId, { activeConcentrationSpellId: null });
     };
 
+    const grantInspiration = (characterId: string) => {
+        updateCharacter(characterId, { inspiration: true });
+    };
+
+    const spendInspiration = (characterId: string): boolean => {
+        const char = getCharacter(characterId);
+        if (!char?.inspiration) return false;
+        updateCharacter(characterId, { inspiration: false });
+        return true;
+    };
+
     const makeConcentrationCheck = (characterId: string, damage: number) => {
         const char = getCharacter(characterId);
         if (!char || !char.activeConcentrationSpellId) return;
@@ -722,6 +737,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         restoreHitDie,
         longRest,
         shortRest,
+        grantInspiration,
+        spendInspiration,
     };
 
     return (

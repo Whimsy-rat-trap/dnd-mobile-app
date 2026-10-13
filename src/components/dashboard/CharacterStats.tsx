@@ -1,6 +1,7 @@
 import React from 'react';
 import { Character } from '../../types/Character';
 import { getProficiencyBonus } from '../../utils/proficiency';
+import InspirationBadge from '../InspirationBadge';
 
 interface CharacterStatsProps {
     character: Character;
@@ -17,6 +18,9 @@ interface CharacterStatsProps {
     onHpClick: () => void;
     onExpClick: () => void;
     onProfileClick: () => void;
+    // Inspiration
+    onGrantInspiration?: () => void;
+    onSpendInspiration?: () => void;
 }
 
 const CharacterStats: React.FC<CharacterStatsProps> = ({
@@ -34,9 +38,12 @@ const CharacterStats: React.FC<CharacterStatsProps> = ({
                                                            onHpClick,
                                                            onExpClick,
                                                            onProfileClick,
+                                                           onGrantInspiration,
+                                                           onSpendInspiration,
                                                        }) => {
     const level = character.level;
     const proficiencyBonus = getProficiencyBonus(level);
+    const showInspiration = Boolean(onGrantInspiration && onSpendInspiration);
 
     return (
         <div className="db-character-card">
@@ -47,7 +54,17 @@ const CharacterStats: React.FC<CharacterStatsProps> = ({
                     </svg>
                 </div>
                 <div className="db-character-info">
-                    <div className="db-character-name">{character.name}</div>
+                    <div className="db-character-name-row">
+                        <span className="db-character-name">{character.name}</span>
+                        {showInspiration && (
+                            <InspirationBadge
+                                hasInspiration={!!character.inspiration}
+                                onGrant={onGrantInspiration!}
+                                onSpend={onSpendInspiration!}
+                                size="sm"
+                            />
+                        )}
+                    </div>
                     <div className="db-character-class">{character.classes?.join(' / ') || 'Unknown'}</div>
                     <div className="db-character-level">
                         Level {level} <span className="db-level-separator">•</span> {character.background || 'No Background'}

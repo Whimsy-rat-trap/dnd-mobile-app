@@ -53,6 +53,10 @@ interface AttackRollerProps {
     onRollDamage?: (result: DiceRollResult) => void;
     trigger?: React.ReactNode;
     className?: string;
+    /** Есть ли у персонажа Inspiration для переброса. */
+    inspirationAvailable?: boolean;
+    /** Колбэк — тратит inspiration, возвращает true при успехе. */
+    onSpendInspiration?: () => boolean;
 }
 
 const AttackRoller: React.FC<AttackRollerProps> = ({
@@ -66,6 +70,8 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                        onRollDamage,
                                                        trigger,
                                                        className,
+                                                       inspirationAvailable = false,
+                                                       onSpendInspiration,
                                                    }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -168,6 +174,18 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
             setSpinningAttack(false);
             if (onRollAttack) onRollAttack(extended);
         }, 700);
+    };
+
+    const handleRerollWithInspiration = () => {
+        if (!onSpendInspiration) return;
+        const ok = onSpendInspiration();
+        if (!ok) return;
+        // Сбрасываем прошлый результат и перебрасываем
+        setAttackResult(null);
+        setDamageResult(null);
+        setCritPending(false);
+        // Отдаём управление на следующий тик, чтобы state применился
+        setTimeout(() => handleRollAttack(), 0);
     };
 
     const handleRollDamage = () => {
@@ -557,6 +575,16 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                     'Normal'
                                         )}
                                     </div>
+                                    {inspirationAvailable && onSpendInspiration && (
+                                        <button
+                                            type="button"
+                                            className="attack-inspiration-btn"
+                                            onClick={handleRerollWithInspiration}
+                                        >
+                                            <span className="attack-inspiration-star">✦</span>
+                                            Reroll with Inspiration
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>

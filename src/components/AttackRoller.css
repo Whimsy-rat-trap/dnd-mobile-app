@@ -586,3 +586,35 @@
     font-size: 14px;
     font-weight: 600;
 }
+
+.attack-inspiration-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid #fbbf24;
+    color: #fbbf24;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    width: 100%;
+}
+
+.attack-inspiration-btn:hover {
+    background: rgba(251, 191, 36, 0.25);
+}
+
+.attack-inspiration-btn:active {
+    transform: scale(0.98);
+}
+
+.attack-inspiration-star {
+    font-size: 14px;
+    line-height: 1;
+}

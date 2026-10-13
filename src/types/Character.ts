@@ -70,6 +70,8 @@ export interface Character {
     usedPactSlots?: number;
     /** Сколько hit dice каждого размера потрачено. Ключ — количество граней (6, 8, 10, 12). */
     hitDiceUsed?: Record<number, number>;
+    /** Есть ли у персонажа Inspiration (можно потратить на reroll d20). */
+    inspiration?: boolean;
 }
 
 export interface InventoryItem {
