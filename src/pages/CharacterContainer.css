@@ -518,13 +518,3 @@
     background: #374151;
     border-color: #6b7280;
 }
-
-.cc-rest-btn-long {
-    border-color: #34d399;
-    color: #34d399;
-}
-
-.cc-rest-btn-long:hover {
-    background: rgba(52, 211, 153, 0.1);
-    border-color: #34d399;
-}

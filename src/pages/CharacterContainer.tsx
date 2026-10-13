@@ -20,6 +20,7 @@ import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
 import HitDiceTracker from '../components/character/HitDiceTracker';
 import HpEditPopup from '../components/character/HpEditPopup';
 import ShortRestModal from '../components/ShortRestModal';
+import LongRestModal from '../components/LongRestModal';
 import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { getActivePassiveEffects } from '../utils/racialFeatures';
@@ -57,6 +58,7 @@ const CharacterContainer: React.FC = () => {
     const [hpPopupOpen, setHpPopupOpen] = useState(false);
     const [showAddFeatModal, setShowAddFeatModal] = useState(false);
     const [shortRestOpen, setShortRestOpen] = useState(false);
+    const [longRestOpen, setLongRestOpen] = useState(false);
 
     // backup attributes for variant rule
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
@@ -243,7 +245,7 @@ const CharacterContainer: React.FC = () => {
                 />
 
                 <div className="cc-rest-actions">
-                    {/* [SHORT REST] Кнопка теперь открывает модалку */}
+                    {/* Short rest */}
                     <button
                         className="cc-rest-btn"
                         onClick={() => setShortRestOpen(true)}
@@ -251,14 +253,11 @@ const CharacterContainer: React.FC = () => {
                     >
                         Short Rest
                     </button>
+                    {/* Long rest */}
                     <button
-                        className="cc-rest-btn cc-rest-btn-long"
-                        onClick={() => {
-                            if (window.confirm('Take a Long Rest? This will restore HP, spell slots, hit dice, and death saves.')) {
-                                longRest(character.id);
-                            }
-                        }}
-                        title="Restores HP, spell slots, and resets death saves"
+                        className="cc-rest-btn"
+                        onClick={() => setLongRestOpen(true)}
+                        title="Restores HP, spell slots, hit dice, and resets death saves"
                     >
                         Long Rest
                     </button>
@@ -360,6 +359,13 @@ const CharacterContainer: React.FC = () => {
             <ShortRestModal
                 isOpen={shortRestOpen}
                 onClose={() => setShortRestOpen(false)}
+                characterId={character.id}
+            />
+
+            {/* Long rest */}
+            <LongRestModal
+                isOpen={longRestOpen}
+                onClose={() => setLongRestOpen(false)}
                 characterId={character.id}
             />
         </div>

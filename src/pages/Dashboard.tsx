@@ -12,7 +12,8 @@ import DiceRollerSection from '../components/dashboard/DiceRollerSection';
 import QuickActions from '../components/dashboard/QuickActions';
 import CurrencyEditModal from '../components/CurrencyEditModal';
 import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
-import ShortRestModal from '../components/ShortRestModal'; // [SHORT REST]
+import ShortRestModal from '../components/ShortRestModal';
+import LongRestModal from '../components/LongRestModal';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
@@ -57,7 +58,8 @@ const Dashboard: React.FC = () => {
 
     const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [currencyPopupOpen, setCurrencyPopupOpen] = useState(false);
-    const [shortRestOpen, setShortRestOpen] = useState(false); // [SHORT REST]
+    const [shortRestOpen, setShortRestOpen] = useState(false);
+    const [longRestOpen, setLongRestOpen] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -551,13 +553,10 @@ const Dashboard: React.FC = () => {
                     >
                         Short Rest
                     </button>
+                    {/* Long rest */}
                     <button
-                        className="db-rest-btn db-rest-btn-long"
-                        onClick={() => {
-                            if (window.confirm('Take a Long Rest? This will restore HP, spell slots, and death saves.')) {
-                                longRest(character.id);
-                            }
-                        }}
+                        className="db-rest-btn"
+                        onClick={() => setLongRestOpen(true)}
                     >
                         Long Rest
                     </button>
@@ -785,6 +784,13 @@ const Dashboard: React.FC = () => {
             <ShortRestModal
                 isOpen={shortRestOpen}
                 onClose={() => setShortRestOpen(false)}
+                characterId={character.id}
+            />
+
+            {/* Long Rest */}
+            <LongRestModal
+                isOpen={longRestOpen}
+                onClose={() => setLongRestOpen(false)}
                 characterId={character.id}
             />
         </div>
