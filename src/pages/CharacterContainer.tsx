@@ -12,6 +12,7 @@ import SavingThrowsSection from '../components/character/SavingThrowsSection';
 import RaceFeaturesSection from '../components/character/RaceFeaturesSection';
 import FeatsSection from '../components/character/FeatsSection';
 import SkillsSection from '../components/character/SkillsSection';
+import PassiveScoresSection from '../components/character/PassiveScoresSection';
 import ToolsSection from '../components/character/ToolsSection';
 import LanguagesSection from '../components/character/LanguagesSection';
 import PassiveEffectsSection from '../components/character/PassiveEffectsSection';
@@ -302,6 +303,8 @@ const CharacterContainer: React.FC = () => {
                     onAttributeChange={changeSkillAttribute}
                     onRoll={handleSkillRoll}
                 />
+                {/* Passive Scores*/}
+                <PassiveScoresSection character={character} />
 
                 <ToolsSection
                     tools={character.toolProficiencies}

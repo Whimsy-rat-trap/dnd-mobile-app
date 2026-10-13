@@ -18,6 +18,7 @@ import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
 import { useCampaigns } from '../context/CampaignContext';
+import PassiveScoresSection from '../components/character/PassiveScoresSection';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -502,6 +503,8 @@ const Dashboard: React.FC = () => {
                     onExpClick={() => openPopup('exp')}
                     onProfileClick={() => openPopup('profile')}
                 />
+
+                <PassiveScoresSection character={character} />
 
                 <div
                     className="db-currency-display"
