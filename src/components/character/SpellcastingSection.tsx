@@ -6,6 +6,10 @@ import {
     getMaxPrepared,
     isSpellcastingClass,
 } from '../../utils/spellcasting';
+import {
+    getSpellSaveDC,
+    getSpellAttackBonus,
+} from '../../utils/spellUtils';
 import './SpellcastingSection.css';
 
 interface SpellcastingSectionProps {
@@ -27,6 +31,10 @@ const SpellcastingSection: React.FC<SpellcastingSectionProps> = ({ character }) 
 
     const showPrepared = isCaster && maxPrepared > 0;
 
+    // Save DC / Attack — считаем по основному классу-кастеру
+    const spellSaveDC = isCaster ? getSpellSaveDC(character) : null;
+    const spellAttackBonus = isCaster ? getSpellAttackBonus(character) : null;
+
     return (
         <div className="cc-section-spellcasting">
             <div className="cc-spellcasting-header">
@@ -35,14 +43,30 @@ const SpellcastingSection: React.FC<SpellcastingSectionProps> = ({ character }) 
                     View Full Spellbook
                 </Link>
             </div>
-            <div className="cc-spell-stats">
-                {isCaster && (
+
+            {/* Save DC / Attack — главные боевые числа */}
+            {isCaster && (
+                <div className="cc-spell-stats cc-spell-stats-primary">
+                    <div className="cc-stat-item cc-stat-dc">
+                        <span className="cc-stat-label">Save DC</span>
+                        <span className="cc-stat-value cc-stat-value-dc">{spellSaveDC}</span>
+                    </div>
+                    <div className="cc-stat-item cc-stat-atk">
+                        <span className="cc-stat-label">Attack</span>
+                        <span className="cc-stat-value cc-stat-value-atk">
+                            {spellAttackBonus !== null && spellAttackBonus >= 0 ? '+' : ''}
+                            {spellAttackBonus}
+                        </span>
+                    </div>
                     <div className="cc-stat-item">
-                        <span className="cc-stat-label">Spell Slots</span>
+                        <span className="cc-stat-label">Slots</span>
                         <span className="cc-stat-value">{totalSlots}</span>
                     </div>
-                )}
+                </div>
+            )}
 
+            {/* Счётчики */}
+            <div className="cc-spell-stats">
                 {showPrepared && (
                     <div className="cc-stat-item">
                         <span className="cc-stat-label">Prepared</span>

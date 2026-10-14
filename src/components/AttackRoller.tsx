@@ -57,6 +57,10 @@ interface AttackRollerProps {
     inspirationAvailable?: boolean;
     /** Колбэк — тратит inspiration, возвращает true при успехе. */
     onSpendInspiration?: () => boolean;
+    // [NEW] Программное открытие модалки (связка Cast → Attack).
+    forceOpen?: boolean;
+    // [NEW] Колбэк после обработки forceOpen.
+    onForceOpenHandled?: () => void;
 }
 
 const AttackRoller: React.FC<AttackRollerProps> = ({
@@ -72,6 +76,8 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                        className,
                                                        inspirationAvailable = false,
                                                        onSpendInspiration,
+                                                       forceOpen = false,
+                                                       onForceOpenHandled,
                                                    }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -107,6 +113,14 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         setAppliedDebuffs([]);
         setDebuffToAdd('');
     };
+
+    // [NEW] Программное открытие (связка Cast → Attack)
+    useEffect(() => {
+        if (forceOpen) {
+            setIsOpen(true);
+            onForceOpenHandled?.();
+        }
+    }, [forceOpen, onForceOpenHandled]);
 
     useEffect(() => {
         setCritPending(false);

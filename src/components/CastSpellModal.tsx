@@ -15,6 +15,8 @@ interface CastSpellModalProps {
     spell: Spell | null;
     character: Character;
     onCast: (level: number, options: { usePact: boolean; asRitual: boolean }) => void;
+    /** Вызывается после успешного каста */
+    onCastCompleted?: (spell: Spell, opts: { needsAttackRoll: boolean }) => void;
 }
 
 const CastSpellModal: React.FC<CastSpellModalProps> = ({
@@ -23,6 +25,7 @@ const CastSpellModal: React.FC<CastSpellModalProps> = ({
                                                            spell,
                                                            character,
                                                            onCast,
+                                                           onCastCompleted,
                                                        }) => {
     const [selectedLevel, setSelectedLevel] = useState<number>(1);
     const [asRitual, setAsRitual] = useState<boolean>(false);
@@ -74,24 +77,35 @@ const CastSpellModal: React.FC<CastSpellModalProps> = ({
     const canCast = isCantrip || asRitual || availableLevels.length > 0 || canUsePact;
 
     const handleCast = () => {
+        if (!spell) return;
+
+        const needsAttackRoll =
+            Boolean(spell.damageRoll || spell.diceRoll) &&
+            spell.damageType !== 'healing' &&
+            spell.element !== 'healing' &&
+            !/saving throw|save\b/i.test(spell.description);
+
         if (isCantrip) {
             onCast(0, { usePact: false, asRitual: false });
+            onCastCompleted?.(spell, { needsAttackRoll });
             onClose();
             return;
         }
         if (asRitual) {
             onCast(spell.level, { usePact: false, asRitual: true });
+            onCastCompleted?.(spell, { needsAttackRoll: false });
             onClose();
             return;
         }
-        // Если доступны обычные слоты — используем их; иначе Pact
         if (availableLevels.length > 0) {
             onCast(selectedLevel, { usePact: false, asRitual: false });
+            onCastCompleted?.(spell, { needsAttackRoll });
             onClose();
             return;
         }
         if (canUsePact) {
             onCast(pactLevel, { usePact: true, asRitual: false });
+            onCastCompleted?.(spell, { needsAttackRoll });
             onClose();
         }
     };

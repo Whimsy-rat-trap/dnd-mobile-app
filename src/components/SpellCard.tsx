@@ -1,6 +1,10 @@
 import React from 'react';
-import { Spell } from '../types/Character';
+import { Character, Spell } from '../types/Character';
 import AttackRoller from './AttackRoller';
+import {
+    getSpellAttackBonus,
+    getSpellDamageBonus,
+} from '../utils/spellUtils';
 import './SpellCard.css';
 
 interface SpellCardProps {
@@ -21,17 +25,28 @@ interface SpellCardProps {
     onToggleConcentration?: () => void;
     showConcentrationControl?: boolean;
 
-    /** Бонус к атаке заклинанием (proficiency + spellcasting ability mod). */
+    /** Персонаж — если задан, SpellCard сам считает attack/damage бонусы. */
+    character?: Character;
+
+    /** Fallback-бонусы, если character не задан. */
     spellAttackBonus?: number;
     /** Бонус к урону заклинанием (обычно = spellcasting ability mod). */
     spellDamageBonus?: number;
-    /** Колбэк для логирования броска. */
+
     onAttackRoll?: (attackTotal: number, damageTotal: number | null, sourceName: string) => void;
 
     /** Показывать ли кнопку Cast. */
     showCastButton?: boolean;
-    /** Колбэк при клике на Cast — обычно открывает модалку. */
+    /** Колбэк при клике на Cast. */
     onCastClick?: () => void;
+
+    /** Принудительно открыть AttackRoller (для связки Cast → Attack). */
+    forceAttackOpen?: boolean;
+    onForceAttackOpenHandled?: () => void;
+
+    /** Inspiration для переброса. */
+    inspirationAvailable?: boolean;
+    onSpendInspiration?: () => boolean;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -51,11 +66,16 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  isConcentrating = false,
                                                  onToggleConcentration,
                                                  showConcentrationControl = false,
+                                                 character,
                                                  spellAttackBonus = 0,
                                                  spellDamageBonus = 0,
                                                  onAttackRoll,
                                                  showCastButton = false,
                                                  onCastClick,
+                                                 forceAttackOpen = false,
+                                                 onForceAttackOpenHandled,
+                                                 inspirationAvailable = false,
+                                                 onSpendInspiration,
                                              }) => {
     const elementColors: Record<string, string> = {
         fire: '#ef4444',
@@ -83,6 +103,14 @@ const SpellCard: React.FC<SpellCardProps> = ({
         Boolean(displayRoll) &&
         spell.damageType !== 'healing' &&
         spell.element !== 'healing';
+
+    // Если задан character — считаем бонусы по нему, иначе — используем пропсы
+    const effectiveAttackBonus = character
+        ? getSpellAttackBonus(character, spell)
+        : spellAttackBonus;
+    const effectiveDamageBonus = character
+        ? getSpellDamageBonus(character, spell)
+        : spellDamageBonus;
 
     return (
         <div className="spell-card">
@@ -174,10 +202,14 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             sourceName={spell.name}
                             damageDice={displayRoll}
                             damageType={spell.damageType || spell.element}
-                            defaultAttackBonus={spellAttackBonus}
-                            defaultDamageBonus={spellDamageBonus}
+                            defaultAttackBonus={effectiveAttackBonus}
+                            defaultDamageBonus={effectiveDamageBonus}
                             onRollAttack={(result) => onAttackRoll?.(result.total, null, spell.name)}
                             onRollDamage={(result) => onAttackRoll?.(0, result.total, spell.name)}
+                            inspirationAvailable={inspirationAvailable}
+                            onSpendInspiration={onSpendInspiration}
+                            forceOpen={forceAttackOpen}
+                            onForceOpenHandled={onForceAttackOpenHandled}
                             trigger={
                                 <button className="spell-attack-btn" type="button">
                                     Attack

@@ -68,3 +68,16 @@
     color: #3b82f6;
     margin-top: 2px;
 }
+
+.cc-spell-stats-primary {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #374957;
+}
+
+.cc-stat-value-dc {
+    color: #a855f7;
+}
+
+.cc-stat-value-atk {
+    color: #34d399;
+}

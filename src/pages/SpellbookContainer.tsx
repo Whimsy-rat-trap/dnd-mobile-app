@@ -43,6 +43,7 @@ const SpellbookContainer: React.FC = () => {
     let warningTimeout: NodeJS.Timeout | null = null;
 
     const [castingSpell, setCastingSpell] = useState<Spell | null>(null);
+    const [autoAttackSpellId, setAutoAttackSpellId] = useState<string | null>(null);
 
     if (!character) {
         return (
@@ -391,6 +392,7 @@ const SpellbookContainer: React.FC = () => {
                             <SpellCard
                                 key={spell.id}
                                 spell={spell}
+                                character={character}
                                 isPrepared={spell.prepared}
                                 onTogglePrepared={() => togglePrepared(spell.id)}
                                 renderPreparedToggle={({ prepared, onToggle }) => (
@@ -404,6 +406,8 @@ const SpellbookContainer: React.FC = () => {
                                 showConcentrationControl={!!spell.requiresConcentration}
                                 showCastButton={true}
                                 onCastClick={() => setCastingSpell(spell)}
+                                forceAttackOpen={autoAttackSpellId === spell.id}
+                                onForceAttackOpenHandled={() => setAutoAttackSpellId(null)}
                             />
                         ))}
                     </div>
@@ -432,6 +436,11 @@ const SpellbookContainer: React.FC = () => {
                 spell={castingSpell}
                 character={character}
                 onCast={handleCastSpell}
+                onCastCompleted={(spell, opts) => {
+                    if (opts.needsAttackRoll) {
+                        setAutoAttackSpellId(spell.id);
+                    }
+                }}
             />
         </div>
     );
