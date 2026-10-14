@@ -47,6 +47,9 @@ interface SpellCardProps {
     /** Inspiration для переброса. */
     inspirationAvailable?: boolean;
     onSpendInspiration?: () => boolean;
+
+    /** Показывать ли кнопку Attack (открывает AttackRoller). По умолчанию true. */
+    showAttackButton?: boolean;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -71,6 +74,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  spellDamageBonus = 0,
                                                  onAttackRoll,
                                                  showCastButton = false,
+                                                 showAttackButton = true,
                                                  onCastClick,
                                                  forceAttackOpen = false,
                                                  onForceAttackOpenHandled,
@@ -186,7 +190,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 {spell.isRacial && <span className="spell-tag-racial">Racial</span>}
             </div>
 
-            {(canRollAttack || showCastButton) && (
+            {(canRollAttack && showAttackButton) || showCastButton ? (
                 <div className="spell-card-attack-row">
                     {showCastButton && onCastClick && (
                         <button
@@ -197,7 +201,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             Cast
                         </button>
                     )}
-                    {canRollAttack && (
+                    {canRollAttack && showAttackButton && (
                         <AttackRoller
                             sourceName={spell.name}
                             damageDice={displayRoll}
@@ -218,7 +222,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                         />
                     )}
                 </div>
-            )}
+            ) : null}
 
             <div className="spell-card-description">{spell.description}</div>
         </div>

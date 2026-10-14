@@ -323,6 +323,7 @@ const SpellsLibrary: React.FC = () => {
                                 showEdit={isCustom}
                                 onEdit={() => handleEditSpell(spell.id)}
                                 requiresConcentration={spell.requiresConcentration || false}
+                                showAttackButton={false}
                             />
                         );
                     })}
