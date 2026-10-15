@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import { useSpells } from '../context/SpellContext';
@@ -10,6 +10,7 @@ import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import { getElementFromSpell, SCHOOLS } from '../utils/spellUtils';
+import { getSpellsAvailableToCharacter } from '../utils/classSpellUtils';
 import './SpellsLibrary.css';
 
 const SpellsLibrary: React.FC = () => {
@@ -31,6 +32,7 @@ const SpellsLibrary: React.FC = () => {
         class: '',
     });
 
+    const [onlyAvailable, setOnlyAvailable] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpell, setNewSpell] = useState({
@@ -52,6 +54,14 @@ const SpellsLibrary: React.FC = () => {
             navigate('/spells', { replace: true });
         }
     }, [location, navigate]);
+
+    // [AVAILABILITY] Множество имён заклинаний, доступных персонажу
+    const availableSpellNames = useMemo(() => {
+        if (!character) return new Set<string>();
+        return new Set(
+            getSpellsAvailableToCharacter(character).map(s => s.name.toLowerCase())
+        );
+    }, [character]);
 
     // Функция сброса формы
     const resetForm = () => {
@@ -195,9 +205,14 @@ const SpellsLibrary: React.FC = () => {
         // Если поле classes отсутствует (undefined), считаем, что заклинание доступно всем классам
         const matchesClass = !filters.class ||
             (spell.classes && spell.classes.includes(filters.class)) ||
-            (!spell.classes); // если classes не указано, считаем доступным для всех
+            (!spell.classes);
+        const matchesAvailability = !onlyAvailable ||
+            !character ||
+            availableSpellNames.has(spell.name.toLowerCase());
+
         return matchesSearch && matchesLevel && matchesSchool && matchesElement &&
-            matchesType && matchesComponents && matchesConcentration && matchesClass;
+            matchesType && matchesComponents && matchesConcentration && matchesClass &&
+            matchesAvailability;
     });
 
     const handleAddSpell = (spellData: any) => {
@@ -307,6 +322,29 @@ const SpellsLibrary: React.FC = () => {
                     placeholder="Search spells..."
                     onFilterClick={() => setShowFilterModal(true)}
                 />
+
+                {/* Availability */}
+                <div className="sl-availability-filters">
+                    <button
+                        className={`sl-filter-btn ${!onlyAvailable ? 'sl-active' : ''}`}
+                        onClick={() => setOnlyAvailable(false)}
+                    >
+                        All Spells
+                    </button>
+                    <button
+                        className={`sl-filter-btn ${onlyAvailable ? 'sl-active' : ''}`}
+                        onClick={() => setOnlyAvailable(true)}
+                        disabled={!character}
+                        title={
+                            !character
+                                ? 'Select a character to filter by availability'
+                                : `Only spells available to ${character.name}`
+                        }
+                    >
+                        Available to {character?.name || 'character'}
+                    </button>
+                </div>
+
                 <div className="sl-list">
                     {filteredSpells.map((spell) => {
                         const inBook = isSpellInBook(spell.name);
