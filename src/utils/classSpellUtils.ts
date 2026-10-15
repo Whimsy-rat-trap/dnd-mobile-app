@@ -5,24 +5,48 @@ import {
     ClassSpellListData,
 } from '../constants/classSpellLists';
 
+// Ключи и резолвинг класса
+
 /**
- * Возвращает данные класса (ability, casterType, spell list).
+ * Возвращает ключ в CLASS_SPELL_LISTS для пары (класс, подкласс).
+ * Для EK/AT (у которых свой список) это 'Fighter:Eldritch Knight', ...
+ * Для обычных классов — просто 'Wizard', 'Cleric' и т.д.
+ *
+ * Если подкласс не указан или у класса нет подклассового списка,
+ * возвращает базовый ключ.
  */
-export function getClassSpellListData(
-    className: string
-): ClassSpellListData | undefined {
-    return CLASS_SPELL_LISTS[className];
+export function resolveSpellListKey(
+    className: string,
+    subclass?: string
+): string {
+    if (subclass) {
+        const composite = `${className}:${subclass}`;
+        if (CLASS_SPELL_LISTS[composite]) return composite;
+    }
+    return className;
 }
 
 /**
- * Возвращает все заклинания из ALL_SPELLS, которые есть в списке класса,
- * включая те, что ещё не существуют в базе (будут отфильтрованы).
+ * Метаданные (ability, casterType, spellsByLevel) для класса/подкласса.
+ */
+export function getClassSpellListData(
+    className: string,
+    subclass?: string
+): ClassSpellListData | undefined {
+    return CLASS_SPELL_LISTS[resolveSpellListKey(className, subclass)];
+}
+
+// Списки заклинаний
+
+/**
+ * Все заклинания класса из ALL_SPELLS. Если задан `level`, только этого уровня.
  */
 export function getSpellsForClass(
     className: string,
-    level?: number
+    level?: number,
+    subclass?: string
 ): SpellData[] {
-    const data = CLASS_SPELL_LISTS[className];
+    const data = getClassSpellListData(className, subclass);
     if (!data) return [];
 
     const names =
@@ -36,20 +60,25 @@ export function getSpellsForClass(
         .filter((s): s is SpellData => !!s);
 }
 
+// Прогрессия уровня заклинаний
+
 /**
- * Максимальный уровень заклинаний, доступный на данном уровне класса.
- * Формулы по типам кастеров:
- *   - Полные (Wizard, Cleric, ...): 1→1, 3→2, 5→3, 7→4, 9→5, 11→6, 13→7, 15→8, 17→9
+ * Максимальный уровень заклинаний, доступный на данном уровне КЛАССА.
+ * Возвращает 0, если класс ещё не получил Spellcasting.
+ *
+ * Формулы:
+ *   - Полные (Bard, Cleric, Druid, Sorcerer, Warlock, Wizard): 1→1, 3→2, ...
  *   - Полукастеры (Paladin, Ranger): 2→1, 5→2, 9→3, 13→4, 17→5
- *   - Artificer: 1→1, 5→2, 9→3, 13→4, 17→5 (как полукастер, но старт с 1-го уровня)
+ *   - Artificer: 1→1, 5→2, 9→3, 13→4, 17→5
  *   - Третьи (EK, AT): 3→1, 7→2, 13→3, 19→4
- *   - Warlock: отдельная таблица, смотри WARLOCK_SLOTS в spellcasting.ts
+ *   - Warlock (Pact Magic): 1→1, 3→2, 5→3, 7→4, 9→5, 17→5
  */
 export function getMaxSpellLevelForClass(
     className: string,
-    classLevel: number
+    classLevel: number,
+    subclass?: string
 ): number {
-    const data = CLASS_SPELL_LISTS[className];
+    const data = getClassSpellListData(className, subclass);
     if (!data) return 0;
     if (classLevel < data.startsAtClassLevel) return 0;
 
@@ -77,7 +106,6 @@ export function getMaxSpellLevelForClass(
         return 0;
     }
     if (className === 'Warlock') {
-        if (classLevel >= 17) return 5;
         if (classLevel >= 9) return 5;
         if (classLevel >= 7) return 4;
         if (classLevel >= 5) return 3;
@@ -96,11 +124,11 @@ export function getMaxSpellLevelForClass(
     return 1;
 }
 
+// Доступные персонажу заклинания
+
 /**
- * Возвращает все заклинания, доступные персонажу по его классам,
- * с учётом максимального уровня, который он может кастовать.
- *
- * Использование в SpellsLibrary для фильтра "Available to this character".
+ * Все заклинания, доступные персонажу, с учётом его мультикласса,
+ * подклассов (EK/AT) и уровней.
  */
 export function getSpellsAvailableToCharacter(
     character: Character,
@@ -111,11 +139,11 @@ export function getSpellsAvailableToCharacter(
     const result = new Map<string, SpellData>();
 
     for (const cl of character.classLevels || []) {
-        const data = CLASS_SPELL_LISTS[cl.className];
+        const data = getClassSpellListData(cl.className, cl.subclass);
         if (!data) continue;
 
         const maxLevel = respectSpellLevel
-            ? getMaxSpellLevelForClass(cl.className, cl.level)
+            ? getMaxSpellLevelForClass(cl.className, cl.level, cl.subclass)
             : 9;
 
         for (const [lvlStr, names] of Object.entries(data.spellsByLevel)) {
@@ -131,4 +159,27 @@ export function getSpellsAvailableToCharacter(
     }
 
     return Array.from(result.values());
+}
+
+// Обратный индекс: spell name → классы
+
+/**
+ * Какие классы могут кастовать это заклинание по данным CLASS_SPELL_LISTS.
+ * Для составных ключей ('Fighter:Eldritch Knight') возвращает базовый класс.
+ */
+export function getClassesForSpell(spellName: string): string[] {
+    const lower = spellName.toLowerCase();
+    const result = new Set<string>();
+
+    for (const [key, data] of Object.entries(CLASS_SPELL_LISTS)) {
+        const found = Object.values(data.spellsByLevel).some(names =>
+            names.some(n => n.toLowerCase() === lower)
+        );
+        if (found) {
+            const baseClass = key.includes(':') ? key.split(':')[0] : key;
+            result.add(baseClass);
+        }
+    }
+
+    return Array.from(result);
 }
