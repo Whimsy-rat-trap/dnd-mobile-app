@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { Character, InventoryItem, Spell, Quest, Campaign, Feat } from '../types/Character';
 import { getNaturalWeapons } from '../utils/racialFeatures';
 import { recalculateAC } from '../utils/armorUtils';
@@ -23,6 +23,8 @@ import {
     restoreHitDiceOnLongRest,
     HitDieRollResult,
 } from '../utils/hitDice';
+// [NEW] импорт утилиты для always-prepared subclass заклинаний
+import { getSubclassAlwaysPreparedSpells } from '../utils/classSpellUtils';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -84,6 +86,7 @@ interface CharacterContextType {
     restoreHitDie: (characterId: string, sides: number) => void;
     longRest: (characterId: string) => void;
     shortRest: (characterId: string) => void;
+    // [NEW] Inspiration
     grantInspiration: (characterId: string) => void;
     spendInspiration: (characterId: string) => boolean;
 }
@@ -171,7 +174,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.activeConcentrationSpellId = null;
                 }
 
-                if (updated.inspiration === undefined) updated.inspiration = false;
+                // [NEW] inspiration migration
+                if (updated.inspiration === undefined) {
+                    updated.inspiration = false;
+                }
 
                 if (!updated.feats) updated.feats = [];
 
@@ -201,7 +207,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                             ...item,
                             id: item.id || `item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
                         };
-                        // Обогащение полями из библиотеки по имени
                         const libraryItem = ALL_ITEMS.find((li: any) => li.name === item.name);
                         if (!libraryItem) return withId;
                         return {
@@ -236,6 +241,28 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
+
+    // [NEW] One-time миграция: синхронизирует always-prepared subclass заклинания
+    // (домены Cleric, клятвы Paladin) у уже существующих персонажей из localStorage.
+    const initialSubclassSyncDone = useRef(false);
+    useEffect(() => {
+        if (initialSubclassSyncDone.current) return;
+        initialSubclassSyncDone.current = true;
+
+        setCharacters(prev => {
+            let changed = false;
+            const next = prev.map(c => {
+                const synced = addSubclassSpellsToCharacter(c);
+                if (JSON.stringify(synced.spells) !== JSON.stringify(c.spells)) {
+                    changed = true;
+                    return synced;
+                }
+                return c;
+            });
+            return changed ? next : prev;
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const addNaturalWeaponsToCharacter = (character: Character): Character => {
         const naturalWeapons = getNaturalWeapons(character.race, character.subrace);
@@ -288,6 +315,82 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         return { ...character, feats: uniqueFeats };
     };
 
+    // [NEW] Синхронизация always-prepared subclass заклинаний
+    // (Cleric Domains, Paladin Oaths и т.п.)
+    const addSubclassSpellsToCharacter = (character: Character): Character => {
+        // 1. Собираем, что ДОЛЖНО быть always-prepared
+        const target = new Map<
+            string,
+            { spell: any; sourceClass: string; sourceSubclass: string }
+        >();
+        for (const cl of character.classLevels || []) {
+            if (!cl.subclass) continue;
+            const spells = getSubclassAlwaysPreparedSpells(cl.className, cl.subclass, cl.level);
+            for (const spell of spells) {
+                const key = spell.name.toLowerCase();
+                if (target.has(key)) continue;
+                target.set(key, {
+                    spell,
+                    sourceClass: cl.className,
+                    sourceSubclass: cl.subclass,
+                });
+            }
+        }
+
+        // 2. Партиционируем существующие заклинания
+        const kept: typeof character.spells = [];
+        const promote: Map<string, typeof character.spells[number]> = new Map();
+
+        for (const s of character.spells) {
+            const lower = s.name.toLowerCase();
+
+            // Racial имеют приоритет — не промоутим, но и не даём дублировать
+            if (s.isRacial) {
+                kept.push(s);
+                target.delete(lower);
+                continue;
+            }
+
+            // Заклинание станет/останется always-prepared
+            if (target.has(lower)) {
+                promote.set(lower, s);
+                continue;
+            }
+
+            // Старое always-prepared, которое больше не подходит → выкидываем
+            if (s.isAlwaysPrepared) continue;
+
+            kept.push(s);
+        }
+
+        // 3. Собираем итоговый always-prepared список
+        const rebuilt: typeof character.spells = [];
+        for (const [key, { spell, sourceClass, sourceSubclass }] of target) {
+            const existing = promote.get(key);
+            if (existing) {
+                rebuilt.push({
+                    ...existing,
+                    prepared: true,
+                    isAlwaysPrepared: true,
+                    source: 'subclass',
+                });
+            } else {
+                rebuilt.push({
+                    ...spell,
+                    id: `subclass-${sourceClass}-${sourceSubclass}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                    prepared: true,
+                    isCustom: false,
+                    isRacial: false,
+                    isAlwaysPrepared: true,
+                    source: 'subclass',
+                    requiresConcentration: spell.requiresConcentration ?? false,
+                });
+            }
+        }
+
+        return { ...character, spells: [...kept, ...rebuilt] };
+    };
+
     const recalculateCharacterStats = (character: Character): Character => {
         let updated = { ...character };
         updated.ac = recalculateAC(updated);
@@ -318,6 +421,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             subrace: character.subrace || '',
             savingThrowProficiencies: character.savingThrowProficiencies || [],
             activeConcentrationSpellId: null,
+            inspiration: false, // [NEW]
             feats: character.feats || [],
             currency: normalizeCurrency(character.currency || EMPTY_CURRENCY),
             usedSpellSlots: Array(9).fill(0),
@@ -333,6 +437,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         newCharacter = addNaturalWeaponsToCharacter(newCharacter);
         newCharacter = addRacialSpellsToCharacter(newCharacter);
         newCharacter = updateFeatsForCharacter(newCharacter);
+        newCharacter = addSubclassSpellsToCharacter(newCharacter); // [NEW]
         newCharacter = recalculateCharacterStats(newCharacter);
 
         setCharacters(prev => [...prev, newCharacter]);
@@ -362,6 +467,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated = updateFeatsForCharacter(updated);
                 }
 
+                // [NEW] при изменении классов/подкласса — синхронизируем always-prepared
+                if (data.classLevels !== undefined || data.class !== undefined) {
+                    updated = addSubclassSpellsToCharacter(updated);
+                }
+
                 if (data.inventory !== undefined || data.abilities !== undefined) {
                     updated = recalculateCharacterStats(updated);
                 }
@@ -385,7 +495,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
 
-        // Если предмет — валюта, кладём деньги в кошелёк
         const money = resolveItemCurrency(item);
         if (money) {
             const current = char.currency || EMPTY_CURRENCY;
@@ -517,17 +626,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCharacter(characterId, { activeConcentrationSpellId: null });
     };
 
-    const grantInspiration = (characterId: string) => {
-        updateCharacter(characterId, { inspiration: true });
-    };
-
-    const spendInspiration = (characterId: string): boolean => {
-        const char = getCharacter(characterId);
-        if (!char?.inspiration) return false;
-        updateCharacter(characterId, { inspiration: false });
-        return true;
-    };
-
     const makeConcentrationCheck = (characterId: string, damage: number) => {
         const char = getCharacter(characterId);
         if (!char || !char.activeConcentrationSpellId) return;
@@ -539,6 +637,18 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const resolveConcentrationCheck = (characterId: string, success: boolean) => {
         if (!success) endConcentration(characterId);
         setConcentrationCheck(null);
+    };
+
+    // [NEW] Inspiration
+    const grantInspiration = (characterId: string) => {
+        updateCharacter(characterId, { inspiration: true });
+    };
+
+    const spendInspiration = (characterId: string): boolean => {
+        const char = getCharacter(characterId);
+        if (!char?.inspiration) return false;
+        updateCharacter(characterId, { inspiration: false });
+        return true;
     };
 
     const addFeat = (characterId: string, feat: Omit<Feat, 'id'>) => {
@@ -666,10 +776,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     // Rests
-    /**
-     * Длинный отдых: восстанавливает HP до максимума, все spell slots,
-     * все Pact slots, половину hit dice, temp HP в 0, сбрасывает death saves.
-     */
     const longRest = (characterId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -686,10 +792,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    /**
-     * Короткий отдых: восстанавливает только Pact Magic.
-     * Восстановление HP через hit dice — вручную, через spendHitDie.
-     */
     const shortRest = (characterId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
@@ -737,6 +839,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         restoreHitDie,
         longRest,
         shortRest,
+        // [NEW]
         grantInspiration,
         spendInspiration,
     };

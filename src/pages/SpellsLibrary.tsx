@@ -347,7 +347,9 @@ const SpellsLibrary: React.FC = () => {
 
                 <div className="sl-list">
                     {filteredSpells.map((spell) => {
-                        const inBook = isSpellInBook(spell.name);
+                        const bookSpell = character?.spells.find(s => s.name === spell.name);
+                        const inBook = !!bookSpell;
+                        const isAlwaysPrepared = !!bookSpell?.isAlwaysPrepared;
                         const isCustom = spell.isCustom || false;
                         return (
                             <SpellCard
@@ -355,7 +357,7 @@ const SpellsLibrary: React.FC = () => {
                                 spell={spell}
                                 showAddButton={!!character && !inBook}
                                 onAdd={() => handleAddSpell(spell)}
-                                showRemoveButton={!!character && inBook}
+                                showRemoveButton={!!character && inBook && !isAlwaysPrepared}
                                 onRemove={() => handleRemoveSpell(spell.name)}
                                 isCustom={isCustom}
                                 showEdit={isCustom}

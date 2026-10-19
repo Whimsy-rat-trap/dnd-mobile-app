@@ -25,31 +25,20 @@ interface SpellCardProps {
     onToggleConcentration?: () => void;
     showConcentrationControl?: boolean;
 
-    /** Персонаж — если задан, SpellCard сам считает attack/damage бонусы. */
     character?: Character;
-
-    /** Fallback-бонусы, если character не задан. */
     spellAttackBonus?: number;
-    /** Бонус к урону заклинанием (обычно = spellcasting ability mod). */
     spellDamageBonus?: number;
-
     onAttackRoll?: (attackTotal: number, damageTotal: number | null, sourceName: string) => void;
 
-    /** Показывать ли кнопку Cast. */
     showCastButton?: boolean;
-    /** Колбэк при клике на Cast. */
     onCastClick?: () => void;
+    showAttackButton?: boolean;
 
-    /** Принудительно открыть AttackRoller (для связки Cast → Attack). */
     forceAttackOpen?: boolean;
     onForceAttackOpenHandled?: () => void;
 
-    /** Inspiration для переброса. */
     inspirationAvailable?: boolean;
     onSpendInspiration?: () => boolean;
-
-    /** Показывать ли кнопку Attack (открывает AttackRoller). По умолчанию true. */
-    showAttackButton?: boolean;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -74,25 +63,18 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  spellDamageBonus = 0,
                                                  onAttackRoll,
                                                  showCastButton = false,
-                                                 showAttackButton = true,
                                                  onCastClick,
+                                                 showAttackButton = true,
                                                  forceAttackOpen = false,
                                                  onForceAttackOpenHandled,
                                                  inspirationAvailable = false,
                                                  onSpendInspiration,
                                              }) => {
     const elementColors: Record<string, string> = {
-        fire: '#ef4444',
-        force: '#a855f7',
-        necrotic: '#8b5cf6',
-        acid: '#22c55e',
-        cold: '#38bdf8',
-        lightning: '#fbbf24',
-        thunder: '#a855f7',
-        psychic: '#f472b6',
-        radiant: '#fcd34d',
-        poison: '#84cc16',
-        healing: '#22c55e',
+        fire: '#ef4444', force: '#a855f7', necrotic: '#8b5cf6',
+        acid: '#22c55e', cold: '#38bdf8', lightning: '#fbbf24',
+        thunder: '#a855f7', psychic: '#f472b6', radiant: '#fcd34d',
+        poison: '#84cc16', healing: '#22c55e',
     };
 
     const getElementColor = (element?: string): string => {
@@ -116,6 +98,10 @@ const SpellCard: React.FC<SpellCardProps> = ({
         ? getSpellDamageBonus(character, spell)
         : spellDamageBonus;
 
+    const alwaysPreparedTitle = spell.isAlwaysPrepared
+        ? 'Always prepared (subclass feature)'
+        : 'Always prepared (racial spell)';
+
     return (
         <div className="spell-card">
             <div className="spell-card-header">
@@ -132,7 +118,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 </div>
                 <div className="spell-card-actions">
                     {renderPreparedToggle && !disableToggle && renderPreparedToggle({ prepared: isPrepared, onToggle: onTogglePrepared || (() => {}) })}
-                    {disableToggle && <span className="spell-always-prepared" title="Always prepared (racial spell)">✦</span>}
+                    {disableToggle && (
+                        <span className="spell-always-prepared" title={alwaysPreparedTitle}>✦</span>
+                    )}
                     {showEdit && onEdit && <button className="spell-edit-btn" onClick={onEdit}>Edit</button>}
                     {showAddButton && onAdd && <button className="btn-add-spell" onClick={onAdd}>+</button>}
                     {showRemoveButton && onRemove && <button className="btn-remove-spell" onClick={onRemove}>✕</button>}
@@ -183,11 +171,12 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 {spell.damageType && spell.damageType !== spell.element && (
                     <span className="spell-tag-damage-type">{spell.damageType}</span>
                 )}
-                {spell.isRitual && (
-                    <span className="spell-tag-ritual">Ritual</span>
-                )}
+                {spell.isRitual && <span className="spell-tag-ritual">Ritual</span>}
                 {isCustom && <span className="spell-tag-custom">Custom</span>}
                 {spell.isRacial && <span className="spell-tag-racial">Racial</span>}
+                {spell.isAlwaysPrepared && (
+                    <span className="spell-tag-always-prepared">Always Prepared</span>
+                )}
             </div>
 
             {(canRollAttack && showAttackButton) || showCastButton ? (

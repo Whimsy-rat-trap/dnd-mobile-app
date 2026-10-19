@@ -25,7 +25,9 @@ const SpellcastingSection: React.FC<SpellcastingSectionProps> = ({ character }) 
     const spellSlots = getSpellSlots(character);
     const totalSlots = spellSlots.reduce((a, b) => a + b, 0);
     const maxPrepared = getMaxPrepared(character);
-    const preparedCount = character.spells.filter(s => s.prepared).length;
+    const preparedCount = character.spells.filter(
+        s => s.prepared && !s.isRacial && !s.isAlwaysPrepared
+    ).length;
     const knownCount = character.spells.length;
     const racialCount = character.spells.filter(s => s.isRacial).length;
 

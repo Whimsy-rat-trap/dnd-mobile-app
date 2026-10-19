@@ -106,7 +106,7 @@ export interface Spell {
     prepared: boolean;
     isCustom?: boolean;
     isRacial?: boolean;
-    source?: 'race' | 'subrace';
+    source?: 'race' | 'subrace' | 'subclass';
     element?: string;
     requiresConcentration?: boolean;
     classes?: string[];
@@ -115,6 +115,7 @@ export interface Spell {
     damageType?: string;
     /** Можно ли кастовать как ритуал (не тратит слот). */
     isRitual?: boolean;
+    isAlwaysPrepared?: boolean;
 }
 
 export interface Quest {

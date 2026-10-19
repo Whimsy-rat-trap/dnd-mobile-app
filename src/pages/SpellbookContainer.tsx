@@ -120,14 +120,16 @@ const SpellbookContainer: React.FC = () => {
         const spell = character.spells.find(s => s.id === spellId);
         if (!spell) return;
 
-        if (spell.isRacial) {
+        if (spell.isRacial || spell.isAlwaysPrepared) {
             return;
         }
 
         if (!spell.prepared) {
             const maxPrepared = getMaxPrepared(character);
-            const nonRacialPrepared = character.spells.filter(s => !s.isRacial && s.prepared).length;
-            if (nonRacialPrepared >= maxPrepared) {
+            const countPrepared = character.spells.filter(
+                s => !s.isRacial && !s.isAlwaysPrepared && s.prepared
+            ).length;
+            if (countPrepared >= maxPrepared) {
                 if (warningTimeout) clearTimeout(warningTimeout);
                 setIsPreparedWarning(true);
                 warningTimeout = setTimeout(() => setIsPreparedWarning(false), 2000);
@@ -198,7 +200,9 @@ const SpellbookContainer: React.FC = () => {
     const spellSlotsArray = getSpellSlots(character);
     const totalSlots = spellSlotsArray.reduce((a: number, b: number) => a + b, 0);
     const maxPrepared = getMaxPrepared(character);
-    const preparedCount = character.spells.filter(s => s.prepared).length;
+    const preparedCount = character.spells.filter(
+        s => s.prepared && !s.isRacial && !s.isAlwaysPrepared
+    ).length;
     const knownCount = character.spells.length;
     const racialCount = character.spells.filter(s => s.isRacial).length;
 
@@ -399,7 +403,7 @@ const SpellbookContainer: React.FC = () => {
                                     <SkillCheck proficient={prepared} onToggle={onToggle} />
                                 )}
                                 isCustom={spell.isCustom || false}
-                                disableToggle={spell.isRacial || false}
+                                disableToggle={(spell.isRacial || spell.isAlwaysPrepared) || false}
                                 requiresConcentration={spell.requiresConcentration || false}
                                 isConcentrating={character.activeConcentrationSpellId === spell.id}
                                 onToggleConcentration={() => handleToggleConcentration(spell.id)}
