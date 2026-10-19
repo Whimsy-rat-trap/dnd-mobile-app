@@ -5,14 +5,10 @@ import {
     ClassSpellListData,
 } from '../constants/classSpellLists';
 import { SUBCLASS_ALWAYS_PREPARED_SPELLS } from '../constants/subclassSpells';
+import { SUBCLASS_EXPANDED_SPELLS } from '../constants/subclassExpandedSpells';
 
 // Ключи и резолвинг класса
 
-/**
- * Возвращает ключ в CLASS_SPELL_LISTS для пары (класс, подкласс).
- * Для EK/AT это 'Fighter:Eldritch Knight' / 'Rogue:Arcane Trickster'.
- * Для обычных классов — просто 'Wizard', 'Cleric' и т.д.
- */
 export function resolveSpellListKey(
     className: string,
     subclass?: string
@@ -31,7 +27,7 @@ export function getClassSpellListData(
     return CLASS_SPELL_LISTS[resolveSpellListKey(className, subclass)];
 }
 
-// Списки заклинаний
+// Списки заклинаний класса
 
 /**
  * Все заклинания класса из ALL_SPELLS. Если задан `level`, только этого уровня.
@@ -55,18 +51,8 @@ export function getSpellsForClass(
         .filter((s): s is SpellData => !!s);
 }
 
-// Always-prepared подклассовые заклинания (Cleric Domains, Paladin Oaths)
+// Always-prepared (Cleric Domains, Paladin Oaths)
 
-/**
- * Возвращает always-prepared заклинания подкласса (по уровню КЛАССА).
- *
- * Использование:
- *   getSubclassAlwaysPreparedSpells('Cleric', 'Light', 5)
- *   → [Burning Hands, Faerie Fire, Flaming Sphere, Scorching Ray, Daylight, Fireball]
- *
- * Возвращает только те заклинания, которые реально есть в ALL_SPELLS
- * (несуществующие имена игнорируются).
- */
 export function getSubclassAlwaysPreparedSpells(
     className: string,
     subclass: string | undefined,
@@ -95,15 +81,10 @@ export function getSubclassAlwaysPreparedSpells(
     return Array.from(result.values());
 }
 
-/**
- * Для всех классов персонажа — суммарный список always-prepared заклинаний
- * подклассов (без дублей).
- */
 export function getSubclassAlwaysPreparedSpellsForCharacter(
     character: Character
 ): SpellData[] {
     const result = new Map<string, SpellData>();
-
     for (const cl of character.classLevels || []) {
         const spells = getSubclassAlwaysPreparedSpells(
             cl.className,
@@ -116,23 +97,124 @@ export function getSubclassAlwaysPreparedSpellsForCharacter(
             result.set(key, spell);
         }
     }
+    return Array.from(result.values());
+}
+
+// Expanded (Warlock Patrons, Divine Soul)
+// NOT auto-added — только расширяют пул доступного.
+
+/**
+ * Возвращает «expanded» заклинания для класса/подкласса на данном уровне класса.
+ * Гейт по МАКСИМАЛЬНОМУ УРОВНЮ ЗАКЛИНАНИЙ, который класс может кастовать.
+ */
+export function getSubclassExpandedSpells(
+    className: string,
+    subclass: string | undefined,
+    classLevel: number
+): SpellData[] {
+    if (!subclass) return [];
+    const classData = SUBCLASS_EXPANDED_SPELLS[className];
+    if (!classData) return [];
+    const subclassData = classData[subclass];
+    if (!subclassData) return [];
+
+    const maxSpellLevel = getMaxSpellLevelForClass(className, classLevel, subclass);
+    if (maxSpellLevel === 0) return [];
+
+    const byName = new Map(ALL_SPELLS.map(s => [s.name.toLowerCase(), s]));
+    const result = new Map<string, SpellData>();
+
+    // 1. Фиксированные списки (Warlock Patrons)
+    if (subclassData.spellsByLevel) {
+        for (const [lvlStr, names] of Object.entries(subclassData.spellsByLevel)) {
+            const lvl = Number(lvlStr);
+            if (lvl > maxSpellLevel) continue;
+            for (const name of names) {
+                const key = name.toLowerCase();
+                if (result.has(key)) continue;
+                const spell = byName.get(key);
+                if (spell) result.set(key, spell);
+            }
+        }
+    }
+
+    // 2. Пул другого класса (Divine Soul → Cleric)
+    if (subclassData.fromClass) {
+        const source = CLASS_SPELL_LISTS[subclassData.fromClass];
+        if (source) {
+            for (const [lvlStr, names] of Object.entries(source.spellsByLevel)) {
+                const lvl = Number(lvlStr);
+                if (lvl > maxSpellLevel) continue;
+                for (const name of names) {
+                    const key = name.toLowerCase();
+                    if (result.has(key)) continue;
+                    const spell = byName.get(key);
+                    if (spell) result.set(key, spell);
+                }
+            }
+        }
+    }
 
     return Array.from(result.values());
 }
 
-// Прогрессия уровня заклинаний
+export function getSubclassExpandedSpellsForCharacter(
+    character: Character
+): SpellData[] {
+    const result = new Map<string, SpellData>();
+    for (const cl of character.classLevels || []) {
+        const spells = getSubclassExpandedSpells(
+            cl.className,
+            cl.subclass,
+            cl.level
+        );
+        for (const spell of spells) {
+            const key = spell.name.toLowerCase();
+            if (result.has(key)) continue;
+            result.set(key, spell);
+        }
+    }
+    return Array.from(result.values());
+}
 
 /**
- * Максимальный уровень заклинаний, доступный на данном уровне КЛАССА.
- * Возвращает 0, если класс ещё не получил Spellcasting.
+ * Является ли заклинание «expanded only» для персонажа —
+ * то есть доступно ТОЛЬКО через expanded-список подкласса,
+ * а не через базовые списки классов.
  *
- * Формулы:
- *   - Полные (Bard, Cleric, Druid, Sorcerer, Warlock, Wizard): 1→1, 3→2, ...
- *   - Полукастеры (Paladin, Ranger): 2→1, 5→2, 9→3, 13→4, 17→5
- *   - Artificer: 1→1, 5→2, 9→3, 13→4, 17→5
- *   - Третьи (EK, AT): 3→1, 7→2, 13→3, 19→4
- *   - Warlock (Pact Magic): 1→1, 3→2, 5→3, 7→4, 9→5, 17→5
+ * Полезно для UI: помечать такие заклинания тегом «Expanded».
  */
+export function isSpellExpandedOnly(
+    character: Character,
+    spellName: string
+): boolean {
+    const lower = spellName.toLowerCase();
+
+    // 1. Если в базовом списке хотя бы одного класса — не «expanded only»
+    for (const cl of character.classLevels || []) {
+        const data = getClassSpellListData(cl.className, cl.subclass);
+        if (!data) continue;
+        const inBase = Object.values(data.spellsByLevel).some(names =>
+            names.some(n => n.toLowerCase() === lower)
+        );
+        if (inBase) return false;
+    }
+
+    // 2. Если есть в expanded хотя бы одного подкласса — true
+    for (const cl of character.classLevels || []) {
+        const expanded = getSubclassExpandedSpells(
+            cl.className,
+            cl.subclass,
+            cl.level
+        );
+        if (expanded.some(s => s.name.toLowerCase() === lower)) return true;
+    }
+
+    return false;
+}
+
+// Прогрессия уровня заклинаний
+
 export function getMaxSpellLevelForClass(
     className: string,
     classLevel: number,
@@ -158,7 +240,6 @@ export function getMaxSpellLevelForClass(
         return 0;
     }
     if (className === 'Fighter' || className === 'Rogue') {
-        // Eldritch Knight / Arcane Trickster
         if (classLevel >= 19) return 4;
         if (classLevel >= 13) return 3;
         if (classLevel >= 7) return 2;
@@ -172,7 +253,6 @@ export function getMaxSpellLevelForClass(
         if (classLevel >= 3) return 2;
         return 1;
     }
-    // Полные кастеры
     if (classLevel >= 17) return 9;
     if (classLevel >= 15) return 8;
     if (classLevel >= 13) return 7;
@@ -188,9 +268,12 @@ export function getMaxSpellLevelForClass(
 
 /**
  * Все заклинания, доступные персонажу:
- *   - по всем его классам и подклассам (EK/AT учитываются),
- *   - по уровням его классов,
- *   - плюс always-prepared заклинания подклассов (Cleric Domains, Paladin Oaths).
+ *   1. Базовые списки классов (по maxSpellLevel).
+ *   2. Always-prepared подклассов (Cleric Domains, Paladin Oaths).
+ *   3. Expanded подклассов (Warlock Patrons, Divine Soul) — для выбора на level up.
+ *
+ * Expanded-заклинания возвращаются в этом списке, но НЕ добавляются
+ * автоматически в character.spells. Это отличие от always-prepared.
  */
 export function getSpellsAvailableToCharacter(
     character: Character,
@@ -200,6 +283,12 @@ export function getSpellsAvailableToCharacter(
     const byName = new Map(ALL_SPELLS.map(s => [s.name.toLowerCase(), s]));
     const result = new Map<string, SpellData>();
 
+    const addSpell = (spell: SpellData) => {
+        const key = spell.name.toLowerCase();
+        if (result.has(key)) return;
+        result.set(key, spell);
+    };
+
     for (const cl of character.classLevels || []) {
         const data = getClassSpellListData(cl.className, cl.subclass);
         if (!data) continue;
@@ -208,43 +297,40 @@ export function getSpellsAvailableToCharacter(
             ? getMaxSpellLevelForClass(cl.className, cl.level, cl.subclass)
             : 9;
 
-        // 1. Заклинания из базового списка класса
+        // 1. Базовый список класса
         for (const [lvlStr, names] of Object.entries(data.spellsByLevel)) {
             const lvl = Number(lvlStr);
             if (lvl > maxLevel) continue;
             for (const name of names) {
-                const key = name.toLowerCase();
-                if (result.has(key)) continue;
-                const spell = byName.get(key);
-                if (spell) result.set(key, spell);
+                const spell = byName.get(name.toLowerCase());
+                if (spell) addSpell(spell);
             }
         }
 
-        // 2. Always-prepared заклинания подкласса (Cleric Domains, Paladin Oaths)
-        //    Гейтятся по УРОВНЮ КЛАССА, а не по maxLevel — это особая категория.
-        const subclassSpells = getSubclassAlwaysPreparedSpells(
+        // 2. Always-prepared подкласса (Cleric Domains, Paladin Oaths)
+        const alwaysPrepared = getSubclassAlwaysPreparedSpells(
             cl.className,
             cl.subclass,
             cl.level
         );
-        for (const spell of subclassSpells) {
-            const key = spell.name.toLowerCase();
-            if (result.has(key)) continue;
-            result.set(key, spell);
-        }
+        for (const spell of alwaysPrepared) addSpell(spell);
+
+        // 3. Expanded подкласса (Warlock Patrons, Divine Soul)
+        const expanded = getSubclassExpandedSpells(
+            cl.className,
+            cl.subclass,
+            cl.level
+        );
+        for (const spell of expanded) addSpell(spell);
     }
 
     return Array.from(result.values());
 }
 
-// Обратный индекс: spell name → классы
+// Обратный индекс: spell name → базовые классы
 
 /**
- * Какие классы могут кастовать это заклинание по данным CLASS_SPELL_LISTS.
- * Для составных ключей ('Fighter:Eldritch Knight') возвращает базовый класс.
- *
- * ВАЖНО: учитывает только базовые списки классов, не subclass spells.
- * Доменные заклинания здесь не «протекают» в другие классы — это корректно.
+ * ВАЖНО: учитывает только базовые списки классов, НЕ expanded и НЕ always-prepared.
  */
 export function getClassesForSpell(spellName: string): string[] {
     const lower = spellName.toLowerCase();

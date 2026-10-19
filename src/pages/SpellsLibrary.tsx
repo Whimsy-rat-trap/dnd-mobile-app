@@ -10,7 +10,7 @@ import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import { getElementFromSpell, SCHOOLS } from '../utils/spellUtils';
-import { getSpellsAvailableToCharacter } from '../utils/classSpellUtils';
+import { getSpellsAvailableToCharacter, isSpellExpandedOnly } from '../utils/classSpellUtils';
 import './SpellsLibrary.css';
 
 const SpellsLibrary: React.FC = () => {
@@ -364,6 +364,7 @@ const SpellsLibrary: React.FC = () => {
                                 onEdit={() => handleEditSpell(spell.id)}
                                 requiresConcentration={spell.requiresConcentration || false}
                                 showAttackButton={false}
+                                isExpanded={character ? isSpellExpandedOnly(character, spell.name) : false}
                             />
                         );
                     })}

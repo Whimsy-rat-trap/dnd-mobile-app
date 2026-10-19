@@ -377,3 +377,14 @@
     font-size: 11px;
     font-weight: 500;
 }
+
+.spell-tag-expanded {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid #fbbf24;
+    color: #fbbf24;
+    padding: 0 6px;
+    border-radius: 4px;
+    line-height: 18px;
+    font-size: 11px;
+    font-weight: 500;
+}

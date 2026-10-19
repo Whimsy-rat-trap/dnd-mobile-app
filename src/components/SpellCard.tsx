@@ -39,6 +39,9 @@ interface SpellCardProps {
 
     inspirationAvailable?: boolean;
     onSpendInspiration?: () => boolean;
+
+    /** Помечать ли как «expanded» (доступно только через подкласс). */
+    isExpanded?: boolean;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -69,6 +72,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
                                                  onForceAttackOpenHandled,
                                                  inspirationAvailable = false,
                                                  onSpendInspiration,
+                                                 isExpanded = false,
                                              }) => {
     const elementColors: Record<string, string> = {
         fire: '#ef4444', force: '#a855f7', necrotic: '#8b5cf6',
@@ -176,6 +180,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 {spell.isRacial && <span className="spell-tag-racial">Racial</span>}
                 {spell.isAlwaysPrepared && (
                     <span className="spell-tag-always-prepared">Always Prepared</span>
+                )}
+                {isExpanded && (
+                    <span className="spell-tag-expanded">Expanded</span>
                 )}
             </div>
 
