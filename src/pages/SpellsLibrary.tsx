@@ -5,6 +5,7 @@ import { useSpells } from '../context/SpellContext';
 import { ALL_SPELLS } from '../constants/spells';
 import { CASTING_TIMES, COMPONENT_OPTIONS, RANGES, ELEMENTS } from '../constants/spellOptions';
 import { DND_CLASSES } from '../constants/classes';
+import { PACT_BOON_OPTIONS } from '../constants/eldritchInvocations';
 import SpellCard from '../components/SpellCard';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
@@ -15,15 +16,32 @@ import {
     getMaxMagicalSecretsForCharacter,
     getUsedMagicalSecretsCount,
     getMagicalSecretsCandidates,
+    getWarlockLevel,
+    hasPactOfTheTome,
+    hasBookOfAncientSecrets,
+    hasInvocation,
+    getPactOfTomeCantripsUsed,
+    getPactOfTomeCantripCandidates,
+    canAddPactOfTomeCantrip,
+    PACT_OF_TOME_CANTRIP_LIMIT,
+    getBookOfAncientSecretsUsed,
+    getBookOfAncientSecretsCandidates,
+    BOOK_OF_ANCIENT_SECRETS_INITIAL_SLOTS,
+    getMaxBookOfAncientSecretsRitualLevel,
 } from '../utils/classSpellUtils';
 import './SpellsLibrary.css';
 
-type LibraryTab = 'all' | 'available' | 'magical-secrets';
+type LibraryTab =
+    | 'all'
+    | 'available'
+    | 'magical-secrets'
+    | 'pact-of-tome'
+    | 'ancient-secrets';
 
 const SpellsLibrary: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { currentCharacterId, getCharacter, addSpellToCharacter, removeSpellFromCharacter } = useCharacters();
+    const { currentCharacterId, getCharacter, addSpellToCharacter, removeSpellFromCharacter, updateCharacter } = useCharacters();
     const { customSpells, addCustomSpell, updateCustomSpell } = useSpells();
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
@@ -31,26 +49,16 @@ const SpellsLibrary: React.FC = () => {
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [tab, setTab] = useState<LibraryTab>('all');
     const [filters, setFilters] = useState({
-        level: '',
-        school: '',
-        element: '',
-        type: '',
-        components: [] as string[],
-        concentration: '',
-        class: '',
+        level: '', school: '', element: '', type: '',
+        components: [] as string[], concentration: '', class: '',
     });
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpell, setNewSpell] = useState({
-        name: '',
-        level: 0,
-        school: SCHOOLS[0] || 'Abjuration',
-        castingTime: CASTING_TIMES[0],
-        range: RANGES[0],
-        components: [] as string[],
-        description: '',
-        element: ELEMENTS[0],
+        name: '', level: 0, school: SCHOOLS[0] || 'Abjuration',
+        castingTime: CASTING_TIMES[0], range: RANGES[0],
+        components: [] as string[], description: '', element: ELEMENTS[0],
     });
 
     // Сброс таба при смене персонажа
@@ -67,7 +75,11 @@ const SpellsLibrary: React.FC = () => {
         }
     }, [location, navigate]);
 
-    // Доступно персонажу (без magical secrets)
+    const isWarlock = character ? getWarlockLevel(character) > 0 : false;
+    const hasTome = character ? hasPactOfTheTome(character) : false;
+    const hasBook = character ? hasBookOfAncientSecrets(character) : false;
+
+    // === Available ===
     const availableSpellNames = useMemo(() => {
         if (!character) return new Set<string>();
         return new Set(
@@ -75,43 +87,67 @@ const SpellsLibrary: React.FC = () => {
         );
     }, [character]);
 
-    // Magical Secrets — счётчики и пул
-    const magicalSecretsMax = character ? getMaxMagicalSecretsForCharacter(character) : 0;
-    const magicalSecretsUsed = character ? getUsedMagicalSecretsCount(character) : 0;
-    const hasMagicalSecrets = magicalSecretsMax > 0;
+    // === Magical Secrets ===
+    const msMax = character ? getMaxMagicalSecretsForCharacter(character) : 0;
+    const msUsed = character ? getUsedMagicalSecretsCount(character) : 0;
+    const msCandidates = useMemo(() => {
+        if (!character || msMax === 0) return new Set<string>();
+        return new Set(getMagicalSecretsCandidates(character).map(s => s.name.toLowerCase()));
+    }, [character, msMax]);
 
-    const magicalSecretsCandidates = useMemo(() => {
-        if (!character || !hasMagicalSecrets) return new Set<string>();
-        return new Set(
-            getMagicalSecretsCandidates(character).map(s => s.name.toLowerCase())
-        );
-    }, [character, hasMagicalSecrets]);
+    // === Pact of the Tome ===
+    const tomeUsed = character ? getPactOfTomeCantripsUsed(character) : 0;
+    const tomeCandidates = useMemo(() => {
+        if (!character || !hasTome) return new Set<string>();
+        return new Set(getPactOfTomeCantripCandidates(character).map(s => s.name.toLowerCase()));
+    }, [character, hasTome]);
+
+    // === Book of Ancient Secrets ===
+    const ancientUsed = character ? getBookOfAncientSecretsUsed(character) : 0;
+    const ancientMaxLevel = character ? getMaxBookOfAncientSecretsRitualLevel(character) : 0;
+    const ancientCandidates = useMemo(() => {
+        if (!character || !hasBook) return new Set<string>();
+        return new Set(getBookOfAncientSecretsCandidates(character).map(s => s.name.toLowerCase()));
+    }, [character, hasBook]);
+
+    const handlePactBoonChange = (value: string) => {
+        if (!character) return;
+        const newBoon = value === '' ? undefined : (value as 'chain' | 'blade' | 'tome');
+        const newInvocations = newBoon === 'tome'
+            ? (character.knownInvocations || [])
+            : (character.knownInvocations || []).filter(id => id !== 'book-of-ancient-secrets');
+        updateCharacter(character.id, {
+            pactBoon: newBoon,
+            knownInvocations: newInvocations,
+        });
+    };
+
+    const handleToggleBookOfAncientSecrets = () => {
+        if (!character) return;
+        const current = character.knownInvocations || [];
+        const has = current.includes('book-of-ancient-secrets');
+        const next = has
+            ? current.filter(id => id !== 'book-of-ancient-secrets')
+            : [...current, 'book-of-ancient-secrets'];
+        updateCharacter(character.id, { knownInvocations: next });
+    };
 
     const resetForm = () => {
         setNewSpell({
-            name: '',
-            level: 0,
-            school: SCHOOLS[0] || 'Abjuration',
-            castingTime: CASTING_TIMES[0],
-            range: RANGES[0],
-            components: [],
-            description: '',
-            element: ELEMENTS[0],
+            name: '', level: 0, school: SCHOOLS[0] || 'Abjuration',
+            castingTime: CASTING_TIMES[0], range: RANGES[0],
+            components: [], description: '', element: ELEMENTS[0],
         });
         setEditingSpellId(null);
     };
 
-    // Открытие модалки для редактирования
     const handleEditSpell = (spellId: string) => {
         const spell = customSpells.find(s => s.id === spellId);
         if (!spell) return;
         setEditingSpellId(spellId);
         setNewSpell({
-            name: spell.name,
-            level: spell.level,
-            school: spell.school,
-            castingTime: spell.castingTime,
-            range: spell.range,
+            name: spell.name, level: spell.level, school: spell.school,
+            castingTime: spell.castingTime, range: spell.range,
             components: spell.components.split(', ').filter(c => c.trim() !== ''),
             description: spell.description,
             element: spell.element || ELEMENTS[0],
@@ -119,23 +155,17 @@ const SpellsLibrary: React.FC = () => {
         setShowCreateModal(true);
     };
 
-    // Функции для управления компонентами при создании
     const toggleComponent = (comp: string) => {
         setNewSpell(prev => {
             const current = prev.components;
-            if (current.includes(comp)) {
-                return { ...prev, components: current.filter(c => c !== comp) };
-            } else {
-                return { ...prev, components: [...current, comp] };
-            }
+            return current.includes(comp)
+                ? { ...prev, components: current.filter(c => c !== comp) }
+                : { ...prev, components: [...current, comp] };
         });
     };
 
     const removeComponent = (comp: string) => {
-        setNewSpell(prev => ({
-            ...prev,
-            components: prev.components.filter(c => c !== comp),
-        }));
+        setNewSpell(prev => ({ ...prev, components: prev.components.filter(c => c !== comp) }));
     };
 
     const handleFilterChange = (newFilters: Record<string, any>) => {
@@ -144,72 +174,43 @@ const SpellsLibrary: React.FC = () => {
 
     const filterFields: FilterField[] = [
         {
-            key: 'level',
-            label: 'Level',
-            type: 'select',
+            key: 'level', label: 'Level', type: 'select',
             options: [
                 { value: '', label: 'All' },
                 { value: '0', label: 'Cantrip' },
                 ...Array.from({ length: 9 }, (_, i) => ({ value: String(i + 1), label: `Level ${i + 1}` })),
             ],
         },
+        { key: 'school', label: 'School', type: 'select', options: [{ value: '', label: 'All' }, ...SCHOOLS.map(s => ({ value: s, label: s }))] },
+        { key: 'element', label: 'Element', type: 'select', options: [{ value: '', label: 'All' }, ...ELEMENTS.map(e => ({ value: e, label: e }))] },
         {
-            key: 'school',
-            label: 'School',
-            type: 'select',
-            options: [{ value: '', label: 'All' }, ...SCHOOLS.map(s => ({ value: s, label: s }))],
-        },
-        {
-            key: 'element',
-            label: 'Element',
-            type: 'select',
-            options: [{ value: '', label: 'All' }, ...ELEMENTS.map(e => ({ value: e, label: e }))],
-        },
-        {
-            key: 'type',
-            label: 'Type',
-            type: 'select',
+            key: 'type', label: 'Type', type: 'select',
             options: [
                 { value: '', label: 'All' },
                 { value: 'standard', label: 'Standard' },
                 { value: 'custom', label: 'Custom' },
             ],
         },
+        { key: 'components', label: 'Components', type: 'tags', options: COMPONENT_OPTIONS.map(c => ({ value: c, label: c })) },
         {
-            key: 'components',
-            label: 'Components',
-            type: 'tags',
-            options: COMPONENT_OPTIONS.map(c => ({ value: c, label: c })),
-        },
-        {
-            key: 'concentration',
-            label: 'Concentration',
-            type: 'select',
+            key: 'concentration', label: 'Concentration', type: 'select',
             options: [
                 { value: '', label: 'All' },
                 { value: 'true', label: 'Requires Concentration' },
                 { value: 'false', label: 'Does Not Require' },
             ],
         },
-        {
-            key: 'class',
-            label: 'Class',
-            type: 'select',
-            options: [
-                { value: '', label: 'All' },
-                ...DND_CLASSES.map(cls => ({ value: cls, label: cls })),
-            ],
-        },
+        { key: 'class', label: 'Class', type: 'select', options: [{ value: '', label: 'All' }, ...DND_CLASSES.map(cls => ({ value: cls, label: cls }))] },
     ];
 
-    // Объединяем стандартные и пользовательские заклинания
     const allSpells = [
         ...ALL_SPELLS.map((s, index) => ({ ...s, id: `std-${index}`, isCustom: false, prepared: false })),
         ...customSpells,
     ];
 
     const filteredSpells = allSpells.filter(spell => {
-        const matchesSearch = spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        const matchesSearch =
+            spell.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             spell.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
             spell.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesLevel = !filters.level || spell.level === Number(filters.level);
@@ -228,12 +229,15 @@ const SpellsLibrary: React.FC = () => {
             (spell.classes && spell.classes.includes(filters.class)) ||
             (!spell.classes);
 
-        // Фильтр по табу
         let matchesTab = true;
         if (tab === 'available') {
             matchesTab = !!character && availableSpellNames.has(spell.name.toLowerCase());
         } else if (tab === 'magical-secrets') {
-            matchesTab = !!character && magicalSecretsCandidates.has(spell.name.toLowerCase());
+            matchesTab = !!character && msCandidates.has(spell.name.toLowerCase());
+        } else if (tab === 'pact-of-tome') {
+            matchesTab = !!character && tomeCandidates.has(spell.name.toLowerCase());
+        } else if (tab === 'ancient-secrets') {
+            matchesTab = !!character && ancientCandidates.has(spell.name.toLowerCase());
         }
 
         return matchesSearch && matchesLevel && matchesSchool && matchesElement &&
@@ -241,38 +245,58 @@ const SpellsLibrary: React.FC = () => {
             matchesTab;
     });
 
-    const handleAddSpell = (spellData: any, asMagicalSecret: boolean = false) => {
+    const handleAddSpell = (
+        spellData: any,
+        mode: 'normal' | 'magical-secret' | 'pact-of-tome' | 'ancient-secret' = 'normal'
+    ) => {
         if (!character) return;
-        const exists = character.spells.some(s => s.name === spellData.name);
-        if (exists) return;
+        if (character.spells.some(s => s.name === spellData.name)) return;
 
-        if (asMagicalSecret) {
-            if (magicalSecretsUsed >= magicalSecretsMax) return;
+        const base = {
+            ...spellData,
+            isCustom: spellData.isCustom || false,
+            element: spellData.element || undefined,
+        };
+
+        if (mode === 'magical-secret') {
+            if (msUsed >= msMax) return;
             addSpellToCharacter(character.id, {
-                ...spellData,
+                ...base,
                 prepared: true,
-                isCustom: spellData.isCustom || false,
                 isMagicalSecret: true,
                 source: 'magical-secrets',
-                element: spellData.element || undefined,
             });
             return;
         }
 
-        addSpellToCharacter(character.id, {
-            ...spellData,
-            prepared: false,
-            isCustom: spellData.isCustom || false,
-            element: spellData.element || undefined,
-        });
+        if (mode === 'pact-of-tome') {
+            if (tomeUsed >= PACT_OF_TOME_CANTRIP_LIMIT) return;
+            addSpellToCharacter(character.id, {
+                ...base,
+                prepared: true,
+                isPactOfTome: true,
+                source: 'pact-of-tome',
+            });
+            return;
+        }
+
+        if (mode === 'ancient-secret') {
+            addSpellToCharacter(character.id, {
+                ...base,
+                prepared: true,
+                isBookOfAncientSecrets: true,
+                source: 'book-of-ancient-secrets',
+            });
+            return;
+        }
+
+        addSpellToCharacter(character.id, { ...base, prepared: false });
     };
 
     const handleRemoveSpell = (spellName: string) => {
         if (!character) return;
         const spell = character.spells.find(s => s.name === spellName);
-        if (spell) {
-            removeSpellFromCharacter(character.id, spell.id);
-        }
+        if (spell) removeSpellFromCharacter(character.id, spell.id);
     };
 
     const isSpellInBook = (spellName: string) => {
@@ -282,19 +306,11 @@ const SpellsLibrary: React.FC = () => {
 
     const handleBack = () => navigate(-1);
 
-    // Сохранение заклинания (создание или обновление)
     const handleSaveSpell = () => {
         const nameTrimmed = newSpell.name.trim();
-        if (!nameTrimmed) {
-            alert('Please enter a spell name.');
-            return;
-        }
-        if (!newSpell.description.trim()) {
-            alert('Please enter a spell description.');
-            return;
-        }
+        if (!nameTrimmed) { alert('Please enter a spell name.'); return; }
+        if (!newSpell.description.trim()) { alert('Please enter a spell description.'); return; }
 
-        // Проверка уникальности имени
         const isEditing = editingSpellId !== null;
         const allSpellNames = [
             ...ALL_SPELLS.map(s => s.name.toLowerCase()),
@@ -305,27 +321,19 @@ const SpellsLibrary: React.FC = () => {
             return;
         }
 
-        const componentsStr = newSpell.components.length > 0 ? newSpell.components.join(', ') : '';
-
         const spellData = {
-            name: nameTrimmed,
-            level: newSpell.level,
-            school: newSpell.school,
-            castingTime: newSpell.castingTime,
-            range: newSpell.range,
-            components: componentsStr,
+            name: nameTrimmed, level: newSpell.level, school: newSpell.school,
+            castingTime: newSpell.castingTime, range: newSpell.range,
+            components: newSpell.components.length > 0 ? newSpell.components.join(', ') : '',
             description: newSpell.description,
             element: newSpell.element === 'None' ? undefined : newSpell.element,
-            isCustom: true,
-            prepared: false,
+            isCustom: true, prepared: false,
         };
 
         if (isEditing) {
-            // Обновление
             const { isCustom, prepared, ...updateData } = spellData;
             updateCustomSpell(editingSpellId, updateData);
         } else {
-            // Создание
             addCustomSpell(spellData);
         }
 
@@ -347,10 +355,7 @@ const SpellsLibrary: React.FC = () => {
                         {character ? `Adding to ${character.name}` : 'Select a character to add spells'}
                     </div>
                 </div>
-                <button className="sl-btn-create-spell" onClick={() => {
-                    resetForm();
-                    setShowCreateModal(true);
-                }}>
+                <button className="sl-btn-create-spell" onClick={() => { resetForm(); setShowCreateModal(true); }}>
                     + Create Spell
                 </button>
             </header>
@@ -363,7 +368,38 @@ const SpellsLibrary: React.FC = () => {
                     onFilterClick={() => setShowFilterModal(true)}
                 />
 
-                <div className="sl-availability-toggle">
+                {/* Warlock Configuration (Pact Boon + Book of Ancient Secrets invocation) */}
+                {character && isWarlock && (
+                    <div className="sl-warlock-options">
+                        <div className="sl-warlock-title">Warlock Options</div>
+                        <div className="sl-warlock-row">
+                            <label className="sl-warlock-label">Pact Boon:</label>
+                            <select
+                                className="sl-warlock-select"
+                                value={character.pactBoon || ''}
+                                onChange={(e) => handlePactBoonChange(e.target.value)}
+                            >
+                                <option value="">— None —</option>
+                                {PACT_BOON_OPTIONS.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        {character.pactBoon === 'tome' && getWarlockLevel(character) >= 3 && (
+                            <label className="sl-warlock-checkbox">
+                                <input
+                                    type="checkbox"
+                                    checked={hasInvocation(character, 'book-of-ancient-secrets')}
+                                    onChange={handleToggleBookOfAncientSecrets}
+                                />
+                                <span>Book of Ancient Secrets (invocation)</span>
+                            </label>
+                        )}
+                    </div>
+                )}
+
+                {/* Tabs */}
+                <div className="sl-availability-toggle sl-tabs">
                     <button
                         type="button"
                         className={`sl-avail-btn ${tab === 'all' ? 'sl-avail-active' : ''}`}
@@ -376,21 +412,43 @@ const SpellsLibrary: React.FC = () => {
                         className={`sl-avail-btn ${tab === 'available' ? 'sl-avail-active' : ''}`}
                         onClick={() => setTab('available')}
                         disabled={!character}
-                        title={!character ? 'Select a character to filter' : `Spells available to ${character.name}`}
                     >
                         Available{character ? ` to ${character.name}` : ''}
                     </button>
-                    {hasMagicalSecrets && (
+                    {msMax > 0 && (
                         <button
                             type="button"
                             className={`sl-avail-btn sl-avail-secrets ${tab === 'magical-secrets' ? 'sl-avail-active' : ''}`}
                             onClick={() => setTab('magical-secrets')}
-                            title="Spells from any class (Magical Secrets)"
                         >
-                            Magical Secrets ({magicalSecretsUsed}/{magicalSecretsMax})
+                            Magical Secrets ({msUsed}/{msMax})
+                        </button>
+                    )}
+                    {hasTome && (
+                        <button
+                            type="button"
+                            className={`sl-avail-btn sl-avail-tome ${tab === 'pact-of-tome' ? 'sl-avail-active' : ''}`}
+                            onClick={() => setTab('pact-of-tome')}
+                        >
+                            Tome Cantrips ({tomeUsed}/{PACT_OF_TOME_CANTRIP_LIMIT})
+                        </button>
+                    )}
+                    {hasBook && (
+                        <button
+                            type="button"
+                            className={`sl-avail-btn sl-avail-ancient ${tab === 'ancient-secrets' ? 'sl-avail-active' : ''}`}
+                            onClick={() => setTab('ancient-secrets')}
+                        >
+                            Ancient Secrets ({ancientUsed})
                         </button>
                     )}
                 </div>
+
+                {tab === 'ancient-secrets' && (
+                    <div className="sl-ancient-info">
+                        Rituals (level ≤ {ancientMaxLevel}). {BOOK_OF_ANCIENT_SECRETS_INITIAL_SLOTS} initial are free; more can be inscribed from scrolls found during adventures.
+                    </div>
+                )}
 
                 <div className="sl-list">
                     {filteredSpells.map((spell) => {
@@ -398,19 +456,30 @@ const SpellsLibrary: React.FC = () => {
                         const inBook = !!bookSpell;
                         const isCustom = spell.isCustom || false;
 
-                        const canAddAsSecret =
-                            tab === 'magical-secrets' &&
-                            !!character &&
-                            !inBook &&
-                            magicalSecretsUsed < magicalSecretsMax &&
-                            magicalSecretsCandidates.has(spell.name.toLowerCase());
+                        // Определяем, как это заклинание можно добавить в текущем табе
+                        let addMode: 'normal' | 'magical-secret' | 'pact-of-tome' | 'ancient-secret' = 'normal';
+                        let canAdd = !!character && !inBook;
+
+                        if (tab === 'magical-secrets') {
+                            canAdd = msUsed < msMax && msCandidates.has(spell.name.toLowerCase());
+                            addMode = 'magical-secret';
+                        } else if (tab === 'pact-of-tome') {
+                            const { can } = canAddPactOfTomeCantrip(character!);
+                            canAdd = can && tomeCandidates.has(spell.name.toLowerCase());
+                            addMode = 'pact-of-tome';
+                        } else if (tab === 'ancient-secrets') {
+                            canAdd = ancientCandidates.has(spell.name.toLowerCase());
+                            addMode = 'ancient-secret';
+                        } else if (tab === 'available') {
+                            canAdd = !!character && !inBook;
+                        }
 
                         return (
                             <SpellCard
                                 key={spell.id}
                                 spell={spell}
-                                showAddButton={!!character && !inBook && tab !== 'magical-secrets'}
-                                onAdd={() => handleAddSpell(spell)}
+                                showAddButton={canAdd}
+                                onAdd={() => handleAddSpell(spell, addMode)}
                                 showRemoveButton={!!character && inBook && !bookSpell?.isAlwaysPrepared}
                                 onRemove={() => handleRemoveSpell(spell.name)}
                                 isCustom={isCustom}
@@ -423,9 +492,19 @@ const SpellsLibrary: React.FC = () => {
                     })}
                 </div>
 
-                {tab === 'magical-secrets' && magicalSecretsUsed >= magicalSecretsMax && (
+                {tab === 'magical-secrets' && msUsed >= msMax && (
                     <div className="sl-limit-notice">
-                        All {magicalSecretsMax} Magical Secrets used. Remove one to swap.
+                        All {msMax} Magical Secrets used. Remove one to swap.
+                    </div>
+                )}
+                {tab === 'pact-of-tome' && tomeUsed >= PACT_OF_TOME_CANTRIP_LIMIT && (
+                    <div className="sl-limit-notice sl-limit-tome">
+                        All 3 Pact of the Tome cantrips chosen. Remove one to swap.
+                    </div>
+                )}
+                {tab === 'ancient-secrets' && ancientUsed > BOOK_OF_ANCIENT_SECRETS_INITIAL_SLOTS && (
+                    <div className="sl-limit-notice sl-limit-ancient">
+                        You have more than the initial 2 rituals — ensure your DM allowed those from scrolls.
                     </div>
                 )}
             </div>
@@ -445,27 +524,19 @@ const SpellsLibrary: React.FC = () => {
                 />
             )}
 
-            <Modal isOpen={showCreateModal} onClose={() => {
-                setShowCreateModal(false);
-                resetForm();
-            }}>
+            <Modal isOpen={showCreateModal} onClose={() => { setShowCreateModal(false); resetForm(); }}>
                 <h3>{editingSpellId ? 'Edit Custom Spell' : 'Create Custom Spell'}</h3>
                 <div className="sl-create-form">
                     <div className="sl-form-group">
                         <label>Spell Name *</label>
-                        <input
-                            type="text"
-                            value={newSpell.name}
-                            onChange={(e) => setNewSpell({ ...newSpell, name: e.target.value })}
-                            placeholder="Enter spell name"
-                        />
+                        <input type="text" value={newSpell.name}
+                               onChange={(e) => setNewSpell({ ...newSpell, name: e.target.value })}
+                               placeholder="Enter spell name" />
                     </div>
                     <div className="sl-form-group">
                         <label>Level</label>
-                        <select
-                            value={newSpell.level}
-                            onChange={(e) => setNewSpell({ ...newSpell, level: Number(e.target.value) })}
-                        >
+                        <select value={newSpell.level}
+                                onChange={(e) => setNewSpell({ ...newSpell, level: Number(e.target.value) })}>
                             {Array.from({ length: 10 }, (_, i) => i).map(lvl => (
                                 <option key={lvl} value={lvl}>{lvl === 0 ? 'Cantrip' : `Level ${lvl}`}</option>
                             ))}
@@ -473,35 +544,23 @@ const SpellsLibrary: React.FC = () => {
                     </div>
                     <div className="sl-form-group">
                         <label>School</label>
-                        <select
-                            value={newSpell.school}
-                            onChange={(e) => setNewSpell({ ...newSpell, school: e.target.value })}
-                        >
-                            {SCHOOLS.map(s => (
-                                <option key={s} value={s}>{s}</option>
-                            ))}
+                        <select value={newSpell.school}
+                                onChange={(e) => setNewSpell({ ...newSpell, school: e.target.value })}>
+                            {SCHOOLS.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                     </div>
                     <div className="sl-form-group">
                         <label>Casting Time</label>
-                        <select
-                            value={newSpell.castingTime}
-                            onChange={(e) => setNewSpell({ ...newSpell, castingTime: e.target.value })}
-                        >
-                            {CASTING_TIMES.map(t => (
-                                <option key={t} value={t}>{t}</option>
-                            ))}
+                        <select value={newSpell.castingTime}
+                                onChange={(e) => setNewSpell({ ...newSpell, castingTime: e.target.value })}>
+                            {CASTING_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
                     </div>
                     <div className="sl-form-group">
                         <label>Range</label>
-                        <select
-                            value={newSpell.range}
-                            onChange={(e) => setNewSpell({ ...newSpell, range: e.target.value })}
-                        >
-                            {RANGES.map(r => (
-                                <option key={r} value={r}>{r}</option>
-                            ))}
+                        <select value={newSpell.range}
+                                onChange={(e) => setNewSpell({ ...newSpell, range: e.target.value })}>
+                            {RANGES.map(r => <option key={r} value={r}>{r}</option>)}
                         </select>
                     </div>
                     <div className="sl-form-group">
@@ -511,24 +570,15 @@ const SpellsLibrary: React.FC = () => {
                                 {newSpell.components.map(comp => (
                                     <span key={comp} className="sl-component-tag">
                                         {comp}
-                                        <button
-                                            type="button"
-                                            className="sl-component-remove"
-                                            onClick={() => removeComponent(comp)}
-                                        >
-                                            ✕
-                                        </button>
+                                        <button type="button" className="sl-component-remove" onClick={() => removeComponent(comp)}>✕</button>
                                     </span>
                                 ))}
                             </div>
                             <div className="sl-component-options">
                                 {COMPONENT_OPTIONS.map(comp => (
-                                    <button
-                                        key={comp}
-                                        type="button"
-                                        className={`sl-component-option-btn ${newSpell.components.includes(comp) ? 'sl-active' : ''}`}
-                                        onClick={() => toggleComponent(comp)}
-                                    >
+                                    <button key={comp} type="button"
+                                            className={`sl-component-option-btn ${newSpell.components.includes(comp) ? 'sl-active' : ''}`}
+                                            onClick={() => toggleComponent(comp)}>
                                         {comp}
                                     </button>
                                 ))}
@@ -537,30 +587,20 @@ const SpellsLibrary: React.FC = () => {
                     </div>
                     <div className="sl-form-group">
                         <label>Element</label>
-                        <select
-                            value={newSpell.element}
-                            onChange={(e) => setNewSpell({ ...newSpell, element: e.target.value })}
-                        >
-                            {ELEMENTS.map(el => (
-                                <option key={el} value={el}>{el}</option>
-                            ))}
+                        <select value={newSpell.element}
+                                onChange={(e) => setNewSpell({ ...newSpell, element: e.target.value })}>
+                            {ELEMENTS.map(el => <option key={el} value={el}>{el}</option>)}
                         </select>
                     </div>
                     <div className="sl-form-group">
                         <label>Description *</label>
-                        <textarea
-                            value={newSpell.description}
-                            onChange={(e) => setNewSpell({ ...newSpell, description: e.target.value })}
-                            placeholder="Enter spell description"
-                            rows={3}
-                        />
+                        <textarea value={newSpell.description}
+                                  onChange={(e) => setNewSpell({ ...newSpell, description: e.target.value })}
+                                  placeholder="Enter spell description" rows={3} />
                     </div>
                 </div>
                 <div className="modal-actions">
-                    <button className="modal-btn cancel" onClick={() => {
-                        setShowCreateModal(false);
-                        resetForm();
-                    }}>Cancel</button>
+                    <button className="modal-btn cancel" onClick={() => { setShowCreateModal(false); resetForm(); }}>Cancel</button>
                     <button className="modal-btn apply" onClick={handleSaveSpell}>
                         {editingSpellId ? 'Update' : 'Create'}
                     </button>

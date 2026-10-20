@@ -7,6 +7,8 @@ import {
 import { SUBCLASS_ALWAYS_PREPARED_SPELLS } from '../constants/subclassSpells';
 import { SUBCLASS_EXPANDED_SPELLS } from '../constants/subclassExpandedSpells';
 import { MAGICAL_SECRETS_FEATURES } from '../constants/magicalSecrets'
+import { ELDRITCH_INVOCATIONS, PactBoon } from '../constants/eldritchInvocations';
+import { isRitualSpell } from '../constants/ritualSpells';
 
 // Ключи и резолвинг класса
 
@@ -462,5 +464,117 @@ export function getMagicalSecretsCandidates(character: Character): SpellData[] {
         if (isSpellOnAnyBaseList(character, s.name)) return false;
         if (s.level === 0) return true; // cantrips всегда доступны
         return s.level <= maxLevel;
+    });
+}
+
+// Warlock: Pact Boon + Eldritch Invocations
+/**
+ * Суммарный уровень Warlock'а (учитывает мультикласс).
+ */
+export function getWarlockLevel(character: Character): number {
+    return (character.classLevels || [])
+        .filter(cl => cl.className === 'Warlock')
+        .reduce((sum, cl) => sum + cl.level, 0);
+}
+
+/**
+ * Есть ли у персонажа Pact of the Tome (и Warlock ≥ 3).
+ */
+export function hasPactOfTheTome(character: Character): boolean {
+    if (character.pactBoon !== 'tome') return false;
+    return getWarlockLevel(character) >= 3;
+}
+
+/**
+ * Есть ли у персонажа конкретная инвокация.
+ */
+export function hasInvocation(character: Character, invocationId: string): boolean {
+    return (character.knownInvocations || []).includes(invocationId);
+}
+
+/**
+ * Есть ли у персонажа Book of Ancient Secrets (invocation + pact = tome + Warlock 3+).
+ */
+export function hasBookOfAncientSecrets(character: Character): boolean {
+    if (!hasPactOfTheTome(character)) return false;
+    return hasInvocation(character, 'book-of-ancient-secrets');
+}
+
+// Pact of the Tome: 3 cantrips с любого класса
+/** Максимум кантрипов от Pact of the Tome. */
+export const PACT_OF_TOME_CANTRIP_LIMIT = 3;
+
+export function getPactOfTomeCantripsUsed(character: Character): number {
+    return character.spells.filter(s => s.isPactOfTome).length;
+}
+
+/**
+ * Кандидаты для Pact of the Tome: все кантрипы из ALL_SPELLS,
+ * которых ещё нет в character.spells.
+ */
+export function getPactOfTomeCantripCandidates(character: Character): SpellData[] {
+    if (!hasPactOfTheTome(character)) return [];
+    const existing = new Set(character.spells.map(s => s.name.toLowerCase()));
+
+    return ALL_SPELLS.filter(s => {
+        if (s.level !== 0) return false;
+        if (existing.has(s.name.toLowerCase())) return false;
+        return true;
+    });
+}
+
+export function canAddPactOfTomeCantrip(character: Character): {
+    can: boolean;
+    used: number;
+    max: number;
+} {
+    const used = getPactOfTomeCantripsUsed(character);
+    const max = hasPactOfTheTome(character) ? PACT_OF_TOME_CANTRIP_LIMIT : 0;
+    return { can: max > 0 && used < max, used, max };
+}
+
+// ---------------------------------------------------------------------------
+// Book of Ancient Secrets: ритуалы
+// ---------------------------------------------------------------------------
+
+/**
+ * Максимальный уровень ритуала в книге:
+ *   ceil(warlockLevel / 2)
+ * Для Warlock 3 → 2, Warlock 5 → 3, Warlock 9 → 5 и т.д.
+ */
+export function getMaxBookOfAncientSecretsRitualLevel(character: Character): number {
+    if (!hasBookOfAncientSecrets(character)) return 0;
+    const warlockLevel = getWarlockLevel(character);
+    if (warlockLevel < 3) return 0;
+    return Math.ceil(warlockLevel / 2);
+}
+
+/**
+ * Базовый лимит свободных ритуалов от инициации (2).
+ * Дальнейшие ритуалы игрок получает «в приключениях» — их количество
+ * не ограничено, но каждая запись требует разрешения DM.
+ */
+export const BOOK_OF_ANCIENT_SECRETS_INITIAL_SLOTS = 2;
+
+export function getBookOfAncientSecretsUsed(character: Character): number {
+    return character.spells.filter(s => s.isBookOfAncientSecrets).length;
+}
+
+/**
+ * Кандидаты для книги: все ритуалы (кроме cantrip'ов) с уровнем
+ * ≤ getMaxBookOfAncientSecretsRitualLevel(character), которых ещё нет
+ * в character.spells.
+ */
+export function getBookOfAncientSecretsCandidates(character: Character): SpellData[] {
+    const maxLevel = getMaxBookOfAncientSecretsRitualLevel(character);
+    if (maxLevel === 0) return [];
+    const existing = new Set(character.spells.map(s => s.name.toLowerCase()));
+
+    return ALL_SPELLS.filter(s => {
+        if (!isRitualSpell(s)) return false;
+        if (s.level === 0) return false;
+        if (s.level > maxLevel) return false;
+        if (existing.has(s.name.toLowerCase())) return false;
+        return true;
     });
 }

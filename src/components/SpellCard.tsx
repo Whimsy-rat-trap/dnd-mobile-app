@@ -187,6 +187,15 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 {spell.isMagicalSecret && (
                     <span className="spell-tag-magical-secret">Magical Secret</span>
                 )}
+                {spell.isMagicalSecret && (
+                    <span className="spell-tag-magical-secret">Magical Secret</span>
+                )}
+                {spell.isPactOfTome && (
+                    <span className="spell-tag-pact-of-tome">Pact of the Tome</span>
+                )}
+                {spell.isBookOfAncientSecrets && (
+                    <span className="spell-tag-book-ancient">Ancient Secret</span>
+                )}
                 {isExpanded && (
                     <span className="spell-tag-expanded">Expanded</span>
                 )}

@@ -181,6 +181,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
                 if (!updated.feats) updated.feats = [];
 
+                if (!Array.isArray(updated.knownInvocations)) updated.knownInvocations = [];
+
                 if (!updated.currency) {
                     updated.currency = { gp: 0, sp: 0, cp: 0 };
                 } else {

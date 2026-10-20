@@ -219,3 +219,122 @@
     font-size: 13px;
     text-align: center;
 }
+
+/* Warlock options panel */
+.sl-warlock-options {
+    background: #1f2937;
+    border: 1px solid #374957;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sl-warlock-title {
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 600;
+    color: #a78bfa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sl-warlock-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sl-warlock-label {
+    font-size: 13px;
+    color: #9ca3af;
+    min-width: 80px;
+}
+
+.sl-warlock-select {
+    flex: 1;
+    padding: 6px 10px;
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.sl-warlock-select:focus {
+    border-color: #a78bfa;
+    outline: none;
+}
+
+.sl-warlock-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #d1d5db;
+    cursor: pointer;
+}
+
+.sl-warlock-checkbox input[type="checkbox"] {
+    accent-color: #a78bfa;
+    width: 16px;
+    height: 16px;
+}
+
+/* Pact of the Tome tab */
+.sl-avail-btn.sl-avail-tome {
+    border-color: #ec4899;
+    color: #f472b6;
+}
+.sl-avail-btn.sl-avail-tome.sl-avail-active {
+    background: rgba(236, 72, 153, 0.15);
+    border-color: #ec4899;
+    color: #f472b6;
+}
+.sl-avail-btn.sl-avail-tome:hover:not(:disabled) {
+    border-color: #f472b6;
+    color: #fbcfe8;
+}
+
+/* Ancient Secrets tab */
+.sl-avail-btn.sl-avail-ancient {
+    border-color: #14b8a6;
+    color: #2dd4bf;
+}
+.sl-avail-btn.sl-avail-ancient.sl-avail-active {
+    background: rgba(20, 184, 166, 0.15);
+    border-color: #14b8a6;
+    color: #2dd4bf;
+}
+.sl-avail-btn.sl-avail-ancient:hover:not(:disabled) {
+    border-color: #2dd4bf;
+    color: #99f6e4;
+}
+
+/* Info strip for Ancient Secrets */
+.sl-ancient-info {
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: rgba(20, 184, 166, 0.1);
+    border-left: 3px solid #14b8a6;
+    border-radius: 6px;
+    color: #99f6e4;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Extra limit notices */
+.sl-limit-tome {
+    background: rgba(236, 72, 153, 0.1);
+    border-color: #ec4899;
+    color: #f472b6;
+}
+
+.sl-limit-ancient {
+    background: rgba(20, 184, 166, 0.1);
+    border-color: #14b8a6;
+    color: #2dd4bf;
+}

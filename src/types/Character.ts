@@ -72,6 +72,10 @@ export interface Character {
     hitDiceUsed?: Record<number, number>;
     /** Есть ли у персонажа Inspiration (можно потратить на reroll d20). */
     inspiration?: boolean;
+    /** Pact Boon, выбранный Warlock'ом (Pact of the Chain/Blade/Tome). */
+    pactBoon?: 'chain' | 'blade' | 'tome';
+    /** Известные Eldritch Invocations (по id из ELDRITCH_INVOCATIONS). */
+    knownInvocations?: string[];
 }
 
 export interface InventoryItem {
@@ -106,7 +110,13 @@ export interface Spell {
     prepared: boolean;
     isCustom?: boolean;
     isRacial?: boolean;
-    source?: 'race' | 'subrace' | 'subclass' | 'magical-secrets';
+    source?:
+        | 'race'
+        | 'subrace'
+        | 'subclass'
+        | 'magical-secrets'
+        | 'pact-of-tome'
+        | 'book-of-ancient-secrets';
     element?: string;
     requiresConcentration?: boolean;
     classes?: string[];
@@ -117,7 +127,12 @@ export interface Spell {
     isRitual?: boolean;
     isAlwaysPrepared?: boolean;
     /** Изучено через Magical Secrets (Bard: Lore L6 + base Bard L10/14/18). */
-    isMagicalSecret?: boolean;}
+    isMagicalSecret?: boolean;
+    /** Кантрип, взятый через Pact of the Tome (Warlock 3+). */
+    isPactOfTome?: boolean;
+    /** Ритуал, записанный в Book of Ancient Secrets (Warlock invocation). */
+    isBookOfAncientSecrets?: boolean;
+}
 
 export interface Quest {
     id: string;
