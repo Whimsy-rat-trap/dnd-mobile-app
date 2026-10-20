@@ -10,8 +10,15 @@ import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import { getElementFromSpell, SCHOOLS } from '../utils/spellUtils';
-import { getSpellsAvailableToCharacter, isSpellExpandedOnly } from '../utils/classSpellUtils';
+import {
+    getSpellsAvailableToCharacter,
+    getMaxMagicalSecretsForCharacter,
+    getUsedMagicalSecretsCount,
+    getMagicalSecretsCandidates,
+} from '../utils/classSpellUtils';
 import './SpellsLibrary.css';
+
+type LibraryTab = 'all' | 'available' | 'magical-secrets';
 
 const SpellsLibrary: React.FC = () => {
     const navigate = useNavigate();
@@ -22,6 +29,7 @@ const SpellsLibrary: React.FC = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
+    const [tab, setTab] = useState<LibraryTab>('all');
     const [filters, setFilters] = useState({
         level: '',
         school: '',
@@ -32,7 +40,6 @@ const SpellsLibrary: React.FC = () => {
         class: '',
     });
 
-    const [onlyAvailable, setOnlyAvailable] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingSpellId, setEditingSpellId] = useState<string | null>(null);
     const [newSpell, setNewSpell] = useState({
@@ -46,7 +53,12 @@ const SpellsLibrary: React.FC = () => {
         element: ELEMENTS[0],
     });
 
-    // Автоматическое открытие модалки при переходе с ?create=true
+    // Сброс таба при смене персонажа
+    useEffect(() => {
+        if (!character && tab !== 'all') setTab('all');
+    }, [character, tab]);
+
+    // Открытие модалки по ?create=true
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get('create') === 'true') {
@@ -55,7 +67,7 @@ const SpellsLibrary: React.FC = () => {
         }
     }, [location, navigate]);
 
-    // [AVAILABILITY] Множество имён заклинаний, доступных персонажу
+    // Доступно персонажу (без magical secrets)
     const availableSpellNames = useMemo(() => {
         if (!character) return new Set<string>();
         return new Set(
@@ -63,7 +75,18 @@ const SpellsLibrary: React.FC = () => {
         );
     }, [character]);
 
-    // Функция сброса формы
+    // Magical Secrets — счётчики и пул
+    const magicalSecretsMax = character ? getMaxMagicalSecretsForCharacter(character) : 0;
+    const magicalSecretsUsed = character ? getUsedMagicalSecretsCount(character) : 0;
+    const hasMagicalSecrets = magicalSecretsMax > 0;
+
+    const magicalSecretsCandidates = useMemo(() => {
+        if (!character || !hasMagicalSecrets) return new Set<string>();
+        return new Set(
+            getMagicalSecretsCandidates(character).map(s => s.name.toLowerCase())
+        );
+    }, [character, hasMagicalSecrets]);
+
     const resetForm = () => {
         setNewSpell({
             name: '',
@@ -201,24 +224,41 @@ const SpellsLibrary: React.FC = () => {
         const matchesConcentration = !filters.concentration ||
             (filters.concentration === 'true' && spell.requiresConcentration === true) ||
             (filters.concentration === 'false' && spell.requiresConcentration !== true);
-        // Фильтр по классу – если класс не выбран, пропускаем; если выбран, проверяем наличие в массиве classes
-        // Если поле classes отсутствует (undefined), считаем, что заклинание доступно всем классам
         const matchesClass = !filters.class ||
             (spell.classes && spell.classes.includes(filters.class)) ||
             (!spell.classes);
-        const matchesAvailability = !onlyAvailable ||
-            !character ||
-            availableSpellNames.has(spell.name.toLowerCase());
+
+        // Фильтр по табу
+        let matchesTab = true;
+        if (tab === 'available') {
+            matchesTab = !!character && availableSpellNames.has(spell.name.toLowerCase());
+        } else if (tab === 'magical-secrets') {
+            matchesTab = !!character && magicalSecretsCandidates.has(spell.name.toLowerCase());
+        }
 
         return matchesSearch && matchesLevel && matchesSchool && matchesElement &&
             matchesType && matchesComponents && matchesConcentration && matchesClass &&
-            matchesAvailability;
+            matchesTab;
     });
 
-    const handleAddSpell = (spellData: any) => {
+    const handleAddSpell = (spellData: any, asMagicalSecret: boolean = false) => {
         if (!character) return;
         const exists = character.spells.some(s => s.name === spellData.name);
         if (exists) return;
+
+        if (asMagicalSecret) {
+            if (magicalSecretsUsed >= magicalSecretsMax) return;
+            addSpellToCharacter(character.id, {
+                ...spellData,
+                prepared: true,
+                isCustom: spellData.isCustom || false,
+                isMagicalSecret: true,
+                source: 'magical-secrets',
+                element: spellData.element || undefined,
+            });
+            return;
+        }
+
         addSpellToCharacter(character.id, {
             ...spellData,
             prepared: false,
@@ -323,52 +363,71 @@ const SpellsLibrary: React.FC = () => {
                     onFilterClick={() => setShowFilterModal(true)}
                 />
 
-                {/* Availability */}
-                <div className="sl-availability-filters">
+                <div className="sl-availability-toggle">
                     <button
-                        className={`sl-filter-btn ${!onlyAvailable ? 'sl-active' : ''}`}
-                        onClick={() => setOnlyAvailable(false)}
+                        type="button"
+                        className={`sl-avail-btn ${tab === 'all' ? 'sl-avail-active' : ''}`}
+                        onClick={() => setTab('all')}
                     >
                         All Spells
                     </button>
                     <button
-                        className={`sl-filter-btn ${onlyAvailable ? 'sl-active' : ''}`}
-                        onClick={() => setOnlyAvailable(true)}
+                        type="button"
+                        className={`sl-avail-btn ${tab === 'available' ? 'sl-avail-active' : ''}`}
+                        onClick={() => setTab('available')}
                         disabled={!character}
-                        title={
-                            !character
-                                ? 'Select a character to filter by availability'
-                                : `Only spells available to ${character.name}`
-                        }
+                        title={!character ? 'Select a character to filter' : `Spells available to ${character.name}`}
                     >
-                        Available to {character?.name || 'character'}
+                        Available{character ? ` to ${character.name}` : ''}
                     </button>
+                    {hasMagicalSecrets && (
+                        <button
+                            type="button"
+                            className={`sl-avail-btn sl-avail-secrets ${tab === 'magical-secrets' ? 'sl-avail-active' : ''}`}
+                            onClick={() => setTab('magical-secrets')}
+                            title="Spells from any class (Magical Secrets)"
+                        >
+                            Magical Secrets ({magicalSecretsUsed}/{magicalSecretsMax})
+                        </button>
+                    )}
                 </div>
 
                 <div className="sl-list">
                     {filteredSpells.map((spell) => {
                         const bookSpell = character?.spells.find(s => s.name === spell.name);
                         const inBook = !!bookSpell;
-                        const isAlwaysPrepared = !!bookSpell?.isAlwaysPrepared;
                         const isCustom = spell.isCustom || false;
+
+                        const canAddAsSecret =
+                            tab === 'magical-secrets' &&
+                            !!character &&
+                            !inBook &&
+                            magicalSecretsUsed < magicalSecretsMax &&
+                            magicalSecretsCandidates.has(spell.name.toLowerCase());
+
                         return (
                             <SpellCard
                                 key={spell.id}
                                 spell={spell}
-                                showAddButton={!!character && !inBook}
+                                showAddButton={!!character && !inBook && tab !== 'magical-secrets'}
                                 onAdd={() => handleAddSpell(spell)}
-                                showRemoveButton={!!character && inBook && !isAlwaysPrepared}
+                                showRemoveButton={!!character && inBook && !bookSpell?.isAlwaysPrepared}
                                 onRemove={() => handleRemoveSpell(spell.name)}
                                 isCustom={isCustom}
                                 showEdit={isCustom}
                                 onEdit={() => handleEditSpell(spell.id)}
                                 requiresConcentration={spell.requiresConcentration || false}
                                 showAttackButton={false}
-                                isExpanded={character ? isSpellExpandedOnly(character, spell.name) : false}
                             />
                         );
                     })}
                 </div>
+
+                {tab === 'magical-secrets' && magicalSecretsUsed >= magicalSecretsMax && (
+                    <div className="sl-limit-notice">
+                        All {magicalSecretsMax} Magical Secrets used. Remove one to swap.
+                    </div>
+                )}
             </div>
 
             {showFilterModal && (
@@ -379,13 +438,8 @@ const SpellsLibrary: React.FC = () => {
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
                     onReset={() => setFilters({
-                        level: '',
-                        school: '',
-                        element: '',
-                        type: '',
-                        components: [],
-                        concentration: '',
-                        class: '',
+                        level: '', school: '', element: '', type: '',
+                        components: [], concentration: '', class: '',
                     })}
                     title="Filter Spells"
                 />

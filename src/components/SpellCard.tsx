@@ -42,6 +42,9 @@ interface SpellCardProps {
 
     /** Помечать ли как «expanded» (доступно только через подкласс). */
     isExpanded?: boolean;
+
+    /** Показывать ли тег «Magical Secret» на карточке. */
+    isMagicalSecret?: boolean;
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
@@ -180,6 +183,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 {spell.isRacial && <span className="spell-tag-racial">Racial</span>}
                 {spell.isAlwaysPrepared && (
                     <span className="spell-tag-always-prepared">Always Prepared</span>
+                )}
+                {spell.isMagicalSecret && (
+                    <span className="spell-tag-magical-secret">Magical Secret</span>
                 )}
                 {isExpanded && (
                     <span className="spell-tag-expanded">Expanded</span>

@@ -372,6 +372,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     ...existing,
                     prepared: true,
                     isAlwaysPrepared: true,
+                    isMagicalSecret: false,
                     source: 'subclass',
                 });
             } else {

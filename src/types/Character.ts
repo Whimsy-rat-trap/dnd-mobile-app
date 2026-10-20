@@ -106,7 +106,7 @@ export interface Spell {
     prepared: boolean;
     isCustom?: boolean;
     isRacial?: boolean;
-    source?: 'race' | 'subrace' | 'subclass';
+    source?: 'race' | 'subrace' | 'subclass' | 'magical-secrets';
     element?: string;
     requiresConcentration?: boolean;
     classes?: string[];
@@ -116,7 +116,8 @@ export interface Spell {
     /** Можно ли кастовать как ритуал (не тратит слот). */
     isRitual?: boolean;
     isAlwaysPrepared?: boolean;
-}
+    /** Изучено через Magical Secrets (Bard: Lore L6 + base Bard L10/14/18). */
+    isMagicalSecret?: boolean;}
 
 export interface Quest {
     id: string;

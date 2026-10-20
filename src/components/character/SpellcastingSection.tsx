@@ -10,6 +10,10 @@ import {
     getSpellSaveDC,
     getSpellAttackBonus,
 } from '../../utils/spellUtils';
+import {
+    getMaxMagicalSecretsForCharacter,
+    getUsedMagicalSecretsCount,
+} from '../../utils/classSpellUtils';
 import './SpellcastingSection.css';
 
 interface SpellcastingSectionProps {
@@ -36,6 +40,9 @@ const SpellcastingSection: React.FC<SpellcastingSectionProps> = ({ character }) 
     // Save DC / Attack — считаем по основному классу-кастеру
     const spellSaveDC = isCaster ? getSpellSaveDC(character) : null;
     const spellAttackBonus = isCaster ? getSpellAttackBonus(character) : null;
+
+    const magicalSecretsMax = getMaxMagicalSecretsForCharacter(character);
+    const magicalSecretsUsed = getUsedMagicalSecretsCount(character);
 
     return (
         <div className="cc-section-spellcasting">
@@ -74,6 +81,15 @@ const SpellcastingSection: React.FC<SpellcastingSectionProps> = ({ character }) 
                         <span className="cc-stat-label">Prepared</span>
                         <span className="cc-stat-value">
                             {preparedCount} / {maxPrepared}
+                        </span>
+                    </div>
+                )}
+
+                {magicalSecretsMax > 0 && (
+                    <div className="cc-stat-item">
+                        <span className="cc-stat-label">Magical Secrets</span>
+                        <span className="cc-stat-value cc-stat-value-secrets">
+                            {magicalSecretsUsed} / {magicalSecretsMax}
                         </span>
                     </div>
                 )}

@@ -189,3 +189,33 @@
     background: rgba(52, 211, 153, 0.15);
     color: #34d399;
 }
+
+/* Особый стиль для Magical Secrets таба */
+.sl-avail-btn.sl-avail-secrets {
+    border-color: #8b5cf6;
+    color: #a78bfa;
+}
+
+.sl-avail-btn.sl-avail-secrets.sl-avail-active {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: #8b5cf6;
+    color: #a78bfa;
+}
+
+.sl-avail-btn.sl-avail-secrets:hover:not(:disabled) {
+    border-color: #a78bfa;
+    color: #c4b5fd;
+}
+
+/* Плашка «все секреты использованы» */
+.sl-limit-notice {
+    margin: 16px 0;
+    padding: 10px 14px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid #8b5cf6;
+    border-radius: 8px;
+    color: #a78bfa;
+    font-family: var(--font-family);
+    font-size: 13px;
+    text-align: center;
+}

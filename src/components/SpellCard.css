@@ -388,3 +388,14 @@
     font-size: 11px;
     font-weight: 500;
 }
+
+.spell-tag-magical-secret {
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid #8b5cf6;
+    color: #a78bfa;
+    padding: 0 6px;
+    border-radius: 4px;
+    line-height: 18px;
+    font-size: 11px;
+    font-weight: 500;
+}

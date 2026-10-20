@@ -6,6 +6,7 @@ import {
 } from '../constants/classSpellLists';
 import { SUBCLASS_ALWAYS_PREPARED_SPELLS } from '../constants/subclassSpells';
 import { SUBCLASS_EXPANDED_SPELLS } from '../constants/subclassExpandedSpells';
+import { MAGICAL_SECRETS_FEATURES } from '../constants/magicalSecrets'
 
 // Ключи и резолвинг класса
 
@@ -347,4 +348,119 @@ export function getClassesForSpell(spellName: string): string[] {
     }
 
     return Array.from(result);
+}
+
+// Magical Secrets (Bard: base + College of Lore)
+/**
+ * Сколько секретов даёт класс/подкласс на данном уровне класса.
+ */
+export function getMaxMagicalSecrets(
+    className: string,
+    subclass: string | undefined,
+    classLevel: number
+): number {
+    const features = MAGICAL_SECRETS_FEATURES[className];
+    if (!features) return 0;
+
+    return features
+        .filter(f =>
+            classLevel >= f.level && (!f.subclass || f.subclass === subclass)
+        )
+        .reduce((sum, f) => sum + f.count, 0);
+}
+
+/**
+ * Сколько всего слотов секретов у персонажа (сумма по всем классам).
+ */
+export function getMaxMagicalSecretsForCharacter(character: Character): number {
+    let total = 0;
+    for (const cl of character.classLevels || []) {
+        total += getMaxMagicalSecrets(cl.className, cl.subclass, cl.level);
+    }
+    return total;
+}
+
+/**
+ * Сколько заклинаний персонаж уже выбрал как секреты.
+ */
+export function getUsedMagicalSecretsCount(character: Character): number {
+    return character.spells.filter(s => s.isMagicalSecret).length;
+}
+
+/**
+ * Максимальный уровень заклинаний, который можно взять как секрет.
+ * Гейтится классом, который даёт Magical Secrets (а не общим уровнем).
+ */
+export function getMaxMagicalSecretSpellLevel(character: Character): number {
+    let max = 0;
+    for (const cl of character.classLevels || []) {
+        if (!MAGICAL_SECRETS_FEATURES[cl.className]) continue;
+        max = Math.max(
+            max,
+            getMaxSpellLevelForClass(cl.className, cl.level, cl.subclass)
+        );
+    }
+    return max;
+}
+
+/**
+ * Может ли персонаж добавить ещё один секрет.
+ */
+export function canAddMagicalSecret(character: Character): {
+    can: boolean;
+    reason?: string;
+    used: number;
+    max: number;
+} {
+    const max = getMaxMagicalSecretsForCharacter(character);
+    const used = getUsedMagicalSecretsCount(character);
+    if (max === 0) {
+        return { can: false, reason: 'Character has no Magical Secrets feature', used, max };
+    }
+    if (used >= max) {
+        return { can: false, reason: `All ${max} slots used`, used, max };
+    }
+    return { can: true, used, max };
+}
+
+/**
+ * Является ли заклинание базовым для персонажа (по любому из его классов).
+ * Используется, чтобы исключить «скучные» секреты — брать то, что и так есть,
+ * бессмысленно.
+ */
+function isSpellOnAnyBaseList(character: Character, spellName: string): boolean {
+    const lower = spellName.toLowerCase();
+    for (const cl of character.classLevels || []) {
+        const data = getClassSpellListData(cl.className, cl.subclass);
+        if (!data) continue;
+        const found = Object.values(data.spellsByLevel).some(names =>
+            names.some(n => n.toLowerCase() === lower)
+        );
+        if (found) return true;
+    }
+    return false;
+}
+
+/**
+ * Пул заклинаний, доступных как Magical Secrets:
+ *   - любое заклинание из ALL_SPELLS, любой класс;
+ *   - level ≤ max castable by the granting class (или cantrip);
+ *   - НЕ уже в character.spells;
+ *   - НЕ на базовом списке персонажа (эти можно взять и так).
+ */
+export function getMagicalSecretsCandidates(character: Character): SpellData[] {
+    const maxLevel = getMaxMagicalSecretSpellLevel(character);
+    if (maxLevel === 0) return [];
+
+    const existing = new Set(
+        character.spells.map(s => s.name.toLowerCase())
+    );
+
+    return ALL_SPELLS.filter(s => {
+        const key = s.name.toLowerCase();
+        if (existing.has(key)) return false;
+        if (isSpellOnAnyBaseList(character, s.name)) return false;
+        if (s.level === 0) return true; // cantrips всегда доступны
+        return s.level <= maxLevel;
+    });
 }
