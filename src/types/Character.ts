@@ -78,6 +78,8 @@ export interface Character {
     knownInvocations?: string[];
     /** Сколько использований Bardic Inspiration потрачено. Восстанавливается на rest. */
     bardicInspirationUsed?: number;
+    /** Сколько Ki-очков потрачено (Monk). Восстанавливается на short/long rest. */
+    kiUsed?: number;
 }
 
 export interface InventoryItem {

@@ -25,6 +25,7 @@ import {
 } from '../utils/hitDice';
 import { getSubclassAlwaysPreparedSpells } from '../utils/classSpellUtils';
 import { getBardicInspirationInfo } from '../utils/bardicInspiration';
+import { getKiInfo } from '../utils/ki';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -90,6 +91,8 @@ interface CharacterContextType {
     shortRest: (characterId: string) => void;
     grantInspiration: (characterId: string) => void;
     spendInspiration: (characterId: string) => boolean;
+    spendKi: (characterId: string, amount?: number) => boolean;
+    restoreKi: (characterId: string, amount?: number) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -205,6 +208,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
                 if (typeof updated.bardicInspirationUsed !== 'number') {
                     updated.bardicInspirationUsed = 0;
+                }
+
+                if (typeof updated.kiUsed !== 'number') {
+                    updated.kiUsed = 0;
                 }
 
                 // Гарантируем id у предметов инвентаря
@@ -809,6 +816,33 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    const spendKi = (characterId: string, amount: number = 1): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const info = getKiInfo(char);
+        if (!info.hasKi || amount <= 0) return false;
+        if (info.availableUses < amount) return false;
+
+        updateCharacter(characterId, {
+            kiUsed: info.usedUses + amount,
+        });
+        return true;
+    };
+
+    const restoreKi = (characterId: string, amount: number = 1) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        const info = getKiInfo(char);
+        if (!info.hasKi || amount <= 0) return;
+
+        const newUsed = Math.max(0, info.usedUses - amount);
+        if (newUsed === info.usedUses) return;
+
+        updateCharacter(characterId, { kiUsed: newUsed });
+    };
+
     // Rests
     const longRest = (characterId: string) => {
         const char = getCharacter(characterId);
@@ -824,6 +858,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             deathFailures: 0,
             isStable: false,
             bardicInspirationUsed: 0,
+            kiUsed: 0,
         });
     };
 
@@ -835,9 +870,14 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         // Font of Inspiration (Bard 5+) — восстановление на short rest
         const restoreBardic = bardInfo.isBard && bardInfo.hasFontOfInspiration;
 
+        // Ki полностью восстанавливается на short rest (Monk 2+)
+        const kiInfo = getKiInfo(char);
+        const restoreKi = kiInfo.hasKi && kiInfo.usedUses > 0;
+
         updateCharacter(characterId, {
             usedPactSlots: 0,
             ...(restoreBardic ? { bardicInspirationUsed: 0 } : {}),
+            ...(restoreKi ? { kiUsed: 0 } : {}),
         });
     };
 
@@ -880,6 +920,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         restoreHitDie,
         spendBardicInspiration,
         restoreBardicInspiration,
+        spendKi,
+        restoreKi,
         longRest,
         shortRest,
         grantInspiration,
