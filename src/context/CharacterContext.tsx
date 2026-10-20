@@ -23,8 +23,8 @@ import {
     restoreHitDiceOnLongRest,
     HitDieRollResult,
 } from '../utils/hitDice';
-// [NEW] импорт утилиты для always-prepared subclass заклинаний
 import { getSubclassAlwaysPreparedSpells } from '../utils/classSpellUtils';
+import { getBardicInspirationInfo } from '../utils/bardicInspiration';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -83,10 +83,11 @@ interface CharacterContextType {
     spendPactSlot: (characterId: string) => boolean;
     restorePactSlot: (characterId: string) => void;
     spendHitDie: (characterId: string, sides: number) => HitDieRollResult | null;
+    spendBardicInspiration: (characterId: string) => boolean;
+    restoreBardicInspiration: (characterId: string) => void;
     restoreHitDie: (characterId: string, sides: number) => void;
     longRest: (characterId: string) => void;
     shortRest: (characterId: string) => void;
-    // [NEW] Inspiration
     grantInspiration: (characterId: string) => void;
     spendInspiration: (characterId: string) => boolean;
 }
@@ -200,6 +201,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 // Миграция hit dice
                 if (!updated.hitDiceUsed || typeof updated.hitDiceUsed !== 'object') {
                     updated.hitDiceUsed = {};
+                }
+
+                if (typeof updated.bardicInspirationUsed !== 'number') {
+                    updated.bardicInspirationUsed = 0;
                 }
 
                 // Гарантируем id у предметов инвентаря
@@ -778,6 +783,32 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    const spendBardicInspiration = (characterId: string): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const info = getBardicInspirationInfo(char);
+        if (!info.isBard || info.availableUses <= 0) return false;
+
+        updateCharacter(characterId, {
+            bardicInspirationUsed: info.usedUses + 1,
+        });
+        return true;
+    };
+
+    const restoreBardicInspiration = (characterId: string) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        const info = getBardicInspirationInfo(char);
+        if (!info.isBard) return;
+        if (info.usedUses === 0) return;
+
+        updateCharacter(characterId, {
+            bardicInspirationUsed: info.usedUses - 1,
+        });
+    };
+
     // Rests
     const longRest = (characterId: string) => {
         const char = getCharacter(characterId);
@@ -792,14 +823,21 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             deathSuccesses: 0,
             deathFailures: 0,
             isStable: false,
+            bardicInspirationUsed: 0,
         });
     };
 
     const shortRest = (characterId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
+
+        const bardInfo = getBardicInspirationInfo(char);
+        // Font of Inspiration (Bard 5+) — восстановление на short rest
+        const restoreBardic = bardInfo.isBard && bardInfo.hasFontOfInspiration;
+
         updateCharacter(characterId, {
             usedPactSlots: 0,
+            ...(restoreBardic ? { bardicInspirationUsed: 0 } : {}),
         });
     };
 
@@ -840,9 +878,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         restorePactSlot,
         spendHitDie,
         restoreHitDie,
+        spendBardicInspiration,
+        restoreBardicInspiration,
         longRest,
         shortRest,
-        // [NEW]
         grantInspiration,
         spendInspiration,
     };

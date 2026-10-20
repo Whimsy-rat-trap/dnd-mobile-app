@@ -76,6 +76,8 @@ export interface Character {
     pactBoon?: 'chain' | 'blade' | 'tome';
     /** Известные Eldritch Invocations (по id из ELDRITCH_INVOCATIONS). */
     knownInvocations?: string[];
+    /** Сколько использований Bardic Inspiration потрачено. Восстанавливается на rest. */
+    bardicInspirationUsed?: number;
 }
 
 export interface InventoryItem {

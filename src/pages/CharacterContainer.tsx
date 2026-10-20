@@ -29,6 +29,7 @@ import {
     getProficiencyBonus, getModifier, getACInfo, getAttackBonuses,
 } from '../utils/characterUtils';
 import InspirationBadge from '../components/InspirationBadge';
+import BardicInspirationTracker from '../components/character/BardicInspirationTracker';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -51,6 +52,8 @@ const CharacterContainer: React.FC = () => {
         shortRest,
         grantInspiration,
         spendInspiration,
+        spendBardicInspiration,
+        restoreBardicInspiration,
     } = useCharacters();
 
     const character = id ? getCharacter(id) : undefined;
@@ -254,6 +257,12 @@ const CharacterContainer: React.FC = () => {
                     onRestoreSlot={(level) => restoreSpellSlot(character.id, level)}
                     onUsePact={() => spendPactSlot(character.id)}
                     onRestorePact={() => restorePactSlot(character.id)}
+                />
+
+                <BardicInspirationTracker
+                    character={character}
+                    onUse={() => spendBardicInspiration(character.id)}
+                    onRestore={() => restoreBardicInspiration(character.id)}
                 />
 
                 <HitDiceTracker
