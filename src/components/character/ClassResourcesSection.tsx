@@ -17,17 +17,25 @@ const ResourceRow: React.FC<{
     onUse: (amount?: number) => void;
     onRestore: (amount?: number) => void;
 }> = ({ state, onUse, onRestore }) => {
-    const { definition, availableUses, maxUses } = state;
+    const { definition, availableUses, maxUses, recharge, dieSize } = state;
+    const color = definition.color || '#34d399';
 
     return (
         <div className="crs-row">
             <div className="crs-row-header">
-                <span
-                    className="crs-row-name"
-                    style={{ color: definition.color || '#34d399' }}
-                >
-                    {definition.name}
-                </span>
+                <div className="crs-row-name-wrap">
+                    <span className="crs-row-name" style={{ color }}>
+                        {definition.name}
+                    </span>
+                    {dieSize && (
+                        <span
+                            className="crs-row-die"
+                            style={{ background: color, color: '#0f0f0f' }}
+                        >
+                            d{dieSize}
+                        </span>
+                    )}
+                </div>
                 <span className="crs-row-count">
                     {availableUses} / {maxUses}
                 </span>
@@ -41,16 +49,11 @@ const ResourceRow: React.FC<{
                             type="button"
                             className={`crs-dot ${isAvailable ? 'available' : 'used'}`}
                             style={
-                                isAvailable && definition.color
-                                    ? {
-                                        background: definition.color,
-                                        borderColor: definition.color,
-                                    }
+                                isAvailable
+                                    ? { background: color, borderColor: color }
                                     : undefined
                             }
-                            onClick={() =>
-                                isAvailable ? onUse(1) : onRestore(1)
-                            }
+                            onClick={() => (isAvailable ? onUse(1) : onRestore(1))}
                             title={
                                 isAvailable
                                     ? `Spend 1 ${definition.name}`
@@ -62,7 +65,7 @@ const ResourceRow: React.FC<{
                 })}
             </div>
             <div className="crs-row-hint">
-                {definition.description} ({definition.recharge === 'short' ? 'short' : 'long'} rest)
+                {definition.description} ({recharge === 'short' ? 'short' : 'long'} rest)
             </div>
         </div>
     );

@@ -76,10 +76,6 @@ export interface Character {
     pactBoon?: 'chain' | 'blade' | 'tome';
     /** Известные Eldritch Invocations (по id из ELDRITCH_INVOCATIONS). */
     knownInvocations?: string[];
-    /** Сколько использований Bardic Inspiration потрачено. Восстанавливается на rest. */
-    bardicInspirationUsed?: number;
-    /** Сколько Ki-очков потрачено (Monk). Восстанавливается на short/long rest. */
-    kiUsed?: number;
     /** Сколько использований каждого классового ресурса потрачено. Ключ — id ресурса. */
     classResourcesUsed?: Record<string, number>;
 }

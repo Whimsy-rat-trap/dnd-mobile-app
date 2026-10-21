@@ -1,33 +1,54 @@
 /**
- * Обобщённые классовые ресурсы: Rage, Action Surge, Channel Divinity, Wild Shape...
+ * Обобщённые классовые ресурсы.
  *
- * Формула максимума:
- *   - 'table'  — массив [minLevel, uses], берём последнюю подходящую строку.
- *   - 'level'  — max = classLevel * multiplier.
- *   - 'fixed'  — фиксированное число.
+ * maxUses:
+ *   - 'fixed'   — фиксированное число.
+ *   - 'level'   — max = classLevel * multiplier.
+ *   - 'table'   — массив [minLevel, uses], берём последнюю подходящую.
+ *   - 'ability' — max = max(min, modifier от ability).
  *
- * Recharge:
- *   - 'short'  — восстанавливается на short и long rest.
- *   - 'long'   — только на long rest.
+ * recharge:
+ *   - 'short' | 'long' — простые.
+ *   - { type: 'table', table: [...] } — зависит от уровня класса (Bardic 5+).
+ *
+ * dieSize (опционально):
+ *   - число или таблица по уровню класса. Для Bardic Inspiration.
  */
 
 export type ResourceRecharge = 'short' | 'long';
 
+export interface RechargeTable {
+    type: 'table';
+    table: Array<{ minLevel: number; recharge: ResourceRecharge }>;
+}
+
+export type ResourceRechargeSpec = ResourceRecharge | RechargeTable;
+
 export type ResourceMaxUses =
     | { type: 'fixed'; value: number }
     | { type: 'level'; multiplier: number }
-    | { type: 'table'; table: Array<{ minLevel: number; uses: number }> };
+    | { type: 'table'; table: Array<{ minLevel: number; uses: number }> }
+    | {
+    type: 'ability';
+    ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
+    min: number;
+};
+
+export type ResourceDieSizeSpec =
+    | number
+    | { type: 'table'; table: Array<{ minLevel: number; dieSize: number }> };
 
 export interface ClassResourceDefinition {
     id: string;
     name: string;
     className: string;
     minClassLevel: number;
-    recharge: ResourceRecharge;
+    recharge: ResourceRechargeSpec;
     maxUses: ResourceMaxUses;
     description: string;
     /** Цвет для UI-акцента. */
     color?: string;
+    dieSize?: ResourceDieSizeSpec;
 }
 
 export const CLASS_RESOURCES: ClassResourceDefinition[] = [
@@ -52,22 +73,32 @@ export const CLASS_RESOURCES: ClassResourceDefinition[] = [
         color: '#ef4444',
     },
 
-    // FIGHTER — Action Surge (L2+)
+    // BARD — Bardic Inspiration
     {
-        id: 'action-surge',
-        name: 'Action Surge',
-        className: 'Fighter',
-        minClassLevel: 2,
-        recharge: 'short',
-        maxUses: {
+        id: 'bardic-inspiration',
+        name: 'Bardic Inspiration',
+        className: 'Bard',
+        minClassLevel: 1,
+        recharge: {
             type: 'table',
             table: [
-                { minLevel: 2, uses: 1 },
-                { minLevel: 17, uses: 2 },
+                { minLevel: 1, recharge: 'long' },
+                { minLevel: 5, recharge: 'short' },
             ],
         },
-        description: 'Take one additional action on your turn. Recharges on short or long rest.',
-        color: '#f59e0b',
+        maxUses: { type: 'ability', ability: 'cha', min: 1 },
+        dieSize: {
+            type: 'table',
+            table: [
+                { minLevel: 1, dieSize: 6 },
+                { minLevel: 5, dieSize: 8 },
+                { minLevel: 10, dieSize: 10 },
+                { minLevel: 15, dieSize: 12 },
+            ],
+        },
+        description:
+            'Grant a Bardic Inspiration die as a bonus action. Recharges on long rest (short rest from Bard 5 — Font of Inspiration).',
+        color: '#fbbf24',
     },
 
     // CLERIC — Channel Divinity (L2+)
@@ -89,18 +120,6 @@ export const CLASS_RESOURCES: ClassResourceDefinition[] = [
         color: '#a855f7',
     },
 
-    // PALADIN — Channel Divinity (L3+)
-    {
-        id: 'channel-divinity-paladin',
-        name: 'Channel Divinity',
-        className: 'Paladin',
-        minClassLevel: 3,
-        recharge: 'short',
-        maxUses: { type: 'fixed', value: 1 },
-        description: 'Channel divine energy. Recharges on short or long rest.',
-        color: '#a855f7',
-    },
-
     // DRUID — Wild Shape (L2+)
     {
         id: 'wild-shape',
@@ -118,11 +137,51 @@ export const CLASS_RESOURCES: ClassResourceDefinition[] = [
         description: 'Transform into a beast. Recharges on short or long rest.',
         color: '#22c55e',
     },
+
+    // FIGHTER — Action Surge (L2+)
+    {
+        id: 'action-surge',
+        name: 'Action Surge',
+        className: 'Fighter',
+        minClassLevel: 2,
+        recharge: 'short',
+        maxUses: {
+            type: 'table',
+            table: [
+                { minLevel: 2, uses: 1 },
+                { minLevel: 17, uses: 2 },
+            ],
+        },
+        description: 'Take one additional action on your turn. Recharges on short or long rest.',
+        color: '#f59e0b',
+    },
+
+    // MONK — Ki (L2+)
+    {
+        id: 'ki',
+        name: 'Ki Points',
+        className: 'Monk',
+        minClassLevel: 2,
+        recharge: 'short',
+        maxUses: { type: 'level', multiplier: 1 },
+        description:
+            'Spend ki for Flurry of Blows, Patient Defense, Step of the Wind, and disciplines. Recharges on short or long rest.',
+        color: '#06b6d4',
+    },
+
+    // PALADIN — Channel Divinity (L3+)
+    {
+        id: 'channel-divinity-paladin',
+        name: 'Channel Divinity',
+        className: 'Paladin',
+        minClassLevel: 3,
+        recharge: 'short',
+        maxUses: { type: 'fixed', value: 1 },
+        description: 'Channel divine energy. Recharges on short or long rest.',
+        color: '#a855f7',
+    },
 ];
 
-/**
- * Получить определение ресурса по id.
- */
 export function getClassResourceDefinition(
     resourceId: string
 ): ClassResourceDefinition | undefined {

@@ -29,8 +29,6 @@ import {
     getProficiencyBonus, getModifier, getACInfo, getAttackBonuses,
 } from '../utils/characterUtils';
 import InspirationBadge from '../components/InspirationBadge';
-import BardicInspirationTracker from '../components/character/BardicInspirationTracker';
-import KiTracker from '../components/character/KiTracker';
 import ClassResourcesSection from '../components/character/ClassResourcesSection';
 import './CharacterContainer.css';
 
@@ -54,10 +52,6 @@ const CharacterContainer: React.FC = () => {
         shortRest,
         grantInspiration,
         spendInspiration,
-        spendBardicInspiration,
-        restoreBardicInspiration,
-        spendKi,
-        restoreKi,
         spendClassResource,
         restoreClassResource,
     } = useCharacters();
@@ -263,18 +257,6 @@ const CharacterContainer: React.FC = () => {
                     onRestoreSlot={(level) => restoreSpellSlot(character.id, level)}
                     onUsePact={() => spendPactSlot(character.id)}
                     onRestorePact={() => restorePactSlot(character.id)}
-                />
-
-                <BardicInspirationTracker
-                    character={character}
-                    onUse={() => spendBardicInspiration(character.id)}
-                    onRestore={() => restoreBardicInspiration(character.id)}
-                />
-
-                <KiTracker
-                    character={character}
-                    onUse={(amount) => spendKi(character.id, amount)}
-                    onRestore={(amount) => restoreKi(character.id, amount)}
                 />
 
                 <ClassResourcesSection

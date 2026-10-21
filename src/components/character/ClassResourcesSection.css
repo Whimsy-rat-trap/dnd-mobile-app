@@ -103,3 +103,20 @@
     font-style: italic;
     line-height: 1.4;
 }
+
+.crs-row-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.crs-row-die {
+    display: inline-block;
+    font-family: var(--font-family);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}

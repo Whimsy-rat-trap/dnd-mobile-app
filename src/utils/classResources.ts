@@ -3,6 +3,9 @@ import {
     CLASS_RESOURCES,
     ClassResourceDefinition,
     ResourceMaxUses,
+    ResourceRecharge,
+    ResourceRechargeSpec,
+    ResourceDieSizeSpec,
 } from '../constants/classResources';
 
 /**
@@ -15,21 +18,60 @@ export function getClassLevelFor(character: Character, className: string): numbe
 }
 
 /**
- * Считает максимум использований ресурса для конкретного уровня класса.
+ * Максимум использований для данного уровня класса.
  */
 export function computeMaxUses(
     formula: ResourceMaxUses,
+    character: Character,
     classLevel: number
 ): number {
     if (formula.type === 'fixed') return formula.value;
-    if (formula.type === 'level') return Math.max(0, classLevel * formula.multiplier);
-
-    // 'table' — берём последнюю подходящую строку
+    if (formula.type === 'level') {
+        return Math.max(0, classLevel * formula.multiplier);
+    }
+    if (formula.type === 'ability') {
+        const score = character.abilities[formula.ability];
+        const mod = Math.floor((score - 10) / 2);
+        return Math.max(formula.min, mod);
+    }
+    // 'table'
     let max = 0;
     for (const row of formula.table) {
         if (classLevel >= row.minLevel) max = row.uses;
     }
     return max;
+}
+
+/**
+ * Резолвит recharge для конкретного уровня класса.
+ */
+export function resolveRecharge(
+    spec: ResourceRechargeSpec,
+    classLevel: number
+): ResourceRecharge {
+    if (spec === 'short' || spec === 'long') return spec;
+    let result: ResourceRecharge = 'long';
+    for (const row of spec.table) {
+        if (classLevel >= row.minLevel) result = row.recharge;
+    }
+    return result;
+}
+
+/**
+ * Резолвит dieSize для конкретного уровня класса. Возвращает undefined, если не задан.
+ */
+export function resolveDieSize(
+    spec: ResourceDieSizeSpec | undefined,
+    classLevel: number
+): number | undefined {
+    if (spec === undefined) return undefined;
+    if (typeof spec === 'number') return spec;
+
+    let result: number | undefined;
+    for (const row of spec.table) {
+        if (classLevel >= row.minLevel) result = row.dieSize;
+    }
+    return result;
 }
 
 export interface ClassResourceState {
@@ -38,6 +80,10 @@ export interface ClassResourceState {
     maxUses: number;
     usedUses: number;
     availableUses: number;
+    /** Активный recharge (уже резолвленный). */
+    recharge: ResourceRecharge;
+    /** Активный dieSize (если задан). */
+    dieSize?: number;
 }
 
 /**
@@ -53,7 +99,7 @@ export function getClassResourceState(
     const classLevel = getClassLevelFor(character, def.className);
     if (classLevel < def.minClassLevel) return null;
 
-    const maxUses = computeMaxUses(def.maxUses, classLevel);
+    const maxUses = computeMaxUses(def.maxUses, character, classLevel);
     if (maxUses === 0) return null;
 
     const usedMap = character.classResourcesUsed || {};
@@ -66,6 +112,8 @@ export function getClassResourceState(
         maxUses,
         usedUses,
         availableUses: Math.max(0, maxUses - usedUses),
+        recharge: resolveRecharge(def.recharge, classLevel),
+        dieSize: resolveDieSize(def.dieSize, classLevel),
     };
 }
 

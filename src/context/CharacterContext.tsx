@@ -24,10 +24,8 @@ import {
     HitDieRollResult,
 } from '../utils/hitDice';
 import { getSubclassAlwaysPreparedSpells } from '../utils/classSpellUtils';
-import { getBardicInspirationInfo } from '../utils/bardicInspiration';
-import { getKiInfo } from '../utils/ki';
 import { getClassResourceDefinition, CLASS_RESOURCES } from '../constants/classResources';
-import { getClassLevelFor, computeMaxUses } from '../utils/classResources';
+import {getClassLevelFor, computeMaxUses, resolveRecharge} from '../utils/classResources';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -86,15 +84,11 @@ interface CharacterContextType {
     spendPactSlot: (characterId: string) => boolean;
     restorePactSlot: (characterId: string) => void;
     spendHitDie: (characterId: string, sides: number) => HitDieRollResult | null;
-    spendBardicInspiration: (characterId: string) => boolean;
-    restoreBardicInspiration: (characterId: string) => void;
     restoreHitDie: (characterId: string, sides: number) => void;
     longRest: (characterId: string) => void;
     shortRest: (characterId: string) => void;
     grantInspiration: (characterId: string) => void;
     spendInspiration: (characterId: string) => boolean;
-    spendKi: (characterId: string, amount?: number) => boolean;
-    restoreKi: (characterId: string, amount?: number) => void;
     spendClassResource: (characterId: string, resourceId: string, amount?: number) => boolean;
     restoreClassResource: (characterId: string, resourceId: string, amount?: number) => void;
 }
@@ -210,17 +204,29 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.hitDiceUsed = {};
                 }
 
-                if (typeof updated.bardicInspirationUsed !== 'number') {
-                    updated.bardicInspirationUsed = 0;
-                }
-
-                if (typeof updated.kiUsed !== 'number') {
-                    updated.kiUsed = 0;
-                }
-
                 if (!updated.classResourcesUsed || typeof updated.classResourcesUsed !== 'object') {
                     updated.classResourcesUsed = {};
                 }
+
+                // Миграция старых полей bardicInspirationUsed / kiUsed → classResourcesUsed
+                const legacyBardic = (updated as any).bardicInspirationUsed;
+                const legacyKi = (updated as any).kiUsed;
+                if (
+                    typeof legacyBardic === 'number' &&
+                    legacyBardic > 0 &&
+                    !updated.classResourcesUsed['bardic-inspiration']
+                ) {
+                    updated.classResourcesUsed['bardic-inspiration'] = legacyBardic;
+                }
+                if (
+                    typeof legacyKi === 'number' &&
+                    legacyKi > 0 &&
+                    !updated.classResourcesUsed['ki']
+                ) {
+                    updated.classResourcesUsed['ki'] = legacyKi;
+                }
+                delete (updated as any).bardicInspirationUsed;
+                delete (updated as any).kiUsed;
 
                 // Гарантируем id у предметов инвентаря
                 if (Array.isArray(updated.inventory)) {
@@ -798,59 +804,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
-    const spendBardicInspiration = (characterId: string): boolean => {
-        const char = getCharacter(characterId);
-        if (!char) return false;
-
-        const info = getBardicInspirationInfo(char);
-        if (!info.isBard || info.availableUses <= 0) return false;
-
-        updateCharacter(characterId, {
-            bardicInspirationUsed: info.usedUses + 1,
-        });
-        return true;
-    };
-
-    const restoreBardicInspiration = (characterId: string) => {
-        const char = getCharacter(characterId);
-        if (!char) return;
-
-        const info = getBardicInspirationInfo(char);
-        if (!info.isBard) return;
-        if (info.usedUses === 0) return;
-
-        updateCharacter(characterId, {
-            bardicInspirationUsed: info.usedUses - 1,
-        });
-    };
-
-    const spendKi = (characterId: string, amount: number = 1): boolean => {
-        const char = getCharacter(characterId);
-        if (!char) return false;
-
-        const info = getKiInfo(char);
-        if (!info.hasKi || amount <= 0) return false;
-        if (info.availableUses < amount) return false;
-
-        updateCharacter(characterId, {
-            kiUsed: info.usedUses + amount,
-        });
-        return true;
-    };
-
-    const restoreKi = (characterId: string, amount: number = 1) => {
-        const char = getCharacter(characterId);
-        if (!char) return;
-
-        const info = getKiInfo(char);
-        if (!info.hasKi || amount <= 0) return;
-
-        const newUsed = Math.max(0, info.usedUses - amount);
-        if (newUsed === info.usedUses) return;
-
-        updateCharacter(characterId, { kiUsed: newUsed });
-    };
-
     /**
      * Универсальное списание классового ресурса (Rage, Action Surge, Channel Divinity, Wild Shape).
      * Возвращает true, если удалось списать.
@@ -863,13 +816,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char || amount <= 0) return false;
 
-        const def = getClassResourceDefinition(resourceId);
+        const def = CLASS_RESOURCES.find(r => r.id === resourceId);
         if (!def) return false;
 
         const classLevel = getClassLevelFor(char, def.className);
         if (classLevel < def.minClassLevel) return false;
 
-        const maxUses = computeMaxUses(def.maxUses, classLevel);
+        const maxUses = computeMaxUses(def.maxUses, char, classLevel);
         if (maxUses === 0) return false;
 
         const usedMap = char.classResourcesUsed || {};
@@ -920,7 +873,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
 
-        // Универсальные классовые ресурсы: сбрасываем все (и short, и long)
+        // Сбрасываем все классовые ресурсы
         const newResourcesUsed: Record<string, number> = { ...(char.classResourcesUsed || {}) };
         for (const def of CLASS_RESOURCES) {
             if (newResourcesUsed[def.id]) {
@@ -937,8 +890,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             deathSuccesses: 0,
             deathFailures: 0,
             isStable: false,
-            bardicInspirationUsed: 0,
-            kiUsed: 0,
             classResourcesUsed: newResourcesUsed,
         });
     };
@@ -947,18 +898,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
 
-        const bardInfo = getBardicInspirationInfo(char);
-        // Font of Inspiration (Bard 5+) — восстановление на short rest
-        const restoreBardic = bardInfo.isBard && bardInfo.hasFontOfInspiration;
-
-        // Ki полностью восстанавливается на short rest (Monk 2+)
-        const kiInfo = getKiInfo(char);
-        const restoreKi = kiInfo.hasKi && kiInfo.usedUses > 0;
-
-        // Универсальные классовые ресурсы: сбрасываем те, что recharge === 'short'
+        // Универсальный сброс ресурсов с recharge === 'short' на текущем уровне
         const newResourcesUsed: Record<string, number> = { ...(char.classResourcesUsed || {}) };
         for (const def of CLASS_RESOURCES) {
-            if (def.recharge !== 'short') continue;
+            const classLevel = getClassLevelFor(char, def.className);
+            if (classLevel < def.minClassLevel) continue;
+            const recharge = resolveRecharge(def.recharge, classLevel);
+            if (recharge !== 'short') continue;
             if (newResourcesUsed[def.id]) {
                 newResourcesUsed[def.id] = 0;
             }
@@ -966,8 +912,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         updateCharacter(characterId, {
             usedPactSlots: 0,
-            ...(restoreBardic ? { bardicInspirationUsed: 0 } : {}),
-            ...(restoreKi ? { kiUsed: 0 } : {}),
             classResourcesUsed: newResourcesUsed,
         });
     };
@@ -1009,10 +953,6 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         restorePactSlot,
         spendHitDie,
         restoreHitDie,
-        spendBardicInspiration,
-        restoreBardicInspiration,
-        spendKi,
-        restoreKi,
         spendClassResource,
         restoreClassResource,
         longRest,
