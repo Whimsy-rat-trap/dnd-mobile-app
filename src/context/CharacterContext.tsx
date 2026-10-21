@@ -26,6 +26,8 @@ import {
 import { getSubclassAlwaysPreparedSpells } from '../utils/classSpellUtils';
 import { getBardicInspirationInfo } from '../utils/bardicInspiration';
 import { getKiInfo } from '../utils/ki';
+import { getClassResourceDefinition, CLASS_RESOURCES } from '../constants/classResources';
+import { getClassLevelFor, computeMaxUses } from '../utils/classResources';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -93,6 +95,8 @@ interface CharacterContextType {
     spendInspiration: (characterId: string) => boolean;
     spendKi: (characterId: string, amount?: number) => boolean;
     restoreKi: (characterId: string, amount?: number) => void;
+    spendClassResource: (characterId: string, resourceId: string, amount?: number) => boolean;
+    restoreClassResource: (characterId: string, resourceId: string, amount?: number) => void;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -212,6 +216,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
                 if (typeof updated.kiUsed !== 'number') {
                     updated.kiUsed = 0;
+                }
+
+                if (!updated.classResourcesUsed || typeof updated.classResourcesUsed !== 'object') {
+                    updated.classResourcesUsed = {};
                 }
 
                 // Гарантируем id у предметов инвентаря
@@ -843,10 +851,82 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         updateCharacter(characterId, { kiUsed: newUsed });
     };
 
+    /**
+     * Универсальное списание классового ресурса (Rage, Action Surge, Channel Divinity, Wild Shape).
+     * Возвращает true, если удалось списать.
+     */
+    const spendClassResource = (
+        characterId: string,
+        resourceId: string,
+        amount: number = 1
+    ): boolean => {
+        const char = getCharacter(characterId);
+        if (!char || amount <= 0) return false;
+
+        const def = getClassResourceDefinition(resourceId);
+        if (!def) return false;
+
+        const classLevel = getClassLevelFor(char, def.className);
+        if (classLevel < def.minClassLevel) return false;
+
+        const maxUses = computeMaxUses(def.maxUses, classLevel);
+        if (maxUses === 0) return false;
+
+        const usedMap = char.classResourcesUsed || {};
+        const currentUsed = Math.min(usedMap[resourceId] || 0, maxUses);
+        const available = maxUses - currentUsed;
+
+        if (available < amount) return false;
+
+        updateCharacter(characterId, {
+            classResourcesUsed: {
+                ...usedMap,
+                [resourceId]: currentUsed + amount,
+            },
+        });
+        return true;
+    };
+
+    /**
+     * Восстановление классового ресурса (например, вручную, или DM решил дать
+     * вне rest).
+     */
+    const restoreClassResource = (
+        characterId: string,
+        resourceId: string,
+        amount: number = 1
+    ) => {
+        const char = getCharacter(characterId);
+        if (!char || amount <= 0) return;
+
+        const def = getClassResourceDefinition(resourceId);
+        if (!def) return;
+
+        const usedMap = char.classResourcesUsed || {};
+        const currentUsed = usedMap[resourceId] || 0;
+        const newUsed = Math.max(0, currentUsed - amount);
+        if (newUsed === currentUsed) return;
+
+        updateCharacter(characterId, {
+            classResourcesUsed: {
+                ...usedMap,
+                [resourceId]: newUsed,
+            },
+        });
+    };
+
     // Rests
     const longRest = (characterId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
+
+        // Универсальные классовые ресурсы: сбрасываем все (и short, и long)
+        const newResourcesUsed: Record<string, number> = { ...(char.classResourcesUsed || {}) };
+        for (const def of CLASS_RESOURCES) {
+            if (newResourcesUsed[def.id]) {
+                newResourcesUsed[def.id] = 0;
+            }
+        }
 
         updateCharacter(characterId, {
             usedSpellSlots: Array(9).fill(0),
@@ -859,6 +939,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             isStable: false,
             bardicInspirationUsed: 0,
             kiUsed: 0,
+            classResourcesUsed: newResourcesUsed,
         });
     };
 
@@ -874,10 +955,20 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const kiInfo = getKiInfo(char);
         const restoreKi = kiInfo.hasKi && kiInfo.usedUses > 0;
 
+        // Универсальные классовые ресурсы: сбрасываем те, что recharge === 'short'
+        const newResourcesUsed: Record<string, number> = { ...(char.classResourcesUsed || {}) };
+        for (const def of CLASS_RESOURCES) {
+            if (def.recharge !== 'short') continue;
+            if (newResourcesUsed[def.id]) {
+                newResourcesUsed[def.id] = 0;
+            }
+        }
+
         updateCharacter(characterId, {
             usedPactSlots: 0,
             ...(restoreBardic ? { bardicInspirationUsed: 0 } : {}),
             ...(restoreKi ? { kiUsed: 0 } : {}),
+            classResourcesUsed: newResourcesUsed,
         });
     };
 
@@ -922,6 +1013,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         restoreBardicInspiration,
         spendKi,
         restoreKi,
+        spendClassResource,
+        restoreClassResource,
         longRest,
         shortRest,
         grantInspiration,

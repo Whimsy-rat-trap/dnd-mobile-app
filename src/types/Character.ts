@@ -80,6 +80,8 @@ export interface Character {
     bardicInspirationUsed?: number;
     /** Сколько Ki-очков потрачено (Monk). Восстанавливается на short/long rest. */
     kiUsed?: number;
+    /** Сколько использований каждого классового ресурса потрачено. Ключ — id ресурса. */
+    classResourcesUsed?: Record<string, number>;
 }
 
 export interface InventoryItem {

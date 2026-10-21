@@ -31,6 +31,7 @@ import {
 import InspirationBadge from '../components/InspirationBadge';
 import BardicInspirationTracker from '../components/character/BardicInspirationTracker';
 import KiTracker from '../components/character/KiTracker';
+import ClassResourcesSection from '../components/character/ClassResourcesSection';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -57,6 +58,8 @@ const CharacterContainer: React.FC = () => {
         restoreBardicInspiration,
         spendKi,
         restoreKi,
+        spendClassResource,
+        restoreClassResource,
     } = useCharacters();
 
     const character = id ? getCharacter(id) : undefined;
@@ -272,6 +275,12 @@ const CharacterContainer: React.FC = () => {
                     character={character}
                     onUse={(amount) => spendKi(character.id, amount)}
                     onRestore={(amount) => restoreKi(character.id, amount)}
+                />
+
+                <ClassResourcesSection
+                    character={character}
+                    onUse={(resourceId, amount) => spendClassResource(character.id, resourceId, amount)}
+                    onRestore={(resourceId, amount) => restoreClassResource(character.id, resourceId, amount)}
                 />
 
                 <HitDiceTracker
