@@ -78,6 +78,8 @@ export interface Character {
     knownInvocations?: string[];
     /** Сколько использований каждого классового ресурса потрачено. Ключ — id ресурса. */
     classResourcesUsed?: Record<string, number>;
+    /** id PartialRecoveryFeature, использованных с последнего cooldown-rest. */
+    partialRecoveryUsed?: string[];
 }
 
 export interface InventoryItem {

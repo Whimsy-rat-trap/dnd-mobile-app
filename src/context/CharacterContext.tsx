@@ -36,6 +36,16 @@ import {
     resolveRecharge,
     getClassResourceState,
 } from '../utils/classResources';
+import {
+    PARTIAL_RECOVERY_FEATURES,
+    AUTO_REST_RECOVERY,
+    PartialRecoveryFeature,
+    AutoRestRecoveryFeature,
+} from '../constants/partialRecovery';
+import {
+    canUsePartialRecovery,
+    getPartialRecoveryBudget,
+} from '../utils/partialRecovery';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -103,6 +113,17 @@ interface CharacterContextType {
     restoreClassResource: (characterId: string, resourceId: string, amount?: number) => void;
     createSpellSlotFromSorceryPoints: (characterId: string, level: number) => boolean;
     convertSpellSlotToSorceryPoints: (characterId: string, level: number) => boolean;
+    /**
+     * Использовать partial-recovery фичу.
+     * Для spell-slots: payload = [{ level, count }, ...].
+     * Для resource: payload не нужен.
+     * Возвращает true, если удалось.
+     */
+    applyPartialRecoveryFeature: (
+        characterId: string,
+        featureId: string,
+        payload?: Array<{ level: number; count: number }>
+    ) => boolean;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -218,6 +239,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
                 if (!updated.classResourcesUsed || typeof updated.classResourcesUsed !== 'object') {
                     updated.classResourcesUsed = {};
+                }
+
+                if (!Array.isArray(updated.partialRecoveryUsed)) {
+                    updated.partialRecoveryUsed = [];
                 }
 
                 // Миграция старых полей bardicInspirationUsed / kiUsed → classResourcesUsed
@@ -954,17 +979,95 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         return true;
     };
 
+    const applyPartialRecoveryFeature = (
+        characterId: string,
+        featureId: string,
+        payload?: Array<{ level: number; count: number }>
+    ): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const feature = PARTIAL_RECOVERY_FEATURES.find(f => f.id === featureId);
+        if (!feature) return false;
+
+        const { can } = canUsePartialRecovery(char, feature);
+        if (!can) return false;
+
+        // Resource
+        if (feature.target.type === 'resource') {
+            const amount = getPartialRecoveryBudget(char, feature.target, feature.className);
+            if (amount <= 0) return false;
+
+            const usedMap = char.classResourcesUsed || {};
+            const currentUsed = usedMap[feature.target.resourceId] || 0;
+            if (currentUsed === 0) return false; // нечего восстанавливать
+
+            const newUsed = Math.max(0, currentUsed - amount);
+
+            updateCharacter(characterId, {
+                classResourcesUsed: {
+                    ...usedMap,
+                    [feature.target.resourceId]: newUsed,
+                },
+                partialRecoveryUsed: [...(char.partialRecoveryUsed || []), feature.id],
+            });
+            return true;
+        }
+
+        // Spell Slots
+        if (feature.target.type === 'spell-slots') {
+            if (!payload || payload.length === 0) return false;
+
+            const budget = getPartialRecoveryBudget(char, feature.target, feature.className);
+            const maxLevel = feature.target.maxSlotLevel;
+
+            const totals = getNonPactSpellSlots(char);
+            const used = getUsedSpellSlots(char);
+            const newUsed = [...used];
+
+            let totalBudget = 0;
+            for (const item of payload) {
+                if (!Number.isInteger(item.level) || !Number.isInteger(item.count)) return false;
+                if (item.level < 1 || item.level > maxLevel) return false;
+                if (item.count < 1) return false;
+
+                const idx = item.level - 1;
+                if ((totals[idx] || 0) === 0) return false;
+                if ((used[idx] || 0) < item.count) return false;
+
+                totalBudget += item.level * item.count;
+                newUsed[idx] -= item.count;
+            }
+
+            if (totalBudget === 0 || totalBudget > budget) return false;
+
+            updateCharacter(characterId, {
+                usedSpellSlots: newUsed,
+                partialRecoveryUsed: [...(char.partialRecoveryUsed || []), feature.id],
+            });
+            return true;
+        }
+
+        return false;
+    };
+
     // Rests
     const longRest = (characterId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
 
-        // Сбрасываем все классовые ресурсы
+        // 1. Все ресурсы — сброс
         const newResourcesUsed: Record<string, number> = { ...(char.classResourcesUsed || {}) };
         for (const def of CLASS_RESOURCES) {
             if (newResourcesUsed[def.id]) {
                 newResourcesUsed[def.id] = 0;
             }
+        }
+
+        // 2. Автоматическое восстановление на long rest (сейчас нет, но на будущее)
+        for (const auto of AUTO_REST_RECOVERY) {
+            if (auto.restType !== 'long') continue;
+            // аналогично shortRest
         }
 
         updateCharacter(characterId, {
@@ -977,6 +1080,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             deathFailures: 0,
             isStable: false,
             classResourcesUsed: newResourcesUsed,
+            partialRecoveryUsed: [],
         });
     };
 
@@ -984,7 +1088,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
 
-        // Универсальный сброс ресурсов с recharge === 'short' на текущем уровне
+        // 1. Ресурсы с recharge === short — сбрасываем
         const newResourcesUsed: Record<string, number> = { ...(char.classResourcesUsed || {}) };
         for (const def of CLASS_RESOURCES) {
             const classLevel = getClassLevelFor(char, def.className);
@@ -996,9 +1100,35 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             }
         }
 
+        // 2. Автоматическое частичное восстановление (Sorcerous Restoration)
+        for (const auto of AUTO_REST_RECOVERY) {
+            if (auto.restType !== 'short') continue;
+            const classLevel = getClassLevelFor(char, auto.className);
+            if (classLevel < auto.minClassLevel) continue;
+            if (auto.subclass) {
+                const has = (char.classLevels || []).some(
+                    cl => cl.className === auto.className && cl.subclass === auto.subclass
+                );
+                if (!has) continue;
+            }
+            if (auto.target.type === 'resource') {
+                const amount = getPartialRecoveryBudget(char, auto.target, auto.className);
+                const currentUsed = newResourcesUsed[auto.target.resourceId] || 0;
+                newResourcesUsed[auto.target.resourceId] = Math.max(0, currentUsed - amount);
+            }
+            // spell-slots в AUTO_REST_RECOVERY сейчас нет, но можно добавить.
+        }
+
+        // 3. Кулдауны partial-recovery с cooldown === 'short' — очищаем
+        const newPartialUsed = (char.partialRecoveryUsed || []).filter(id => {
+            const feature = PARTIAL_RECOVERY_FEATURES.find(f => f.id === id);
+            return feature?.cooldown !== 'short';
+        });
+
         updateCharacter(characterId, {
             usedPactSlots: 0,
             classResourcesUsed: newResourcesUsed,
+            partialRecoveryUsed: newPartialUsed,
         });
     };
 
@@ -1047,6 +1177,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         shortRest,
         grantInspiration,
         spendInspiration,
+        applyPartialRecoveryFeature,
     };
 
     return (

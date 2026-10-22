@@ -31,6 +31,7 @@ import {
 import InspirationBadge from '../components/InspirationBadge';
 import ClassResourcesSection from '../components/character/ClassResourcesSection';
 import SorceryPointsConverter from '../components/character/SorceryPointsConverter';
+import PartialRecoverySection from '../components/character/PartialRecoverySection';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -57,6 +58,7 @@ const CharacterContainer: React.FC = () => {
         restoreClassResource,
         createSpellSlotFromSorceryPoints,
         convertSpellSlotToSorceryPoints,
+        applyPartialRecoveryFeature,
     } = useCharacters();
 
     const character = id ? getCharacter(id) : undefined;
@@ -272,6 +274,13 @@ const CharacterContainer: React.FC = () => {
                     character={character}
                     onCreateSlot={(level) => createSpellSlotFromSorceryPoints(character.id, level)}
                     onConvertToSP={(level) => convertSpellSlotToSorceryPoints(character.id, level)}
+                />
+
+                <PartialRecoverySection
+                    character={character}
+                    onUse={(featureId, payload) =>
+                        applyPartialRecoveryFeature(character.id, featureId, payload)
+                    }
                 />
 
                 <HitDiceTracker

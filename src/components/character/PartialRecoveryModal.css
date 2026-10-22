@@ -1,0 +1,170 @@
+.prm-modal {
+    min-width: 340px;
+}
+
+.prm-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #fff;
+}
+
+.prm-title {
+    font-family: var(--font-family);
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0;
+    color: #60a5fa;
+}
+
+.prm-subtitle {
+    font-family: var(--font-family);
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.prm-budget {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #1f2937;
+    border-radius: 8px;
+    border: 1px solid #374957;
+}
+
+.prm-budget-label {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.prm-budget-value {
+    font-size: 14px;
+    color: #60a5fa;
+    font-weight: 700;
+}
+
+.prm-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.prm-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: #1f2937;
+    border-radius: 8px;
+}
+
+.prm-level {
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 700;
+    color: #60a5fa;
+    min-width: 40px;
+}
+
+.prm-info {
+    font-size: 12px;
+    color: #9ca3af;
+    flex: 1;
+}
+
+.prm-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.prm-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid #374957;
+    background: #0f0f0f;
+    color: #d1d5db;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.prm-btn:hover:not(:disabled) {
+    border-color: #60a5fa;
+    color: #60a5fa;
+}
+
+.prm-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.prm-picked {
+    font-family: var(--font-family);
+    font-size: 14px;
+    font-weight: 700;
+    color: #34d399;
+    min-width: 20px;
+    text-align: center;
+}
+
+.prm-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.prm-btn-cancel,
+.prm-btn-confirm {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.prm-btn-cancel {
+    background: transparent;
+    border-color: #374957;
+    color: #d1d5db;
+}
+
+.prm-btn-cancel:hover {
+    background: #374151;
+    border-color: #6b7280;
+}
+
+.prm-btn-confirm {
+    background: #60a5fa;
+    border-color: #60a5fa;
+    color: #0f0f0f;
+}
+
+.prm-btn-confirm:hover:not(:disabled) {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+.prm-btn-confirm:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
