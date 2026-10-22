@@ -24,8 +24,18 @@ import {
     HitDieRollResult,
 } from '../utils/hitDice';
 import { getSubclassAlwaysPreparedSpells } from '../utils/classSpellUtils';
-import { getClassResourceDefinition, CLASS_RESOURCES } from '../constants/classResources';
-import {getClassLevelFor, computeMaxUses, resolveRecharge} from '../utils/classResources';
+import {
+    getClassResourceDefinition,
+    CLASS_RESOURCES,
+    SORCERY_POINT_SLOT_COSTS,
+    MAX_CONVERTIBLE_SPELL_LEVEL,
+} from '../constants/classResources';
+import {
+    getClassLevelFor,
+    computeMaxUses,
+    resolveRecharge,
+    getClassResourceState,
+} from '../utils/classResources';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -91,6 +101,8 @@ interface CharacterContextType {
     spendInspiration: (characterId: string) => boolean;
     spendClassResource: (characterId: string, resourceId: string, amount?: number) => boolean;
     restoreClassResource: (characterId: string, resourceId: string, amount?: number) => void;
+    createSpellSlotFromSorceryPoints: (characterId: string, level: number) => boolean;
+    convertSpellSlotToSorceryPoints: (characterId: string, level: number) => boolean;
 }
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
@@ -868,6 +880,80 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    // Sorcery Points ↔ Spell Slots
+    const createSpellSlotFromSorceryPoints = (
+        characterId: string,
+        level: number
+    ): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+        if (level < 1 || level > MAX_CONVERTIBLE_SPELL_LEVEL) return false;
+
+        const cost = SORCERY_POINT_SLOT_COSTS[level];
+        if (!cost) return false;
+
+        const spState = getClassResourceState(char, 'sorcery-points');
+        if (!spState) return false;
+        if (spState.availableUses < cost) return false;
+
+        const totals = getNonPactSpellSlots(char);
+        const used = getUsedSpellSlots(char);
+        const idx = level - 1;
+
+        if ((totals[idx] || 0) === 0) return false;
+        if ((used[idx] || 0) <= 0) return false;
+
+        const newUsedSlots = [...used];
+        newUsedSlots[idx] -= 1;
+
+        updateCharacter(characterId, {
+            classResourcesUsed: {
+                ...(char.classResourcesUsed || {}),
+                'sorcery-points': spState.usedUses + cost,
+            },
+            usedSpellSlots: newUsedSlots,
+        });
+        return true;
+    };
+
+    const convertSpellSlotToSorceryPoints = (
+        characterId: string,
+        level: number
+    ): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+        if (level < 1 || level > MAX_CONVERTIBLE_SPELL_LEVEL) return false;
+
+        const spState = getClassResourceState(char, 'sorcery-points');
+        if (!spState) return false;
+
+        const totals = getNonPactSpellSlots(char);
+        const used = getUsedSpellSlots(char);
+        const idx = level - 1;
+        const total = totals[idx] || 0;
+        const usedCount = used[idx] || 0;
+
+        if (total === 0) return false;
+        if (usedCount >= total) return false;         // нет свободных слотов
+
+        const gained = level;                          // slot → SP: level = SP
+        if (spState.availableUses + gained > spState.maxUses) return false;
+
+        const newUsedSlots = [...used];
+        newUsedSlots[idx] += 1;
+
+        const newUsedSP = Math.max(0, spState.usedUses - gained);
+
+        updateCharacter(characterId, {
+            classResourcesUsed: {
+                ...(char.classResourcesUsed || {}),
+                'sorcery-points': newUsedSP,
+            },
+            usedSpellSlots: newUsedSlots,
+        });
+        return true;
+    };
+
     // Rests
     const longRest = (characterId: string) => {
         const char = getCharacter(characterId);
@@ -955,6 +1041,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         restoreHitDie,
         spendClassResource,
         restoreClassResource,
+        createSpellSlotFromSorceryPoints,
+        convertSpellSlotToSorceryPoints,
         longRest,
         shortRest,
         grantInspiration,

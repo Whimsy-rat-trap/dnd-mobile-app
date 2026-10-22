@@ -200,3 +200,31 @@ export function getClassResourceDefinition(
 ): ClassResourceDefinition | undefined {
     return CLASS_RESOURCES.find(r => r.id === resourceId);
 }
+
+// Sorcery Points <-> Spell Slots
+//
+// PHB:
+//   Slot → SP: level 1 → 1 SP, ..., level 5 → 5 SP
+//   SP → Slot: 1st = 2 SP, 2nd = 3 SP, 3rd = 5 SP, 4th = 6 SP, 5th = 7 SP
+//   Создавать слоты 6-го уровня и выше нельзя.
+
+export const SORCERY_POINT_SLOT_COSTS: Record<number, number> = {
+    1: 2,
+    2: 3,
+    3: 5,
+    4: 6,
+    5: 7,
+};
+
+export const MAX_CONVERTIBLE_SPELL_LEVEL = 5;
+
+/** SP, которые даёт конверсия слота в SP. */
+export function getSpGainedFromSlot(level: number): number {
+    if (level < 1 || level > MAX_CONVERTIBLE_SPELL_LEVEL) return 0;
+    return level;
+}
+
+/** SP, нужные для создания слота. 0, если уровень недопустим. */
+export function getCostForSlot(level: number): number {
+    return SORCERY_POINT_SLOT_COSTS[level] ?? 0;
+}

@@ -30,6 +30,7 @@ import {
 } from '../utils/characterUtils';
 import InspirationBadge from '../components/InspirationBadge';
 import ClassResourcesSection from '../components/character/ClassResourcesSection';
+import SorceryPointsConverter from '../components/character/SorceryPointsConverter';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -54,6 +55,8 @@ const CharacterContainer: React.FC = () => {
         spendInspiration,
         spendClassResource,
         restoreClassResource,
+        createSpellSlotFromSorceryPoints,
+        convertSpellSlotToSorceryPoints,
     } = useCharacters();
 
     const character = id ? getCharacter(id) : undefined;
@@ -263,6 +266,12 @@ const CharacterContainer: React.FC = () => {
                     character={character}
                     onUse={(resourceId, amount) => spendClassResource(character.id, resourceId, amount)}
                     onRestore={(resourceId, amount) => restoreClassResource(character.id, resourceId, amount)}
+                />
+
+                <SorceryPointsConverter
+                    character={character}
+                    onCreateSlot={(level) => createSpellSlotFromSorceryPoints(character.id, level)}
+                    onConvertToSP={(level) => convertSpellSlotToSorceryPoints(character.id, level)}
                 />
 
                 <HitDiceTracker
