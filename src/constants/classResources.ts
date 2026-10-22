@@ -169,6 +169,19 @@ export const CLASS_RESOURCES: ClassResourceDefinition[] = [
         color: '#06b6d4',
     },
 
+    // SORCERER — Sorcery Points (L2+)
+    {
+        id: 'sorcery-points',
+        name: 'Sorcery Points',
+        className: 'Sorcerer',
+        minClassLevel: 2,
+        recharge: 'long',
+        maxUses: { type: 'level', multiplier: 1 },
+        description:
+            'Spend sorcery points to create spell slots or apply Metamagic. Recharges on a long rest.',
+        color: '#ec4899',
+    },
+
     // PALADIN — Channel Divinity (L3+)
     {
         id: 'channel-divinity-paladin',
