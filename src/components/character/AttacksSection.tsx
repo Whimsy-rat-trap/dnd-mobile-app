@@ -9,9 +9,20 @@ interface Props {
     feats: Feat[];
     attackBonus: number;
     damageBonus: number;
+    /** Опционально: для секции Maneuvers в AttackRoller (Battle Master). */
+    character?: Character;
+    /** Опционально: колбэк списания superiority die. */
+    onSpendSuperiorityDie?: () => boolean;
 }
 
-const AttacksSection: React.FC<Props> = ({ features, feats, attackBonus, damageBonus }) => {
+const AttacksSection: React.FC<Props> = ({
+                                             features,
+                                             feats,
+                                             attackBonus,
+                                             damageBonus,
+                                             character,
+                                             onSpendSuperiorityDie,
+                                         }) => {
     const attackingFeatures = features.filter(f => f.damageDice);
     const attackingFeats = feats.filter(f => f.damageDice);
 
@@ -25,28 +36,44 @@ const AttacksSection: React.FC<Props> = ({ features, feats, attackBonus, damageB
             <div className="cc-attacks-list">
                 {attackingFeatures.map((f, idx) => (
                     <div key={`f-${idx}`} className="cc-attack-item">
-                        <span className="cc-attack-name">{f.name}<span className="cc-attack-source"> (race)</span></span>
-                        <span className="cc-attack-dice">{f.damageDice}{f.damageType ? ` ${f.damageType}` : ''}</span>
+                        <span className="cc-attack-name">
+                            {f.name}
+                            <span className="cc-attack-source"> (race)</span>
+                        </span>
+                        <span className="cc-attack-dice">
+                            {f.damageDice}
+                            {f.damageType ? ` ${f.damageType}` : ''}
+                        </span>
                         <AttackRoller
                             sourceName={f.name}
                             damageDice={f.damageDice}
                             damageType={f.damageType}
                             defaultAttackBonus={attackBonus}
                             defaultDamageBonus={damageBonus}
+                            character={character}
+                            onSpendSuperiorityDie={onSpendSuperiorityDie}
                             trigger={<button className="cc-attack-btn">Attack</button>}
                         />
                     </div>
                 ))}
                 {attackingFeats.map(feat => (
                     <div key={feat.id} className="cc-attack-item">
-                        <span className="cc-attack-name">{feat.name}<span className="cc-attack-source"> (feat)</span></span>
-                        <span className="cc-attack-dice">{feat.damageDice}{feat.damageType ? ` ${feat.damageType}` : ''}</span>
+                        <span className="cc-attack-name">
+                            {feat.name}
+                            <span className="cc-attack-source"> (feat)</span>
+                        </span>
+                        <span className="cc-attack-dice">
+                            {feat.damageDice}
+                            {feat.damageType ? ` ${feat.damageType}` : ''}
+                        </span>
                         <AttackRoller
                             sourceName={feat.name}
                             damageDice={feat.damageDice}
                             damageType={feat.damageType}
                             defaultAttackBonus={attackBonus}
                             defaultDamageBonus={damageBonus}
+                            character={character}
+                            onSpendSuperiorityDie={onSpendSuperiorityDie}
                             trigger={<button className="cc-attack-btn">Attack</button>}
                         />
                     </div>

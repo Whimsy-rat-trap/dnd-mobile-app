@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Modal from './Modal';
+import { Character } from '../types/Character';
 import {
     rollD20,
     rollDice,
@@ -13,13 +14,15 @@ import {
 } from '../utils/diceUtils';
 import { DAMAGE_BUFFS, getBuffById } from '../constants/damageBuffs';
 import { ATTACK_DEBUFFS, getDebuffById } from '../constants/attackDebuffs';
+import { getKnownManeuvers, getManeuverSaveDC } from '../utils/maneuvers';
+import { getClassResourceState } from '../utils/classResources';
+import { Maneuver } from '../constants/maneuvers';
 import './DiceRoller.css';
 import './AttackRoller.css';
 
 type BonusMode = 'default' | 'custom';
 
 interface AppliedBuff {
-    /** Уникальный ключ, чтобы можно было добавить один и тот же бафф дважды. */
     key: string;
     buffId: string;
     rank?: number;
@@ -31,14 +34,15 @@ interface AppliedDebuff {
     rank?: number;
 }
 
+interface AppliedManeuver {
+    maneuver: Maneuver;
+    dieRoll: number;
+}
+
 interface ExtendedAttackResult extends D20RollResult {
-    /** Итоговый режим с учётом всех источников adv/dis. */
     effectiveMode: RollMode;
-    /** Суммарный плоский штраф (отрицательный). */
     flatPenalty: number;
-    /** Результаты бросков кубиков-штрафов (например, Bane 1d4). */
     dicePenalties: { name: string; rolls: number[]; total: number }[];
-    /** Итоговое значение после всех штрафов. */
     finalTotal: number;
 }
 
@@ -53,14 +57,14 @@ interface AttackRollerProps {
     onRollDamage?: (result: DiceRollResult) => void;
     trigger?: React.ReactNode;
     className?: string;
-    /** Есть ли у персонажа Inspiration для переброса. */
     inspirationAvailable?: boolean;
-    /** Колбэк — тратит inspiration, возвращает true при успехе. */
     onSpendInspiration?: () => boolean;
-    // [NEW] Программное открытие модалки (связка Cast → Attack).
     forceOpen?: boolean;
-    // [NEW] Колбэк после обработки forceOpen.
     onForceOpenHandled?: () => void;
+    /** Опционально: если задан и персонаж Battle Master с dice — секция Maneuvers. */
+    character?: Character;
+    /** Опционально: спенд superiority die, возвращает true при успехе. */
+    onSpendSuperiorityDie?: () => boolean;
 }
 
 const AttackRoller: React.FC<AttackRollerProps> = ({
@@ -78,6 +82,8 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                        onSpendInspiration,
                                                        forceOpen = false,
                                                        onForceOpenHandled,
+                                                       character,
+                                                       onSpendSuperiorityDie,
                                                    }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -93,6 +99,9 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
     const [appliedDebuffs, setAppliedDebuffs] = useState<AppliedDebuff[]>([]);
     const [debuffToAdd, setDebuffToAdd] = useState<string>('');
 
+    const [appliedManeuver, setAppliedManeuver] = useState<AppliedManeuver | null>(null);
+    const [selectedManeuverId, setSelectedManeuverId] = useState<string>('');
+
     const [attackResult, setAttackResult] = useState<ExtendedAttackResult | null>(null);
     const [damageResult, setDamageResult] = useState<DiceRollResult | null>(null);
     const [spinningAttack, setSpinningAttack] = useState(false);
@@ -101,6 +110,57 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
     const [critPending, setCritPending] = useState(false);
 
     const damageSides = getPrimaryDiceSides(damageDice);
+
+    // Superiority dice / maneuvers
+    const superiorityInfo = character
+        ? getClassResourceState(character, 'superiority-dice')
+        : null;
+    const dieSize = superiorityInfo?.dieSize ?? 0;
+    const availableDice = superiorityInfo?.availableUses ?? 0;
+
+    const availableManeuvers = useMemo<Maneuver[]>(() => {
+        if (!character || !onSpendSuperiorityDie) return [];
+        if (!superiorityInfo) return [];
+        const known = getKnownManeuvers(character);
+        // В AttackRoller показываем только те, что дают бонус к атаке или урону.
+        return known.filter(m => m.addsTo === 'attack' || m.addsTo === 'damage');
+    }, [character, onSpendSuperiorityDie, superiorityInfo]);
+
+    const selectedManeuver = selectedManeuverId
+        ? availableManeuvers.find(m => m.id === selectedManeuverId) ?? null
+        : null;
+
+    const canShowManeuvers =
+        availableManeuvers.length > 0 && !appliedManeuver;
+
+    const canApplySelectedManeuver = (() => {
+        if (!selectedManeuver) return false;
+        if (appliedManeuver) return false;
+        if (!attackResult) return false;
+        if (availableDice === 0) return false;
+        // Precision (addsTo 'attack') — можно после любого броска.
+        if (selectedManeuver.addsTo === 'attack') return true;
+        // Damage/on-hit — только после попадания (не crit fail).
+        if (attackResult.isCritFail) return false;
+        return true;
+    })();
+
+    const handleApplyManeuver = () => {
+        if (!selectedManeuver || !canApplySelectedManeuver || !onSpendSuperiorityDie) return;
+        if (!onSpendSuperiorityDie()) return;
+
+        const roll = Math.floor(Math.random() * dieSize) + 1;
+
+        // Precision: сразу добавляем к итогу атаки.
+        if (selectedManeuver.addsTo === 'attack' && attackResult) {
+            setAttackResult({
+                ...attackResult,
+                finalTotal: attackResult.finalTotal + roll,
+            });
+        }
+
+        setAppliedManeuver({ maneuver: selectedManeuver, dieRoll: roll });
+    };
 
     const handleOpen = () => setIsOpen(true);
     const handleClose = () => {
@@ -112,9 +172,10 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         setBuffToAdd('');
         setAppliedDebuffs([]);
         setDebuffToAdd('');
+        setAppliedManeuver(null);
+        setSelectedManeuverId('');
     };
 
-    // [NEW] Программное открытие (связка Cast → Attack)
     useEffect(() => {
         if (forceOpen) {
             setIsOpen(true);
@@ -126,11 +187,13 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         setCritPending(false);
         setAttackResult(null);
         setDamageResult(null);
+        setAppliedManeuver(null);
     }, [rollMode]);
 
     useEffect(() => {
         setCritPending(false);
         setAttackResult(null);
+        setAppliedManeuver(null);
     }, [attackBonusMode, customAttackBonus, defaultAttackBonus]);
 
     // Предрасчёт effective mode и штрафов
@@ -151,15 +214,14 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         setSpinningAttack(true);
         setAttackResult(null);
         setDamageResult(null);
+        setAppliedManeuver(null);
 
         setTimeout(() => {
             const baseBonus =
                 attackBonusMode === 'custom' ? customAttackBonus : defaultAttackBonus;
 
-            // 1. Роллим d20 с учётом effectiveMode
             const d20 = rollD20(effectiveMode, baseBonus);
 
-            // 2. Считаем dice penalties (Bane и т.п.)
             const dicePenalties: { name: string; rolls: number[]; total: number }[] = [];
             for (const applied of appliedDebuffs) {
                 const d = getDebuffById(applied.debuffId);
@@ -171,7 +233,6 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                 }
             }
 
-            // 3. Собираем итог
             const dicePenaltyTotal = dicePenalties.reduce((s, x) => s + x.total, 0);
             const finalTotal = d20.total + flatPenalty - dicePenaltyTotal;
 
@@ -194,11 +255,10 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         if (!onSpendInspiration) return;
         const ok = onSpendInspiration();
         if (!ok) return;
-        // Сбрасываем прошлый результат и перебрасываем
         setAttackResult(null);
         setDamageResult(null);
         setCritPending(false);
-        // Отдаём управление на следующий тик, чтобы state применился
+        setAppliedManeuver(null);
         setTimeout(() => handleRollAttack(), 0);
     };
 
@@ -211,7 +271,11 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
             const damageBonus =
                 damageBonusMode === 'custom' ? customDamageBonus : defaultDamageBonus;
 
-            // Собираем все формулы в одну строку: base + buffs
+            const maneuverBonus =
+                appliedManeuver && appliedManeuver.maneuver.addsTo === 'damage'
+                    ? appliedManeuver.dieRoll
+                    : 0;
+
             const parts: string[] = [damageDice.replace(/\s+/g, '')];
 
             for (const applied of appliedBuffs) {
@@ -229,9 +293,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                 return;
             }
 
-            // Добавляем плоский бонус от damageBonus (не удваивается на крите)
-            const totalModifier = parsed.modifier + damageBonus;
-
+            const totalModifier = parsed.modifier + damageBonus + maneuverBonus;
             const result = rollMultiDice(parsed.dice, totalModifier, critPending);
             setDamageResult(result);
             if (onRollDamage) onRollDamage(result);
@@ -277,15 +339,16 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
             },
         ]);
         setDebuffToAdd('');
-        // Сбрасываем прошлый бросок атаки, т.к.условия изменились
         setAttackResult(null);
         setCritPending(false);
+        setAppliedManeuver(null);
     };
 
     const handleRemoveDebuff = (key: string) => {
         setAppliedDebuffs(prev => prev.filter(d => d.key !== key));
         setAttackResult(null);
         setCritPending(false);
+        setAppliedManeuver(null);
     };
 
     const handleDebuffRankChange = (key: string, rank: number) => {
@@ -296,35 +359,31 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         setAppliedDebuffs([]);
         setAttackResult(null);
         setCritPending(false);
+        setAppliedManeuver(null);
     };
 
-    // Preview формулы урона
+    // Preview формулы урона (с учётом манёвра)
     const previewFormula = (() => {
         if (!damageDice) return '';
 
         const parts: string[] = [];
 
-        // Хелпер: парсит формулу, удваивает кости при крите, добавляет модификатор без удвоения
         const pushFormula = (rawFormula: string) => {
             const parsed = parseMultiDiceFormula(rawFormula.replace(/\s+/g, ''));
             if (!parsed) return;
 
-            // Кости (с удвоением при крите)
             for (const group of parsed.dice) {
                 const count = critPending ? group.count * 2 : group.count;
                 parts.push(`${count}d${group.sides}`);
             }
 
-            // Модификатор (НЕ удваивается при крите — правило D&D 5e)
             if (parsed.modifier !== 0) {
                 parts.push(`${parsed.modifier > 0 ? '+' : ''}${parsed.modifier}`);
             }
         };
 
-        // 1. Базовый урон
         pushFormula(damageDice);
 
-        // 2. Баффы
         for (const applied of appliedBuffs) {
             const buff = getBuffById(applied.buffId);
             if (!buff) continue;
@@ -333,8 +392,14 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
             pushFormula(formula);
         }
 
-        // 3. Плоский бонус от damageBonus (не удваивается при крите)
-        const bonus = damageBonusMode === 'custom' ? customDamageBonus : defaultDamageBonus;
+        const maneuverBonus =
+            appliedManeuver && appliedManeuver.maneuver.addsTo === 'damage'
+                ? appliedManeuver.dieRoll
+                : 0;
+
+        const bonus =
+            (damageBonusMode === 'custom' ? customDamageBonus : defaultDamageBonus) +
+            maneuverBonus;
         if (bonus !== 0) parts.push(`${bonus > 0 ? '+' : ''}${bonus}`);
 
         return parts.join('+').replace(/\+\+/g, '+').replace(/\+-/g, '-');
@@ -360,7 +425,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                     <div className="attack-roller">
                         <h3 className="attack-title">Attack: {sourceName}</h3>
 
-                        {/* Attack Roll */}
+                        {/* === ATTACK ROLL === */}
                         <div className="attack-block">
                             <div className="attack-block-header">Attack Roll</div>
 
@@ -599,11 +664,96 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                             Reroll with Inspiration
                                         </button>
                                     )}
+
+                                    {/* === Maneuvers (после броска) === */}
+                                    {canShowManeuvers && (
+                                        <div className="attack-maneuvers-section">
+                                            <span className="attack-label">Maneuver</span>
+                                            <div className="attack-buff-add-row">
+                                                <select
+                                                    className="attack-buff-select"
+                                                    value={selectedManeuverId}
+                                                    onChange={(e) => setSelectedManeuverId(e.target.value)}
+                                                >
+                                                    <option value="">— Select maneuver —</option>
+                                                    {availableManeuvers.map(m => {
+                                                        // Precision — доступен всегда, on-hit — только после попадания
+                                                        const isAvailableNow = m.addsTo === 'attack'
+                                                            || !attackResult.isCritFail;
+                                                        return (
+                                                            <option
+                                                                key={m.id}
+                                                                value={m.id}
+                                                                disabled={!isAvailableNow}
+                                                            >
+                                                                {m.name} ({m.addsTo === 'attack' ? '+attack' : '+damage'})
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                                <button
+                                                    type="button"
+                                                    className="attack-buff-add-btn attack-maneuver-apply-btn"
+                                                    onClick={handleApplyManeuver}
+                                                    disabled={!canApplySelectedManeuver}
+                                                    title={
+                                                        !selectedManeuver
+                                                            ? 'Select a maneuver'
+                                                            : availableDice === 0
+                                                                ? 'No superiority dice left'
+                                                                : selectedManeuver.addsTo === 'damage' && attackResult.isCritFail
+                                                                    ? 'Cannot apply on-hit maneuver on a miss'
+                                                                    : `Spend 1 die (d${dieSize})`
+                                                    }
+                                                >
+                                                    Apply (d{dieSize})
+                                                </button>
+                                            </div>
+                                            {selectedManeuver && (
+                                                <div className="attack-maneuver-info">
+                                                    {selectedManeuver.description}
+                                                    {selectedManeuver.save && character && (
+                                                        <div className="attack-maneuver-save-hint">
+                                                            DC {getManeuverSaveDC(character)} {selectedManeuver.save.ability.toUpperCase()} — {selectedManeuver.save.effect}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {appliedManeuver && (
+                                        <div className="attack-maneuver-applied">
+                                            <div className="attack-maneuver-applied-header">
+                                                <span className="attack-maneuver-applied-name">
+                                                    {appliedManeuver.maneuver.name}
+                                                </span>
+                                                <span className="attack-maneuver-applied-die">
+                                                    d{dieSize} → <strong>{appliedManeuver.dieRoll}</strong>
+                                                </span>
+                                            </div>
+                                            {appliedManeuver.maneuver.save && character && (
+                                                <div className="attack-maneuver-applied-save">
+                                                    DC {getManeuverSaveDC(character)} {appliedManeuver.maneuver.save.ability.toUpperCase()} — {appliedManeuver.maneuver.save.effect}
+                                                </div>
+                                            )}
+                                            {appliedManeuver.maneuver.addsTo === 'attack' && (
+                                                <div className="attack-maneuver-applied-hint">
+                                                    +{appliedManeuver.dieRoll} added to attack total
+                                                </div>
+                                            )}
+                                            {appliedManeuver.maneuver.addsTo === 'damage' && (
+                                                <div className="attack-maneuver-applied-hint">
+                                                    +{appliedManeuver.dieRoll} will be added to damage
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
 
-                        {/* Damage Roll */}
+                        {/* === DAMAGE ROLL === */}
                         {!hideDamage && damageDice && (
                             <div className={`attack-block ${critPending ? 'attack-block-crit' : ''}`}>
                                 <div className="attack-block-header">
@@ -773,6 +923,11 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                         {critPending && (
                                             <div className="attack-result-hint crit-hint">
                                                 Critical damage!
+                                            </div>
+                                        )}
+                                        {appliedManeuver && appliedManeuver.maneuver.addsTo === 'damage' && (
+                                            <div className="attack-result-hint attack-maneuver-damage-hint">
+                                                {appliedManeuver.maneuver.name}: +{appliedManeuver.dieRoll} from superiority die
                                             </div>
                                         )}
                                     </div>

@@ -253,6 +253,10 @@ const CharacterContainer: React.FC = () => {
                     feats={character.feats}
                     attackBonus={meleeAttack}
                     damageBonus={meleeDamage}
+                    character={character}
+                    onSpendSuperiorityDie={() =>
+                        spendClassResource(character.id, 'superiority-dice', 1)
+                    }
                 />
 
                 <SpellcastingSection character={character} />
