@@ -35,6 +35,7 @@ import {
     computeMaxUses,
     resolveRecharge,
     getClassResourceState,
+    isResourceApplicable,
 } from '../utils/classResources';
 import {
     PARTIAL_RECOVERY_FEATURES,
@@ -853,25 +854,15 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char || amount <= 0) return false;
 
-        const def = CLASS_RESOURCES.find(r => r.id === resourceId);
-        if (!def) return false;
-
-        const classLevel = getClassLevelFor(char, def.className);
-        if (classLevel < def.minClassLevel) return false;
-
-        const maxUses = computeMaxUses(def.maxUses, char, classLevel);
-        if (maxUses === 0) return false;
+        const state = getClassResourceState(char, resourceId);
+        if (!state) return false;
+        if (state.availableUses < amount) return false;
 
         const usedMap = char.classResourcesUsed || {};
-        const currentUsed = Math.min(usedMap[resourceId] || 0, maxUses);
-        const available = maxUses - currentUsed;
-
-        if (available < amount) return false;
-
         updateCharacter(characterId, {
             classResourcesUsed: {
                 ...usedMap,
-                [resourceId]: currentUsed + amount,
+                [resourceId]: state.usedUses + amount,
             },
         });
         return true;
@@ -1059,6 +1050,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         // 1. Все ресурсы — сброс
         const newResourcesUsed: Record<string, number> = { ...(char.classResourcesUsed || {}) };
         for (const def of CLASS_RESOURCES) {
+            if (!isResourceApplicable(char, def)) continue;
             if (newResourcesUsed[def.id]) {
                 newResourcesUsed[def.id] = 0;
             }
@@ -1091,8 +1083,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         // 1. Ресурсы с recharge === short — сбрасываем
         const newResourcesUsed: Record<string, number> = { ...(char.classResourcesUsed || {}) };
         for (const def of CLASS_RESOURCES) {
+            if (!isResourceApplicable(char, def)) continue;
             const classLevel = getClassLevelFor(char, def.className);
-            if (classLevel < def.minClassLevel) continue;
             const recharge = resolveRecharge(def.recharge, classLevel);
             if (recharge !== 'short') continue;
             if (newResourcesUsed[def.id]) {

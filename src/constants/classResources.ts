@@ -42,6 +42,7 @@ export interface ClassResourceDefinition {
     id: string;
     name: string;
     className: string;
+    subclass?: string;
     minClassLevel: number;
     recharge: ResourceRechargeSpec;
     maxUses: ResourceMaxUses;
@@ -154,6 +155,35 @@ export const CLASS_RESOURCES: ClassResourceDefinition[] = [
         },
         description: 'Take one additional action on your turn. Recharges on short or long rest.',
         color: '#f59e0b',
+    },
+
+    // FIGHTER (BATTLE MASTER) — Superiority Dice (L3+)
+    {
+        id: 'superiority-dice',
+        name: 'Superiority Dice',
+        className: 'Fighter',
+        subclass: 'Battle Master',
+        minClassLevel: 3,
+        recharge: 'short',
+        maxUses: {
+            type: 'table',
+            table: [
+                { minLevel: 3, uses: 4 },
+                { minLevel: 7, uses: 5 },
+                { minLevel: 15, uses: 6 },
+            ],
+        },
+        dieSize: {
+            type: 'table',
+            table: [
+                { minLevel: 3, dieSize: 8 },
+                { minLevel: 10, dieSize: 10 },
+                { minLevel: 18, dieSize: 12 },
+            ],
+        },
+        description:
+            'Spend superiority dice on maneuvers. Recharges on short or long rest. (Relentless at Fighter 15: regain 1 on initiative if you have 0.)',
+        color: '#f97316',
     },
 
     // MONK — Ki (L2+)
