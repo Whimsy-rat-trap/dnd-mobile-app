@@ -47,6 +47,8 @@ import {
     canUsePartialRecovery,
     getPartialRecoveryBudget,
 } from '../utils/partialRecovery';
+import { getKnownManeuversLimit, getAvailableManeuvers } from '../utils/maneuvers';
+import { getManeuverById } from '../constants/maneuvers';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -112,6 +114,8 @@ interface CharacterContextType {
     spendInspiration: (characterId: string) => boolean;
     spendClassResource: (characterId: string, resourceId: string, amount?: number) => boolean;
     restoreClassResource: (characterId: string, resourceId: string, amount?: number) => void;
+    learnManeuver: (characterId: string, maneuverId: string) => boolean;
+    forgetManeuver: (characterId: string, maneuverId: string) => void;
     createSpellSlotFromSorceryPoints: (characterId: string, level: number) => boolean;
     convertSpellSlotToSorceryPoints: (characterId: string, level: number) => boolean;
     /**
@@ -244,6 +248,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
                 if (!Array.isArray(updated.partialRecoveryUsed)) {
                     updated.partialRecoveryUsed = [];
+                }
+
+                if (!Array.isArray(updated.knownManeuvers)) {
+                    updated.knownManeuvers = [];
                 }
 
                 // Миграция старых полей bardicInspirationUsed / kiUsed → classResourcesUsed
@@ -868,6 +876,38 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         return true;
     };
 
+    const learnManeuver = (characterId: string, maneuverId: string): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const maneuver = getManeuverById(maneuverId);
+        if (!maneuver) return false;
+
+        const known = char.knownManeuvers || [];
+        if (known.includes(maneuverId)) return false;
+
+        const limit = getKnownManeuversLimit(char);
+        if (limit === 0) return false;
+        if (known.length >= limit) return false;
+
+        updateCharacter(characterId, {
+            knownManeuvers: [...known, maneuverId],
+        });
+        return true;
+    };
+
+    const forgetManeuver = (characterId: string, maneuverId: string) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        const known = char.knownManeuvers || [];
+        if (!known.includes(maneuverId)) return;
+
+        updateCharacter(characterId, {
+            knownManeuvers: known.filter(id => id !== maneuverId),
+        });
+    };
+
     /**
      * Восстановление классового ресурса (например, вручную, или DM решил дать
      * вне rest).
@@ -1162,6 +1202,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         spendHitDie,
         restoreHitDie,
         spendClassResource,
+        learnManeuver,
+        forgetManeuver,
         restoreClassResource,
         createSpellSlotFromSorceryPoints,
         convertSpellSlotToSorceryPoints,

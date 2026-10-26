@@ -32,6 +32,7 @@ import InspirationBadge from '../components/InspirationBadge';
 import ClassResourcesSection from '../components/character/ClassResourcesSection';
 import SorceryPointsConverter from '../components/character/SorceryPointsConverter';
 import PartialRecoverySection from '../components/character/PartialRecoverySection';
+import ManeuversSection from '../components/character/ManeuversSection';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -268,6 +269,11 @@ const CharacterContainer: React.FC = () => {
                     character={character}
                     onUse={(resourceId, amount) => spendClassResource(character.id, resourceId, amount)}
                     onRestore={(resourceId, amount) => restoreClassResource(character.id, resourceId, amount)}
+                />
+
+                <ManeuversSection
+                    character={character}
+                    onSpendSuperiorityDie={() => spendClassResource(character.id, 'superiority-dice', 1)}
                 />
 
                 <SorceryPointsConverter
