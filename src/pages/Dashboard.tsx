@@ -14,12 +14,14 @@ import CurrencyEditModal from '../components/CurrencyEditModal';
 import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
 import ShortRestModal from '../components/ShortRestModal';
 import LongRestModal from '../components/LongRestModal';
+import LevelUpModal from '../components/LevelUpModal'; // [LVL]
+import PassiveScoresSection from '../components/character/PassiveScoresSection';
+import InspirationBadge from '../components/InspirationBadge';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
 import { useCampaigns } from '../context/CampaignContext';
-import PassiveScoresSection from '../components/character/PassiveScoresSection';
-import InspirationBadge from '../components/InspirationBadge';
+import { getXpToNextLevel, canLevelUpNow } from '../utils/leveling'; // [LVL]
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -46,6 +48,7 @@ const Dashboard: React.FC = () => {
         shortRest,
         grantInspiration,
         spendInspiration,
+        applyLevelUp, // [LVL]
     } = useCharacters();
 
     const safeCharacters = React.useMemo(
@@ -64,6 +67,7 @@ const Dashboard: React.FC = () => {
     const [currencyPopupOpen, setCurrencyPopupOpen] = useState(false);
     const [shortRestOpen, setShortRestOpen] = useState(false);
     const [longRestOpen, setLongRestOpen] = useState(false);
+    const [levelUpOpen, setLevelUpOpen] = useState(false); // [LVL]
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -303,29 +307,19 @@ const Dashboard: React.FC = () => {
     const exp = character.exp;
     const level = character.level;
 
-    const getMaxExp = (lvl: number) => lvl * 1000;
-    const maxExp = getMaxExp(level);
+    const maxExp = getXpToNextLevel(level);
+    const isMaxLevel = !isFinite(maxExp);
 
     const hpPercent = (hp / maxHp) * 100;
     const tempPercent = (tempHp / maxHp) * 100;
-    const expPercent = Math.min((exp / maxExp) * 100, 100);
-    const overlevelPercent = exp > maxExp ? ((exp - maxExp) / maxExp) * 100 : 0;
+    const expPercent = isMaxLevel ? 100 : Math.min((exp / maxExp) * 100, 100);
+    const overlevelPercent = isMaxLevel || exp <= maxExp
+        ? 0
+        : ((exp - maxExp) / maxExp) * 100;
 
     const isZeroHp = hp === 0;
 
-    const levelUpIfNeeded = () => {
-        let newExp = exp;
-        let newLevel = level;
-        let leveledUp = false;
-        while (newExp >= getMaxExp(newLevel)) {
-            newExp -= getMaxExp(newLevel);
-            newLevel += 1;
-            leveledUp = true;
-        }
-        if (leveledUp) {
-            updateChar({ exp: newExp, level: newLevel });
-        }
-    };
+    const isLevelUpAvailable = canLevelUpNow(character);
 
     const resetDeathSaves = () => {
         if (character.hp > 0) {
@@ -437,8 +431,9 @@ const Dashboard: React.FC = () => {
     };
 
     const openPopup = (type: 'hp' | 'exp' | 'settings' | 'profile') => setPopupType(type);
+
+    // [LVL] closePopup больше не запускает levelUpIfNeeded — это делает отдельная модалка
     const closePopup = () => {
-        if (popupType === 'exp') levelUpIfNeeded();
         setPopupType(null);
     };
 
@@ -464,7 +459,6 @@ const Dashboard: React.FC = () => {
         ? character.spells.find(s => s.id === character.activeConcentrationSpellId)
         : null;
 
-    // Валюта
     const currency = character.currency || { gp: 0, sp: 0, cp: 0 };
 
     return (
@@ -513,6 +507,8 @@ const Dashboard: React.FC = () => {
                     onProfileClick={() => openPopup('profile')}
                     onGrantInspiration={() => grantInspiration(character.id)}
                     onSpendInspiration={() => spendInspiration(character.id)}
+                    canLevelUp={isLevelUpAvailable}          // [LVL]
+                    onLevelUpClick={() => setLevelUpOpen(true)} // [LVL]
                 />
 
                 <PassiveScoresSection character={character} />
@@ -537,7 +533,6 @@ const Dashboard: React.FC = () => {
                     rollDeathSave={rollDeathSave}
                 />
 
-                {/* Отображение активной концентрации */}
                 {activeConcentrationSpell && (
                     <div className="db-active-concentration">
                         <span className="db-concentration-label">Concentrating: </span>
@@ -560,14 +555,12 @@ const Dashboard: React.FC = () => {
                 />
 
                 <div className="db-rest-actions">
-                    {/* Short rest */}
                     <button
                         className="db-rest-btn"
                         onClick={() => setShortRestOpen(true)}
                     >
                         Short Rest
                     </button>
-                    {/* Long rest */}
                     <button
                         className="db-rest-btn"
                         onClick={() => setLongRestOpen(true)}
@@ -583,7 +576,6 @@ const Dashboard: React.FC = () => {
                     questsActive={character.quests?.filter(q => q.status === 'active').length || 0}
                 />
 
-                {/* Campaigns */}
                 <div className="db-campaigns-container">
                     <div className="db-campaigns-header">
                         <span className="db-campaigns-title">Your campaigns</span>
@@ -614,7 +606,6 @@ const Dashboard: React.FC = () => {
                             ))
                         )}
 
-                        {/* Кнопка "Create campaign" — ведёт на страницу кампаний с автооткрытием модалки и привязкой к персонажу */}
                         <Link
                             to={`/campaigns?characterId=${character.id}&create=true`}
                             className="db-campaign-card db-add-campaign"
@@ -712,8 +703,12 @@ const Dashboard: React.FC = () => {
                                 </div>
                             </div>
                             <span className="db-stat-value db-stat-value-exp">
-                                {exp.toLocaleString()} / {maxExp.toLocaleString()}
-                                {exp > maxExp && <span className="db-overlevel-exp-value"> +{Math.floor(exp - maxExp)} over</span>}
+                                {exp.toLocaleString()} / {isMaxLevel ? 'MAX' : maxExp.toLocaleString()}
+                                {overlevelPercent > 0 && (
+                                    <span className="db-overlevel-exp-value">
+                                        {' '}+{Math.floor(exp - maxExp)} over
+                                    </span>
+                                )}
                             </span>
                         </div>
                         <div className="db-popup-controls">
@@ -796,7 +791,6 @@ const Dashboard: React.FC = () => {
                 onSave={(newCurrency) => updateCharacter(character.id, { currency: newCurrency })}
             />
 
-            {/* Short Rest */}
             <ShortRestModal
                 isOpen={shortRestOpen}
                 onClose={() => setShortRestOpen(false)}
@@ -808,6 +802,14 @@ const Dashboard: React.FC = () => {
                 isOpen={longRestOpen}
                 onClose={() => setLongRestOpen(false)}
                 characterId={character.id}
+            />
+
+            {/* [LVL] Level Up Modal */}
+            <LevelUpModal
+                isOpen={levelUpOpen}
+                onClose={() => setLevelUpOpen(false)}
+                character={character}
+                onApply={(payload) => applyLevelUp(character.id, payload)}
             />
         </div>
     );

@@ -1,0 +1,306 @@
+.lum-modal {
+    min-width: 420px;
+    max-width: 520px;
+}
+
+.lum-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: #fff;
+}
+
+.lum-title {
+    margin: 0;
+    font-family: var(--font-family);
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    color: #34d399;
+}
+
+.lum-subtitle {
+    margin: 0;
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.lum-xp {
+    color: #60a5fa;
+    font-weight: 600;
+}
+
+.lum-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: #1f2937;
+    border-radius: 10px;
+    border: 1px solid #2a3747;
+}
+
+.lum-section-highlight {
+    border-color: rgba(52, 211, 153, 0.4);
+    background: rgba(52, 211, 153, 0.05);
+}
+
+.lum-label {
+    font-family: var(--font-family);
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lum-asi-levels {
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: none;
+}
+
+.lum-select {
+    padding: 8px 10px;
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #fff;
+    font-family: var(--font-family);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.lum-select:focus {
+    outline: none;
+    border-color: #34d399;
+}
+
+/* HP */
+.lum-hp-methods {
+    display: flex;
+    gap: 8px;
+}
+
+.lum-hp-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px;
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    border-radius: 8px;
+    color: #9ca3af;
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lum-hp-btn:hover {
+    border-color: #6b7280;
+    color: #e5e7eb;
+}
+
+.lum-hp-btn.active {
+    background: rgba(52, 211, 153, 0.15);
+    border-color: #34d399;
+    color: #34d399;
+}
+
+.lum-hp-preview {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fbbf24;
+}
+
+.lum-roll-row {
+    display: flex;
+    justify-content: center;
+    padding-top: 4px;
+}
+
+.lum-roll-btn {
+    padding: 8px 18px;
+    background: #fbbf24;
+    color: #0f0f0f;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.lum-roll-btn:hover {
+    background: #f59e0b;
+}
+
+.lum-roll-result {
+    font-family: var(--font-family);
+    font-size: 14px;
+    color: #d1d5db;
+}
+
+.lum-roll-result strong {
+    color: #fbbf24;
+    font-size: 20px;
+}
+
+.lum-con {
+    color: #34d399;
+    font-size: 12px;
+}
+
+/* ASI */
+.lum-asi-tabs {
+    display: flex;
+    gap: 6px;
+}
+
+.lum-asi-tab {
+    flex: 1;
+    padding: 6px 10px;
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #9ca3af;
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lum-asi-tab.active {
+    background: rgba(52, 211, 153, 0.15);
+    border-color: #34d399;
+    color: #34d399;
+}
+
+.lum-asi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.lum-asi-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #0f0f0f;
+    border-radius: 6px;
+    border: 1px solid #2a3747;
+}
+
+.lum-asi-name {
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.lum-asi-score {
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.lum-asi-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lum-asi-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 1px solid #374957;
+    background: #0f0f0f;
+    color: #d1d5db;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.15s;
+}
+
+.lum-asi-btn:hover:not(:disabled) {
+    border-color: #34d399;
+    color: #34d399;
+}
+
+.lum-asi-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.lum-asi-value {
+    min-width: 24px;
+    text-align: center;
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: 700;
+    color: #34d399;
+}
+
+.lum-asi-hint {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Actions */
+.lum-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.lum-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.lum-btn-cancel {
+    background: transparent;
+    border-color: #374957;
+    color: #d1d5db;
+}
+
+.lum-btn-cancel:hover {
+    background: #374151;
+    border-color: #6b7280;
+}
+
+.lum-btn-confirm {
+    background: #34d399;
+    border-color: #34d399;
+    color: #0f0f0f;
+}
+
+.lum-btn-confirm:hover:not(:disabled) {
+    background: #059669;
+    border-color: #059669;
+}
+
+.lum-btn-confirm:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

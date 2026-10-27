@@ -16,6 +16,28 @@ export interface Character {
     subclass?: string;
     level: number;
     classLevels: ClassLevel[];
+    /** Режим прокачки: xp (по опыту) или milestone (по решению DM). */
+    levelingMode?: 'xp' | 'milestone';
+    /** Разрешено ли DM заменять ASI на фит. */
+    allowFeatInsteadOfASI?: boolean;
+    /** История бросков HP при level up (по одному на каждый уровень, начиная с 2-го). */
+    hpRolls?: Array<{
+        classLevel: number;
+        className: string;
+        method: 'roll' | 'average';
+        roll?: number;
+        conMod: number;
+        gained: number;
+    }>;
+    /** История ASI / Feat по уровням. */
+    abilityScoreImprovements?: Array<{
+        classLevel: number;
+        className: string;
+        type: 'asi' | 'feat';
+        bonuses?: Partial<Record<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha', number>>;
+        featId?: string;
+        featName?: string;
+    }>;
     race: string;
     subrace?: string;
     background: string;

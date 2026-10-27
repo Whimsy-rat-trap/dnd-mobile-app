@@ -51,6 +51,15 @@ import { getKnownManeuversLimit, getAvailableManeuvers } from '../utils/maneuver
 import { getMetamagicById } from '../constants/metamagic';
 import { getKnownMetamagicLimit } from '../utils/metamagic';
 import { getManeuverById } from '../constants/maneuvers';
+import {
+    getXpToNextLevel,
+    validateLevelUp,
+    shouldGetASI,
+    needsSubclassChoice,
+    computeHpGain,
+    LevelUpPayload,
+} from '../utils/leveling';
+import { GENERAL_FEATS } from '../constants/generalFeats';
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -80,6 +89,7 @@ interface CharacterContextType {
     addCharacter: (character: Omit<Character, 'id'>) => void;
     updateCharacter: (id: string, data: Partial<Character>) => void;
     deleteCharacter: (id: string) => void;
+    applyLevelUp: (characterId: string, payload: LevelUpPayload) => boolean;
     getCharacter: (id: string) => Character | undefined;
     setCurrentCharacterId: (id: string | null) => void;
     addItemToInventory: (characterId: string, item: Omit<InventoryItem, 'id'> & { id?: string }) => void;
@@ -262,6 +272,19 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.knownMetamagic = [];
                 }
 
+                if (updated.levelingMode === undefined) {
+                    updated.levelingMode = 'xp';
+                }
+                if (typeof updated.allowFeatInsteadOfASI !== 'boolean') {
+                    updated.allowFeatInsteadOfASI = false;
+                }
+                if (!Array.isArray(updated.hpRolls)) {
+                    updated.hpRolls = [];
+                }
+                if (!Array.isArray(updated.abilityScoreImprovements)) {
+                    updated.abilityScoreImprovements = [];
+                }
+
                 // Миграция старых полей bardicInspirationUsed / kiUsed → classResourcesUsed
                 const legacyBardic = (updated as any).bardicInspirationUsed;
                 const legacyKi = (updated as any).kiUsed;
@@ -389,7 +412,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             character.subrace,
             character.background
         );
-        const customFeats = character.feats.filter(f => f.source === 'custom');
+        const customFeats = character.feats.filter(
+            f => f.source === 'custom' || f.source === 'level' || f.source === 'quest' || f.source === 'other'
+        );
         const allFeats = [...autoFeats, ...customFeats];
         const uniqueFeats = allFeats.filter((feat, index, self) =>
             index === self.findIndex(f => f.id === feat.id)
@@ -567,6 +592,128 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const deleteCharacter = (id: string) => {
         setCharacters(prev => prev.filter(char => char.id !== id));
         if (currentCharacterId === id) setCurrentCharacterId(null);
+    };
+
+    /**
+     * Применяет один level up для класса по индексу.
+     * НЕ проверяет XP повторно (модалка уже проверила) — только структурные
+     * требования (max level, class index).
+     */
+    const applyLevelUp = (characterId: string, payload: LevelUpPayload): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const cl = char.classLevels?.[payload.classIndex];
+        if (!cl) return false;
+        if (char.level >= 20) return false;
+
+        const newClassLevel = cl.level + 1;
+        const conMod = Math.floor((char.abilities.con - 10) / 2);
+        const { gain: hpGain, usedRoll } = computeHpGain(
+            cl.className,
+            conMod,
+            payload.hp.method,
+            payload.hp.roll
+        );
+
+        // 1. Новые классы
+        const newClassLevels = char.classLevels.map((c, i) =>
+            i === payload.classIndex
+                ? {
+                    ...c,
+                    level: newClassLevel,
+                    subclass: payload.subclass || c.subclass,
+                }
+                : c
+        );
+        const newTotalLevel = newClassLevels.reduce((s, c) => s + c.level, 0);
+
+        // 2. HP
+        const newMaxHp = char.maxHp + hpGain;
+        const newHp = Math.min(char.hp + hpGain, newMaxHp);
+        const newHpRolls = [
+            ...(char.hpRolls || []),
+            {
+                classLevel: newClassLevel,
+                className: cl.className,
+                method: payload.hp.method,
+                roll: usedRoll,
+                conMod,
+                gained: hpGain,
+            },
+        ];
+
+        // 3. ASI / Feat
+        let newAbilities = char.abilities;
+        let newFeats = char.feats;
+        let newAsiHistory = char.abilityScoreImprovements || [];
+
+        if (payload.asi) {
+            if (payload.asi.type === 'asi' && payload.asi.bonuses) {
+                newAbilities = { ...char.abilities };
+                for (const [key, val] of Object.entries(payload.asi.bonuses)) {
+                    const k = key as keyof typeof newAbilities;
+                    if (typeof val === 'number' && val > 0) {
+                        newAbilities[k] = Math.min(20, newAbilities[k] + val);
+                    }
+                }
+                newAsiHistory = [
+                    ...newAsiHistory,
+                    {
+                        classLevel: newClassLevel,
+                        className: cl.className,
+                        type: 'asi',
+                        bonuses: payload.asi.bonuses,
+                    },
+                ];
+            } else if (payload.asi.type === 'feat' && payload.asi.featId) {
+                const featId = payload.asi.featId;
+                const catalogFeat = GENERAL_FEATS.find(f => f.id === featId);
+                if (catalogFeat) {
+                    newFeats = [
+                        ...char.feats,
+                        {
+                            id: `level-${Date.now()}-${catalogFeat.id}`,
+                            name: catalogFeat.name,
+                            description: catalogFeat.description,
+                            source: 'level',
+                            gainedAtLevel: newClassLevel,
+                        },
+                    ];
+                    newAsiHistory = [
+                        ...newAsiHistory,
+                        {
+                            classLevel: newClassLevel,
+                            className: cl.className,
+                            type: 'feat',
+                            featId: catalogFeat.id,
+                            featName: catalogFeat.name,
+                        },
+                    ];
+                }
+            }
+        }
+
+        // 4. XP
+        let newExp = char.exp;
+        if (char.levelingMode !== 'milestone' && payload.consumeXp !== false) {
+            const xpToNext = getXpToNextLevel(char.level);
+            newExp = Math.max(0, char.exp - xpToNext);
+        }
+
+        updateCharacter(characterId, {
+            classLevels: newClassLevels,
+            level: newTotalLevel,
+            maxHp: newMaxHp,
+            hp: newHp,
+            hpRolls: newHpRolls,
+            abilities: newAbilities,
+            feats: newFeats,
+            abilityScoreImprovements: newAsiHistory,
+            exp: newExp,
+        });
+
+        return true;
     };
 
     const getCharacter = (id: string) => characters.find(char => char.id === id);
@@ -1210,6 +1357,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         concentrationCheck,
         addCharacter,
         updateCharacter,
+        applyLevelUp,
         deleteCharacter,
         getCharacter,
         setCurrentCharacterId,

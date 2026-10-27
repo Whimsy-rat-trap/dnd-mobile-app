@@ -1,6 +1,7 @@
 import React from 'react';
 import { Character } from '../../types/Character';
 import { getProficiencyBonus } from '../../utils/proficiency';
+import { getXpToNextLevel } from '../../utils/leveling';
 import InspirationBadge from '../InspirationBadge';
 
 interface CharacterStatsProps {
@@ -18,9 +19,12 @@ interface CharacterStatsProps {
     onHpClick: () => void;
     onExpClick: () => void;
     onProfileClick: () => void;
-    // Inspiration
     onGrantInspiration?: () => void;
     onSpendInspiration?: () => void;
+    /** Клик по иконке Level Up. */
+    onLevelUpClick?: () => void;
+    /** Показывать ли иконку как активную кнопку. */
+    canLevelUp?: boolean;
 }
 
 const CharacterStats: React.FC<CharacterStatsProps> = ({
@@ -40,10 +44,37 @@ const CharacterStats: React.FC<CharacterStatsProps> = ({
                                                            onProfileClick,
                                                            onGrantInspiration,
                                                            onSpendInspiration,
+                                                           onLevelUpClick,
+                                                           canLevelUp = false,
                                                        }) => {
     const level = character.level;
     const proficiencyBonus = getProficiencyBonus(level);
     const showInspiration = Boolean(onGrantInspiration && onSpendInspiration);
+
+    // Level Up
+    const isMilestone = character.levelingMode === 'milestone';
+    const isMaxLevel = level >= 20;
+    const xpToNext = getXpToNextLevel(level);
+
+    // В milestone — всегда активна, в XP — только когда exp >= xpToNext
+    const isActive = !isMaxLevel && (isMilestone || canLevelUp);
+
+    const levelUpTitle = (() => {
+        if (isMaxLevel) return 'Max level (20)';
+        if (isActive) {
+            return isMilestone
+                ? 'Level up (Milestone — DM decides)'
+                : 'Level up available! Click to level up';
+        }
+        return `Level ${level} · ${exp.toLocaleString()} / ${xpToNext.toLocaleString()} XP`;
+    })();
+
+    const levelUpClass = [
+        'db-levelup-icon',
+        isActive ? 'db-levelup-active' : 'db-levelup-inactive',
+        isActive && isMilestone ? 'db-levelup-milestone' : '',
+        isMaxLevel ? 'db-levelup-max' : '',
+    ].filter(Boolean).join(' ');
 
     return (
         <div className="db-character-card">
@@ -70,18 +101,30 @@ const CharacterStats: React.FC<CharacterStatsProps> = ({
                         Level {level} <span className="db-level-separator">•</span> {character.background || 'No Background'}
                     </div>
                 </div>
-                <div className="db-levelup-icon">
+
+                {/* Level Up */}
+                <button
+                    type="button"
+                    className={levelUpClass}
+                    onClick={isActive ? onLevelUpClick : undefined}
+                    disabled={!isActive || !onLevelUpClick}
+                    title={levelUpTitle}
+                    aria-label={levelUpTitle}
+                >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clipPath="url(#clip0_403_3729)">
-                            <path d="M22.5861 18.1479L12.7071 8.26894C12.517 8.08645 12.2636 7.98455 12.0001 7.98455C11.7365 7.98455 11.4832 8.08645 11.2931 8.26894L1.4201 18.1419L0.00610352 16.7279L9.8791 6.85494C10.4507 6.30947 11.2105 6.00513 12.0006 6.00513C12.7907 6.00513 13.5505 6.30947 14.1221 6.85494L24.0001 16.7339L22.5861 18.1479Z" fill="#374957" />
+                        <g clipPath="url(#clip0_lvlup)">
+                            <path
+                                d="M22.5861 18.1479L12.7071 8.26894C12.517 8.08645 12.2636 7.98455 12.0001 7.98455C11.7365 7.98455 11.4832 8.08645 11.2931 8.26894L1.4201 18.1419L0.00610352 16.7279L9.8791 6.85494C10.4507 6.30947 11.2105 6.00513 12.0006 6.00513C12.7907 6.00513 13.5505 6.30947 14.1221 6.85494L24.0001 16.7339L22.5861 18.1479Z"
+                                fill="currentColor"
+                            />
                         </g>
                         <defs>
-                            <clipPath id="clip0_403_3729">
+                            <clipPath id="clip0_lvlup">
                                 <rect width="24" height="24" fill="white" />
                             </clipPath>
                         </defs>
                     </svg>
-                </div>
+                </button>
             </div>
 
             <div className="db-stats-row">
@@ -101,7 +144,9 @@ const CharacterStats: React.FC<CharacterStatsProps> = ({
                     </span>
                     {isZeroHp && (
                         <div className="db-death-warning">
-                            {character.isStable ? 'Character is stable. Please get healed.' : 'You need to make a death saving throw'}
+                            {character.isStable
+                                ? 'Character is stable. Please get healed.'
+                                : 'You need to make a death saving throw'}
                         </div>
                     )}
                 </div>
