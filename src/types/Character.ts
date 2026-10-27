@@ -80,6 +80,8 @@ export interface Character {
     classResourcesUsed?: Record<string, number>;
     /** id известных Battle Master maneuvers. */
     knownManeuvers?: string[];
+    /** id известных Metamagic options (Sorcerer). */
+    knownMetamagic?: string[];
     /** id PartialRecoveryFeature, использованных с последнего cooldown-rest. */
     partialRecoveryUsed?: string[];
 }

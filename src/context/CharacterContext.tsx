@@ -48,6 +48,8 @@ import {
     getPartialRecoveryBudget,
 } from '../utils/partialRecovery';
 import { getKnownManeuversLimit, getAvailableManeuvers } from '../utils/maneuvers';
+import { getMetamagicById } from '../constants/metamagic';
+import { getKnownMetamagicLimit } from '../utils/metamagic';
 import { getManeuverById } from '../constants/maneuvers';
 
 const defaultSkills = [
@@ -116,6 +118,8 @@ interface CharacterContextType {
     restoreClassResource: (characterId: string, resourceId: string, amount?: number) => void;
     learnManeuver: (characterId: string, maneuverId: string) => boolean;
     forgetManeuver: (characterId: string, maneuverId: string) => void;
+    learnMetamagic: (characterId: string, metamagicId: string) => boolean;
+    forgetMetamagic: (characterId: string, metamagicId: string) => void;
     createSpellSlotFromSorceryPoints: (characterId: string, level: number) => boolean;
     convertSpellSlotToSorceryPoints: (characterId: string, level: number) => boolean;
     /**
@@ -252,6 +256,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
                 if (!Array.isArray(updated.knownManeuvers)) {
                     updated.knownManeuvers = [];
+                }
+
+                if (!Array.isArray(updated.knownMetamagic)) {
+                    updated.knownMetamagic = [];
                 }
 
                 // Миграция старых полей bardicInspirationUsed / kiUsed → classResourcesUsed
@@ -908,6 +916,38 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         });
     };
 
+    const learnMetamagic = (characterId: string, metamagicId: string): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const metamagic = getMetamagicById(metamagicId);
+        if (!metamagic) return false;
+
+        const known = char.knownMetamagic || [];
+        if (known.includes(metamagicId)) return false;
+
+        const limit = getKnownMetamagicLimit(char);
+        if (limit === 0) return false;
+        if (known.length >= limit) return false;
+
+        updateCharacter(characterId, {
+            knownMetamagic: [...known, metamagicId],
+        });
+        return true;
+    };
+
+    const forgetMetamagic = (characterId: string, metamagicId: string) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        const known = char.knownMetamagic || [];
+        if (!known.includes(metamagicId)) return;
+
+        updateCharacter(characterId, {
+            knownMetamagic: known.filter(id => id !== metamagicId),
+        });
+    };
+
     /**
      * Восстановление классового ресурса (например, вручную, или DM решил дать
      * вне rest).
@@ -1204,6 +1244,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         spendClassResource,
         learnManeuver,
         forgetManeuver,
+        learnMetamagic,
+        forgetMetamagic,
         restoreClassResource,
         createSpellSlotFromSorceryPoints,
         convertSpellSlotToSorceryPoints,

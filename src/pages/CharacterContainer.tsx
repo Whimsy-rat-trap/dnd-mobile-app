@@ -30,6 +30,7 @@ import {
 } from '../utils/characterUtils';
 import InspirationBadge from '../components/InspirationBadge';
 import ClassResourcesSection from '../components/character/ClassResourcesSection';
+import MetamagicSection from '../components/character/MetamagicSection';
 import SorceryPointsConverter from '../components/character/SorceryPointsConverter';
 import PartialRecoverySection from '../components/character/PartialRecoverySection';
 import ManeuversSection from '../components/character/ManeuversSection';
@@ -284,6 +285,13 @@ const CharacterContainer: React.FC = () => {
                     character={character}
                     onCreateSlot={(level) => createSpellSlotFromSorceryPoints(character.id, level)}
                     onConvertToSP={(level) => convertSpellSlotToSorceryPoints(character.id, level)}
+                />
+
+                <MetamagicSection
+                    character={character}
+                    onSpendSorceryPoints={(amount) =>
+                        spendClassResource(character.id, 'sorcery-points', amount)
+                    }
                 />
 
                 <PartialRecoverySection

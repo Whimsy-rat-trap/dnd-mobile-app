@@ -1,0 +1,138 @@
+.umg-modal {
+    min-width: 340px;
+    max-width: 460px;
+}
+
+.umg-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #fff;
+}
+
+.umg-title {
+    margin: 0;
+    font-family: var(--font-family);
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    color: #ec4899;
+}
+
+.umg-desc {
+    margin: 0;
+    font-size: 12px;
+    color: #d1d5db;
+    line-height: 1.5;
+    background: #0f0f0f;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #2a3747;
+}
+
+.umg-level-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.umg-level-label {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.umg-level-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+}
+
+.umg-level-btn {
+    padding: 6px;
+    background: #0f0f0f;
+    border: 1px solid #374957;
+    border-radius: 6px;
+    color: #d1d5db;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.umg-level-btn:hover {
+    border-color: #ec4899;
+}
+
+.umg-level-btn.active {
+    background: rgba(236, 72, 153, 0.15);
+    border-color: #ec4899;
+    color: #ec4899;
+}
+
+.umg-cost-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #1f2937;
+    border-radius: 8px;
+    border: 1px solid #374957;
+}
+
+.umg-cost-label {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.umg-cost-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ec4899;
+}
+
+.umg-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.umg-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.umg-btn-cancel {
+    background: transparent;
+    border-color: #374957;
+    color: #d1d5db;
+}
+
+.umg-btn-cancel:hover {
+    background: #374151;
+    border-color: #6b7280;
+}
+
+.umg-btn-confirm {
+    background: #ec4899;
+    border-color: #ec4899;
+    color: #0f0f0f;
+}
+
+.umg-btn-confirm:hover {
+    background: #db2777;
+    border-color: #db2777;
+}
