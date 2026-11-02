@@ -404,3 +404,109 @@
     border: 1px solid rgba(52, 211, 153, 0.4);
     color: #34d399;
 }
+
+/* Spell Learning */
+.lum-spells-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.lum-spells-title {
+    font-family: var(--font-family);
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lum-spells-count-ok {
+    color: #34d399;
+}
+
+.lum-spells-count-pending {
+    color: #fbbf24;
+}
+
+.lum-spells-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 4px;
+    background: #0f0f0f;
+    border-radius: 6px;
+    padding: 6px;
+}
+
+.lum-spells-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.lum-spells-list::-webkit-scrollbar-thumb {
+    background: #374957;
+    border-radius: 2px;
+}
+
+.lum-spell-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-size: 12px;
+    color: #d1d5db;
+}
+
+.lum-spell-row:hover:not(.disabled) {
+    background: rgba(52, 211, 153, 0.05);
+}
+
+.lum-spell-row.selected {
+    background: rgba(52, 211, 153, 0.1);
+    color: #34d399;
+}
+
+.lum-spell-row.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.lum-spell-row input[type="checkbox"] {
+    accent-color: #34d399;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.lum-spell-name {
+    flex: 1;
+    font-family: var(--font-family);
+    font-weight: 500;
+}
+
+.lum-spell-level {
+    font-family: var(--font-family);
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    padding: 1px 6px;
+    border: 1px solid #2a3747;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.lum-spells-empty {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+    padding: 8px;
+}

@@ -15,6 +15,7 @@ import {
     LevelUpPayload,
     LevelUpPreview,
 } from '../utils/leveling';
+import { getSpellCandidates } from '../utils/spellLearning';
 import './LevelUpModal.css';
 
 interface Props {
@@ -184,7 +185,27 @@ const PreviewBlock: React.FC<PreviewBlockProps> = ({
         );
     }
 
-    // Class resources
+    // Learn spells (known casters)
+    if (preview.spellLearning) {
+        const parts: string[] = [];
+        if (preview.spellLearning.spellsToLearn > 0) {
+            parts.push(`${preview.spellLearning.spellsToLearn} spell${preview.spellLearning.spellsToLearn > 1 ? 's' : ''}`);
+        }
+        if (preview.spellLearning.cantripsToLearn > 0) {
+            parts.push(`${preview.spellLearning.cantripsToLearn} cantrip${preview.spellLearning.cantripsToLearn > 1 ? 's' : ''}`);
+        }
+        rows.push(
+            <div key="learn" className="lum-preview-row">
+                <span className="lum-preview-label">Learn spells</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    {parts.join(' + ')}
+                    {preview.spellLearning.maxSpellLevel > 0 &&
+                        ` (≤ Lv.${preview.spellLearning.maxSpellLevel})`}
+                </span>
+            </div>
+        );
+    }
+
     for (const res of preview.classResources) {
         const parts: string[] = [];
         for (const ch of res.changes) {
@@ -256,6 +277,8 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
     const [asiBonuses, setAsiBonuses] = useState<Partial<Record<Abilities, number>>>({});
     const [selectedFeat, setSelectedFeat] = useState('');
     const [subclass, setSubclass] = useState('');
+    const [selectedSpells, setSelectedSpells] = useState<string[]>([]);
+    const [selectedCantrips, setSelectedCantrips] = useState<string[]>([]);
 
     const classOptions = getClassOptionsForLevelUp(character);
     const currentClass = classOptions[classIndex];
@@ -291,17 +314,67 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
         return true;
     }, [getsASI, asiType, asiBonuses, selectedFeat, asiAlreadySet, character.abilities]);
 
-    // Preview — реактивно пересчитывается при смене класса/subclass
     const preview = useMemo(
         () => computeLevelUpPreview(character, classIndex, subclass || undefined),
         [character, classIndex, subclass]
     );
 
+    // --- Spell learning ---
+    const spellLearning = preview?.spellLearning || null;
+
+    const spellCandidates = useMemo(() => {
+        if (!spellLearning || !currentClass) return [];
+        if (spellLearning.spellsToLearn === 0) return [];
+        return getSpellCandidates(
+            character,
+            currentClass.className,
+            spellLearning.maxSpellLevel,
+            false
+        );
+    }, [character, currentClass, spellLearning]);
+
+    const cantripCandidates = useMemo(() => {
+        if (!spellLearning || !currentClass) return [];
+        if (spellLearning.cantripsToLearn === 0) return [];
+        return getSpellCandidates(
+            character,
+            currentClass.className,
+            spellLearning.maxSpellLevel,
+            true
+        );
+    }, [character, currentClass, spellLearning]);
+
+    const toggleSpell = (name: string) => {
+        setSelectedSpells(prev => {
+            if (prev.includes(name)) return prev.filter(n => n !== name);
+            if (spellLearning && prev.length >= spellLearning.spellsToLearn) return prev;
+            return [...prev, name];
+        });
+    };
+
+    const toggleCantrip = (name: string) => {
+        setSelectedCantrips(prev => {
+            if (prev.includes(name)) return prev.filter(n => n !== name);
+            if (spellLearning && prev.length >= spellLearning.cantripsToLearn) return prev;
+            return [...prev, name];
+        });
+    };
+
+    const spellsValid = !spellLearning
+        ? true
+        : selectedSpells.length === spellLearning.spellsToLearn;
+
+    const cantripsValid = !spellLearning
+        ? true
+        : selectedCantrips.length === spellLearning.cantripsToLearn;
+
     const canSubmit =
         !!currentClass &&
         (!needsSubclass || !!subclass) &&
         (hpMethod === 'average' || hpRoll !== null) &&
-        asiValid;
+        asiValid &&
+        spellsValid &&
+        cantripsValid;
 
     const handleRoll = () => {
         setHpRoll(Math.floor(Math.random() * hitDie) + 1);
@@ -338,7 +411,19 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
             }
         }
 
+        if (spellLearning) {
+            if (selectedSpells.length > 0) {
+                payload.spellsToLearn = selectedSpells;
+            }
+            if (selectedCantrips.length > 0) {
+                payload.cantripsToLearn = selectedCantrips;
+            }
+        }
+
         if (onApply(payload)) {
+            // Сбрасываем локальный state после успеха
+            setSelectedSpells([]);
+            setSelectedCantrips([]);
             onClose();
         }
     };
@@ -389,6 +474,8 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                                 setSubclass('');
                                 setAsiBonuses({});
                                 setSelectedFeat('');
+                                setSelectedSpells([]);
+                                setSelectedCantrips([]);
                             }}
                         >
                             {classOptions.map((opt) => (
@@ -560,6 +647,106 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                         {asiType === 'asi' && asiAlreadySet !== 2 && (
                             <div className="lum-asi-hint">
                                 Distribute exactly 2 points (+2 to one or +1/+1 to two).
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Spell Learning (known casters) */}
+                {spellLearning && (
+                    <div className="lum-section lum-section-highlight">
+                        <span className="lum-label">
+                            Learn new spells
+                            <span className="lum-asi-levels">
+                                {' '}· {currentClass?.className} at level {newClassLevel}
+                            </span>
+                        </span>
+
+                        {spellLearning.spellsToLearn > 0 && (
+                            <div className="lum-spells-block">
+                                <span className="lum-spells-title">
+                                    Spells (≤ Lv.{spellLearning.maxSpellLevel}) ·{' '}
+                                    <span className={
+                                        spellsValid
+                                            ? 'lum-spells-count-ok'
+                                            : 'lum-spells-count-pending'
+                                    }>
+                                        {selectedSpells.length}/{spellLearning.spellsToLearn}
+                                    </span>
+                                </span>
+                                <div className="lum-spells-list">
+                                    {spellCandidates.length === 0 ? (
+                                        <div className="lum-spells-empty">
+                                            No eligible spells available.
+                                        </div>
+                                    ) : (
+                                        spellCandidates.map(spell => {
+                                            const isSelected = selectedSpells.includes(spell.name);
+                                            const canPick =
+                                                isSelected ||
+                                                selectedSpells.length < spellLearning.spellsToLearn;
+                                            return (
+                                                <label
+                                                    key={spell.name}
+                                                    className={`lum-spell-row ${isSelected ? 'selected' : ''} ${!canPick ? 'disabled' : ''}`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        disabled={!canPick}
+                                                        onChange={() => toggleSpell(spell.name)}
+                                                    />
+                                                    <span className="lum-spell-name">{spell.name}</span>
+                                                    <span className="lum-spell-level">Lv.{spell.level}</span>
+                                                </label>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {spellLearning.cantripsToLearn > 0 && (
+                            <div className="lum-spells-block">
+                                <span className="lum-spells-title">
+                                    Cantrips ·{' '}
+                                    <span className={
+                                        cantripsValid
+                                            ? 'lum-spells-count-ok'
+                                            : 'lum-spells-count-pending'
+                                    }>
+                                        {selectedCantrips.length}/{spellLearning.cantripsToLearn}
+                                    </span>
+                                </span>
+                                <div className="lum-spells-list">
+                                    {cantripCandidates.length === 0 ? (
+                                        <div className="lum-spells-empty">
+                                            No eligible cantrips available.
+                                        </div>
+                                    ) : (
+                                        cantripCandidates.map(spell => {
+                                            const isSelected = selectedCantrips.includes(spell.name);
+                                            const canPick =
+                                                isSelected ||
+                                                selectedCantrips.length < spellLearning.cantripsToLearn;
+                                            return (
+                                                <label
+                                                    key={spell.name}
+                                                    className={`lum-spell-row ${isSelected ? 'selected' : ''} ${!canPick ? 'disabled' : ''}`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        disabled={!canPick}
+                                                        onChange={() => toggleCantrip(spell.name)}
+                                                    />
+                                                    <span className="lum-spell-name">{spell.name}</span>
+                                                    <span className="lum-spell-level">Cantrip</span>
+                                                </label>
+                                            );
+                                        })
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>

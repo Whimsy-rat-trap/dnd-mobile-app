@@ -17,7 +17,8 @@ import {
 import { getMaxSpellLevelForClass } from './classSpellUtils';
 import { getAvailableClassResources, ClassResourceState } from './classResources';
 import { getSpellSaveDC, getSpellAttackBonus } from './spellUtils';
-import {getProficiencyBonus} from "./proficiency";
+import { getProficiencyBonus } from "./proficiency";
+import { getSpellLearningInfo, SpellLearningInfo } from './spellLearning'; // [SPELL LEARNING]
 
 /**
  * Сколько XP нужно внутри текущего уровня, чтобы дойти до следующего.
@@ -186,6 +187,11 @@ export interface LevelUpPayload {
     subclass?: string;
     /** Потреблять XP за этот level up (true для XP-режима). */
     consumeXp?: boolean;
+    // [SPELL LEARNING] — Known caster'ы (Bard, Sorcerer, Warlock, Ranger)
+    /** Имена выученных заклинаний. */
+    spellsToLearn?: string[];
+    /** Имена выученных кантрипов. */
+    cantripsToLearn?: string[];
 }
 
 // Level Up Preview
@@ -245,6 +251,10 @@ export interface LevelUpPreview {
     spellSaveDC: { from: number; to: number } | null;
     spellAttackBonus: { from: number; to: number } | null;
     classResources: ClassResourcePreview[];
+
+    // [SPELL LEARNING] — null для prepared casters и не-кастеров
+    /** Информация о том, сколько заклинаний/кантрипов нужно выучить. */
+    spellLearning: SpellLearningInfo | null;
 
     hasASI: boolean;
     hasSubclassChoice: boolean;
@@ -375,6 +385,8 @@ export function computeLevelUpPreview(
         spellSaveDC,
         spellAttackBonus,
         classResources,
+        // [SPELL LEARNING] — только для known casters, null для остальных
+        spellLearning: getSpellLearningInfo(cl.className, classLevelFrom, classLevelTo),
         hasASI: shouldGetASI(cl.className, classLevelTo),
         hasSubclassChoice: needsSubclassChoice(character, classIndex, classLevelTo),
     };

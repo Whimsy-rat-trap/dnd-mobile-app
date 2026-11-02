@@ -51,6 +51,7 @@ import { getKnownManeuversLimit, getAvailableManeuvers } from '../utils/maneuver
 import { getMetamagicById } from '../constants/metamagic';
 import { getKnownMetamagicLimit } from '../utils/metamagic';
 import { getManeuverById } from '../constants/maneuvers';
+import { ALL_SPELLS } from '../constants/spells';
 import {
     getXpToNextLevel,
     validateLevelUp,
@@ -701,6 +702,28 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             newExp = Math.max(0, char.exp - xpToNext);
         }
 
+        // Learned spells / cantrips (known casters)
+        const newLearnedSpells: typeof char.spells = [];
+        const allNewSpellNames = [
+            ...(payload.cantripsToLearn || []),
+            ...(payload.spellsToLearn || []),
+        ];
+        for (const name of allNewSpellNames) {
+            const spellData = ALL_SPELLS.find(
+                s => s.name.toLowerCase() === name.toLowerCase()
+            );
+            if (!spellData) continue;
+            newLearnedSpells.push({
+                ...spellData,
+                id: `learned-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                prepared: true,
+                isCustom: false,
+            });
+        }
+        const newSpells = newLearnedSpells.length > 0
+            ? [...char.spells, ...newLearnedSpells]
+            : char.spells;
+
         updateCharacter(characterId, {
             classLevels: newClassLevels,
             level: newTotalLevel,
@@ -711,6 +734,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             feats: newFeats,
             abilityScoreImprovements: newAsiHistory,
             exp: newExp,
+            spells: newSpells,
         });
 
         return true;
