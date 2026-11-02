@@ -7,7 +7,17 @@ import {
     MAX_LEVEL,
 } from '../constants/leveling';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
-import { getModifier } from './characterUtils';
+import { getModifier } from './characterUtils'
+import {
+    getNonPactSpellSlots,
+    getPactMagicInfo,
+    getMaxPrepared,
+    isSpellcastingClass,
+} from './spellcasting';
+import { getMaxSpellLevelForClass } from './classSpellUtils';
+import { getAvailableClassResources, ClassResourceState } from './classResources';
+import { getSpellSaveDC, getSpellAttackBonus } from './spellUtils';
+import {getProficiencyBonus} from "./proficiency";
 
 /**
  * Сколько XP нужно внутри текущего уровня, чтобы дойти до следующего.
@@ -176,4 +186,196 @@ export interface LevelUpPayload {
     subclass?: string;
     /** Потреблять XP за этот level up (true для XP-режима). */
     consumeXp?: boolean;
+}
+
+// Level Up Preview
+
+function simulateLevelUp(
+    character: Character,
+    classIndex: number,
+    chosenSubclass?: string
+): Character {
+    const newClassLevels = character.classLevels.map((cl, i) =>
+        i === classIndex
+            ? {
+                ...cl,
+                level: cl.level + 1,
+                subclass: chosenSubclass || cl.subclass,
+            }
+            : cl
+    );
+    return {
+        ...character,
+        classLevels: newClassLevels,
+        level: newClassLevels.reduce((s, cl) => s + cl.level, 0),
+    };
+}
+
+export interface SpellSlotDelta {
+    level: number;
+    from: number;
+    to: number;
+    delta: number;
+}
+
+export type ClassResourceChange =
+    | { kind: 'maxUses'; from: number; to: number }
+    | { kind: 'dieSize'; from: number | undefined; to: number | undefined }
+    | { kind: 'recharge'; from: string; to: string }
+    | { kind: 'new'; maxUses: number; dieSize?: number };
+
+export interface ClassResourcePreview {
+    id: string;
+    name: string;
+    changes: ClassResourceChange[];
+}
+
+export interface LevelUpPreview {
+    levelFrom: number;
+    levelTo: number;
+    className: string;
+    classLevelFrom: number;
+    classLevelTo: number;
+
+    proficiency: { from: number; to: number };
+    spellSlots: SpellSlotDelta[];
+    pactSlots: { from: number; to: number; slotLevel: number } | null;
+    maxPrepared: { from: number; to: number } | null;
+    maxSpellLevel: { from: number; to: number } | null;
+    spellSaveDC: { from: number; to: number } | null;
+    spellAttackBonus: { from: number; to: number } | null;
+    classResources: ClassResourcePreview[];
+
+    hasASI: boolean;
+    hasSubclassChoice: boolean;
+}
+
+export function computeLevelUpPreview(
+    character: Character,
+    classIndex: number,
+    chosenSubclass?: string
+): LevelUpPreview | null {
+    const cl = character.classLevels?.[classIndex];
+    if (!cl) return null;
+
+    const preview = simulateLevelUp(character, classIndex, chosenSubclass);
+    const classLevelFrom = cl.level;
+    const classLevelTo = cl.level + 1;
+
+    // Proficiency
+    const profFrom = getProficiencyBonus(character.level);
+    const profTo = getProficiencyBonus(preview.level);
+
+    // Spell slots
+    const slotsFrom = getNonPactSpellSlots(character);
+    const slotsTo = getNonPactSpellSlots(preview);
+    const spellSlots: SpellSlotDelta[] = [];
+    for (let i = 0; i < 9; i++) {
+        const from = slotsFrom[i] || 0;
+        const to = slotsTo[i] || 0;
+        if (from !== to) {
+            spellSlots.push({ level: i + 1, from, to, delta: to - from });
+        }
+    }
+
+    // Pact slots
+    const pactFrom = getPactMagicInfo(character);
+    const pactTo = getPactMagicInfo(preview);
+    let pactSlots: LevelUpPreview['pactSlots'] = null;
+    if (pactFrom || pactTo) {
+        const totalFrom = pactFrom?.total ?? 0;
+        const totalTo = pactTo?.total ?? 0;
+        const lvlFrom = pactFrom?.slotLevel ?? 0;
+        const lvlTo = pactTo?.slotLevel ?? 0;
+        if (totalFrom !== totalTo || lvlFrom !== lvlTo) {
+            pactSlots = {
+                from: totalFrom,
+                to: totalTo,
+                slotLevel: lvlTo || lvlFrom,
+            };
+        }
+    }
+
+    // Max prepared
+    const prepFrom = getMaxPrepared(character);
+    const prepTo = getMaxPrepared(preview);
+    const maxPrepared =
+        prepFrom !== prepTo ? { from: prepFrom, to: prepTo } : null;
+
+    // Max spell level for this class
+    const msFrom = getMaxSpellLevelForClass(cl.className, classLevelFrom, cl.subclass);
+    const msTo = getMaxSpellLevelForClass(cl.className, classLevelTo, chosenSubclass || cl.subclass);
+    const maxSpellLevel =
+        msFrom !== msTo ? { from: msFrom, to: msTo } : null;
+
+    // Spellcasting DC/Attack (только если это кастер)
+    let spellSaveDC: LevelUpPreview['spellSaveDC'] = null;
+    let spellAttackBonus: LevelUpPreview['spellAttackBonus'] = null;
+    if (isSpellcastingClass(character) || isSpellcastingClass(preview)) {
+        const dcFrom = getSpellSaveDC(character);
+        const dcTo = getSpellSaveDC(preview);
+        if (dcFrom !== dcTo) spellSaveDC = { from: dcFrom, to: dcTo };
+
+        const atkFrom = getSpellAttackBonus(character);
+        const atkTo = getSpellAttackBonus(preview);
+        if (atkFrom !== atkTo) spellAttackBonus = { from: atkFrom, to: atkTo };
+    }
+
+    // Class resources
+    const resFrom = getAvailableClassResources(character);
+    const resTo = getAvailableClassResources(preview);
+    const map = new Map<string, { from?: ClassResourceState; to?: ClassResourceState }>();
+    for (const r of resFrom) map.set(r.definition.id, { from: r });
+    for (const r of resTo) {
+        const cur = map.get(r.definition.id) || {};
+        map.set(r.definition.id, { ...cur, to: r });
+    }
+
+    const classResources: ClassResourcePreview[] = [];
+    for (const [id, { from, to }] of map) {
+        const def = to?.definition || from?.definition;
+        if (!def) continue;
+
+        const changes: ClassResourceChange[] = [];
+
+        if (!from && to) {
+            changes.push({
+                kind: 'new',
+                maxUses: to.maxUses,
+                dieSize: to.dieSize,
+            });
+        } else if (from && to) {
+            if (from.maxUses !== to.maxUses) {
+                changes.push({ kind: 'maxUses', from: from.maxUses, to: to.maxUses });
+            }
+            if (from.dieSize !== to.dieSize) {
+                changes.push({ kind: 'dieSize', from: from.dieSize, to: to.dieSize });
+            }
+            if (from.recharge !== to.recharge) {
+                changes.push({ kind: 'recharge', from: from.recharge, to: to.recharge });
+            }
+        }
+
+        if (changes.length > 0) {
+            classResources.push({ id, name: def.name, changes });
+        }
+    }
+
+    return {
+        levelFrom: character.level,
+        levelTo: preview.level,
+        className: cl.className,
+        classLevelFrom,
+        classLevelTo,
+        proficiency: { from: profFrom, to: profTo },
+        spellSlots,
+        pactSlots,
+        maxPrepared,
+        maxSpellLevel,
+        spellSaveDC,
+        spellAttackBonus,
+        classResources,
+        hasASI: shouldGetASI(cl.className, classLevelTo),
+        hasSubclassChoice: needsSubclassChoice(character, classIndex, classLevelTo),
+    };
 }

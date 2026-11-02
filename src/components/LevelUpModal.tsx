@@ -11,7 +11,9 @@ import {
     needsSubclassChoice,
     computeHpGain,
     getClassOptionsForLevelUp,
+    computeLevelUpPreview,
     LevelUpPayload,
+    LevelUpPreview,
 } from '../utils/leveling';
 import './LevelUpModal.css';
 
@@ -27,6 +29,224 @@ const ABILITY_KEYS: Abilities[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 const ABILITY_LABELS: Record<Abilities, string> = {
     str: 'STR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'WIS', cha: 'CHA',
 };
+
+const ordinal = (n: number): string => {
+    if (n === 1) return '1st';
+    if (n === 2) return '2nd';
+    if (n === 3) return '3rd';
+    return `${n}th`;
+};
+
+// Preview block
+
+interface PreviewBlockProps {
+    preview: LevelUpPreview | null;
+    hpGain: number | null;
+    chosenSubclass: string;
+    hasASI: boolean;
+    asiType: 'asi' | 'feat';
+}
+
+const PreviewBlock: React.FC<PreviewBlockProps> = ({
+                                                       preview,
+                                                       hpGain,
+                                                       chosenSubclass,
+                                                       hasASI,
+                                                       asiType,
+                                                   }) => {
+    if (!preview) return null;
+
+    const rows: React.ReactNode[] = [];
+
+    // Level
+    rows.push(
+        <div key="level" className="lum-preview-row lum-preview-row-title">
+            <span className="lum-preview-label">Level</span>
+            <span className="lum-preview-value lum-preview-highlight">
+                {preview.levelFrom} → {preview.levelTo}
+                {preview.classLevelFrom !== preview.classLevelTo && (
+                    <span className="lum-preview-sub">
+                        {' '}({preview.className} {preview.classLevelFrom} → {preview.classLevelTo})
+                    </span>
+                )}
+            </span>
+        </div>
+    );
+
+    // HP
+    if (hpGain !== null) {
+        rows.push(
+            <div key="hp" className="lum-preview-row">
+                <span className="lum-preview-label">HP</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    +{hpGain}
+                </span>
+            </div>
+        );
+    }
+
+    // Proficiency
+    if (preview.proficiency.from !== preview.proficiency.to) {
+        rows.push(
+            <div key="prof" className="lum-preview-row">
+                <span className="lum-preview-label">Proficiency</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    +{preview.proficiency.from} → +{preview.proficiency.to}
+                </span>
+            </div>
+        );
+    }
+
+    // Spell Save DC
+    if (preview.spellSaveDC) {
+        rows.push(
+            <div key="spdc" className="lum-preview-row">
+                <span className="lum-preview-label">Spell Save DC</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    {preview.spellSaveDC.from} → {preview.spellSaveDC.to}
+                </span>
+            </div>
+        );
+    }
+
+    // Spell Attack
+    if (preview.spellAttackBonus) {
+        rows.push(
+            <div key="spatk" className="lum-preview-row">
+                <span className="lum-preview-label">Spell Attack</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    {preview.spellAttackBonus.from >= 0 ? '+' : ''}
+                    {preview.spellAttackBonus.from} →{' '}
+                    {preview.spellAttackBonus.to >= 0 ? '+' : ''}
+                    {preview.spellAttackBonus.to}
+                </span>
+            </div>
+        );
+    }
+
+    // New spell level
+    if (preview.maxSpellLevel) {
+        rows.push(
+            <div key="msl" className="lum-preview-row">
+                <span className="lum-preview-label">New spell level</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    {preview.maxSpellLevel.from > 0
+                        ? `${preview.maxSpellLevel.from} → ${preview.maxSpellLevel.to}`
+                        : preview.maxSpellLevel.to}
+                    {preview.maxSpellLevel.to > 0 &&
+                        ` (up to ${ordinal(preview.maxSpellLevel.to)})`}
+                </span>
+            </div>
+        );
+    }
+
+    // Spell slots
+    if (preview.spellSlots.length > 0) {
+        rows.push(
+            <div key="slots" className="lum-preview-row lum-preview-row-multi">
+                <span className="lum-preview-label">Spell Slots</span>
+                <span className="lum-preview-value">
+                    {preview.spellSlots.map((s, i) => (
+                        <span key={s.level} className="lum-preview-chip lum-preview-chip-green">
+                            Lv.{s.level} {s.delta > 0 ? `+${s.delta}` : s.delta}
+                            {s.from === 0 && s.to > 0 && ' (new)'}
+                            {i < preview.spellSlots.length - 1 ? ' · ' : ''}
+                        </span>
+                    ))}
+                </span>
+            </div>
+        );
+    }
+
+    // Pact slots
+    if (preview.pactSlots) {
+        const ps = preview.pactSlots;
+        rows.push(
+            <div key="pact" className="lum-preview-row">
+                <span className="lum-preview-label">Pact Magic</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    {ps.from === 0 ? `${ps.to}` : `${ps.from} → ${ps.to}`} slots
+                    {ps.slotLevel > 0 && ` @ Lv.${ps.slotLevel}`}
+                </span>
+            </div>
+        );
+    }
+
+    // Max prepared
+    if (preview.maxPrepared) {
+        rows.push(
+            <div key="prep" className="lum-preview-row">
+                <span className="lum-preview-label">Max prepared</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    {preview.maxPrepared.from} → {preview.maxPrepared.to}
+                </span>
+            </div>
+        );
+    }
+
+    // Class resources
+    for (const res of preview.classResources) {
+        const parts: string[] = [];
+        for (const ch of res.changes) {
+            if (ch.kind === 'new') {
+                parts.push(`new (${ch.maxUses}${ch.dieSize ? `, d${ch.dieSize}` : ''})`);
+            } else if (ch.kind === 'maxUses') {
+                parts.push(`${ch.from} → ${ch.to}`);
+            } else if (ch.kind === 'dieSize') {
+                if (ch.from === undefined && ch.to !== undefined) {
+                    parts.push(`d${ch.to}`);
+                } else if (ch.from !== undefined && ch.to !== undefined) {
+                    parts.push(`d${ch.from} → d${ch.to}`);
+                }
+            } else if (ch.kind === 'recharge') {
+                parts.push(`recharge ${ch.from} → ${ch.to}`);
+            }
+        }
+        rows.push(
+            <div key={`res-${res.id}`} className="lum-preview-row lum-preview-row-multi">
+                <span className="lum-preview-label">{res.name}</span>
+                <span className="lum-preview-value lum-preview-positive">
+                    {parts.join(' · ')}
+                </span>
+            </div>
+        );
+    }
+
+    // Subclass
+    if (preview.hasSubclassChoice && chosenSubclass) {
+        rows.push(
+            <div key="subclass" className="lum-preview-row">
+                <span className="lum-preview-label">Subclass</span>
+                <span className="lum-preview-value lum-preview-highlight">
+                    {preview.className}: {chosenSubclass}
+                </span>
+            </div>
+        );
+    }
+
+    // ASI
+    if (hasASI) {
+        rows.push(
+            <div key="asi" className="lum-preview-row">
+                <span className="lum-preview-label">ASI</span>
+                <span className="lum-preview-value lum-preview-highlight">
+                    {asiType === 'asi' ? 'Ability Score Improvement' : 'Feat (DM allowed)'}
+                </span>
+            </div>
+        );
+    }
+
+    return (
+        <div className="lum-preview">
+            <div className="lum-preview-header">
+                <span className="lum-preview-title">Preview</span>
+            </div>
+            {rows}
+        </div>
+    );
+};
+
+// Main modal
 
 const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) => {
     const [classIndex, setClassIndex] = useState(0);
@@ -62,7 +282,6 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
     const asiValid = useMemo(() => {
         if (!getsASI) return true;
         if (asiType === 'feat') return !!selectedFeat;
-        // ASI: +2 в одну или +1/+1 в две
         const sum = asiAlreadySet;
         if (sum !== 2) return false;
         for (const [k, v] of Object.entries(asiBonuses)) {
@@ -71,6 +290,12 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
         }
         return true;
     }, [getsASI, asiType, asiBonuses, selectedFeat, asiAlreadySet, character.abilities]);
+
+    // Preview — реактивно пересчитывается при смене класса/subclass
+    const preview = useMemo(
+        () => computeLevelUpPreview(character, classIndex, subclass || undefined),
+        [character, classIndex, subclass]
+    );
 
     const canSubmit =
         !!currentClass &&
@@ -87,7 +312,6 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
             const cur = prev[ability] || 0;
             const next = Math.max(0, Math.min(2, cur + delta));
             const newBonuses = { ...prev, [ability]: next };
-            // Сумма не должна превышать 2
             const total = Object.values(newBonuses).reduce((s, v) => s + (v || 0), 0);
             if (total > 2) return prev;
             return newBonuses;
@@ -123,6 +347,22 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
 
     const xpToNext = getXpToNextLevel(character.level);
     const asiLevels = currentClass ? getAsiLevelsForClass(currentClass.className) : [];
+
+    const hpGainForPreview =
+        hpMethod === 'average'
+            ? computeHpGain(
+                currentClass?.className || 'Fighter',
+                conMod,
+                'average'
+            ).gain
+            : hpRoll !== null
+                ? computeHpGain(
+                    currentClass?.className || 'Fighter',
+                    conMod,
+                    'roll',
+                    hpRoll
+                ).gain
+                : null;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="lum-modal">
@@ -324,6 +564,15 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                         )}
                     </div>
                 )}
+
+                {/* Preview */}
+                <PreviewBlock
+                    preview={preview}
+                    hpGain={hpGainForPreview}
+                    chosenSubclass={subclass}
+                    hasASI={getsASI}
+                    asiType={asiType}
+                />
 
                 <div className="lum-actions">
                     <button className="lum-btn lum-btn-cancel" onClick={onClose}>
