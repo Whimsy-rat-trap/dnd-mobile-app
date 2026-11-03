@@ -36,6 +36,8 @@ import PartialRecoverySection from '../components/character/PartialRecoverySecti
 import ManeuversSection from '../components/character/ManeuversSection';
 import PrepareSpellsModal from '../components/character/PrepareSpellsModal';
 import { canPrepareSpells } from '../utils/spellPreparation';
+import SwapSpellModal from '../components/character/SwapSpellModal';
+import { canSwapSpellOnLongRest } from '../utils/spellSwap';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -75,7 +77,8 @@ const CharacterContainer: React.FC = () => {
     const [showAddFeatModal, setShowAddFeatModal] = useState(false);
     const [shortRestOpen, setShortRestOpen] = useState(false);
     const [longRestOpen, setLongRestOpen] = useState(false);
-    const [prepareSpellsOpen, setPrepareSpellsOpen] = useState(false);
+    const [postLongRestStage, setPostLongRestStage] =
+        useState<'none' | 'prepare' | 'swap'>('none');
 
     // backup attributes for variant rule
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
@@ -445,15 +448,31 @@ const CharacterContainer: React.FC = () => {
                 characterId={character.id}
                 onComplete={(charId) => {
                     const char = getCharacter(charId);
-                    if (char && canPrepareSpells(char)) {
-                        setPrepareSpellsOpen(true);
+                    if (!char) return;
+                    if (canPrepareSpells(char)) {
+                        setPostLongRestStage('prepare');
+                    } else if (canSwapSpellOnLongRest(char)) {
+                        setPostLongRestStage('swap');
                     }
                 }}
             />
 
             <PrepareSpellsModal
-                isOpen={prepareSpellsOpen}
-                onClose={() => setPrepareSpellsOpen(false)}
+                isOpen={postLongRestStage === 'prepare'}
+                onClose={() => {
+                    if (canSwapSpellOnLongRest(character)) {
+                        setPostLongRestStage('swap');
+                    } else {
+                        setPostLongRestStage('none');
+                    }
+                }}
+                character={character}
+            />
+
+            {/* Swap Spell */}
+            <SwapSpellModal
+                isOpen={postLongRestStage === 'swap'}
+                onClose={() => setPostLongRestStage('none')}
                 character={character}
             />
         </div>

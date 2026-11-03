@@ -1,0 +1,236 @@
+.ssm-modal {
+    min-width: 520px;
+    max-width: 700px;
+}
+
+.ssm-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #fff;
+    max-height: 85vh;
+}
+
+.ssm-title {
+    margin: 0;
+    font-family: var(--font-family);
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    color: #a855f7;
+}
+
+.ssm-subtitle {
+    margin: 0;
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.ssm-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.ssm-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #0f0f0f;
+    border: 1px solid #2a3747;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.ssm-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #2a3747;
+}
+
+.ssm-column-title {
+    font-family: var(--font-family);
+    font-size: 11px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ssm-column-selected {
+    font-size: 11px;
+    font-weight: 600;
+    color: #34d399;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ssm-column-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.ssm-column-body::-webkit-scrollbar {
+    width: 4px;
+}
+.ssm-column-body::-webkit-scrollbar-thumb {
+    background: #374957;
+    border-radius: 2px;
+}
+
+.ssm-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ssm-group-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.ssm-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: #1f2937;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #d1d5db;
+    font-family: var(--font-family);
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+}
+
+.ssm-row:hover {
+    border-color: #a855f7;
+    background: rgba(168, 85, 247, 0.05);
+}
+
+.ssm-row.selected {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: #a855f7;
+    color: #c084fc;
+}
+
+.ssm-row-name {
+    flex: 1;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ssm-row-school {
+    font-size: 10px;
+    color: #6b7280;
+    font-style: italic;
+    text-transform: capitalize;
+    flex-shrink: 0;
+}
+
+.ssm-row.selected .ssm-row-school {
+    color: #a855f7;
+}
+
+.ssm-empty {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+    padding: 16px;
+}
+
+.ssm-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ssm-preview-from {
+    color: #ef4444;
+    text-decoration: line-through;
+}
+
+.ssm-preview-arrow {
+    color: #a855f7;
+    font-size: 16px;
+}
+
+.ssm-preview-to {
+    color: #34d399;
+}
+
+.ssm-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #2a3747;
+}
+
+.ssm-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.ssm-btn-cancel {
+    background: transparent;
+    border-color: #374957;
+    color: #d1d5db;
+}
+
+.ssm-btn-cancel:hover {
+    background: #374151;
+    border-color: #6b7280;
+}
+
+.ssm-btn-confirm {
+    background: #a855f7;
+    border-color: #a855f7;
+    color: #0f0f0f;
+}
+
+.ssm-btn-confirm:hover:not(:disabled) {
+    background: #9333ea;
+    border-color: #9333ea;
+    color: #fff;
+}
+
+.ssm-btn-confirm:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

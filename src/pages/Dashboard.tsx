@@ -24,6 +24,8 @@ import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
 import { useCampaigns } from '../context/CampaignContext';
 import { getXpToNextLevel, canLevelUpNow } from '../utils/leveling';
+import SwapSpellModal from '../components/character/SwapSpellModal';
+import { canSwapSpellOnLongRest } from '../utils/spellSwap';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -69,7 +71,7 @@ const Dashboard: React.FC = () => {
     const [currencyPopupOpen, setCurrencyPopupOpen] = useState(false);
     const [shortRestOpen, setShortRestOpen] = useState(false);
     const [longRestOpen, setLongRestOpen] = useState(false)
-    const [prepareSpellsOpen, setPrepareSpellsOpen] = useState(false);
+    const [postLongRestStage, setPostLongRestStage] = useState<'none' | 'prepare' | 'swap'>('none');
     const [levelUpOpen, setLevelUpOpen] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState('');
@@ -807,15 +809,30 @@ const Dashboard: React.FC = () => {
                 characterId={character.id}
                 onComplete={(charId) => {
                     const char = getCharacter(charId);
-                    if (char && canPrepareSpells(char)) {
-                        setPrepareSpellsOpen(true);
+                    if (!char) return;
+                    if (canPrepareSpells(char)) {
+                        setPostLongRestStage('prepare');
+                    } else if (canSwapSpellOnLongRest(char)) {
+                        setPostLongRestStage('swap');
                     }
                 }}
             />
 
             <PrepareSpellsModal
-                isOpen={prepareSpellsOpen}
-                onClose={() => setPrepareSpellsOpen(false)}
+                isOpen={postLongRestStage === 'prepare'}
+                onClose={() => {
+                    if (canSwapSpellOnLongRest(character)) {
+                        setPostLongRestStage('swap');
+                    } else {
+                        setPostLongRestStage('none');
+                    }
+                }}
+                character={character}
+            />
+
+            <SwapSpellModal
+                isOpen={postLongRestStage === 'swap'}
+                onClose={() => setPostLongRestStage('none')}
                 character={character}
             />
 
