@@ -14,14 +14,16 @@ import CurrencyEditModal from '../components/CurrencyEditModal';
 import SpellSlotsTracker from '../components/character/SpellSlotsTracker';
 import ShortRestModal from '../components/ShortRestModal';
 import LongRestModal from '../components/LongRestModal';
-import LevelUpModal from '../components/LevelUpModal'; // [LVL]
+import PrepareSpellsModal from '../components/character/PrepareSpellsModal';
+import { canPrepareSpells } from '../utils/spellPreparation';
+import LevelUpModal from '../components/LevelUpModal';
 import PassiveScoresSection from '../components/character/PassiveScoresSection';
 import InspirationBadge from '../components/InspirationBadge';
 import { DND_CLASSES } from '../constants/classes';
 import { DND_RACES } from '../constants/races';
 import { SUBCLASSES } from '../constants/subclasses';
 import { useCampaigns } from '../context/CampaignContext';
-import { getXpToNextLevel, canLevelUpNow } from '../utils/leveling'; // [LVL]
+import { getXpToNextLevel, canLevelUpNow } from '../utils/leveling';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -66,8 +68,9 @@ const Dashboard: React.FC = () => {
     const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [currencyPopupOpen, setCurrencyPopupOpen] = useState(false);
     const [shortRestOpen, setShortRestOpen] = useState(false);
-    const [longRestOpen, setLongRestOpen] = useState(false);
-    const [levelUpOpen, setLevelUpOpen] = useState(false); // [LVL]
+    const [longRestOpen, setLongRestOpen] = useState(false)
+    const [prepareSpellsOpen, setPrepareSpellsOpen] = useState(false);
+    const [levelUpOpen, setLevelUpOpen] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState('');
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -802,9 +805,21 @@ const Dashboard: React.FC = () => {
                 isOpen={longRestOpen}
                 onClose={() => setLongRestOpen(false)}
                 characterId={character.id}
+                onComplete={(charId) => {
+                    const char = getCharacter(charId);
+                    if (char && canPrepareSpells(char)) {
+                        setPrepareSpellsOpen(true);
+                    }
+                }}
             />
 
-            {/* [LVL] Level Up Modal */}
+            <PrepareSpellsModal
+                isOpen={prepareSpellsOpen}
+                onClose={() => setPrepareSpellsOpen(false)}
+                character={character}
+            />
+
+            {/* Level Up Modal */}
             <LevelUpModal
                 isOpen={levelUpOpen}
                 onClose={() => setLevelUpOpen(false)}

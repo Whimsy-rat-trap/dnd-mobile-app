@@ -34,6 +34,8 @@ import MetamagicSection from '../components/character/MetamagicSection';
 import SorceryPointsConverter from '../components/character/SorceryPointsConverter';
 import PartialRecoverySection from '../components/character/PartialRecoverySection';
 import ManeuversSection from '../components/character/ManeuversSection';
+import PrepareSpellsModal from '../components/character/PrepareSpellsModal';
+import { canPrepareSpells } from '../utils/spellPreparation';
 import './CharacterContainer.css';
 
 const CharacterContainer: React.FC = () => {
@@ -73,6 +75,7 @@ const CharacterContainer: React.FC = () => {
     const [showAddFeatModal, setShowAddFeatModal] = useState(false);
     const [shortRestOpen, setShortRestOpen] = useState(false);
     const [longRestOpen, setLongRestOpen] = useState(false);
+    const [prepareSpellsOpen, setPrepareSpellsOpen] = useState(false);
 
     // backup attributes for variant rule
     const [backupSkillAttributes, setBackupSkillAttributes] = useState<{ name: string; attribute: string }[]>([]);
@@ -440,6 +443,18 @@ const CharacterContainer: React.FC = () => {
                 isOpen={longRestOpen}
                 onClose={() => setLongRestOpen(false)}
                 characterId={character.id}
+                onComplete={(charId) => {
+                    const char = getCharacter(charId);
+                    if (char && canPrepareSpells(char)) {
+                        setPrepareSpellsOpen(true);
+                    }
+                }}
+            />
+
+            <PrepareSpellsModal
+                isOpen={prepareSpellsOpen}
+                onClose={() => setPrepareSpellsOpen(false)}
+                character={character}
             />
         </div>
     );

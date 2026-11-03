@@ -16,12 +16,15 @@ interface LongRestModalProps {
     isOpen: boolean;
     onClose: () => void;
     characterId: string;
+    /** Вызывается после применения long rest — до onClose */
+    onComplete?: (characterId: string) => void;
 }
 
 const LongRestModal: React.FC<LongRestModalProps> = ({
                                                          isOpen,
                                                          onClose,
                                                          characterId,
+                                                         onComplete,
                                                      }) => {
     const { getCharacter, longRest } = useCharacters();
     const character = getCharacter(characterId);
@@ -74,6 +77,7 @@ const LongRestModal: React.FC<LongRestModalProps> = ({
 
     const handleComplete = () => {
         longRest(characterId);
+        onComplete?.(characterId);
         onClose();
     };
 
