@@ -2,9 +2,11 @@
 
 > A mobile-first D&D 5e character manager. All game mechanics, spellcasting, class resources, and leveling are handled client-side with no backend — persistence is `localStorage`, and all rules are derived from character data in pure TypeScript functions.
 
-![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white&style=flat-square)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white&style=flat-square)
+![React](https://img.shields.io/badge/React-19.2-61dafb?logo=react&logoColor=white&style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.9-3178c6?logo=typescript&logoColor=white&style=flat-square)
+![CRA](https://img.shields.io/badge/CRA-5.0.1-09d3ac?style=flat-square)
 ![Schema](https://img.shields.io/badge/schema-v1-34d399?style=flat-square)
+![Node](https://img.shields.io/badge/node-%E2%89%A520-339933?logo=node.js&logoColor=white&style=flat-square)
 ![License](https://img.shields.io/badge/license-personal--project-lightgrey?style=flat-square)
 
 ---
@@ -12,6 +14,7 @@
 ## Table of contents
 
 - [Tech stack](#tech-stack)
+- [Requirements](#requirements)
 - [Quick start](#quick-start)
 - [Architecture](#architecture)
 - [Data model](#data-model)
@@ -39,11 +42,41 @@
 
 ## Tech stack
 
-- **React 18** + **TypeScript**
-- **React Router** for navigation
-- **localStorage** persistence — no backend, no auth
-- Plain **CSS** (CSS variables for theming, no preprocessor)
-- **CRA 5+** or **Vite** (either works, path aliases used)
+| Layer | Technology | Version |
+|-------|------------|---------|
+| UI | **React** | 19.2.7 |
+| Language | **TypeScript** | 4.9.5 |
+| Routing | **react-router-dom** | 7.18.0 |
+| Build tool | **Create React App** (`react-scripts`) | 5.0.1 |
+| Persistence | `localStorage` | — |
+| Styling | Plain **CSS** (CSS variables, no preprocessor) | — |
+| Testing | **React Testing Library** + **Jest** | via CRA |
+| Web vitals | **web-vitals** | 2.1.4 |
+
+`tsconfig.json` highlights:
+
+```jsonc
+{
+  "target": "es2020",
+  "lib": ["dom", "dom.iterable", "esnext"],
+  "strict": true,
+  "jsx": "react-jsx",
+  "module": "esnext",
+  "moduleResolution": "node"
+}
+```
+
+- **No backend, no auth** — everything lives in `localStorage`.
+- **No path aliases** — imports are relative (`../utils/...`).
+- **No state-management library** — `CharacterContext` is the single source of truth.
+
+---
+
+## Requirements
+
+- **Node.js ≥ 20** (required by `react-router-dom` 7.18)
+- **npm** (bundled with Node)
+- A modern browser (Chrome / Firefox / Safari / Edge)
 
 ---
 
@@ -51,11 +84,12 @@
 
 ```bash
 npm install
-npm start        # dev server
-npm run build    # production build
+npm start        # dev server → http://localhost:3000
+npm run build    # production build → ./build
+npm test         # run tests in watch mode
 ```
 
-App lives at `http://localhost:3000`. No env vars required.
+No environment variables are required.
 
 ---
 
@@ -67,7 +101,6 @@ src/
 │   ├── character/        # Character sheet sections (Skills, SavingThrows, ClassResources…)
 │   ├── dashboard/        # Dashboard widgets (CharacterStats, DiceRollerSection…)
 │   ├── CreateCharacter/  # Character creation form sections
-│   ├── icons/            # Shared SVG icons (IconBack, IconChevron…)
 │   ├── AttackRoller.tsx
 │   ├── CastSpellModal.tsx
 │   ├── DiceRoller.tsx
@@ -534,8 +567,9 @@ Currently: `migrate_v0_to_v1` covers all pre-schema migrations (classLevels, ski
 | `utils/partialRecovery.ts` | Arcane/Natural Recovery |
 | `utils/leveling.ts` | XP, ASI, HP, subclass, preview, payload |
 | `utils/hitDice.ts` | Hit die pools, roll, long-rest restore |
-| `utils/characterIO.ts` *(planned)* | Export/import character JSON |
+| `utils/format.ts` | `ordinal(n)` — "1st", "2nd", "3rd", … |
 | `utils/currencyUtils.ts` | Currency normalization |
+| `utils/characterIO.ts` *(planned)* | Export/import character JSON |
 
 ---
 
@@ -555,6 +589,15 @@ localStorage.removeItem('dnd_characters');
 ---
 
 ## Development
+
+### npm scripts
+
+| Script | What it does |
+|--------|--------------|
+| `npm start` | Start the CRA dev server at `http://localhost:3000` |
+| `npm run build` | Production build to `./build` |
+| `npm test` | Run Jest tests in watch mode (CRA + RTL) |
+| `npm run eject` | ⚠️ Ejects CRA config (one-way, do not use unless necessary) |
 
 ### Adding a new class resource
 
@@ -591,6 +634,7 @@ If a character is **stuck at an old version** after reload, check that:
 - **Pure functions** in `utils/`, **side effects only** in `context/` or `components/`
 - **No `any` in new code** — use `unknown` + type guards if needed
 - `React.memo` for list items that render frequently (`SpellCard`, `SkillCheck`)
+- Imports are **relative** (no path aliases configured)
 
 ---
 
