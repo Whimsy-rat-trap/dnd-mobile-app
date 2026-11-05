@@ -3,9 +3,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    background: #1f2937;
-    border: 1px solid #374957;
-    color: #6b7280;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    color: var(--text-hint);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -14,14 +14,14 @@
 .insp-badge.insp-md { padding: 8px; }
 
 .insp-badge:hover:not(:disabled) {
-    border-color: #fbbf24;
-    color: #fbbf24;
+    border-color: var(--color-warning);
+    color: var(--color-warning);
 }
 
 .insp-badge.insp-active {
     background: rgba(251, 191, 36, 0.15);
-    border-color: #fbbf24;
-    color: #fbbf24;
+    border-color: var(--color-warning);
+    color: var(--color-warning);
     box-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
 }
 

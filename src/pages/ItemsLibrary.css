@@ -2,11 +2,11 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
 }
 
 .il-header {
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     padding: 0 20px;
     border-bottom: 1px solid #2c3e50;
     flex-shrink: 0;
@@ -25,7 +25,7 @@
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 24px;
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .il-header-actions {
@@ -38,23 +38,23 @@
     padding: 6px 14px;
     border: none;
     border-radius: 6px;
-    background: #fbbf24;
-    color: #0f0f0f;
+    background: var(--color-warning);
+    color: var(--bg-darkest);
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
 }
 .il-create-btn:hover {
-    background: #f59e0b;
+    background: var(--color-warning-dark);
 }
 
 .il-back-btn {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--text-muted);
     background: transparent;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     padding: 6px 14px;
     border-radius: 8px;
     cursor: pointer;
@@ -62,15 +62,15 @@
     transition: border-color 0.2s, color 0.2s;
 }
 .il-back-btn:hover {
-    border-color: #34d399;
-    color: #34d399;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .il-subtitle {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--text-muted);
     padding-bottom: 16px;
 }
 
@@ -98,14 +98,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 12px;
     padding: 12px 16px;
     border-left: 4px solid transparent;
     transition: border-color 0.2s;
 }
 .il-item:hover {
-    border-left-color: #34d399;
+    border-left-color: var(--color-primary);
 }
 
 .il-item-info {
@@ -122,7 +122,7 @@
 }
 .il-item-type {
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: capitalize;
 }
 .il-item-rarity {
@@ -132,30 +132,30 @@
 }
 .il-item-attunement {
     font-size: 11px;
-    color: #6b7280;
+    color: var(--text-hint);
     background: rgba(255,255,255,0.05);
     padding: 2px 8px;
     border-radius: 4px;
 }
 .il-item-custom-tag {
     font-size: 11px;
-    color: #fbbf24;
+    color: var(--color-warning);
     background: rgba(251, 191, 36, 0.15);
-    border: 1px solid #fbbf24;
+    border: 1px solid var(--color-warning);
     padding: 0 8px;
     border-radius: 4px;
     line-height: 18px;
 }
 .il-item-description {
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
     flex-basis: 100%;
     margin-top: 4px;
 }
 
 .il-add-btn {
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
     border: none;
     border-radius: 6px;
     padding: 6px 14px;
@@ -166,7 +166,7 @@
     flex-shrink: 0;
 }
 .il-add-btn:hover {
-    background: #059669;
+    background: var(--color-primary-dark);
     transform: scale(1.05);
 }
 .il-add-btn:active {
@@ -175,7 +175,7 @@
 
 .il-empty {
     text-align: center;
-    color: #9ca3af;
+    color: var(--text-muted);
     padding: 40px 0;
     font-size: 16px;
 }
@@ -194,15 +194,15 @@
 }
 .il-form-group label {
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 .il-form-group input,
 .il-form-group select,
 .il-form-group textarea {
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid #374957;
-    background: #0f0f0f;
+    border: 1px solid var(--border-default);
+    background: var(--bg-darkest);
     color: #fff;
     font-size: 14px;
     font-family: var(--font-family);
@@ -215,7 +215,7 @@
 .il-form-group select:focus,
 .il-form-group textarea:focus {
     outline: none;
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 .il-modal-actions {
@@ -233,18 +233,18 @@
     transition: background 0.2s;
 }
 .il-modal-btn.il-cancel {
-    background: #374151;
-    color: #9ca3af;
+    background: var(--bg-mid);
+    color: var(--text-muted);
 }
 .il-modal-btn.il-cancel:hover {
-    background: #4b5563;
+    background: var(--border-strong);
 }
 .il-modal-btn.il-apply {
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
 }
 .il-modal-btn.il-apply:hover {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 .inv-item-stats,
@@ -261,18 +261,18 @@
     border-radius: 4px;
     line-height: 20px;
     font-size: 12px;
-    color: #d1d5db;
+    color: var(--text-secondary);
 }
 
 .inv-item-stat-ac,
 .il-item-stat-ac {
-    color: #60a5fa;
+    color: var(--color-info);
     border: 1px solid rgba(96, 165, 250, 0.3);
 }
 
 .inv-item-stat-strength,
 .il-item-stat-strength {
-    color: #fbbf24;
+    color: var(--color-warning);
     border: 1px solid rgba(251, 191, 36, 0.3);
 }
 

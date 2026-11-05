@@ -10,7 +10,7 @@
 }
 
 .cc-popup-stat-block {
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 12px 16px;
     margin-bottom: 16px;
@@ -21,7 +21,7 @@
 
 .cc-popup-stat-block .cc-stat-label {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .cc-popup-stat-block .cc-stat-progress {
@@ -37,7 +37,7 @@
 }
 
 .cc-stat-value-hp {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 .cc-control-group {
@@ -48,7 +48,7 @@
 }
 
 .cc-control-group label {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
     font-weight: 500;
 }
@@ -63,8 +63,8 @@
 .cc-input-group input {
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid #374151;
-    background: #1f2937;
+    border: 1px solid var(--bg-mid);
+    background: var(--bg-card);
     color: #fff;
     width: 80px;
     font-size: 14px;
@@ -72,20 +72,20 @@
 
 .cc-input-group input:focus {
     outline: none;
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 .cc-input-group button {
     padding: 6px 14px;
     border: none;
     border-radius: 6px;
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .cc-input-group button:hover {
-    background: #059669;
+    background: var(--color-primary-dark);
 }

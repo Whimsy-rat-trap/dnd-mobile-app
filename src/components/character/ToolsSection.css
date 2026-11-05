@@ -15,7 +15,7 @@
 }
 
 .cc-tools-empty {
-    color: #6b7280;
+    color: var(--text-hint);
     font-size: 14px;
     font-style: italic;
 }

@@ -4,7 +4,7 @@
     flex-direction: column;
     gap: 8px;
     padding: 12px;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 12px;
     box-sizing: border-box;
 }
@@ -13,7 +13,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
-    color: #34d399;
+    color: var(--color-primary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -33,13 +33,13 @@
 .sst-row-pact {
     margin-top: 4px;
     padding-top: 6px;
-    border-top: 1px dashed #374957;
+    border-top: 1px dashed var(--border-default);
 }
 
 .sst-label {
     font-family: var(--font-family);
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 500;
     min-width: 62px;
 }
@@ -55,7 +55,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     background: transparent;
     cursor: pointer;
     padding: 0;
@@ -63,39 +63,39 @@
 }
 
 .sst-dot.available {
-    background: #34d399;
-    border-color: #34d399;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .sst-dot.available:hover {
-    background: #059669;
-    border-color: #059669;
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
     transform: scale(1.2);
 }
 
 .sst-dot.used {
-    background: #0f0f0f;
-    border-color: #374957;
+    background: var(--bg-darkest);
+    border-color: var(--border-default);
 }
 
 .sst-dot.used:hover {
-    border-color: #ef4444;
+    border-color: var(--color-danger);
 }
 
 .sst-dot.pact.available {
-    background: #a855f7;
-    border-color: #a855f7;
+    background: var(--color-purple);
+    border-color: var(--color-purple);
 }
 
 .sst-dot.pact.available:hover {
-    background: #7e22ce;
-    border-color: #7e22ce;
+    background: var(--color-purple-dark);
+    border-color: var(--color-purple-dark);
 }
 
 .sst-count {
     font-family: var(--font-family);
     font-size: 12px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-weight: 600;
     min-width: 34px;
     text-align: right;
@@ -103,6 +103,6 @@
 
 .sst-hint {
     font-size: 11px;
-    color: #6b7280;
+    color: var(--text-hint);
     font-style: italic;
 }

@@ -29,7 +29,7 @@
 .cc-header {
     height: 84px;
     padding: 0 20px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
@@ -43,7 +43,7 @@
     width: 36px;
     height: 36px;
     border-radius: 8px;
-    background: #1f2937;
+    background: var(--bg-card);
     border: none;
     cursor: pointer;
     display: flex;
@@ -54,7 +54,7 @@
     transition: background 0.2s;
 }
 .cc-back-btn:hover {
-    background: #374151;
+    background: var(--bg-mid);
 }
 
 .cc-header-info {
@@ -75,12 +75,12 @@
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-align: left;
 }
 
 .cc-set-current-btn {
-    background: #34d399;
+    background: var(--color-primary);
     border: none;
     padding: 8px 16px;
     border-radius: 8px;
@@ -91,7 +91,7 @@
 }
 
 .cc-delete-btn {
-    background: #ef4444;
+    background: var(--color-danger);
     border: none;
     padding: 8px 16px;
     border-radius: 8px;
@@ -117,7 +117,7 @@
     width: 353px;
     padding: 20px;
     border-radius: 12px;
-    background: linear-gradient(315deg, #dc2626 0%, #991b1b 100%);
+    background: linear-gradient(315deg, var(--color-danger-dark) 0%, #991b1b 100%);
     box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
@@ -166,7 +166,7 @@
 
 .cc-temp-hp-value {
     font-weight: 600;
-    color: #ef4444;
+    color: var(--color-danger);
     margin-left: 4px;
 }
 
@@ -187,7 +187,7 @@
 
 .cc-hp-fill {
     height: 100%;
-    background: linear-gradient(0deg, #dc2626 0%, #ef4444 100%);
+    background: linear-gradient(0deg, var(--color-danger-dark) 0%, var(--color-danger) 100%);
     transition: width 0.3s ease;
     flex-shrink: 0;
 }
@@ -196,10 +196,10 @@
     height: 100%;
     background: repeating-linear-gradient(
             45deg,
-            #ef4444 0px,
-            #ef4444 4px,
-            #1a1a1a 4px,
-            #1a1a1a 8px
+            var(--color-danger) 0px,
+            var(--color-danger) 4px,
+            var(--bg-body) 4px,
+            var(--bg-body) 8px
     );
     transition: width 0.3s ease;
     flex-shrink: 0;
@@ -220,7 +220,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -229,7 +229,7 @@
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 18px;
-    color: #3b82f6;
+    color: var(--color-info-dark);
     margin-top: 2px;
 }
 
@@ -239,14 +239,14 @@
 }
 
 .cc-stat-value-hp {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 /* Shared skill card styles
    Используются в SkillsSection и ToolsSection */
 .cc-roll-hint {
     font-size: 12px;
-    color: #fbbf24;
+    color: var(--color-warning);
     font-style: italic;
 }
 
@@ -262,7 +262,7 @@
     padding: 12px 16px;
     width: 353px;
     height: 44px;
-    background: #1f2937;
+    background: var(--bg-card);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -276,7 +276,7 @@
 
 .cc-skill-card.cc-rollable:hover {
     transform: scale(1.02);
-    border-color: #fbbf24;
+    border-color: var(--color-warning);
 }
 
 .cc-skill-left {
@@ -296,7 +296,7 @@
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 16px;
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .cc-skill-right {
@@ -306,10 +306,10 @@
 }
 
 .cc-attr-select {
-    background: #1f2937;
-    border: 1px solid #374957;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
     border-radius: 4px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-size: 12px;
     padding: 2px 4px;
     height: 28px;
@@ -318,7 +318,7 @@
 }
 
 .cc-attr-select:focus {
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 /* Variant toggle */
@@ -336,7 +336,7 @@
     cursor: pointer;
     font-family: var(--font-family);
     font-size: 14px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     user-select: none;
 }
 
@@ -348,7 +348,7 @@
     position: relative;
     width: 44px;
     height: 24px;
-    background: #374151;
+    background: var(--bg-mid);
     border-radius: 12px;
     transition: background 0.3s;
     flex-shrink: 0;
@@ -367,7 +367,7 @@
 }
 
 .cc-variant-toggle input:checked + .cc-toggle-slider {
-    background: #34d399;
+    background: var(--color-primary);
 }
 
 .cc-variant-toggle input:checked + .cc-toggle-slider::after {
@@ -387,7 +387,7 @@
 }
 
 .cc-roll-modal-modifier {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
 }
 
@@ -397,7 +397,7 @@
 }
 
 .cc-roll-modal-total strong {
-    color: #34d399;
+    color: var(--color-primary);
     font-size: 28px;
 }
 
@@ -417,7 +417,7 @@
 }
 
 .cc-popup-stat-block {
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 12px 16px;
     margin-bottom: 16px;
@@ -428,7 +428,7 @@
 
 .cc-popup-stat-block .cc-stat-label {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .cc-popup-stat-block .cc-stat-progress {
@@ -451,7 +451,7 @@
 }
 
 .cc-control-group label {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
     font-weight: 500;
 }
@@ -466,8 +466,8 @@
 .cc-input-group input {
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid #374151;
-    background: #1f2937;
+    border: 1px solid var(--bg-mid);
+    background: var(--bg-card);
     color: #fff;
     width: 80px;
     font-size: 14px;
@@ -475,22 +475,22 @@
 
 .cc-input-group input:focus {
     outline: none;
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 .cc-input-group button {
     padding: 6px 14px;
     border: none;
     border-radius: 6px;
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .cc-input-group button:hover {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 .cc-rest-actions {
@@ -503,10 +503,10 @@
 .cc-rest-btn {
     flex: 1;
     padding: 10px;
-    background: #1f2937;
-    border: 1px solid #374957;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
     border-radius: 8px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-family: var(--font-family);
     font-size: 13px;
     font-weight: 600;
@@ -515,6 +515,6 @@
 }
 
 .cc-rest-btn:hover {
-    background: #374151;
-    border-color: #6b7280;
+    background: var(--bg-mid);
+    border-color: var(--text-hint);
 }

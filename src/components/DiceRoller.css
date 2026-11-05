@@ -21,7 +21,7 @@
     text-shadow: 0 1px 2px rgba(0,0,0,0.4);
     position: relative;
     user-select: none;
-    background: radial-gradient(ellipse at 30% 30%, #3b82f6, #1e3a8a);
+    background: radial-gradient(ellipse at 30% 30%, var(--color-info-dark), #1e3a8a);
     border-radius: 10px;
 }
 
@@ -45,7 +45,7 @@
 /* d4 */
 .dice-4 {
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    background: radial-gradient(ellipse at 30% 30%, #f97316, #b45309);
+    background: radial-gradient(ellipse at 30% 30%, var(--color-orange), #b45309);
     width: 54px;
     height: 48px;
     border-radius: 0;
@@ -55,14 +55,14 @@
 /* d6 */
 .dice-6 {
     border-radius: 8px;
-    background: radial-gradient(ellipse at 30% 30%, #3b82f6, #1e3a8a);
+    background: radial-gradient(ellipse at 30% 30%, var(--color-info-dark), #1e3a8a);
     box-shadow: 0 4px 12px 0 rgba(59, 130, 246, 0.4);
 }
 
 /* d8 */
 .dice-8 {
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    background: radial-gradient(ellipse at 30% 30%, #22c55e, #15803d);
+    background: radial-gradient(ellipse at 30% 30%, var(--color-success), var(--color-success-dark));
     width: 54px;
     height: 54px;
     border-radius: 0;
@@ -82,7 +82,7 @@
 /* d12 */
 .dice-12 {
     clip-path: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
-    background: radial-gradient(ellipse at 30% 30%, #f59e0b, #b45309);
+    background: radial-gradient(ellipse at 30% 30%, var(--color-warning-dark), #b45309);
     width: 56px;
     height: 52px;
     border-radius: 0;
@@ -92,7 +92,7 @@
 /* d20 – восьмиугольник (имитация икосаэдра) */
 .dice-20 {
     clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%);
-    background: radial-gradient(ellipse at 30% 30%, #ef4444, #991b1b);
+    background: radial-gradient(ellipse at 30% 30%, var(--color-danger), #991b1b);
     width: 58px;
     height: 58px;
     border-radius: 0;
@@ -102,7 +102,7 @@
 /* fallback для других */
 .dice-btn:not(.dice-4):not(.dice-8):not(.dice-10):not(.dice-12):not(.dice-20) {
     border-radius: 10px;
-    background: linear-gradient(315deg, #3b82f6 0%, #1e40af 100%);
+    background: linear-gradient(315deg, var(--color-info-dark) 0%, #1e40af 100%);
 }
 
 /* Кнопка переброса через Inspiration */
@@ -113,8 +113,8 @@
     padding: 6px 10px;
     border-radius: 8px;
     background: rgba(251, 191, 36, 0.15);
-    border: 1px solid #fbbf24;
-    color: #fbbf24;
+    border: 1px solid var(--color-warning);
+    color: var(--color-warning);
     font-family: var(--font-family);
     font-size: 12px;
     font-weight: 700;

@@ -21,9 +21,9 @@
 }
 
 .csm-tag {
-    background: #0f0f0f;
-    border: 1px solid #374957;
-    color: #9ca3af;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
+    color: var(--text-muted);
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -32,8 +32,8 @@
 }
 
 .csm-tag-conc {
-    border-color: #fbbf24;
-    color: #fbbf24;
+    border-color: var(--color-warning);
+    color: var(--color-warning);
 }
 
 .csm-section {
@@ -44,7 +44,7 @@
 
 .csm-label {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 500;
@@ -62,24 +62,24 @@
     align-items: center;
     gap: 2px;
     padding: 8px 12px;
-    background: #1f2937;
-    border: 1px solid #374957;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
-    color: #9ca3af;
+    color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s;
     min-width: 90px;
 }
 
 .csm-level-btn:hover {
-    border-color: #6b7280;
-    color: #e5e7eb;
+    border-color: var(--text-hint);
+    color: var(--text-secondary-alt);
 }
 
 .csm-level-btn.active {
     background: rgba(52, 211, 153, 0.15);
-    border-color: #34d399;
-    color: #34d399;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .csm-level-num {
@@ -122,16 +122,16 @@
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     cursor: pointer;
     padding: 8px 12px;
-    background: #0f0f0f;
-    border: 1px solid #1f2937;
+    background: var(--bg-darkest);
+    border: 1px solid var(--bg-card);
     border-radius: 6px;
 }
 
 .csm-ritual-toggle input[type="checkbox"] {
-    accent-color: #34d399;
+    accent-color: var(--color-primary);
     width: 16px;
     height: 16px;
 }
@@ -154,21 +154,21 @@
 }
 
 .csm-btn-cancel {
-    background: #374151;
-    color: #9ca3af;
+    background: var(--bg-mid);
+    color: var(--text-muted);
 }
 
 .csm-btn-cancel:hover {
-    background: #4b5563;
+    background: var(--border-strong);
 }
 
 .csm-btn-cast {
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
 }
 
 .csm-btn-cast:hover:not(:disabled) {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 .csm-btn-cast:disabled {

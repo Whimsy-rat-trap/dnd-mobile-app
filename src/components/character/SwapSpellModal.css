@@ -17,13 +17,13 @@
     font-size: 20px;
     font-weight: 700;
     text-align: center;
-    color: #a855f7;
+    color: var(--color-purple);
 }
 
 .ssm-subtitle {
     margin: 0;
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-align: center;
     line-height: 1.4;
 }
@@ -38,8 +38,8 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background: #0f0f0f;
-    border: 1px solid #2a3747;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
     padding: 10px;
 }
@@ -50,14 +50,14 @@
     align-items: center;
     gap: 8px;
     padding-bottom: 6px;
-    border-bottom: 1px solid #2a3747;
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .ssm-column-title {
     font-family: var(--font-family);
     font-size: 11px;
     font-weight: 700;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -65,7 +65,7 @@
 .ssm-column-selected {
     font-size: 11px;
     font-weight: 600;
-    color: #34d399;
+    color: var(--color-primary);
     max-width: 140px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -85,7 +85,7 @@
     width: 4px;
 }
 .ssm-column-body::-webkit-scrollbar-thumb {
-    background: #374957;
+    background: var(--border-default);
     border-radius: 2px;
 }
 
@@ -98,7 +98,7 @@
 .ssm-group-title {
     font-size: 10px;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--text-hint);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 2px;
@@ -110,10 +110,10 @@
     align-items: center;
     gap: 8px;
     padding: 6px 10px;
-    background: #1f2937;
+    background: var(--bg-card);
     border: 1px solid transparent;
     border-radius: 6px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-family: var(--font-family);
     font-size: 12px;
     cursor: pointer;
@@ -122,13 +122,13 @@
 }
 
 .ssm-row:hover {
-    border-color: #a855f7;
+    border-color: var(--color-purple);
     background: rgba(168, 85, 247, 0.05);
 }
 
 .ssm-row.selected {
     background: rgba(168, 85, 247, 0.15);
-    border-color: #a855f7;
+    border-color: var(--color-purple);
     color: #c084fc;
 }
 
@@ -142,19 +142,19 @@
 
 .ssm-row-school {
     font-size: 10px;
-    color: #6b7280;
+    color: var(--text-hint);
     font-style: italic;
     text-transform: capitalize;
     flex-shrink: 0;
 }
 
 .ssm-row.selected .ssm-row-school {
-    color: #a855f7;
+    color: var(--color-purple);
 }
 
 .ssm-empty {
     font-size: 11px;
-    color: #6b7280;
+    color: var(--text-hint);
     font-style: italic;
     text-align: center;
     padding: 16px;
@@ -175,24 +175,24 @@
 }
 
 .ssm-preview-from {
-    color: #ef4444;
+    color: var(--color-danger);
     text-decoration: line-through;
 }
 
 .ssm-preview-arrow {
-    color: #a855f7;
+    color: var(--color-purple);
     font-size: 16px;
 }
 
 .ssm-preview-to {
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .ssm-actions {
     display: flex;
     gap: 8px;
     padding-top: 8px;
-    border-top: 1px solid #2a3747;
+    border-top: 1px solid var(--border-subtle);
 }
 
 .ssm-btn {
@@ -209,24 +209,24 @@
 
 .ssm-btn-cancel {
     background: transparent;
-    border-color: #374957;
-    color: #d1d5db;
+    border-color: var(--border-default);
+    color: var(--text-secondary);
 }
 
 .ssm-btn-cancel:hover {
-    background: #374151;
-    border-color: #6b7280;
+    background: var(--bg-mid);
+    border-color: var(--text-hint);
 }
 
 .ssm-btn-confirm {
-    background: #a855f7;
-    border-color: #a855f7;
-    color: #0f0f0f;
+    background: var(--color-purple);
+    border-color: var(--color-purple);
+    color: var(--bg-darkest);
 }
 
 .ssm-btn-confirm:hover:not(:disabled) {
-    background: #9333ea;
-    border-color: #9333ea;
+    background: var(--color-purple-mid);
+    border-color: var(--color-purple-mid);
     color: #fff;
 }
 

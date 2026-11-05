@@ -16,18 +16,18 @@
     font-size: 18px;
     font-weight: 700;
     text-align: center;
-    color: #f97316;
+    color: var(--color-orange);
 }
 
 .umm-desc {
     margin: 0;
     font-size: 12px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     line-height: 1.5;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     padding: 10px 12px;
     border-radius: 8px;
-    border: 1px solid #2a3747;
+    border: 1px solid var(--border-subtle);
 }
 
 .umm-roll-block {
@@ -36,14 +36,14 @@
     align-items: center;
     gap: 6px;
     padding: 10px;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 8px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
 }
 
 .umm-roll-label {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -51,9 +51,9 @@
 
 .umm-roll-btn {
     padding: 8px 16px;
-    background: #f97316;
-    color: #0f0f0f;
-    border: 1px solid #f97316;
+    background: var(--color-orange);
+    color: var(--bg-darkest);
+    border: 1px solid var(--color-orange);
     border-radius: 6px;
     font-family: var(--font-family);
     font-size: 13px;
@@ -63,25 +63,25 @@
 }
 
 .umm-roll-btn:hover {
-    background: #ea580c;
-    border-color: #ea580c;
+    background: var(--color-orange-dark);
+    border-color: var(--color-orange-dark);
 }
 
 .umm-roll-result {
     font-family: var(--font-family);
     font-size: 16px;
     font-weight: 600;
-    color: #d1d5db;
+    color: var(--text-secondary);
 }
 
 .umm-roll-result strong {
-    color: #f97316;
+    color: var(--color-orange);
     font-size: 22px;
 }
 
 .umm-bonus {
     font-size: 12px;
-    color: #34d399;
+    color: var(--color-primary);
     font-weight: 500;
 }
 
@@ -91,7 +91,7 @@
     gap: 4px;
     padding: 10px;
     background: rgba(96, 165, 250, 0.1);
-    border: 1px solid #60a5fa;
+    border: 1px solid var(--color-info);
     border-radius: 8px;
 }
 
@@ -99,12 +99,12 @@
     font-family: var(--font-family);
     font-size: 12px;
     font-weight: 700;
-    color: #60a5fa;
+    color: var(--color-info);
 }
 
 .umm-save-effect {
     font-size: 12px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     line-height: 1.4;
 }
 
@@ -128,24 +128,24 @@
 
 .umm-btn-cancel {
     background: transparent;
-    border-color: #374957;
-    color: #d1d5db;
+    border-color: var(--border-default);
+    color: var(--text-secondary);
 }
 
 .umm-btn-cancel:hover {
-    background: #374151;
-    border-color: #6b7280;
+    background: var(--bg-mid);
+    border-color: var(--text-hint);
 }
 
 .umm-btn-use {
-    background: #f97316;
-    border-color: #f97316;
-    color: #0f0f0f;
+    background: var(--color-orange);
+    border-color: var(--color-orange);
+    color: var(--bg-darkest);
 }
 
 .umm-btn-use:hover:not(:disabled) {
-    background: #ea580c;
-    border-color: #ea580c;
+    background: var(--color-orange-dark);
+    border-color: var(--color-orange-dark);
 }
 
 .umm-btn-use:disabled {

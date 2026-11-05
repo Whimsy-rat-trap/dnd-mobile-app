@@ -1,8 +1,68 @@
 :root {
+  /* Fonts / Gradients */
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   --gradient-dark: linear-gradient(315deg, #1f2937 0%, #111827 100%);
-  --color-dark: #0f0f0f;
   --gradient-green: linear-gradient(315deg, #34d399 0%, #059669 100%);
+
+  /* Semantic colors */
+  --color-primary: #34d399;
+  --color-primary-dark: #059669;
+
+  --color-danger: #ef4444;
+  --color-danger-dark: #dc2626;
+
+  --color-warning: #fbbf24;
+  --color-warning-dark: #f59e0b;
+
+  --color-info: #60a5fa;
+  --color-info-dark: #3b82f6;
+  --color-info-mid: #2563eb;
+
+  --color-success: #22c55e;
+  --color-success-dark: #15803d;
+  --color-success-mid: #16a34a;
+
+  --color-orange: #f97316;
+  --color-orange-dark: #ea580c;
+
+  --color-purple: #a855f7;
+  --color-purple-mid: #9333ea;
+  --color-purple-dark: #7e22ce;
+
+  --color-pink: #ec4899;
+  --color-pink-dark: #db2777;
+
+  --color-teal: #14b8a6;
+  --color-teal-light: #2dd4bf;
+  --color-teal-mid: #0d9488;
+
+  --color-cyan: #06b6d4;
+  --color-cyan-dark: #0891b2;
+
+  /* Backgrounds */
+  --bg-body: #1a1a1a;
+  --bg-darkest: #0f0f0f;
+  --bg-dark1: #111827;
+  --bg-card: #1f2937;
+  --bg-hover: #2d3748;
+  --bg-mid: #374151;
+  --bg-nav: #2c3e50;
+  --bg-nav-hover: #34495e;
+
+  /* Borders */
+  --border-subtle: #2a3747;
+  --border-default: #374957;
+  --border-strong: #4b5563;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-secondary-alt: #e5e7eb;
+  --text-muted: #9ca3af;
+  --text-hint: #6b7280;
+
+  /* Legacy alias */
+  --color-dark: #0f0f0f;
 }
 
 * {
@@ -16,14 +76,14 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #1a1a1a;
+  background: var(--bg-body);
   font-family: var(--font-family);
 }
 
 #root {
   width: 393px;
   height: 852px;
-  background: var(--color-dark);
+  background: var(--bg-darkest);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -40,7 +100,6 @@ body {
 .page-content {
   flex: 1;
   overflow-y: auto;
-  /*padding: 20px; <- this idiot took me an hour to find and fix why did i put this here??????*/
   scrollbar-width: none;
 }
 
@@ -66,7 +125,7 @@ body {
 .bottom-nav {
   display: flex;
   justify-content: space-around;
-  background: #2c3e50;
+  background: var(--bg-nav);
   padding: 10px 0;
   position: sticky;
   bottom: 0;
@@ -83,5 +142,5 @@ body {
 }
 
 .bottom-nav a:hover {
-  background: #34495e;
+  background: var(--bg-nav-hover);
 }

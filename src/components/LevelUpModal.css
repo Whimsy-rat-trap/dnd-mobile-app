@@ -16,18 +16,18 @@
     font-size: 20px;
     font-weight: 700;
     text-align: center;
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .lum-subtitle {
     margin: 0;
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-align: center;
 }
 
 .lum-xp {
-    color: #60a5fa;
+    color: var(--color-info);
     font-weight: 600;
 }
 
@@ -36,9 +36,9 @@
     flex-direction: column;
     gap: 8px;
     padding: 12px;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 10px;
-    border: 1px solid #2a3747;
+    border: 1px solid var(--border-subtle);
 }
 
 .lum-section-highlight {
@@ -49,22 +49,22 @@
 .lum-label {
     font-family: var(--font-family);
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .lum-asi-levels {
-    color: #6b7280;
+    color: var(--text-hint);
     font-weight: 500;
     text-transform: none;
 }
 
 .lum-select {
     padding: 8px 10px;
-    background: #0f0f0f;
-    border: 1px solid #374957;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
     color: #fff;
     font-family: var(--font-family);
@@ -74,7 +74,7 @@
 
 .lum-select:focus {
     outline: none;
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 /* HP */
@@ -90,10 +90,10 @@
     align-items: center;
     gap: 4px;
     padding: 10px;
-    background: #0f0f0f;
-    border: 1px solid #374957;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
     border-radius: 8px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-family: var(--font-family);
     font-size: 12px;
     font-weight: 600;
@@ -102,20 +102,20 @@
 }
 
 .lum-hp-btn:hover {
-    border-color: #6b7280;
-    color: #e5e7eb;
+    border-color: var(--text-hint);
+    color: var(--text-secondary-alt);
 }
 
 .lum-hp-btn.active {
     background: rgba(52, 211, 153, 0.15);
-    border-color: #34d399;
-    color: #34d399;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .lum-hp-preview {
     font-size: 14px;
     font-weight: 700;
-    color: #fbbf24;
+    color: var(--color-warning);
 }
 
 .lum-roll-row {
@@ -126,8 +126,8 @@
 
 .lum-roll-btn {
     padding: 8px 18px;
-    background: #fbbf24;
-    color: #0f0f0f;
+    background: var(--color-warning);
+    color: var(--bg-darkest);
     border: none;
     border-radius: 6px;
     font-family: var(--font-family);
@@ -138,22 +138,22 @@
 }
 
 .lum-roll-btn:hover {
-    background: #f59e0b;
+    background: var(--color-warning-dark);
 }
 
 .lum-roll-result {
     font-family: var(--font-family);
     font-size: 14px;
-    color: #d1d5db;
+    color: var(--text-secondary);
 }
 
 .lum-roll-result strong {
-    color: #fbbf24;
+    color: var(--color-warning);
     font-size: 20px;
 }
 
 .lum-con {
-    color: #34d399;
+    color: var(--color-primary);
     font-size: 12px;
 }
 
@@ -166,10 +166,10 @@
 .lum-asi-tab {
     flex: 1;
     padding: 6px 10px;
-    background: #0f0f0f;
-    border: 1px solid #374957;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-family: var(--font-family);
     font-size: 12px;
     font-weight: 600;
@@ -179,8 +179,8 @@
 
 .lum-asi-tab.active {
     background: rgba(52, 211, 153, 0.15);
-    border-color: #34d399;
-    color: #34d399;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .lum-asi-grid {
@@ -194,9 +194,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 6px 10px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-radius: 6px;
-    border: 1px solid #2a3747;
+    border: 1px solid var(--border-subtle);
 }
 
 .lum-asi-name {
@@ -207,7 +207,7 @@
 }
 
 .lum-asi-score {
-    color: #6b7280;
+    color: var(--text-hint);
     font-weight: 400;
 }
 
@@ -221,9 +221,9 @@
     width: 22px;
     height: 22px;
     border-radius: 4px;
-    border: 1px solid #374957;
-    background: #0f0f0f;
-    color: #d1d5db;
+    border: 1px solid var(--border-default);
+    background: var(--bg-darkest);
+    color: var(--text-secondary);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
@@ -235,8 +235,8 @@
 }
 
 .lum-asi-btn:hover:not(:disabled) {
-    border-color: #34d399;
-    color: #34d399;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .lum-asi-btn:disabled {
@@ -250,12 +250,12 @@
     font-family: var(--font-family);
     font-size: 12px;
     font-weight: 700;
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .lum-asi-hint {
     font-size: 11px;
-    color: #6b7280;
+    color: var(--text-hint);
     font-style: italic;
     text-align: center;
 }
@@ -280,24 +280,24 @@
 
 .lum-btn-cancel {
     background: transparent;
-    border-color: #374957;
-    color: #d1d5db;
+    border-color: var(--border-default);
+    color: var(--text-secondary);
 }
 
 .lum-btn-cancel:hover {
-    background: #374151;
-    border-color: #6b7280;
+    background: var(--bg-mid);
+    border-color: var(--text-hint);
 }
 
 .lum-btn-confirm {
-    background: #34d399;
-    border-color: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--bg-darkest);
 }
 
 .lum-btn-confirm:hover:not(:disabled) {
-    background: #059669;
-    border-color: #059669;
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
 }
 
 .lum-btn-confirm:disabled {
@@ -311,9 +311,9 @@
     flex-direction: column;
     gap: 6px;
     padding: 12px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-radius: 10px;
-    border: 1px solid #2a3747;
+    border: 1px solid var(--border-subtle);
 }
 
 .lum-preview-header {
@@ -321,7 +321,7 @@
     justify-content: space-between;
     align-items: center;
     padding-bottom: 6px;
-    border-bottom: 1px solid #2a3747;
+    border-bottom: 1px solid var(--border-subtle);
     margin-bottom: 4px;
 }
 
@@ -329,7 +329,7 @@
     font-family: var(--font-family);
     font-size: 11px;
     font-weight: 600;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -354,7 +354,7 @@
 
 .lum-preview-row-title {
     padding-bottom: 6px;
-    border-bottom: 1px dashed #2a3747;
+    border-bottom: 1px dashed var(--border-subtle);
     margin-bottom: 4px;
 }
 
@@ -362,7 +362,7 @@
     font-family: var(--font-family);
     font-size: 12px;
     font-weight: 500;
-    color: #9ca3af;
+    color: var(--text-muted);
     flex-shrink: 0;
 }
 
@@ -370,21 +370,21 @@
     font-family: var(--font-family);
     font-size: 13px;
     font-weight: 600;
-    color: #d1d5db;
+    color: var(--text-secondary);
     text-align: right;
 }
 
 .lum-preview-positive {
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .lum-preview-highlight {
-    color: #fbbf24;
+    color: var(--color-warning);
     font-weight: 700;
 }
 
 .lum-preview-sub {
-    color: #6b7280;
+    color: var(--text-hint);
     font-weight: 400;
     font-size: 11px;
 }
@@ -402,7 +402,7 @@
 .lum-preview-chip-green {
     background: rgba(52, 211, 153, 0.15);
     border: 1px solid rgba(52, 211, 153, 0.4);
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 /* Spell Learning */
@@ -417,17 +417,17 @@
     font-family: var(--font-family);
     font-size: 11px;
     font-weight: 600;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .lum-spells-count-ok {
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .lum-spells-count-pending {
-    color: #fbbf24;
+    color: var(--color-warning);
 }
 
 .lum-spells-list {
@@ -437,7 +437,7 @@
     max-height: 220px;
     overflow-y: auto;
     padding-right: 4px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-radius: 6px;
     padding: 6px;
 }
@@ -447,7 +447,7 @@
 }
 
 .lum-spells-list::-webkit-scrollbar-thumb {
-    background: #374957;
+    background: var(--border-default);
     border-radius: 2px;
 }
 
@@ -460,7 +460,7 @@
     cursor: pointer;
     transition: background 0.15s;
     font-size: 12px;
-    color: #d1d5db;
+    color: var(--text-secondary);
 }
 
 .lum-spell-row:hover:not(.disabled) {
@@ -469,7 +469,7 @@
 
 .lum-spell-row.selected {
     background: rgba(52, 211, 153, 0.1);
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .lum-spell-row.disabled {
@@ -478,7 +478,7 @@
 }
 
 .lum-spell-row input[type="checkbox"] {
-    accent-color: #34d399;
+    accent-color: var(--color-primary);
     width: 14px;
     height: 14px;
     flex-shrink: 0;
@@ -494,9 +494,9 @@
     font-family: var(--font-family);
     font-size: 10px;
     font-weight: 700;
-    color: #6b7280;
+    color: var(--text-hint);
     padding: 1px 6px;
-    border: 1px solid #2a3747;
+    border: 1px solid var(--border-subtle);
     border-radius: 3px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -505,7 +505,7 @@
 
 .lum-spells-empty {
     font-size: 11px;
-    color: #6b7280;
+    color: var(--text-hint);
     font-style: italic;
     text-align: center;
     padding: 8px;

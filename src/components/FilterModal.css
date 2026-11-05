@@ -7,7 +7,7 @@
 
 .filter-group label {
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .filter-group select,
@@ -16,8 +16,8 @@
 .filter-group input[type="date"] {
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid #374957;
-    background: #0f0f0f;
+    border: 1px solid var(--border-default);
+    background: var(--bg-darkest);
     color: #fff;
     font-size: 14px;
 }
@@ -34,20 +34,20 @@
 }
 
 .range-inputs span {
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .boolean-filter {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-size: 14px;
     cursor: pointer;
 }
 
 .boolean-filter input[type="checkbox"] {
-    accent-color: #34d399;
+    accent-color: var(--color-primary);
     width: 16px;
     height: 16px;
 }
@@ -64,27 +64,27 @@
     gap: 6px;
     min-height: 32px;
     padding: 4px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-radius: 6px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
 }
 
 .filter-tag {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: #1f2937;
-    border: 1px solid #34d399;
+    background: var(--bg-card);
+    border: 1px solid var(--color-primary);
     border-radius: 4px;
     padding: 2px 8px;
     font-size: 13px;
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .filter-tag-remove {
     background: transparent;
     border: none;
-    color: #6b7280;
+    color: var(--text-hint);
     font-size: 14px;
     cursor: pointer;
     padding: 0 2px;
@@ -92,7 +92,7 @@
 }
 
 .filter-tag-remove:hover {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 .filter-tags-options {
@@ -103,24 +103,24 @@
 
 .filter-tag-btn {
     padding: 4px 12px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     border-radius: 4px;
     background: transparent;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 13px;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .filter-tag-btn:hover {
-    border-color: #6b7280;
+    border-color: var(--text-hint);
     color: #fff;
 }
 
 .filter-tag-btn.active {
-    border-color: #34d399;
+    border-color: var(--color-primary);
     background: rgba(52, 211, 153, 0.15);
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .modal-actions {
@@ -138,16 +138,16 @@
     transition: background 0.2s;
 }
 .modal-btn.cancel {
-    background: #374151;
-    color: #9ca3af;
+    background: var(--bg-mid);
+    color: var(--text-muted);
 }
 .modal-btn.cancel:hover {
-    background: #4b5563;
+    background: var(--border-strong);
 }
 .modal-btn.apply {
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
 }
 .modal-btn.apply:hover {
-    background: #059669;
+    background: var(--color-primary-dark);
 }

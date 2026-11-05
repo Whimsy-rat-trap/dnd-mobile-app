@@ -21,16 +21,16 @@
 }
 
 .cc-language-tag {
-    background: #1f2937;
-    border: 1px solid #374957;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
     padding: 4px 12px;
     font-size: 13px;
-    color: #d1d5db;
+    color: var(--text-secondary);
 }
 
 .cc-languages-empty {
-    color: #6b7280;
+    color: var(--text-hint);
     font-size: 14px;
     font-style: italic;
 }

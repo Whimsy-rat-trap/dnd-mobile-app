@@ -1,5 +1,5 @@
 .sl-page {
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -9,7 +9,7 @@
     display: flex;
     align-items: center;
     padding: 16px 20px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-bottom: 1px solid #2c3e50;
     flex-shrink: 0;
 }
@@ -18,7 +18,7 @@
     width: 36px;
     height: 36px;
     border-radius: 8px;
-    background: #1f2937;
+    background: var(--bg-card);
     border: none;
     cursor: pointer;
     display: flex;
@@ -45,22 +45,22 @@
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .sl-btn-create-spell {
     padding: 6px 16px;
     border: none;
     border-radius: 6px;
-    background: #fbbf24;
-    color: #0f0f0f;
+    background: var(--color-warning);
+    color: var(--bg-darkest);
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
     flex-shrink: 0;
 }
 .sl-btn-create-spell:hover {
-    background: #f59e0b;
+    background: var(--color-warning-dark);
 }
 
 .sl-content {
@@ -98,15 +98,15 @@
 }
 .sl-form-group label {
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 .sl-form-group input,
 .sl-form-group select,
 .sl-form-group textarea {
     padding: 6px 10px;
     border-radius: 6px;
-    border: 1px solid #374957;
-    background: #0f0f0f;
+    border: 1px solid var(--border-default);
+    background: var(--bg-darkest);
     color: #fff;
     font-size: 14px;
     font-family: var(--font-family);
@@ -119,7 +119,7 @@
 .sl-form-group select:focus,
 .sl-form-group textarea:focus {
     outline: none;
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 .sl-component-selector {
@@ -134,34 +134,34 @@
     gap: 6px;
     min-height: 32px;
     padding: 4px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-radius: 6px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
 }
 
 .sl-component-tag {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: #1f2937;
-    border: 1px solid #34d399;
+    background: var(--bg-card);
+    border: 1px solid var(--color-primary);
     border-radius: 4px;
     padding: 2px 8px;
     font-size: 13px;
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .sl-component-remove {
     background: transparent;
     border: none;
-    color: #6b7280;
+    color: var(--text-hint);
     font-size: 14px;
     cursor: pointer;
     padding: 0 2px;
     line-height: 1;
 }
 .sl-component-remove:hover {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 .sl-component-options {
@@ -172,22 +172,22 @@
 
 .sl-component-option-btn {
     padding: 4px 12px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     border-radius: 4px;
     background: transparent;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 13px;
     cursor: pointer;
     transition: all 0.2s;
 }
 .sl-component-option-btn:hover {
-    border-color: #6b7280;
+    border-color: var(--text-hint);
     color: #fff;
 }
 .sl-component-option-btn.sl-active {
-    border-color: #34d399;
+    border-color: var(--color-primary);
     background: rgba(52, 211, 153, 0.15);
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 /* Особый стиль для Magical Secrets таба */
@@ -222,8 +222,8 @@
 
 /* Warlock options panel */
 .sl-warlock-options {
-    background: #1f2937;
-    border: 1px solid #374957;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
     border-radius: 10px;
     padding: 12px 14px;
     margin: 8px 0;
@@ -249,15 +249,15 @@
 
 .sl-warlock-label {
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
     min-width: 80px;
 }
 
 .sl-warlock-select {
     flex: 1;
     padding: 6px 10px;
-    background: #0f0f0f;
-    border: 1px solid #374957;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
     color: #fff;
     font-size: 13px;
@@ -274,7 +274,7 @@
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     cursor: pointer;
 }
 
@@ -286,12 +286,12 @@
 
 /* Pact of the Tome tab */
 .sl-avail-btn.sl-avail-tome {
-    border-color: #ec4899;
+    border-color: var(--color-pink);
     color: #f472b6;
 }
 .sl-avail-btn.sl-avail-tome.sl-avail-active {
     background: rgba(236, 72, 153, 0.15);
-    border-color: #ec4899;
+    border-color: var(--color-pink);
     color: #f472b6;
 }
 .sl-avail-btn.sl-avail-tome:hover:not(:disabled) {
@@ -301,16 +301,16 @@
 
 /* Ancient Secrets tab */
 .sl-avail-btn.sl-avail-ancient {
-    border-color: #14b8a6;
-    color: #2dd4bf;
+    border-color: var(--color-teal);
+    color: var(--color-teal-light);
 }
 .sl-avail-btn.sl-avail-ancient.sl-avail-active {
     background: rgba(20, 184, 166, 0.15);
-    border-color: #14b8a6;
-    color: #2dd4bf;
+    border-color: var(--color-teal);
+    color: var(--color-teal-light);
 }
 .sl-avail-btn.sl-avail-ancient:hover:not(:disabled) {
-    border-color: #2dd4bf;
+    border-color: var(--color-teal-light);
     color: #99f6e4;
 }
 
@@ -319,7 +319,7 @@
     margin: 8px 0;
     padding: 8px 12px;
     background: rgba(20, 184, 166, 0.1);
-    border-left: 3px solid #14b8a6;
+    border-left: 3px solid var(--color-teal);
     border-radius: 6px;
     color: #99f6e4;
     font-size: 12px;
@@ -329,12 +329,12 @@
 /* Extra limit notices */
 .sl-limit-tome {
     background: rgba(236, 72, 153, 0.1);
-    border-color: #ec4899;
+    border-color: var(--color-pink);
     color: #f472b6;
 }
 
 .sl-limit-ancient {
     background: rgba(20, 184, 166, 0.1);
-    border-color: #14b8a6;
-    color: #2dd4bf;
+    border-color: var(--color-teal);
+    color: var(--color-teal-light);
 }

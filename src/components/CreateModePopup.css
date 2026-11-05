@@ -17,21 +17,21 @@
 }
 
 .mode-btn.creative {
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
 }
 
 .mode-btn.creative:hover {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 .mode-btn.rules {
-    background: #3b82f6;
+    background: var(--color-info-dark);
     color: #fff;
 }
 
 .mode-btn.rules:hover {
-    background: #2563eb;
+    background: var(--color-info-mid);
 }
 
 .mode-btn:active {

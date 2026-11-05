@@ -17,19 +17,19 @@
     font-size: 20px;
     font-weight: 700;
     text-align: center;
-    color: #60a5fa;
+    color: var(--color-info);
 }
 
 .psm-subtitle {
     margin: 0;
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-align: center;
     line-height: 1.4;
 }
 
 .psm-subtitle-hint {
-    color: #60a5fa;
+    color: var(--color-info);
     font-weight: 600;
 }
 
@@ -39,15 +39,15 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 14px;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 10px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
 }
 
 .psm-counter-label {
     font-family: var(--font-family);
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -57,11 +57,11 @@
     font-family: var(--font-family);
     font-size: 18px;
     font-weight: 700;
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .psm-counter-value.over {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 /* Sections */
@@ -74,14 +74,14 @@
 .psm-section-title {
     font-family: var(--font-family);
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .psm-section-hint {
-    color: #6b7280;
+    color: var(--text-hint);
     font-weight: 400;
     text-transform: none;
     letter-spacing: 0;
@@ -112,7 +112,7 @@
 .psm-always-level {
     font-size: 10px;
     font-weight: 700;
-    color: #7e22ce;
+    color: var(--color-purple-dark);
     background: rgba(168, 85, 247, 0.15);
     padding: 1px 6px;
     border-radius: 3px;
@@ -120,7 +120,7 @@
 
 .psm-always-tag {
     font-size: 9px;
-    color: #60a5fa;
+    color: var(--color-info);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -135,9 +135,9 @@
 .psm-toolbar-btn {
     padding: 4px 10px;
     background: transparent;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     border-radius: 6px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-family: var(--font-family);
     font-size: 11px;
     font-weight: 600;
@@ -146,8 +146,8 @@
 }
 
 .psm-toolbar-btn:hover:not(:disabled) {
-    border-color: #60a5fa;
-    color: #60a5fa;
+    border-color: var(--color-info);
+    color: var(--color-info);
 }
 
 .psm-toolbar-btn:disabled {
@@ -170,7 +170,7 @@
 }
 
 .psm-levels::-webkit-scrollbar-thumb {
-    background: #374957;
+    background: var(--border-default);
     border-radius: 2px;
 }
 
@@ -178,7 +178,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-radius: 6px;
     padding: 6px;
 }
@@ -192,7 +192,7 @@
     cursor: pointer;
     transition: background 0.15s;
     font-size: 13px;
-    color: #d1d5db;
+    color: var(--text-secondary);
 }
 
 .psm-row:hover:not(.disabled) {
@@ -201,7 +201,7 @@
 
 .psm-row.selected {
     background: rgba(96, 165, 250, 0.1);
-    color: #60a5fa;
+    color: var(--color-info);
 }
 
 .psm-row.disabled {
@@ -210,7 +210,7 @@
 }
 
 .psm-row input[type="checkbox"] {
-    accent-color: #60a5fa;
+    accent-color: var(--color-info);
     width: 15px;
     height: 15px;
     flex-shrink: 0;
@@ -230,7 +230,7 @@
 .psm-spell-school {
     font-family: var(--font-family);
     font-size: 10px;
-    color: #6b7280;
+    color: var(--text-hint);
     font-style: italic;
     text-transform: capitalize;
     flex-shrink: 0;
@@ -239,11 +239,11 @@
 /* Empty */
 .psm-empty {
     font-size: 12px;
-    color: #6b7280;
+    color: var(--text-hint);
     font-style: italic;
     text-align: center;
     padding: 20px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-radius: 8px;
 }
 
@@ -252,7 +252,7 @@
     display: flex;
     gap: 8px;
     padding-top: 8px;
-    border-top: 1px solid #2a3747;
+    border-top: 1px solid var(--border-subtle);
 }
 
 .psm-btn {
@@ -269,24 +269,24 @@
 
 .psm-btn-cancel {
     background: transparent;
-    border-color: #374957;
-    color: #d1d5db;
+    border-color: var(--border-default);
+    color: var(--text-secondary);
 }
 
 .psm-btn-cancel:hover {
-    background: #374151;
-    border-color: #6b7280;
+    background: var(--bg-mid);
+    border-color: var(--text-hint);
 }
 
 .psm-btn-confirm {
-    background: #60a5fa;
-    border-color: #60a5fa;
-    color: #0f0f0f;
+    background: var(--color-info);
+    border-color: var(--color-info);
+    color: var(--bg-darkest);
 }
 
 .psm-btn-confirm:hover:not(:disabled) {
-    background: #3b82f6;
-    border-color: #3b82f6;
+    background: var(--color-info-dark);
+    border-color: var(--color-info-dark);
     color: #fff;
 }
 

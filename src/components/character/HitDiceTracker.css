@@ -4,7 +4,7 @@
     flex-direction: column;
     gap: 8px;
     padding: 12px;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 12px;
     box-sizing: border-box;
 }
@@ -19,7 +19,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
-    color: #34d399;
+    color: var(--color-primary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -28,7 +28,7 @@
     font-family: var(--font-family);
     font-size: 13px;
     font-weight: 700;
-    color: #d1d5db;
+    color: var(--text-secondary);
 }
 
 .hdt-list {
@@ -46,7 +46,7 @@
 .hdt-label {
     font-family: var(--font-family);
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 600;
     min-width: 32px;
     text-transform: uppercase;
@@ -63,7 +63,7 @@
     width: 16px;
     height: 16px;
     border-radius: 3px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     background: transparent;
     cursor: pointer;
     padding: 0;
@@ -71,29 +71,29 @@
 }
 
 .hdt-dot.available {
-    background: #fbbf24;
-    border-color: #fbbf24;
+    background: var(--color-warning);
+    border-color: var(--color-warning);
 }
 
 .hdt-dot.available:hover {
-    background: #f59e0b;
-    border-color: #f59e0b;
+    background: var(--color-warning-dark);
+    border-color: var(--color-warning-dark);
     transform: scale(1.2);
 }
 
 .hdt-dot.used {
-    background: #0f0f0f;
-    border-color: #374957;
+    background: var(--bg-darkest);
+    border-color: var(--border-default);
 }
 
 .hdt-dot.used:hover {
-    border-color: #ef4444;
+    border-color: var(--color-danger);
 }
 
 .hdt-count {
     font-family: var(--font-family);
     font-size: 12px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-weight: 600;
     min-width: 34px;
     text-align: right;
@@ -101,6 +101,6 @@
 
 .hdt-hint {
     font-size: 11px;
-    color: #6b7280;
+    color: var(--text-hint);
     font-style: italic;
 }

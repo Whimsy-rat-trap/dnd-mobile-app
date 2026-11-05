@@ -47,7 +47,7 @@
     font-weight: 400;
     font-size: 14px;
     text-align: center;
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 /* Content */
@@ -80,7 +80,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
     letter-spacing: 0.5px;
 }
 
@@ -88,9 +88,9 @@
     width: 353px;
     height: 48px;
     padding: 0 16px;
-    border: 1px solid #374151;
+    border: 1px solid var(--bg-mid);
     border-radius: 10px;
-    background: #1f2937;
+    background: var(--bg-card);
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
     color: #f9fafb;
     font-size: 14px;
@@ -99,10 +99,10 @@
     margin: 0 auto;
 }
 .lg-form-input::placeholder {
-    color: #6b7280;
+    color: var(--text-hint);
 }
 .lg-form-input:focus {
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 .lg-form-actions {
@@ -117,7 +117,7 @@
     font-weight: 500;
     font-size: 13px;
     text-align: right;
-    color: #34d399;
+    color: var(--color-primary);
     text-decoration: none;
 }
 .lg-forgot-link:hover {
@@ -155,11 +155,11 @@
     flex: 1;
     border: none;
     height: 1px;
-    background: #374151;
+    background: var(--bg-mid);
 }
 
 .lg-divider-text {
-    color: #6b7280;
+    color: var(--text-hint);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -180,7 +180,7 @@
     border: none;
     border-radius: 10px;
     padding: 0 16px;
-    background: #1f2937;
+    background: var(--bg-card);
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
     color: #fff;
     font-family: var(--font-family);
@@ -195,7 +195,7 @@
     box-sizing: border-box;
 }
 .lg-social-btn:hover {
-    background: #2d3748;
+    background: var(--bg-hover);
 }
 
 .lg-social-btn svg {
@@ -205,13 +205,13 @@
 /* Signup */
 .lg-signup-section {
     text-align: center;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
     margin-top: auto;
 }
 
 .lg-signup-link {
-    color: #34d399;
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
 }

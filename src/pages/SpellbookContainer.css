@@ -10,7 +10,7 @@
 .sb-header {
     height: 84px;
     padding: 0 20px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
@@ -23,7 +23,7 @@
     width: 36px;
     height: 36px;
     border-radius: 8px;
-    background: #1f2937;
+    background: var(--bg-card);
     border: none;
     cursor: pointer;
     display: flex;
@@ -34,7 +34,7 @@
     transition: background 0.2s;
 }
 .sb-back-btn:hover {
-    background: #374151;
+    background: var(--bg-mid);
 }
 
 .sb-header-info {
@@ -55,7 +55,7 @@
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-align: left;
 }
 
@@ -63,22 +63,22 @@
     padding: 6px 14px;
     border: none;
     border-radius: 6px;
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
     font-weight: 600;
     cursor: pointer;
     margin-left: auto;
     transition: background 0.2s;
 }
 .sb-btn-add-library:hover {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 /* Stats */
 .sb-stats {
     padding: 16px 20px;
     height: 71px;
-    background: #1f2937;
+    background: var(--bg-card);
     display: flex;
     align-items: center;
     gap: 16px;
@@ -100,7 +100,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -109,7 +109,7 @@
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 18px;
-    color: #3b82f6;
+    color: var(--color-info-dark);
     margin-top: 2px;
     transition: color 0.5s ease;
 }
@@ -120,7 +120,7 @@
 }
 
 .sb-stat-item.sb-warning .sb-stat-value {
-    color: #ef4444 !important;
+    color: var(--color-danger) !important;
 }
 
 @keyframes shakeWarning {
@@ -138,33 +138,33 @@
     align-items: center;
     gap: 10px;
     padding: 12px 20px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     width: 100%;
     box-sizing: border-box;
 }
 .sb-level-selector label {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
     font-weight: 500;
 }
 .sb-level-selector select {
     padding: 6px 12px;
     border-radius: 6px;
-    border: 1px solid #374957;
-    background: #1f2937;
+    border: 1px solid var(--border-default);
+    background: var(--bg-card);
     color: #fff;
     font-size: 14px;
     cursor: pointer;
     outline: none;
 }
 .sb-level-selector select:focus {
-    border-color: #3b82f6;
+    border-color: var(--color-info-dark);
 }
 
 /* Content */
 .sb-content {
     padding: 0 20px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     width: 100%;
     box-sizing: border-box;
     margin-top: 0;
@@ -190,29 +190,29 @@
 
 .sb-filter-btn {
     padding: 4px 12px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     border-radius: 4px;
     background: transparent;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s;
 }
 .sb-filter-btn.sb-active {
-    background: #34d399;
-    border-color: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--bg-darkest);
 }
 .sb-filter-btn:hover:not(.sb-active) {
-    border-color: #6b7280;
-    color: #e5e7eb;
+    border-color: var(--text-hint);
+    color: var(--text-secondary-alt);
 }
 
 .sb-list-title {
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-align: left;
     padding-top: 20px;
     margin-bottom: 12px;
@@ -232,23 +232,23 @@
     padding: 20px 0;
 }
 .sb-empty-message p {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
 }
 
 .sb-btn-primary {
     padding: 10px 24px;
-    background: #34d399;
+    background: var(--color-primary);
     border: none;
     border-radius: 8px;
-    color: #0f0f0f;
+    color: var(--bg-darkest);
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
     transition: background 0.2s;
 }
 .sb-btn-primary:hover {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 /* Пустое состояние */
@@ -263,7 +263,7 @@
     text-align: center;
 }
 .sb-empty-state p {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 16px;
 }
 

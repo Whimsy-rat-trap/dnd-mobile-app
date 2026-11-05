@@ -6,7 +6,7 @@
     gap: 8px;
     flex-shrink: 0;
     padding: 12px;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 12px;
 }
 
@@ -27,7 +27,7 @@
 .cc-view-full-spellbook {
     font-family: var(--font-family);
     font-size: 13px;
-    color: #34d399;
+    color: var(--color-primary);
     text-decoration: none;
     transition: opacity 0.2s;
 }
@@ -56,7 +56,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -65,21 +65,21 @@
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 18px;
-    color: #3b82f6;
+    color: var(--color-info-dark);
     margin-top: 2px;
 }
 
 .cc-spell-stats-primary {
     padding-bottom: 8px;
-    border-bottom: 1px solid #374957;
+    border-bottom: 1px solid var(--border-default);
 }
 
 .cc-stat-value-dc {
-    color: #a855f7;
+    color: var(--color-purple);
 }
 
 .cc-stat-value-atk {
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .cc-stat-value-secrets {

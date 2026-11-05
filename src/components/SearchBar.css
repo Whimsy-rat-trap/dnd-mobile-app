@@ -1,17 +1,17 @@
 .search-bar {
     display: flex;
     align-items: center;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 0 12px;
     height: 40px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     transition: border-color 0.2s;
     width: 100%;
 }
 
 .search-bar:focus-within {
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 .search-icon {
@@ -30,7 +30,7 @@
 }
 
 .search-input::placeholder {
-    color: #6b7280;
+    color: var(--text-hint);
 }
 
 .filter-icon-btn {

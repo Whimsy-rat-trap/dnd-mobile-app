@@ -1,5 +1,5 @@
 .attack-trigger-btn {
-    background: #ef4444;
+    background: var(--color-danger);
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -11,7 +11,7 @@
 }
 
 .attack-trigger-btn:hover {
-    background: #dc2626;
+    background: var(--color-danger-dark);
 }
 
 .attack-roller {
@@ -34,19 +34,19 @@
     flex-direction: column;
     gap: 10px;
     padding: 12px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border-radius: 10px;
-    border: 1px solid #1f2937;
+    border: 1px solid var(--bg-card);
 }
 
 .attack-block-header {
     font-size: 13px;
     font-weight: 700;
-    color: #34d399;
+    color: var(--color-primary);
     text-transform: uppercase;
     letter-spacing: 1px;
     padding-bottom: 6px;
-    border-bottom: 1px solid #1f2937;
+    border-bottom: 1px solid var(--bg-card);
 }
 
 .attack-section {
@@ -58,7 +58,7 @@
 .attack-label {
     font-size: 11px;
     font-weight: 500;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -66,7 +66,7 @@
 .attack-formula {
     font-size: 14px;
     font-weight: 700;
-    color: #fbbf24;
+    color: var(--color-warning);
     padding: 2px 0;
     letter-spacing: 0.5px;
 }
@@ -81,10 +81,10 @@
     flex: 1;
     min-width: 70px;
     padding: 6px 10px;
-    background: #1f2937;
-    border: 1px solid #374957;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
@@ -92,20 +92,20 @@
 }
 
 .attack-mode-btn:hover {
-    border-color: #6b7280;
-    color: #e5e7eb;
+    border-color: var(--text-hint);
+    color: var(--text-secondary-alt);
 }
 
 .attack-mode-btn.active {
     background: rgba(52, 211, 153, 0.15);
-    border-color: #34d399;
-    color: #34d399;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .attack-bonus-input {
     padding: 6px 10px;
-    background: #0f0f0f;
-    border: 1px solid #374957;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
     color: #fff;
     font-size: 14px;
@@ -113,7 +113,7 @@
 }
 
 .attack-bonus-input:focus {
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 /* Ряд с кнопкой броска */
@@ -126,8 +126,8 @@
 
 .attack-roll-btn {
     flex: 1;
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
     border: none;
     border-radius: 8px;
     padding: 10px 14px;
@@ -138,7 +138,7 @@
 }
 
 .attack-roll-btn:hover:not(:disabled) {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 .attack-roll-btn:disabled {
@@ -147,12 +147,12 @@
 }
 
 .attack-roll-btn.damage-btn {
-    background: #ef4444;
+    background: var(--color-danger);
     color: #fff;
 }
 
 .attack-roll-btn.damage-btn:hover:not(:disabled) {
-    background: #dc2626;
+    background: var(--color-danger-dark);
 }
 
 /* Результат */
@@ -160,7 +160,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 10px 12px;
     margin-top: 4px;
@@ -182,50 +182,50 @@
     min-width: 30px;
     height: 30px;
     padding: 0 6px;
-    background: #0f0f0f;
-    border: 1px solid #374957;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
-    color: #e5e7eb;
+    color: var(--text-secondary-alt);
 }
 
 .attack-die.chosen {
-    border-color: #34d399;
-    color: #34d399;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
     background: rgba(52, 211, 153, 0.1);
 }
 
 .attack-bonus {
-    color: #fbbf24;
+    color: var(--color-warning);
     font-size: 14px;
 }
 
 .attack-equals {
-    color: #6b7280;
+    color: var(--text-hint);
     margin: 0 4px;
 }
 
 .attack-total {
     font-size: 22px;
     font-weight: 800;
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .attack-total.crit {
-    color: #fbbf24;
+    color: var(--color-warning);
     text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
 }
 
 .attack-total.crit-fail {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 .attack-total.damage {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 .attack-result-hint {
     font-size: 12px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-style: italic;
 }
 
@@ -260,26 +260,26 @@
 
 /* Подсветка выбранного значения (advantage / disadvantage) */
 .dice-btn-value.chosen {
-    color: #34d399;
+    color: var(--color-primary);
     text-shadow: 0 0 8px rgba(52, 211, 153, 0.7);
 }
 
 /* Крит / крит-провал при одиночном d20 */
 .dice-btn-value.crit {
-    color: #fbbf24;
+    color: var(--color-warning);
     text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
 }
 
 .dice-btn-value.crit-fail {
-    color: #ef4444;
+    color: var(--color-danger);
     text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
 }
 
 /* Кнопки Roll */
 .attack-roll-btn {
     width: 100%;
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
     border: none;
     border-radius: 8px;
     padding: 10px 14px;
@@ -291,7 +291,7 @@
 }
 
 .attack-roll-btn:hover:not(:disabled) {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 .attack-roll-btn:disabled {
@@ -300,17 +300,17 @@
 }
 
 .attack-roll-btn.damage-btn {
-    background: #ef4444;
+    background: var(--color-danger);
     color: #fff;
 }
 
 .attack-roll-btn.damage-btn:hover:not(:disabled) {
-    background: #dc2626;
+    background: var(--color-danger-dark);
 }
 
 /* Подсветка блока урона при крите */
 .attack-block-crit {
-    border-color: #fbbf24 !important;
+    border-color: var(--color-warning) !important;
     box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
 }
 
@@ -319,8 +319,8 @@
     display: inline-block;
     margin-left: 8px;
     padding: 2px 8px;
-    background: #fbbf24;
-    color: #0f0f0f;
+    background: var(--color-warning);
+    color: var(--bg-darkest);
     border-radius: 4px;
     font-size: 10px;
     font-weight: 800;
@@ -335,7 +335,7 @@
 
 /* Подсказка "dice doubled" рядом с формулой */
 .attack-crit-hint {
-    color: #fbbf24;
+    color: var(--color-warning);
     font-size: 10px;
     font-style: italic;
     margin-left: 4px;
@@ -343,19 +343,19 @@
 
 /* Итоговое значение урона при крите — золотое */
 .attack-total.damage.crit {
-    color: #fbbf24;
+    color: var(--color-warning);
     text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
 }
 
 /* Подсказка под результатом крита */
 .attack-result-hint.crit-hint {
-    color: #fbbf24;
+    color: var(--color-warning);
     font-weight: 600;
 }
 
 /* Buffs */
 .attack-buffs-section {
-    border-top: 1px dashed #1f2937;
+    border-top: 1px dashed var(--bg-card);
     padding-top: 10px;
     margin-top: 6px;
 }
@@ -368,8 +368,8 @@
 .attack-buff-select {
     flex: 1;
     padding: 6px 10px;
-    background: #0f0f0f;
-    border: 1px solid #374957;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
     color: #fff;
     font-size: 13px;
@@ -378,13 +378,13 @@
 }
 
 .attack-buff-select:focus {
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 .attack-buff-add-btn {
     padding: 6px 14px;
-    background: #34d399;
-    color: #0f0f0f;
+    background: var(--color-primary);
+    color: var(--bg-darkest);
     border: none;
     border-radius: 6px;
     font-size: 13px;
@@ -395,7 +395,7 @@
 }
 
 .attack-buff-add-btn:hover:not(:disabled) {
-    background: #059669;
+    background: var(--color-primary-dark);
 }
 
 .attack-buff-add-btn:disabled {
@@ -415,8 +415,8 @@
     align-items: center;
     gap: 8px;
     padding: 6px 10px;
-    background: #0f0f0f;
-    border: 1px solid #1f2937;
+    background: var(--bg-darkest);
+    border: 1px solid var(--bg-card);
     border-radius: 6px;
 }
 
@@ -430,7 +430,7 @@
 
 .attack-buff-name {
     font-size: 13px;
-    color: #e5e7eb;
+    color: var(--text-secondary-alt);
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
@@ -445,15 +445,15 @@
 
 .attack-buff-rank-label {
     font-size: 10px;
-    color: #6b7280;
+    color: var(--text-hint);
     text-transform: uppercase;
 }
 
 .attack-buff-rank-input {
     width: 50px;
     padding: 2px 6px;
-    background: #1f2937;
-    border: 1px solid #374957;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
     border-radius: 4px;
     color: #fff;
     font-size: 12px;
@@ -462,11 +462,11 @@
 }
 
 .attack-buff-rank-input:focus {
-    border-color: #34d399;
+    border-color: var(--color-primary);
 }
 
 .attack-buff-formula {
-    color: #fbbf24;
+    color: var(--color-warning);
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
@@ -475,7 +475,7 @@
 .attack-buff-remove {
     background: transparent;
     border: none;
-    color: #6b7280;
+    color: var(--text-hint);
     font-size: 14px;
     cursor: pointer;
     padding: 0 4px;
@@ -483,15 +483,15 @@
 }
 
 .attack-buff-remove:hover {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 .attack-buff-clear {
     align-self: flex-start;
     background: transparent;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
     border-radius: 4px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 11px;
     padding: 3px 10px;
     cursor: pointer;
@@ -499,13 +499,13 @@
 }
 
 .attack-buff-clear:hover {
-    border-color: #ef4444;
-    color: #ef4444;
+    border-color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 /* Debuffs */
 .attack-debuffs-section {
-    border-top: 1px dashed #1f2937;
+    border-top: 1px dashed var(--bg-card);
     padding-top: 10px;
     margin-top: 6px;
 }
@@ -513,7 +513,7 @@
 .attack-debuff-select {
     flex: 1;
     padding: 6px 10px;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     border: 1px solid #7f1d1d;
     border-radius: 6px;
     color: #fff;
@@ -523,12 +523,12 @@
 }
 
 .attack-debuff-select:focus {
-    border-color: #ef4444;
+    border-color: var(--color-danger);
 }
 
 .attack-debuff-add-btn {
     padding: 6px 14px;
-    background: #ef4444;
+    background: var(--color-danger);
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -540,7 +540,7 @@
 }
 
 .attack-debuff-add-btn:hover:not(:disabled) {
-    background: #dc2626;
+    background: var(--color-danger-dark);
 }
 
 .attack-debuff-add-btn:disabled {
@@ -564,12 +564,12 @@
 /* Пометка Effective mode */
 .attack-effective-mode {
     font-size: 11px;
-    color: #fbbf24;
+    color: var(--color-warning);
     font-style: italic;
     margin-top: 4px;
     padding: 4px 8px;
     background: rgba(251, 191, 36, 0.1);
-    border-left: 3px solid #fbbf24;
+    border-left: 3px solid var(--color-warning);
     border-radius: 4px;
 }
 
@@ -582,7 +582,7 @@
 
 /* Значения штрафов в результате */
 .attack-penalty {
-    color: #ef4444;
+    color: var(--color-danger);
     font-size: 14px;
     font-weight: 600;
 }
@@ -596,8 +596,8 @@
     padding: 8px 12px;
     border-radius: 8px;
     background: rgba(251, 191, 36, 0.15);
-    border: 1px solid #fbbf24;
-    color: #fbbf24;
+    border: 1px solid var(--color-warning);
+    color: var(--color-warning);
     font-family: var(--font-family);
     font-size: 13px;
     font-weight: 700;
@@ -621,27 +621,27 @@
 
 /* Maneuvers */
 .attack-maneuvers-section {
-    border-top: 1px dashed #1f2937;
+    border-top: 1px dashed var(--bg-card);
     padding-top: 10px;
     margin-top: 8px;
 }
 
 .attack-maneuver-apply-btn {
-    background: #f97316;
-    color: #0f0f0f;
+    background: var(--color-orange);
+    color: var(--bg-darkest);
 }
 
 .attack-maneuver-apply-btn:hover:not(:disabled) {
-    background: #ea580c;
+    background: var(--color-orange-dark);
 }
 
 .attack-maneuver-info {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     line-height: 1.5;
     padding: 6px 10px;
     background: rgba(249, 115, 22, 0.05);
-    border-left: 3px solid #f97316;
+    border-left: 3px solid var(--color-orange);
     border-radius: 4px;
     margin-top: 6px;
 }
@@ -649,7 +649,7 @@
 .attack-maneuver-save-hint {
     margin-top: 4px;
     font-size: 11px;
-    color: #fbbf24;
+    color: var(--color-warning);
     font-weight: 600;
 }
 
@@ -659,7 +659,7 @@
     gap: 6px;
     padding: 10px 12px;
     background: rgba(249, 115, 22, 0.1);
-    border: 1px solid #f97316;
+    border: 1px solid var(--color-orange);
     border-radius: 8px;
     margin-top: 8px;
 }
@@ -675,34 +675,34 @@
     font-family: var(--font-family);
     font-size: 13px;
     font-weight: 700;
-    color: #f97316;
+    color: var(--color-orange);
 }
 
 .attack-maneuver-applied-die {
     font-family: var(--font-family);
     font-size: 12px;
-    color: #d1d5db;
+    color: var(--text-secondary);
 }
 
 .attack-maneuver-applied-die strong {
-    color: #fbbf24;
+    color: var(--color-warning);
     font-size: 16px;
 }
 
 .attack-maneuver-applied-save {
     font-size: 11px;
-    color: #fbbf24;
+    color: var(--color-warning);
     font-weight: 500;
 }
 
 .attack-maneuver-applied-hint {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-style: italic;
 }
 
 .attack-maneuver-damage-hint {
-    color: #f97316;
+    color: var(--color-orange);
     font-weight: 600;
     font-style: normal;
 }

@@ -16,18 +16,18 @@
     font-size: 18px;
     font-weight: 700;
     text-align: center;
-    color: #ec4899;
+    color: var(--color-pink);
 }
 
 .umg-desc {
     margin: 0;
     font-size: 12px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     line-height: 1.5;
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     padding: 10px 12px;
     border-radius: 8px;
-    border: 1px solid #2a3747;
+    border: 1px solid var(--border-subtle);
 }
 
 .umg-level-block {
@@ -38,7 +38,7 @@
 
 .umg-level-label {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -52,10 +52,10 @@
 
 .umg-level-btn {
     padding: 6px;
-    background: #0f0f0f;
-    border: 1px solid #374957;
+    background: var(--bg-darkest);
+    border: 1px solid var(--border-default);
     border-radius: 6px;
-    color: #d1d5db;
+    color: var(--text-secondary);
     font-family: var(--font-family);
     font-size: 13px;
     font-weight: 700;
@@ -64,13 +64,13 @@
 }
 
 .umg-level-btn:hover {
-    border-color: #ec4899;
+    border-color: var(--color-pink);
 }
 
 .umg-level-btn.active {
     background: rgba(236, 72, 153, 0.15);
-    border-color: #ec4899;
-    color: #ec4899;
+    border-color: var(--color-pink);
+    color: var(--color-pink);
 }
 
 .umg-cost-block {
@@ -78,14 +78,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 12px;
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 8px;
-    border: 1px solid #374957;
+    border: 1px solid var(--border-default);
 }
 
 .umg-cost-label {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -94,7 +94,7 @@
 .umg-cost-value {
     font-size: 16px;
     font-weight: 700;
-    color: #ec4899;
+    color: var(--color-pink);
 }
 
 .umg-actions {
@@ -117,22 +117,22 @@
 
 .umg-btn-cancel {
     background: transparent;
-    border-color: #374957;
-    color: #d1d5db;
+    border-color: var(--border-default);
+    color: var(--text-secondary);
 }
 
 .umg-btn-cancel:hover {
-    background: #374151;
-    border-color: #6b7280;
+    background: var(--bg-mid);
+    border-color: var(--text-hint);
 }
 
 .umg-btn-confirm {
-    background: #ec4899;
-    border-color: #ec4899;
-    color: #0f0f0f;
+    background: var(--color-pink);
+    border-color: var(--color-pink);
+    color: var(--bg-darkest);
 }
 
 .umg-btn-confirm:hover {
-    background: #db2777;
-    border-color: #db2777;
+    background: var(--color-pink-dark);
+    border-color: var(--color-pink-dark);
 }

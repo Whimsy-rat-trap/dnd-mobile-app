@@ -13,7 +13,7 @@
 }
 
 .modal-content {
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 16px;
     padding: 24px;
     min-width: 280px;
@@ -40,9 +40,9 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #34d399;
+    background: var(--color-primary);
     border: none;
-    color: #0f0f0f;
+    color: var(--bg-darkest);
     font-size: 18px;
     cursor: pointer;
     display: flex;

@@ -1,5 +1,5 @@
 .hb-page {
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -11,7 +11,7 @@
 
 /* Хэдер */
 .hb-header {
-    background: #0f0f0f;
+    background: var(--bg-darkest);
     padding: 16px 0 12px 0;
     border-bottom: 1px solid #2c3e50;
     flex-shrink: 0;
@@ -37,7 +37,7 @@
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 24px;
-    color: #34d399;
+    color: var(--color-primary);
     text-align: left;
     line-height: 1.2;
 }
@@ -46,7 +46,7 @@
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--text-muted);
     margin-top: 12px;
     text-align: left;
     padding-bottom: 16px;
@@ -118,7 +118,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 14px;
-    color: #34d399;
+    color: var(--color-primary);
     background: none;
     border: none;
     cursor: pointer;
@@ -147,7 +147,7 @@
 }
 
 .hb-character-card {
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 10px;
     padding: 10px;
     width: 170px;
@@ -164,13 +164,13 @@
 }
 
 .hb-character-card.hb-inactive {
-    background: #2d3748;
+    background: var(--bg-hover);
     opacity: 0.7;
 }
 
 .hb-character-card.hb-inactive .hb-character-name,
 .hb-character-card.hb-inactive .hb-character-class {
-    color: #9ca3af;
+    color: var(--text-muted);
 }
 
 .hb-character-info {
@@ -197,7 +197,7 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 1.4;
-    color: #9ca3af;
+    color: var(--text-muted);
     margin: 0;
     padding: 0;
 }
@@ -210,22 +210,22 @@
 }
 
 .hb-character-status.active {
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .hb-character-status.dead {
-    color: #ef4444;
+    color: var(--color-danger);
 }
 
 .hb-character-status.archived {
-    color: #34d399;
+    color: var(--color-primary);
 }
 
 .hb-character-created {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
-    color: #6b7280;
+    color: var(--text-hint);
     margin-top: 1px;
     white-space: nowrap;
     overflow: hidden;
@@ -236,7 +236,7 @@
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
-    color: #9ca3af;
+    color: var(--text-muted);
     margin-top: 1px;
     white-space: nowrap;
     overflow: hidden;
@@ -256,7 +256,7 @@
 }
 
 .hb-campaign-card {
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 10px;
     padding: 10px;
     width: 170px;
@@ -297,7 +297,7 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 1.4;
-    color: #9ca3af;
+    color: var(--text-muted);
     margin: 0;
     padding: 0;
 }
@@ -306,7 +306,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 11px;
-    color: #34d399;
+    color: var(--color-primary);
     text-transform: capitalize;
     margin: 0;
     padding: 0;
@@ -314,14 +314,14 @@
 }
 
 .hb-campaign-card.hb-inactive .hb-campaign-status {
-    color: #6b7280;
+    color: var(--text-hint);
 }
 
 .hb-campaign-players {
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
-    color: #9ca3af;
+    color: var(--text-muted);
     margin-top: 2px;
     white-space: nowrap;
     overflow: hidden;
@@ -332,7 +332,7 @@
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
-    color: #6b7280;
+    color: var(--text-hint);
     margin-top: 1px;
     white-space: nowrap;
     overflow: hidden;
@@ -352,7 +352,7 @@
 }
 
 .hb-item-card {
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 10px;
     padding: 10px;
     width: 170px;
@@ -393,7 +393,7 @@
     font-weight: 400;
     font-size: 11px;
     line-height: 1.3;
-    color: #9ca3af;
+    color: var(--text-muted);
     margin: 0;
     padding: 0;
     display: -webkit-box;
@@ -410,14 +410,14 @@
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
-    color: #6b7280;
+    color: var(--text-hint);
     margin-top: 4px;
     flex-wrap: wrap;
 }
 
 .hb-item-tag-healing {
     background: rgba(255, 255, 255, 0.05);
-    color: #22c55e;
+    color: var(--color-success);
     padding: 0 6px;
     border-radius: 4px;
     line-height: 18px;
@@ -446,7 +446,7 @@
 }
 
 .hb-spell-card {
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 10px;
     padding: 10px;
     width: 170px;
@@ -487,7 +487,7 @@
     font-weight: 400;
     font-size: 11px;
     line-height: 1.3;
-    color: #9ca3af;
+    color: var(--text-muted);
     margin: 0;
     padding: 0;
     display: -webkit-box;
@@ -503,7 +503,7 @@
     font-family: var(--font-family);
     font-weight: 400;
     font-size: 10px;
-    color: #6b7280;
+    color: var(--text-hint);
     margin-top: 4px;
     flex-wrap: wrap;
 }
@@ -530,7 +530,7 @@
 /* Карточка добавления */
 .hb-add-card {
     background: transparent !important;
-    border: 2px dashed #374957;
+    border: 2px dashed var(--border-default);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -539,7 +539,7 @@
 }
 
 .hb-add-card:hover {
-    border-color: #34d399;
+    border-color: var(--color-primary);
     background: rgba(52, 211, 153, 0.05) !important;
     transform: scale(1.02);
 }
@@ -560,7 +560,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-align: center;
     margin: 0;
     padding: 0;
@@ -574,7 +574,7 @@
 
 /* Death Saves Indicator */
 .hb-character-card.hb-needs-death-save {
-    border: 2px solid #ef4444;
+    border: 2px solid var(--color-danger);
     background: rgba(239, 68, 68, 0.1);
 }
 
@@ -605,26 +605,26 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    border: 1px solid #6b7280;
+    border: 1px solid var(--text-hint);
     display: inline-block;
 }
 
 .hb-dot.hb-success {
-    background: #34d399;
-    border-color: #34d399;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .hb-dot.hb-failure {
-    background: #ef4444;
-    border-color: #ef4444;
+    background: var(--color-danger);
+    border-color: var(--color-danger);
 }
 
 .hb-dot.hb-empty {
     background: transparent;
-    border-color: #4b5563;
+    border-color: var(--border-strong);
 }
 
 .hb-separator {
-    color: #6b7280;
+    color: var(--text-hint);
     margin: 0 2px;
 }

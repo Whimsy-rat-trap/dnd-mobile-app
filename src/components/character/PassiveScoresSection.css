@@ -10,7 +10,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
-    border-bottom: 1px solid #374957;
+    border-bottom: 1px solid var(--border-default);
 }
 
 .cc-passive-scores-title {
@@ -28,7 +28,7 @@
 }
 
 .cc-passive-score-card {
-    background: #1f2937;
+    background: var(--bg-card);
     border-radius: 10px;
     padding: 12px 8px;
     display: flex;
@@ -42,7 +42,7 @@
     font-family: var(--font-family);
     font-weight: 700;
     font-size: 24px;
-    color: #34d399;
+    color: var(--color-primary);
     line-height: 1;
 }
 
@@ -50,7 +50,7 @@
     font-family: var(--font-family);
     font-weight: 500;
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -59,6 +59,6 @@
     font-family: var(--font-family);
     font-size: 10px;
     font-weight: 600;
-    color: #fbbf24;
+    color: var(--color-warning);
     margin-top: 2px;
 }
