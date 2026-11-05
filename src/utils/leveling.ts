@@ -1,4 +1,4 @@
-import { Character, ClassLevel } from '../types/Character';
+import { Character } from '../types/Character';
 import {
     XP_TO_NEXT,
     XP_TABLE,
@@ -7,7 +7,6 @@ import {
     MAX_LEVEL,
 } from '../constants/leveling';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
-import { getModifier } from './characterUtils'
 import {
     getNonPactSpellSlots,
     getPactMagicInfo,

@@ -17,6 +17,7 @@ import {
 } from '../utils/leveling';
 import { getSpellCandidates } from '../utils/spellLearning';
 import './LevelUpModal.css';
+import {ordinal} from "../utils/format";
 
 interface Props {
     isOpen: boolean;
@@ -31,15 +32,7 @@ const ABILITY_LABELS: Record<Abilities, string> = {
     str: 'STR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'WIS', cha: 'CHA',
 };
 
-const ordinal = (n: number): string => {
-    if (n === 1) return '1st';
-    if (n === 2) return '2nd';
-    if (n === 3) return '3rd';
-    return `${n}th`;
-};
-
 // Preview block
-
 interface PreviewBlockProps {
     preview: LevelUpPreview | null;
     hpGain: number | null;
