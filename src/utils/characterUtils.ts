@@ -1,26 +1,15 @@
-import { Character, InventoryItem } from '../types/Character';
-import {getSpellcastingAbilityForClass} from "./spellUtils";
+import { Character } from '../types/Character';
+import {getPrimarySpellcastingAbility} from "./spellUtils";
+import {getProficiencyBonus} from "./proficiency";
 
 export const NATURAL_ARMOR: Record<string, { base: number; dex?: boolean; max?: number }> = {
     Tortle: { base: 17 },
     Lizardfolk: { base: 13, dex: true, max: 2 },
 };
 
-export const getProficiencyBonus = (level: number): number => {
-    if (level <= 4) return 2;
-    if (level <= 8) return 3;
-    if (level <= 12) return 4;
-    if (level <= 16) return 5;
-    return 6;
-};
-
 export const getModifier = (score: number): number => Math.floor((score - 10) / 2);
 
-export const getSpellcastingAbility = (character: Character): keyof Character['abilities'] => {
-    const cl = character.classLevels?.[0];
-    if (!cl) return 'cha';
-    return getSpellcastingAbilityForClass(cl.className, cl.subclass);
-};
+export const getSpellcastingAbility = getPrimarySpellcastingAbility;
 
 export interface ACInfo {
     total: number;

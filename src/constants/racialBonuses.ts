@@ -1,8 +1,12 @@
+import {Character} from "../types/Character";
+
+type AbilityKey = keyof Character['abilities'];
+
 type RacialBonus = {
     fixed?: Record<string, number>; // фиксированные бонусы: { str: 2, dex: 1 }
     choose?: {                      // выбираемые бонусы
         count: number;              // количество бонусов
-        options: string[];          // доступные атрибуты
+        options: AbilityKey[];          // доступные атрибуты
         bonus: number;              // величина бонуса (обычно 1 или 2)
     };
 };

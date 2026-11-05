@@ -1,7 +1,8 @@
 import React from 'react';
 import { Character } from '../../types/Character';
-import { getModifier, getProficiencyBonus } from '../../utils/characterUtils';
+import { getModifier } from '../../utils/characterUtils';
 import './PassiveScoresSection.css';
+import {getProficiencyBonus} from "../../utils/proficiency";
 
 interface Props {
     character: Character;

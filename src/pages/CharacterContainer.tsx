@@ -25,7 +25,7 @@ import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { getActivePassiveEffects } from '../utils/racialFeatures';
 import {
-    getProficiencyBonus, getModifier, getACInfo, getAttackBonuses,
+    getModifier, getACInfo, getAttackBonuses,
 } from '../utils/characterUtils';
 import InspirationBadge from '../components/InspirationBadge';
 import ClassResourcesSection from '../components/character/ClassResourcesSection';
@@ -39,6 +39,7 @@ import SwapSpellModal from '../components/character/SwapSpellModal';
 import { canSwapSpellOnLongRest } from '../utils/spellSwap';
 import './CharacterContainer.css';
 import {Character} from "../types/Character";
+import {getProficiencyBonus} from "../utils/proficiency";
 
 const CharacterContainer: React.FC = () => {
     const { id } = useParams<{ id: string }>();

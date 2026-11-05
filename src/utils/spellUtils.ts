@@ -1,6 +1,7 @@
 import { Character, Spell } from '../types/Character';
 import { ALL_SPELLS } from '../constants/spells';
-import { getModifier, getProficiencyBonus } from './characterUtils';
+import { getModifier } from './characterUtils';
+import {getProficiencyBonus} from "./proficiency";
 
 export const getElementFromSpell = (spell: Spell | { name: string }): string | undefined => {
     const name = spell.name.toLowerCase();

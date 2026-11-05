@@ -5,7 +5,8 @@ import {
     getManeuversKnownCount,
 } from '../constants/maneuvers';
 import { getClassLevelFor } from './classResources';
-import { getProficiencyBonus, getModifier } from './characterUtils';
+import { getModifier } from './characterUtils';
+import {getProficiencyBonus} from "./proficiency";
 
 /**
  * Сколько манёвров знает персонаж (Battle Master).
