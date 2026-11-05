@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacters } from '../context/CharacterContext';
 import DiceRoller from '../components/DiceRoller';
 import Modal from '../components/Modal';
 import AddFeatModal from '../components/AddFeatModal';
-import AttackRoller from '../components/AttackRoller';
 import CharacterInfoSection from '../components/character/CharacterInfoSection';
 import AbilitiesSection from '../components/character/AbilitiesSection';
 import AttacksSection from '../components/character/AttacksSection';
@@ -39,6 +38,7 @@ import { canPrepareSpells } from '../utils/spellPreparation';
 import SwapSpellModal from '../components/character/SwapSpellModal';
 import { canSwapSpellOnLongRest } from '../utils/spellSwap';
 import './CharacterContainer.css';
+import {Character} from "../types/Character";
 
 const CharacterContainer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -56,8 +56,6 @@ const CharacterContainer: React.FC = () => {
         restorePactSlot,
         spendHitDie,
         restoreHitDie,
-        longRest,
-        shortRest,
         grantInspiration,
         spendInspiration,
         spendClassResource,
@@ -65,6 +63,7 @@ const CharacterContainer: React.FC = () => {
         createSpellSlotFromSorceryPoints,
         convertSpellSlotToSorceryPoints,
         applyPartialRecoveryFeature,
+        addDiceLog,
     } = useCharacters();
 
     const character = id ? getCharacter(id) : undefined;
@@ -101,13 +100,8 @@ const CharacterContainer: React.FC = () => {
     });
     const allFeatures = Array.from(allFeaturesMap.values());
 
-    // Spell stats
-    const preparedCount = character.spells.filter(s => s.prepared).length;
-    const knownCount = character.spells.length;
-    const racialCount = character.spells.filter(s => s.isRacial).length;
-
     // Handlers
-    const update = (data: Partial<typeof character>) => updateCharacter(character.id, data);
+    const update = (data: Partial<Character>) => updateCharacter(character.id, data);
 
     const handleDelete = () => {
         if (window.confirm(`Delete "${character.name}"? This action cannot be undone.`)) {
@@ -121,6 +115,7 @@ const CharacterContainer: React.FC = () => {
         if (!ok) return false;
         const newRoll = Math.floor(Math.random() * 20) + 1;
         setRollResultModal(prev => prev ? { ...prev, result: newRoll } : null);
+        addDiceLog(character.id, 20, newRoll);
         return true;
     };
 
@@ -200,8 +195,8 @@ const CharacterContainer: React.FC = () => {
     const hp = character.hp;
     const maxHp = character.maxHp;
     const tempHp = character.tempHp || 0;
-    const hpPercent = (hp / maxHp) * 100;
-    const tempPercent = (tempHp / maxHp) * 100;
+    const hpPercent = Math.min(100, (hp / maxHp) * 100);
+    const tempPercent = Math.min(100, (tempHp / maxHp) * 100);
 
     return (
         <div className="cc-page">
