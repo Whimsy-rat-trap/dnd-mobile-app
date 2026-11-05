@@ -61,6 +61,7 @@ import {
     LevelUpPayload,
 } from '../utils/leveling';
 import { GENERAL_FEATS } from '../constants/generalFeats';
+import {newId} from "../utils/id";
 
 const defaultSkills = [
     { name: 'Acrobatics', attribute: 'DEX', proficient: false },
@@ -311,7 +312,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.inventory = updated.inventory.map((item: any) => {
                         const withId = {
                             ...item,
-                            id: item.id || `item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                            id: item.id || newId('item'),
                         };
                         const libraryItem = ALL_ITEMS.find((li: any) => li.name === item.name);
                         if (!libraryItem) return withId;
@@ -509,7 +510,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const addCharacter = (character: Omit<Character, 'id'>) => {
         let newCharacter: Character = {
             ...character,
-            id: Date.now().toString(),
+            id: newId(),
             class: character.class || character.classLevels?.[0]?.className || 'Fighter',
             classes: character.classes || character.classLevels?.map(cl => cl.className) || ['Fighter'],
             level: character.level || character.classLevels?.reduce((sum, cl) => sum + cl.level, 0) || 1,
@@ -530,7 +531,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             subrace: character.subrace || '',
             savingThrowProficiencies: character.savingThrowProficiencies || [],
             activeConcentrationSpellId: null,
-            inspiration: false, // [NEW]
+            inspiration: false,
             feats: character.feats || [],
             currency: normalizeCurrency(character.currency || EMPTY_CURRENCY),
             usedSpellSlots: Array(9).fill(0),
@@ -540,7 +541,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         newCharacter.inventory = newCharacter.inventory.map(item => ({
             ...item,
-            id: item.id || `item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            id: item.id || newId('item'),
         }));
 
         newCharacter = addNaturalWeaponsToCharacter(newCharacter);
@@ -715,7 +716,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             if (!spellData) continue;
             newLearnedSpells.push({
                 ...spellData,
-                id: `learned-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                id: newId('learned'),
                 prepared: true,
                 isCustom: false,
             });
@@ -760,7 +761,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         const newItem: InventoryItem = {
             ...item,
-            id: item.id || `item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            id: item.id || newId('item'),
         };
         updateCharacter(characterId, { inventory: [...char.inventory, newItem] });
     };
@@ -792,7 +793,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const addSpellToCharacter = (characterId: string, spell: Omit<Spell, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const newSpell: Spell = { ...spell, id: Date.now().toString(), prepared: spell.prepared || false };
+        const newSpell: Spell = { ...spell, id: newId('spell'), prepared: spell.prepared || false };
         updateCharacter(characterId, { spells: [...char.spells, newSpell] });
     };
 
@@ -815,7 +816,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const addQuestToCharacter = (characterId: string, quest: Omit<Quest, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const newQuest: Quest = { ...quest, id: Date.now().toString() };
+        const newQuest: Quest = { ...quest, id: newId('quest') };
         updateCharacter(characterId, { quests: [...char.quests, newQuest] });
     };
 
@@ -838,7 +839,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const addCampaignToCharacter = (characterId: string, campaign: Omit<Campaign, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const newCampaign: Campaign = { ...campaign, id: Date.now().toString() };
+        const newCampaign: Campaign = { ...campaign, id: newId('campaign') };
         updateCharacter(characterId, { campaigns: [...char.campaigns, newCampaign] });
     };
 
@@ -908,7 +909,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const addFeat = (characterId: string, feat: Omit<Feat, 'id'>) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        const newFeat: Feat = { ...feat, id: `custom-${Date.now()}` };
+        const newFeat: Feat = { ...feat, id: newId('custom') };
         updateCharacter(characterId, { feats: [...char.feats, newFeat] });
     };
 

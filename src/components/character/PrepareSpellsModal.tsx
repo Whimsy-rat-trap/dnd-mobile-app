@@ -4,6 +4,7 @@ import { Character } from '../../types/Character';
 import { useCharacters } from '../../context/CharacterContext';
 import { getPreparableSpellsData } from '../../utils/spellPreparation';
 import './PrepareSpellsModal.css';
+import {groupByLevel} from "../../utils/arrayHelpers";
 
 interface Props {
     isOpen: boolean;
@@ -65,12 +66,8 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
     };
 
     // Группируем preparable по уровню
-    const grouped = new Map<number, typeof data.spells>();
-    for (const s of data.spells) {
-        if (!grouped.has(s.level)) grouped.set(s.level, []);
-        grouped.get(s.level)!.push(s);
-    }
-    const levels = Array.from(grouped.keys()).sort((a, b) => a - b);
+    const grouped = groupByLevel(data.spells);
+    const levels = Array.from(grouped.keys());
 
     const total = selected.size;
     const isOverLimit = total > data.maxPrepared;

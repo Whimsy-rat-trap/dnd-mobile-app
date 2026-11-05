@@ -6,6 +6,7 @@ import {
     getForgettableSpells,
     getLearnableSpellsForSwap,
 } from '../../utils/spellSwap';
+import { groupByLevel } from '../../utils/arrayHelpers';
 import './SwapSpellModal.css';
 
 interface Props {
@@ -70,17 +71,8 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
     };
 
     // Группировка
-    const groupByLevel = <T extends { level: number; name: string }>(items: T[]) => {
-        const map = new Map<number, T[]>();
-        for (const s of items) {
-            if (!map.has(s.level)) map.set(s.level, []);
-            map.get(s.level)!.push(s);
-        }
-        return Array.from(map.entries()).sort((a, b) => a[0] - b[0]);
-    };
-
-    const forgetGroups = groupByLevel(forgettable);
-    const learnGroups = groupByLevel(learnable);
+    const forgetGroups = Array.from(groupByLevel(forgettable).entries());
+    const learnGroups = Array.from(groupByLevel(learnable).entries());
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="ssm-modal">
