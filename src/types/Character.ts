@@ -7,6 +7,8 @@ export interface ClassLevel {
 
 export interface Character {
     id: string;
+    /** Версия схемы на момент сохранения. Управляется context/migrations.ts. */
+    schemaVersion: number;
     name: string;
     /** @deprecated Основной класс теперь используют classLevels[0].className */
     class: string;

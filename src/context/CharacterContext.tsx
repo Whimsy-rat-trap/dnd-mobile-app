@@ -4,7 +4,6 @@ import { getNaturalWeapons } from '../utils/racialFeatures';
 import { recalculateAC } from '../utils/armorUtils';
 import { getRacialSpells } from '../constants/racialSpells';
 import { getFeatsForCharacter } from '../constants/feats';
-import { ALL_ITEMS } from '../constants/items';
 import {
     getNonPactSpellSlots,
     getUsedSpellSlots,
@@ -62,27 +61,9 @@ import {
 } from '../utils/leveling';
 import { GENERAL_FEATS } from '../constants/generalFeats';
 import {newId} from "../utils/id";
-
-const defaultSkills = [
-    { name: 'Acrobatics', attribute: 'DEX', proficient: false },
-    { name: 'Animal Handling', attribute: 'WIS', proficient: false },
-    { name: 'Arcana', attribute: 'INT', proficient: false },
-    { name: 'Athletics', attribute: 'STR', proficient: false },
-    { name: 'Deception', attribute: 'CHA', proficient: false },
-    { name: 'History', attribute: 'INT', proficient: false },
-    { name: 'Insight', attribute: 'WIS', proficient: false },
-    { name: 'Intimidation', attribute: 'CHA', proficient: false },
-    { name: 'Investigation', attribute: 'INT', proficient: false },
-    { name: 'Medicine', attribute: 'WIS', proficient: false },
-    { name: 'Nature', attribute: 'INT', proficient: false },
-    { name: 'Perception', attribute: 'WIS', proficient: false },
-    { name: 'Performance', attribute: 'CHA', proficient: false },
-    { name: 'Persuasion', attribute: 'CHA', proficient: false },
-    { name: 'Religion', attribute: 'INT', proficient: false },
-    { name: 'Sleight of Hand', attribute: 'DEX', proficient: false },
-    { name: 'Stealth', attribute: 'DEX', proficient: false },
-    { name: 'Survival', attribute: 'WIS', proficient: false },
-];
+import { migrate } from './migrations';
+import { DEFAULT_SKILLS } from '../constants/skills';
+import { CURRENT_SCHEMA_VERSION } from '../constants/schema';
 
 interface CharacterContextType {
     characters: Character[];
@@ -156,186 +137,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!stored) return [];
         try {
             const parsed = JSON.parse(stored);
-            return parsed.map((char: any) => {
-                const updated = { ...char };
-
-                if (typeof updated.class === 'string' && !updated.classes) {
-                    updated.classes = [updated.class];
-                } else if (!updated.classes) {
-                    updated.classes = [updated.class || 'Fighter'];
-                }
-                if (!updated.class) {
-                    updated.class = updated.classes[0] || 'Fighter';
-                }
-
-                if (!updated.classLevels || updated.classLevels.length === 0) {
-                    if (updated.classes && updated.level) {
-                        updated.classLevels = updated.classes.map((cls: string) => ({ className: cls, level: updated.level }));
-                    } else if (updated.class) {
-                        updated.classLevels = [{ className: updated.class, level: updated.level || 1, subclass: '' }];
-                    } else {
-                        updated.classLevels = [{ className: 'Fighter', level: 1, subclass: '' }];
-                    }
-                }
-                if (updated.classLevels.length > 0) {
-                    updated.level = updated.classLevels.reduce((sum: number, cl: any) => sum + cl.level, 0);
-                }
-
-                // Миграция: перенос character.subclass в classLevels[0].subclass
-                if (Array.isArray(updated.classLevels) && updated.classLevels.length > 0) {
-                    updated.classLevels = updated.classLevels.map((cl: any, idx: number) => {
-                        if (idx === 0 && !cl.subclass && updated.subclass) {
-                            return { ...cl, subclass: updated.subclass };
-                        }
-                        return cl;
-                    });
-                }
-                if (updated.classLevels?.[0]?.subclass) {
-                    updated.subclass = updated.classLevels[0].subclass;
-                }
-
-                if (!updated.skills || updated.skills.length === 0) {
-                    updated.skills = defaultSkills;
-                }
-                if (!updated.diceLogs) updated.diceLogs = {};
-
-                if (updated.deathSuccesses === undefined) updated.deathSuccesses = 0;
-                if (updated.deathFailures === undefined) updated.deathFailures = 0;
-                if (updated.isStable === undefined) updated.isStable = false;
-
-                if (Array.isArray(updated.toolProficiencies) && updated.toolProficiencies.length > 0) {
-                    if (typeof updated.toolProficiencies[0] === 'string') {
-                        updated.toolProficiencies = updated.toolProficiencies.map((name: string) => ({
-                            name,
-                            attribute: 'DEX',
-                            proficient: true,
-                        }));
-                    } else if (typeof updated.toolProficiencies[0] === 'object') {
-                        updated.toolProficiencies = updated.toolProficiencies.map((tool: any) => ({
-                            ...tool,
-                            attribute: tool.attribute || 'DEX',
-                        }));
-                    }
-                } else {
-                    updated.toolProficiencies = updated.toolProficiencies || [];
-                }
-
-                if (!updated.languages) updated.languages = [];
-                if (!updated.size) updated.size = 'Medium';
-                if (!updated.creatureType) updated.creatureType = 'Humanoid';
-                if (!updated.subrace) updated.subrace = '';
-                if (!updated.savingThrowProficiencies) updated.savingThrowProficiencies = [];
-
-                if (updated.activeConcentrationSpellId === undefined) {
-                    updated.activeConcentrationSpellId = null;
-                }
-
-                // [NEW] inspiration migration
-                if (updated.inspiration === undefined) {
-                    updated.inspiration = false;
-                }
-
-                if (!updated.feats) updated.feats = [];
-
-                if (!Array.isArray(updated.knownInvocations)) updated.knownInvocations = [];
-
-                if (!updated.currency) {
-                    updated.currency = { gp: 0, sp: 0, cp: 0 };
-                } else {
-                    updated.currency = normalizeCurrency(updated.currency);
-                }
-
-                // Миграция слотов заклинаний
-                if (!Array.isArray(updated.usedSpellSlots) || updated.usedSpellSlots.length !== 9) {
-                    updated.usedSpellSlots = Array(9).fill(0);
-                }
-                if (typeof updated.usedPactSlots !== 'number') {
-                    updated.usedPactSlots = 0;
-                }
-
-                // Миграция hit dice
-                if (!updated.hitDiceUsed || typeof updated.hitDiceUsed !== 'object') {
-                    updated.hitDiceUsed = {};
-                }
-
-                if (!updated.classResourcesUsed || typeof updated.classResourcesUsed !== 'object') {
-                    updated.classResourcesUsed = {};
-                }
-
-                if (!Array.isArray(updated.partialRecoveryUsed)) {
-                    updated.partialRecoveryUsed = [];
-                }
-
-                if (!Array.isArray(updated.knownManeuvers)) {
-                    updated.knownManeuvers = [];
-                }
-
-                if (!Array.isArray(updated.knownMetamagic)) {
-                    updated.knownMetamagic = [];
-                }
-
-                if (updated.levelingMode === undefined) {
-                    updated.levelingMode = 'xp';
-                }
-                if (typeof updated.allowFeatInsteadOfASI !== 'boolean') {
-                    updated.allowFeatInsteadOfASI = false;
-                }
-                if (!Array.isArray(updated.hpRolls)) {
-                    updated.hpRolls = [];
-                }
-                if (!Array.isArray(updated.abilityScoreImprovements)) {
-                    updated.abilityScoreImprovements = [];
-                }
-
-                // Миграция старых полей bardicInspirationUsed / kiUsed → classResourcesUsed
-                const legacyBardic = (updated as any).bardicInspirationUsed;
-                const legacyKi = (updated as any).kiUsed;
-                if (
-                    typeof legacyBardic === 'number' &&
-                    legacyBardic > 0 &&
-                    !updated.classResourcesUsed['bardic-inspiration']
-                ) {
-                    updated.classResourcesUsed['bardic-inspiration'] = legacyBardic;
-                }
-                if (
-                    typeof legacyKi === 'number' &&
-                    legacyKi > 0 &&
-                    !updated.classResourcesUsed['ki']
-                ) {
-                    updated.classResourcesUsed['ki'] = legacyKi;
-                }
-                delete (updated as any).bardicInspirationUsed;
-                delete (updated as any).kiUsed;
-
-                // Гарантируем id у предметов инвентаря
-                if (Array.isArray(updated.inventory)) {
-                    updated.inventory = updated.inventory.map((item: any) => {
-                        const withId = {
-                            ...item,
-                            id: item.id || newId('item'),
-                        };
-                        const libraryItem = ALL_ITEMS.find((li: any) => li.name === item.name);
-                        if (!libraryItem) return withId;
-                        return {
-                            ...withId,
-                            damageDice: withId.damageDice ?? libraryItem.damageDice,
-                            damageType: withId.damageType ?? libraryItem.damageType,
-                            healingDice: withId.healingDice ?? libraryItem.healingDice,
-                            uses: withId.uses ?? libraryItem.uses,
-                            baseAC: withId.baseAC ?? libraryItem.baseAC,
-                            acBonus: withId.acBonus ?? libraryItem.acBonus,
-                            dexModifierAllowed: withId.dexModifierAllowed ?? libraryItem.dexModifierAllowed,
-                            maxDexBonus: withId.maxDexBonus ?? libraryItem.maxDexBonus,
-                            strengthRequirement: withId.strengthRequirement ?? libraryItem.strengthRequirement,
-                            stealthDisadvantage: withId.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
-                        };
-                    });
-                } else {
-                    updated.inventory = [];
-                }
-
-                return updated;
-            });
+            if (!Array.isArray(parsed)) return [];
+            return parsed
+                .filter((c: any) => c != null)
+                .map((c: any) => migrate(c));
         } catch (e) {
             console.error('Failed to parse characters from localStorage', e);
             return [];
@@ -511,11 +316,14 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         let newCharacter: Character = {
             ...character,
             id: newId(),
+            schemaVersion: CURRENT_SCHEMA_VERSION,
             class: character.class || character.classLevels?.[0]?.className || 'Fighter',
             classes: character.classes || character.classLevels?.map(cl => cl.className) || ['Fighter'],
             level: character.level || character.classLevels?.reduce((sum, cl) => sum + cl.level, 0) || 1,
             classLevels: character.classLevels || [{ className: character.class || 'Fighter', level: character.level || 1, subclass: '' }],
-            skills: (character.skills && character.skills.length > 0) ? character.skills : defaultSkills,
+            skills: (character.skills && character.skills.length > 0)
+                ? character.skills
+                : DEFAULT_SKILLS.map(s => ({ ...s })),
             toolProficiencies: character.toolProficiencies?.map((tool: any) => ({
                 name: tool.name || tool,
                 attribute: tool.attribute || 'DEX',
