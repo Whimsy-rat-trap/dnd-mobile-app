@@ -1,0 +1,23 @@
+# Build output
+build/
+coverage/
+
+# Dependencies (на всякий случай)
+node_modules/
+
+# Lock файлы
+package-lock.json
+yarn.lock
+
+# Автогенерируемое
+*.tsbuildinfo
+
+# Markdown — иногда лучше не форматировать (таблицы ломаются)
+*.md
+
+# Файлы, которые Prettier не понимает
+.env
+.env.*
+
+# Опционально — игнорировать всё, что не src
+public/
