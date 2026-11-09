@@ -1,5 +1,3 @@
-import { DND_RACES } from './races';
-
 export type SizeOption = 'Small' | 'Medium' | 'Large';
 
 export interface RaceDetail {

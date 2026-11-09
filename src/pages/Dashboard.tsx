@@ -39,7 +39,6 @@ const Dashboard: React.FC = () => {
         updateCharacter,
         deleteCharacter,
         addDiceLog,
-        startConcentration,
         endConcentration,
         makeConcentrationCheck,
         resolveConcentrationCheck,
@@ -48,11 +47,9 @@ const Dashboard: React.FC = () => {
         restoreSpellSlot,
         spendPactSlot,
         restorePactSlot,
-        longRest,
-        shortRest,
         grantInspiration,
         spendInspiration,
-        applyLevelUp, // [LVL]
+        applyLevelUp,
     } = useCharacters();
 
     const safeCharacters = React.useMemo(

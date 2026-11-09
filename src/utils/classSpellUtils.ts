@@ -7,11 +7,9 @@ import {
 import { SUBCLASS_ALWAYS_PREPARED_SPELLS } from '../constants/subclassSpells';
 import { SUBCLASS_EXPANDED_SPELLS } from '../constants/subclassExpandedSpells';
 import { MAGICAL_SECRETS_FEATURES } from '../constants/magicalSecrets'
-import { ELDRITCH_INVOCATIONS, PactBoon } from '../constants/eldritchInvocations';
 import { isRitualSpell } from '../constants/ritualSpells';
 
 // Ключи и резолвинг класса
-
 export function resolveSpellListKey(
     className: string,
     subclass?: string

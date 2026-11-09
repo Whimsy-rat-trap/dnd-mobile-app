@@ -31,7 +31,6 @@ import {
 } from '../constants/classResources';
 import {
     getClassLevelFor,
-    computeMaxUses,
     resolveRecharge,
     getClassResourceState,
     isResourceApplicable,
@@ -39,23 +38,18 @@ import {
 import {
     PARTIAL_RECOVERY_FEATURES,
     AUTO_REST_RECOVERY,
-    PartialRecoveryFeature,
-    AutoRestRecoveryFeature,
 } from '../constants/partialRecovery';
 import {
     canUsePartialRecovery,
     getPartialRecoveryBudget,
 } from '../utils/partialRecovery';
-import { getKnownManeuversLimit, getAvailableManeuvers } from '../utils/maneuvers';
+import { getKnownManeuversLimit } from '../utils/maneuvers';
 import { getMetamagicById } from '../constants/metamagic';
 import { getKnownMetamagicLimit } from '../utils/metamagic';
 import { getManeuverById } from '../constants/maneuvers';
 import { ALL_SPELLS } from '../constants/spells';
 import {
     getXpToNextLevel,
-    validateLevelUp,
-    shouldGetASI,
-    needsSubclassChoice,
     computeHpGain,
     LevelUpPayload,
 } from '../utils/leveling';

@@ -6,7 +6,6 @@ import {
     getAvailableManeuvers,
     getKnownManeuversLimit,
 } from '../../utils/maneuvers';
-import { MANEUVERS } from '../../constants/maneuvers';
 import { useCharacters } from '../../context/CharacterContext';
 import './ManageManeuversModal.css';
 

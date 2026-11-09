@@ -24,7 +24,6 @@ const HPSection: React.FC<HPSectionProps> = ({
                                                  maxHp,
                                                  level,
                                                  mainClass,
-                                                 conMod,
                                                  hpMethod,
                                                  onHpMethodChange,
                                                  rolledHps,

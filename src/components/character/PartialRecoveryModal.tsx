@@ -4,7 +4,6 @@ import { Character } from '../../types/Character';
 import { PartialRecoveryFeature } from '../../constants/partialRecovery';
 import { getPartialRecoveryBudget } from '../../utils/partialRecovery';
 import { getNonPactSpellSlots, getUsedSpellSlots } from '../../utils/spellcasting';
-import { getClassLevelFor } from '../../utils/classResources';
 import './PartialRecoveryModal.css';
 
 interface Props {
@@ -26,7 +25,6 @@ const PartialRecoveryModal: React.FC<Props> = ({
 
     if (!isOpen || !feature || feature.target.type !== 'spell-slots') return null;
 
-    const classLevel = getClassLevelFor(character, feature.className);
     const budget = getPartialRecoveryBudget(character, feature.target, feature.className);
     const maxLevel = feature.target.maxSlotLevel;
 

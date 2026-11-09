@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DND_CLASSES } from '../constants/classes';
 
 export const useClassLevels = (initialClass: string, initialLevel: number) => {

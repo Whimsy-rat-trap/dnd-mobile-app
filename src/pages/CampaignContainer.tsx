@@ -25,7 +25,7 @@ const CampaignContainer: React.FC = () => {
         deleteCampaign,
         getCampaign,
     } = useCampaigns();
-    const { characters, currentCharacterId } = useCharacters();
+    const { characters } = useCharacters();
 
     // Определяем режим: все кампании или кампании персонажа
     const params = new URLSearchParams(routerLocation.search);
