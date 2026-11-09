@@ -1,6 +1,6 @@
 import { Character } from '../types/Character';
-import {getPrimarySpellcastingAbility} from "./spellUtils";
-import {getProficiencyBonus} from "./proficiency";
+import { getPrimarySpellcastingAbility } from './spellUtils';
+import { getProficiencyBonus } from './proficiency';
 
 export const NATURAL_ARMOR: Record<string, { base: number; dex?: boolean; max?: number }> = {
     Tortle: { base: 17 },
@@ -18,10 +18,10 @@ export interface ACInfo {
 
 export const getACInfo = (character: Character): ACInfo => {
     const dexMod = getModifier(character.abilities.dex);
-    const equippedArmor = character.inventory.find(i => i.type === 'armor' && i.equipped);
-    const equippedShield = character.inventory.find(i => i.type === 'shield' && i.equipped);
+    const equippedArmor = character.inventory.find((i) => i.type === 'armor' && i.equipped);
+    const equippedShield = character.inventory.find((i) => i.type === 'shield' && i.equipped);
     const acBonusItems = character.inventory.filter(
-        i => i.equipped && i.acBonus && i.type !== 'armor' && i.type !== 'shield'
+        (i) => i.equipped && i.acBonus && i.type !== 'armor' && i.type !== 'shield'
     );
     const raceNaturalArmor = NATURAL_ARMOR[character.race];
 
@@ -49,7 +49,7 @@ export const getACInfo = (character: Character): ACInfo => {
             ac += dexBonus;
             breakdown.push(
                 `Dex bonus: ${dexBonus >= 0 ? '+' : ''}${dexBonus}` +
-                (maxDex !== Infinity ? ` (max ${maxDex})` : '')
+                    (maxDex !== Infinity ? ` (max ${maxDex})` : '')
             );
         }
         total = ac;
@@ -77,7 +77,9 @@ export const getSkillBonus = (
     abilities: Character['abilities'],
     proficiencyBonus: number
 ): number => {
-    const mod = getModifier(abilities[skill.attribute.toLowerCase() as keyof Character['abilities']]);
+    const mod = getModifier(
+        abilities[skill.attribute.toLowerCase() as keyof Character['abilities']]
+    );
     return skill.proficient ? mod + proficiencyBonus : mod;
 };
 

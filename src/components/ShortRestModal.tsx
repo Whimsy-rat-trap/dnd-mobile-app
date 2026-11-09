@@ -19,20 +19,13 @@ interface RollLogEntry {
     hpAfter: number;
 }
 
-const ShortRestModal: React.FC<ShortRestModalProps> = ({
-                                                           isOpen,
-                                                           onClose,
-                                                           characterId,
-                                                       }) => {
+const ShortRestModal: React.FC<ShortRestModalProps> = ({ isOpen, onClose, characterId }) => {
     const { getCharacter, spendHitDie, updateCharacter, shortRest } = useCharacters();
     const character = getCharacter(characterId);
 
     const [rollLog, setRollLog] = useState<RollLogEntry[]>([]);
 
-    const pools = useMemo(
-        () => (character ? getHitDicePools(character) : []),
-        [character]
-    );
+    const pools = useMemo(() => (character ? getHitDicePools(character) : []), [character]);
 
     if (!character) return null;
 
@@ -44,7 +37,7 @@ const ShortRestModal: React.FC<ShortRestModalProps> = ({
         const hpAfter = Math.min(hpBefore + result.heal, character.maxHp);
         updateCharacter(characterId, { hp: hpAfter });
 
-        setRollLog(prev => [
+        setRollLog((prev) => [
             {
                 sides,
                 roll: result.roll,
@@ -92,7 +85,7 @@ const ShortRestModal: React.FC<ShortRestModalProps> = ({
                     <div className="srm-empty">No hit dice available.</div>
                 ) : (
                     <div className="srm-pools">
-                        {pools.map(pool => (
+                        {pools.map((pool) => (
                             <div key={pool.sides} className="srm-pool-row">
                                 <span className="srm-pool-label">d{pool.sides}</span>
                                 <div className="srm-pool-dots">
@@ -103,10 +96,18 @@ const ShortRestModal: React.FC<ShortRestModalProps> = ({
                                                 key={i}
                                                 type="button"
                                                 className={`srm-dot ${isAvailable ? 'available' : 'used'}`}
-                                                onClick={() => isAvailable && handleSpendDie(pool.sides)}
+                                                onClick={() =>
+                                                    isAvailable && handleSpendDie(pool.sides)
+                                                }
                                                 disabled={!isAvailable}
-                                                title={isAvailable ? `Roll d${pool.sides} + CON` : 'Used'}
-                                                aria-label={isAvailable ? 'Spend hit die' : 'Used hit die'}
+                                                title={
+                                                    isAvailable
+                                                        ? `Roll d${pool.sides} + CON`
+                                                        : 'Used'
+                                                }
+                                                aria-label={
+                                                    isAvailable ? 'Spend hit die' : 'Used hit die'
+                                                }
                                             />
                                         );
                                     })}
@@ -131,7 +132,9 @@ const ShortRestModal: React.FC<ShortRestModalProps> = ({
                                     <span className="srm-log-die">d{entry.sides}</span>
                                     <span className="srm-log-formula">
                                         {entry.roll}
-                                        {entry.conMod >= 0 ? ` + ${entry.conMod}` : ` − ${Math.abs(entry.conMod)}`}
+                                        {entry.conMod >= 0
+                                            ? ` + ${entry.conMod}`
+                                            : ` − ${Math.abs(entry.conMod)}`}
                                         {' = '}
                                         <strong>{entry.heal}</strong>
                                     </span>

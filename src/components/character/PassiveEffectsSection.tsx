@@ -32,9 +32,7 @@ const PassiveEffectsSection: React.FC<PassiveEffectsSectionProps> = ({ effects }
                                 <span className="cc-passive-effect-source"> ({effect.source})</span>
                             )}
                         </span>
-                        <span className="cc-passive-effect-description">
-                            {effect.description}
-                        </span>
+                        <span className="cc-passive-effect-description">{effect.description}</span>
                     </div>
                 ))}
             </div>

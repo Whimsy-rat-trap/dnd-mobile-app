@@ -15,5 +15,5 @@ export const DND_RACES = [
     'Kenku',
     'Lizardfolk',
     'Tabaxi',
-    'Tortle'
+    'Tortle',
 ];

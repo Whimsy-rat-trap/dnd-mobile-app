@@ -16,7 +16,7 @@ import {
 import { getMaxSpellLevelForClass } from './classSpellUtils';
 import { getAvailableClassResources, ClassResourceState } from './classResources';
 import { getSpellSaveDC, getSpellAttackBonus } from './spellUtils';
-import { getProficiencyBonus } from "./proficiency";
+import { getProficiencyBonus } from './proficiency';
 import { getSpellLearningInfo, SpellLearningInfo } from './spellLearning'; // [SPELL LEARNING]
 
 /**
@@ -86,9 +86,7 @@ export function computeHpGain(
         return { gain: Math.max(1, average + conMod) };
     }
 
-    const usedRoll = roll !== undefined
-        ? roll
-        : Math.floor(Math.random() * hitDie) + 1;
+    const usedRoll = roll !== undefined ? roll : Math.floor(Math.random() * hitDie) + 1;
     return {
         gain: Math.max(1, usedRoll + conMod),
         usedRoll,
@@ -203,10 +201,10 @@ function simulateLevelUp(
     const newClassLevels = character.classLevels.map((cl, i) =>
         i === classIndex
             ? {
-                ...cl,
-                level: cl.level + 1,
-                subclass: chosenSubclass || cl.subclass,
-            }
+                  ...cl,
+                  level: cl.level + 1,
+                  subclass: chosenSubclass || cl.subclass,
+              }
             : cl
     );
     return {
@@ -308,14 +306,16 @@ export function computeLevelUpPreview(
     // Max prepared
     const prepFrom = getMaxPrepared(character);
     const prepTo = getMaxPrepared(preview);
-    const maxPrepared =
-        prepFrom !== prepTo ? { from: prepFrom, to: prepTo } : null;
+    const maxPrepared = prepFrom !== prepTo ? { from: prepFrom, to: prepTo } : null;
 
     // Max spell level for this class
     const msFrom = getMaxSpellLevelForClass(cl.className, classLevelFrom, cl.subclass);
-    const msTo = getMaxSpellLevelForClass(cl.className, classLevelTo, chosenSubclass || cl.subclass);
-    const maxSpellLevel =
-        msFrom !== msTo ? { from: msFrom, to: msTo } : null;
+    const msTo = getMaxSpellLevelForClass(
+        cl.className,
+        classLevelTo,
+        chosenSubclass || cl.subclass
+    );
+    const maxSpellLevel = msFrom !== msTo ? { from: msFrom, to: msTo } : null;
 
     // Spellcasting DC/Attack (только если это кастер)
     let spellSaveDC: LevelUpPreview['spellSaveDC'] = null;

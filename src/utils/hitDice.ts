@@ -74,7 +74,7 @@ export interface HitDieRollResult {
  */
 export function rollHitDie(character: Character, sides: number): HitDieRollResult | null {
     const pools = getHitDicePools(character);
-    const pool = pools.find(p => p.sides === sides);
+    const pool = pools.find((p) => p.sides === sides);
     if (!pool || pool.available <= 0) return null;
 
     const roll = Math.floor(Math.random() * sides) + 1;

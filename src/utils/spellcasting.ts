@@ -51,7 +51,7 @@ export function isClassSpellcaster(
  */
 export function isSpellcastingClass(character: Character): boolean {
     if (!character.classLevels || character.classLevels.length === 0) return false;
-    return character.classLevels.some(cl =>
+    return character.classLevels.some((cl) =>
         isClassSpellcaster(cl.className, cl.subclass, cl.level)
     );
 }
@@ -78,60 +78,60 @@ function getCasterLevelContribution(cl: ClassLevel): number {
 
 /** Слоты полного кастера (по уровню кастера 1–20). */
 const FULL_CASTER_SLOTS: Record<number, number[]> = {
-    1: [2,0,0,0,0,0,0,0,0],
-    2: [3,0,0,0,0,0,0,0,0],
-    3: [4,2,0,0,0,0,0,0,0],
-    4: [4,3,0,0,0,0,0,0,0],
-    5: [4,3,2,0,0,0,0,0,0],
-    6: [4,3,3,0,0,0,0,0,0],
-    7: [4,3,3,1,0,0,0,0,0],
-    8: [4,3,3,2,0,0,0,0,0],
-    9: [4,3,3,3,1,0,0,0,0],
-    10: [4,3,3,3,2,0,0,0,0],
-    11: [4,3,3,3,2,1,0,0,0],
-    12: [4,3,3,3,2,1,0,0,0],
-    13: [4,3,3,3,2,1,1,0,0],
-    14: [4,3,3,3,2,1,1,0,0],
-    15: [4,3,3,3,2,1,1,1,0],
-    16: [4,3,3,3,2,1,1,1,0],
-    17: [4,3,3,3,2,1,1,1,1],
-    18: [4,3,3,3,3,1,1,1,1],
-    19: [4,3,3,3,3,2,1,1,1],
-    20: [4,3,3,3,3,2,2,1,1],
+    1: [2, 0, 0, 0, 0, 0, 0, 0, 0],
+    2: [3, 0, 0, 0, 0, 0, 0, 0, 0],
+    3: [4, 2, 0, 0, 0, 0, 0, 0, 0],
+    4: [4, 3, 0, 0, 0, 0, 0, 0, 0],
+    5: [4, 3, 2, 0, 0, 0, 0, 0, 0],
+    6: [4, 3, 3, 0, 0, 0, 0, 0, 0],
+    7: [4, 3, 3, 1, 0, 0, 0, 0, 0],
+    8: [4, 3, 3, 2, 0, 0, 0, 0, 0],
+    9: [4, 3, 3, 3, 1, 0, 0, 0, 0],
+    10: [4, 3, 3, 3, 2, 0, 0, 0, 0],
+    11: [4, 3, 3, 3, 2, 1, 0, 0, 0],
+    12: [4, 3, 3, 3, 2, 1, 0, 0, 0],
+    13: [4, 3, 3, 3, 2, 1, 1, 0, 0],
+    14: [4, 3, 3, 3, 2, 1, 1, 0, 0],
+    15: [4, 3, 3, 3, 2, 1, 1, 1, 0],
+    16: [4, 3, 3, 3, 2, 1, 1, 1, 0],
+    17: [4, 3, 3, 3, 2, 1, 1, 1, 1],
+    18: [4, 3, 3, 3, 3, 1, 1, 1, 1],
+    19: [4, 3, 3, 3, 3, 2, 1, 1, 1],
+    20: [4, 3, 3, 3, 3, 2, 2, 1, 1],
 };
 
 /** Слоты варлока (по уровню 1–20). */
 const WARLOCK_SLOTS: Record<number, number[]> = {
-    1: [1,0,0,0,0,0,0,0,0],
-    2: [2,0,0,0,0,0,0,0,0],
-    3: [0,2,0,0,0,0,0,0,0],
-    4: [0,2,0,0,0,0,0,0,0],
-    5: [0,0,2,0,0,0,0,0,0],
-    6: [0,0,2,0,0,0,0,0,0],
-    7: [0,0,0,2,0,0,0,0,0],
-    8: [0,0,0,2,0,0,0,0,0],
-    9: [0,0,0,0,2,0,0,0,0],
-    10: [0,0,0,0,2,0,0,0,0],
-    11: [0,0,0,0,3,0,0,0,0],
-    12: [0,0,0,0,3,0,0,0,0],
-    13: [0,0,0,0,3,0,0,0,0],
-    14: [0,0,0,0,3,0,0,0,0],
-    15: [0,0,0,0,3,0,0,0,0],
-    16: [0,0,0,0,3,0,0,0,0],
-    17: [0,0,0,0,4,0,0,0,0],
-    18: [0,0,0,0,4,0,0,0,0],
-    19: [0,0,0,0,4,0,0,0,0],
-    20: [0,0,0,0,4,0,0,0,0],
+    1: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    2: [2, 0, 0, 0, 0, 0, 0, 0, 0],
+    3: [0, 2, 0, 0, 0, 0, 0, 0, 0],
+    4: [0, 2, 0, 0, 0, 0, 0, 0, 0],
+    5: [0, 0, 2, 0, 0, 0, 0, 0, 0],
+    6: [0, 0, 2, 0, 0, 0, 0, 0, 0],
+    7: [0, 0, 0, 2, 0, 0, 0, 0, 0],
+    8: [0, 0, 0, 2, 0, 0, 0, 0, 0],
+    9: [0, 0, 0, 0, 2, 0, 0, 0, 0],
+    10: [0, 0, 0, 0, 2, 0, 0, 0, 0],
+    11: [0, 0, 0, 0, 3, 0, 0, 0, 0],
+    12: [0, 0, 0, 0, 3, 0, 0, 0, 0],
+    13: [0, 0, 0, 0, 3, 0, 0, 0, 0],
+    14: [0, 0, 0, 0, 3, 0, 0, 0, 0],
+    15: [0, 0, 0, 0, 3, 0, 0, 0, 0],
+    16: [0, 0, 0, 0, 3, 0, 0, 0, 0],
+    17: [0, 0, 0, 0, 4, 0, 0, 0, 0],
+    18: [0, 0, 0, 0, 4, 0, 0, 0, 0],
+    19: [0, 0, 0, 0, 4, 0, 0, 0, 0],
+    20: [0, 0, 0, 0, 4, 0, 0, 0, 0],
 };
 
 /** Слоты третьего кастера (Eldritch Knight / Arcane Trickster). */
 const THIRD_CASTER_SLOTS: Record<number, number[]> = {
-    1: [2,0,0,0,0,0,0,0,0],
-    2: [3,0,0,0,0,0,0,0,0],
-    3: [3,0,0,0,0,0,0,0,0],
-    4: [4,2,0,0,0,0,0,0,0],
-    5: [4,2,0,0,0,0,0,0,0],
-    6: [4,3,0,0,0,0,0,0,0],
+    1: [2, 0, 0, 0, 0, 0, 0, 0, 0],
+    2: [3, 0, 0, 0, 0, 0, 0, 0, 0],
+    3: [3, 0, 0, 0, 0, 0, 0, 0, 0],
+    4: [4, 2, 0, 0, 0, 0, 0, 0, 0],
+    5: [4, 2, 0, 0, 0, 0, 0, 0, 0],
+    6: [4, 3, 0, 0, 0, 0, 0, 0, 0],
 };
 
 function getFullCasterSlots(level: number): number[] {
@@ -267,13 +267,13 @@ export interface PactMagicInfo {
 export function getPactMagicInfo(character: Character): PactMagicInfo | null {
     const classLevels = character.classLevels || [];
     const warlockLevel = classLevels
-        .filter(cl => cl.className === WARLOCK_CLASS)
+        .filter((cl) => cl.className === WARLOCK_CLASS)
         .reduce((sum, cl) => sum + cl.level, 0);
 
     if (warlockLevel === 0) return null;
 
     const slots = getWarlockSlots(warlockLevel);
-    const idx = slots.findIndex(n => n > 0);
+    const idx = slots.findIndex((n) => n > 0);
     if (idx === -1) return null;
 
     const total = slots[idx];
@@ -309,7 +309,7 @@ export function getAvailableSpellSlots(character: Character): number[] {
  * Есть ли у персонажа хоть какие-то слоты (обычные или pact).
  */
 export function hasAnySpellSlots(character: Character): boolean {
-    const regular = getNonPactSpellSlots(character).some(n => n > 0);
+    const regular = getNonPactSpellSlots(character).some((n) => n > 0);
     const pact = getPactMagicInfo(character);
     return regular || !!pact;
 }

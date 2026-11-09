@@ -16,15 +16,15 @@ interface Props {
 }
 
 const AttacksSection: React.FC<Props> = ({
-                                             features,
-                                             feats,
-                                             attackBonus,
-                                             damageBonus,
-                                             character,
-                                             onSpendSuperiorityDie,
-                                         }) => {
-    const attackingFeatures = features.filter(f => f.damageDice);
-    const attackingFeats = feats.filter(f => f.damageDice);
+    features,
+    feats,
+    attackBonus,
+    damageBonus,
+    character,
+    onSpendSuperiorityDie,
+}) => {
+    const attackingFeatures = features.filter((f) => f.damageDice);
+    const attackingFeats = feats.filter((f) => f.damageDice);
 
     if (attackingFeatures.length === 0 && attackingFeats.length === 0) return null;
 
@@ -56,7 +56,7 @@ const AttacksSection: React.FC<Props> = ({
                         />
                     </div>
                 ))}
-                {attackingFeats.map(feat => (
+                {attackingFeats.map((feat) => (
                     <div key={feat.id} className="cc-attack-item">
                         <span className="cc-attack-name">
                             {feat.name}

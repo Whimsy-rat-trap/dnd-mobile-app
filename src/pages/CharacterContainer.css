@@ -195,11 +195,11 @@
 .cc-temp-fill {
     height: 100%;
     background: repeating-linear-gradient(
-            45deg,
-            var(--color-danger) 0px,
-            var(--color-danger) 4px,
-            var(--bg-body) 4px,
-            var(--bg-body) 8px
+        45deg,
+        var(--color-danger) 0px,
+        var(--color-danger) 4px,
+        var(--bg-body) 4px,
+        var(--bg-body) 8px
     );
     transition: width 0.3s ease;
     flex-shrink: 0;
@@ -271,7 +271,9 @@
 
 .cc-skill-card.cc-rollable {
     cursor: pointer;
-    transition: transform 0.1s, border-color 0.2s;
+    transition:
+        transform 0.1s,
+        border-color 0.2s;
 }
 
 .cc-skill-card.cc-rollable:hover {
@@ -511,7 +513,9 @@
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
+    transition:
+        background 0.2s,
+        border-color 0.2s;
 }
 
 .cc-rest-btn:hover {

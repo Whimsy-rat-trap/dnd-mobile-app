@@ -30,23 +30,32 @@ export const SpellProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             isCustom: true,
             prepared: false,
         };
-        setCustomSpells(prev => [...prev, newSpell]);
+        setCustomSpells((prev) => [...prev, newSpell]);
     };
 
-    const updateCustomSpell = (id: string, spellData: Omit<Spell, 'id' | 'isCustom' | 'prepared'>) => {
-        setCustomSpells(prev => prev.map(s =>
-            s.id === id ? { ...s, ...spellData } : s
-        ));
+    const updateCustomSpell = (
+        id: string,
+        spellData: Omit<Spell, 'id' | 'isCustom' | 'prepared'>
+    ) => {
+        setCustomSpells((prev) => prev.map((s) => (s.id === id ? { ...s, ...spellData } : s)));
     };
 
     const removeCustomSpell = (id: string) => {
-        setCustomSpells(prev => prev.filter(s => s.id !== id));
+        setCustomSpells((prev) => prev.filter((s) => s.id !== id));
     };
 
     const getCustomSpells = () => customSpells;
 
     return (
-        <SpellContext.Provider value={{ customSpells, addCustomSpell, updateCustomSpell, removeCustomSpell, getCustomSpells }}>
+        <SpellContext.Provider
+            value={{
+                customSpells,
+                addCustomSpell,
+                updateCustomSpell,
+                removeCustomSpell,
+                getCustomSpells,
+            }}
+        >
             {children}
         </SpellContext.Provider>
     );

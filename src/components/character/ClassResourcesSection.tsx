@@ -1,9 +1,6 @@
 import React from 'react';
 import { Character } from '../../types/Character';
-import {
-    getAvailableClassResources,
-    ClassResourceState,
-} from '../../utils/classResources';
+import { getAvailableClassResources, ClassResourceState } from '../../utils/classResources';
 import './ClassResourcesSection.css';
 
 interface Props {
@@ -49,9 +46,7 @@ const ResourceRow: React.FC<{
                             type="button"
                             className={`crs-dot ${isAvailable ? 'available' : 'used'}`}
                             style={
-                                isAvailable
-                                    ? { background: color, borderColor: color }
-                                    : undefined
+                                isAvailable ? { background: color, borderColor: color } : undefined
                             }
                             onClick={() => (isAvailable ? onUse(1) : onRestore(1))}
                             title={
@@ -81,7 +76,7 @@ const ClassResourcesSection: React.FC<Props> = ({ character, onUse, onRestore })
                 <span className="crs-title">Class Resources</span>
             </div>
             <div className="crs-list">
-                {resources.map(state => (
+                {resources.map((state) => (
                     <ResourceRow
                         key={state.definition.id}
                         state={state}

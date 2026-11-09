@@ -209,7 +209,7 @@
     cursor: not-allowed;
 }
 
-.psm-row input[type="checkbox"] {
+.psm-row input[type='checkbox'] {
     accent-color: var(--color-info);
     width: 15px;
     height: 15px;
@@ -217,7 +217,7 @@
     cursor: pointer;
 }
 
-.psm-row.disabled input[type="checkbox"] {
+.psm-row.disabled input[type='checkbox'] {
     cursor: not-allowed;
 }
 

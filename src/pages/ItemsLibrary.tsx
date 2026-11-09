@@ -7,7 +7,7 @@ import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import './ItemsLibrary.css';
-import {InventoryItem} from "../types/Character";
+import { InventoryItem } from '../types/Character';
 
 // Уникальные типы и редкости
 const TYPES = [
@@ -19,16 +19,25 @@ const TYPES = [
     'wand',
     'shield',
     'natural weapon',
-    'other'
+    'other',
 ];
-const RARITIES = Array.from(new Set(ALL_ITEMS.map(i => i.rarity)));
+const RARITIES = Array.from(new Set(ALL_ITEMS.map((i) => i.rarity)));
 
 // Опции для типов урона
 const DAMAGE_TYPES = [
-    'slashing', 'piercing', 'bludgeoning',
-    'fire', 'cold', 'lightning', 'thunder',
-    'acid', 'poison', 'necrotic', 'radiant',
-    'force', 'psychic'
+    'slashing',
+    'piercing',
+    'bludgeoning',
+    'fire',
+    'cold',
+    'lightning',
+    'thunder',
+    'acid',
+    'poison',
+    'necrotic',
+    'radiant',
+    'force',
+    'psychic',
 ];
 
 const ItemsLibrary: React.FC = () => {
@@ -87,13 +96,22 @@ const ItemsLibrary: React.FC = () => {
             key: 'type',
             label: 'Type',
             type: 'select',
-            options: [{ value: '', label: 'All' }, ...TYPES.map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))],
+            options: [
+                { value: '', label: 'All' },
+                ...TYPES.map((t) => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })),
+            ],
         },
         {
             key: 'rarity',
             label: 'Rarity',
             type: 'select',
-            options: [{ value: '', label: 'All' }, ...RARITIES.map(r => ({ value: r, label: r.charAt(0).toUpperCase() + r.slice(1) }))],
+            options: [
+                { value: '', label: 'All' },
+                ...RARITIES.map((r) => ({
+                    value: r,
+                    label: r.charAt(0).toUpperCase() + r.slice(1),
+                })),
+            ],
         },
         {
             key: 'attunement',
@@ -119,18 +137,23 @@ const ItemsLibrary: React.FC = () => {
 
     const allItems = [...ALL_ITEMS, ...customItems];
 
-    const filteredItems = allItems.filter(item => {
-        const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const filteredItems = allItems.filter((item) => {
+        const matchesSearch =
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesType = !filters.type || item.type === filters.type;
         const matchesRarity = !filters.rarity || item.rarity === filters.rarity;
-        const matchesAttunement = !filters.attunement ||
+        const matchesAttunement =
+            !filters.attunement ||
             (filters.attunement === 'required' && item.attunement === true) ||
             (filters.attunement === 'not-required' && !item.attunement);
-        const matchesItemType = !filters.itemType ||
-            (filters.itemType === 'custom' && customItems.some(ci => ci.id === item.id)) ||
-            (filters.itemType === 'standard' && ALL_ITEMS.some(ai => ai.id === item.id));
-        return matchesSearch && matchesType && matchesRarity && matchesAttunement && matchesItemType;
+        const matchesItemType =
+            !filters.itemType ||
+            (filters.itemType === 'custom' && customItems.some((ci) => ci.id === item.id)) ||
+            (filters.itemType === 'standard' && ALL_ITEMS.some((ai) => ai.id === item.id));
+        return (
+            matchesSearch && matchesType && matchesRarity && matchesAttunement && matchesItemType
+        );
     });
 
     const handleAddToInventory = (item: LibraryItem) => {
@@ -168,12 +191,18 @@ const ItemsLibrary: React.FC = () => {
 
     const getRarityColor = (rarity: LibraryItem['rarity']) => {
         switch (rarity) {
-            case 'common': return '#9ca3af';
-            case 'uncommon': return '#34d399';
-            case 'rare': return '#60a5fa';
-            case 'very rare': return '#a78bfa';
-            case 'legendary': return '#fbbf24';
-            default: return '#fff';
+            case 'common':
+                return '#9ca3af';
+            case 'uncommon':
+                return '#34d399';
+            case 'rare':
+                return '#60a5fa';
+            case 'very rare':
+                return '#a78bfa';
+            case 'legendary':
+                return '#fbbf24';
+            default:
+                return '#fff';
         }
     };
 
@@ -206,7 +235,7 @@ const ItemsLibrary: React.FC = () => {
 
     // Обновление полей uses в форме
     const handleUsesChange = (field: 'current' | 'max', value: number) => {
-        setNewItem(prev => ({
+        setNewItem((prev) => ({
             ...prev,
             uses: {
                 current: field === 'current' ? Math.max(0, value) : (prev.uses?.current ?? 0),
@@ -224,7 +253,9 @@ const ItemsLibrary: React.FC = () => {
                         <button className="il-create-btn" onClick={() => setShowCreateModal(true)}>
                             + Create Item
                         </button>
-                        <Link to="/inventory" className="il-back-btn">← Back to Inventory</Link>
+                        <Link to="/inventory" className="il-back-btn">
+                            ← Back to Inventory
+                        </Link>
                     </div>
                 </div>
                 <div className="il-subtitle">Browse all available D&D items</div>
@@ -241,68 +272,83 @@ const ItemsLibrary: React.FC = () => {
                     {filteredItems.length === 0 ? (
                         <div className="il-empty">No items match your filters.</div>
                     ) : (
-                        filteredItems.map(item => {
-                            const isCustom = customItems.some(ci => ci.id === item.id);
+                        filteredItems.map((item) => {
+                            const isCustom = customItems.some((ci) => ci.id === item.id);
                             return (
                                 <div key={item.id} className="il-item">
                                     <div className="il-item-info">
                                         <span className="il-item-name">{item.name}</span>
                                         <span className="il-item-type">{item.type}</span>
-                                        <span className="il-item-rarity" style={{ color: getRarityColor(item.rarity) }}>
+                                        <span
+                                            className="il-item-rarity"
+                                            style={{ color: getRarityColor(item.rarity) }}
+                                        >
                                             {item.rarity}
                                         </span>
                                         {item.attunement !== undefined && (
                                             <span className="il-item-attunement">
-                                                {item.attunement ? 'Requires Attunement' : 'No Attunement'}
+                                                {item.attunement
+                                                    ? 'Requires Attunement'
+                                                    : 'No Attunement'}
                                             </span>
                                         )}
                                         {isCustom && (
                                             <span className="il-item-custom-tag">Custom</span>
                                         )}
-                                        <span className="il-item-description">{item.description}</span>
+                                        <span className="il-item-description">
+                                            {item.description}
+                                        </span>
 
                                         {/* Блок с характеристиками предмета */}
-                                        {(item.damageDice || item.healingDice || item.uses || item.baseAC || item.acBonus || item.strengthRequirement) && (
+                                        {(item.damageDice ||
+                                            item.healingDice ||
+                                            item.uses ||
+                                            item.baseAC ||
+                                            item.acBonus ||
+                                            item.strengthRequirement) && (
                                             <div className="inv-item-stats">
                                                 {/* Урон */}
                                                 {item.damageDice && (
                                                     <span className="inv-item-stat inv-item-stat-damage">
-                                                    Damage: {item.damageDice}
-                                                        {item.damageType ? ` ${item.damageType}` : ''}
-                                                </span>
+                                                        Damage: {item.damageDice}
+                                                        {item.damageType
+                                                            ? ` ${item.damageType}`
+                                                            : ''}
+                                                    </span>
                                                 )}
                                                 {item.healingDice && (
                                                     <span className="inv-item-stat inv-item-stat-healing">
-                                                    Healing: {item.healingDice}
-                                                </span>
+                                                        Healing: {item.healingDice}
+                                                    </span>
                                                 )}
                                                 {item.baseAC !== undefined && (
                                                     <span className="inv-item-stat inv-item-stat-ac">
-                                                    AC {item.baseAC}
-                                                        {item.dexModifierAllowed && (
-                                                            item.maxDexBonus !== undefined ? ` + Dex (max ${item.maxDexBonus})` : ' + Dex'
-                                                        )}
-                                                </span>
+                                                        AC {item.baseAC}
+                                                        {item.dexModifierAllowed &&
+                                                            (item.maxDexBonus !== undefined
+                                                                ? ` + Dex (max ${item.maxDexBonus})`
+                                                                : ' + Dex')}
+                                                    </span>
                                                 )}
                                                 {item.acBonus !== undefined && (
                                                     <span className="inv-item-stat inv-item-stat-ac">
-                                                    Bonus +{item.acBonus} AC
-                                                </span>
+                                                        Bonus +{item.acBonus} AC
+                                                    </span>
                                                 )}
                                                 {item.strengthRequirement !== undefined && (
                                                     <span className="inv-item-stat inv-item-stat-strength">
-                                                    Str: {item.strengthRequirement}
-                                                </span>
+                                                        Str: {item.strengthRequirement}
+                                                    </span>
                                                 )}
                                                 {item.stealthDisadvantage && (
                                                     <span className="inv-item-stat inv-item-stat-stealth">
-                                                    Stealth Disadv.
-                                                </span>
+                                                        Stealth Disadv.
+                                                    </span>
                                                 )}
                                                 {item.uses && (
                                                     <span className="inv-item-stat inv-item-stat-uses">
-                                                    Uses: {item.uses.current}/{item.uses.max}
-                                                </span>
+                                                        Uses: {item.uses.current}/{item.uses.max}
+                                                    </span>
                                                 )}
                                             </div>
                                         )}
@@ -327,7 +373,9 @@ const ItemsLibrary: React.FC = () => {
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
-                    onReset={() => setFilters({ type: '', rarity: '', attunement: '', itemType: '' })}
+                    onReset={() =>
+                        setFilters({ type: '', rarity: '', attunement: '', itemType: '' })
+                    }
                     title="Filter Items"
                 />
             )}
@@ -348,10 +396,14 @@ const ItemsLibrary: React.FC = () => {
                         <label>Type</label>
                         <select
                             value={newItem.type}
-                            onChange={(e) => setNewItem({ ...newItem, type: e.target.value as any })}
+                            onChange={(e) =>
+                                setNewItem({ ...newItem, type: e.target.value as any })
+                            }
                         >
-                            {TYPES.map(t => (
-                                <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                            {TYPES.map((t) => (
+                                <option key={t} value={t}>
+                                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -359,10 +411,14 @@ const ItemsLibrary: React.FC = () => {
                         <label>Rarity</label>
                         <select
                             value={newItem.rarity}
-                            onChange={(e) => setNewItem({ ...newItem, rarity: e.target.value as any })}
+                            onChange={(e) =>
+                                setNewItem({ ...newItem, rarity: e.target.value as any })
+                            }
                         >
-                            {RARITIES.map(r => (
-                                <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
+                            {RARITIES.map((r) => (
+                                <option key={r} value={r}>
+                                    {r.charAt(0).toUpperCase() + r.slice(1)}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -370,7 +426,9 @@ const ItemsLibrary: React.FC = () => {
                         <label>Attunement</label>
                         <select
                             value={newItem.attunement ? 'true' : 'false'}
-                            onChange={(e) => setNewItem({ ...newItem, attunement: e.target.value === 'true' })}
+                            onChange={(e) =>
+                                setNewItem({ ...newItem, attunement: e.target.value === 'true' })
+                            }
                         >
                             <option value="false">No Attunement</option>
                             <option value="true">Requires Attunement</option>
@@ -384,7 +442,9 @@ const ItemsLibrary: React.FC = () => {
                             <input
                                 type="text"
                                 value={newItem.damageDice || ''}
-                                onChange={(e) => setNewItem({ ...newItem, damageDice: e.target.value })}
+                                onChange={(e) =>
+                                    setNewItem({ ...newItem, damageDice: e.target.value })
+                                }
                                 placeholder="e.g., 2d6"
                             />
                         </div>
@@ -392,11 +452,15 @@ const ItemsLibrary: React.FC = () => {
                             <label>Damage Type</label>
                             <select
                                 value={newItem.damageType || ''}
-                                onChange={(e) => setNewItem({ ...newItem, damageType: e.target.value })}
+                                onChange={(e) =>
+                                    setNewItem({ ...newItem, damageType: e.target.value })
+                                }
                             >
                                 <option value="">None</option>
-                                {DAMAGE_TYPES.map(dt => (
-                                    <option key={dt} value={dt}>{dt.charAt(0).toUpperCase() + dt.slice(1)}</option>
+                                {DAMAGE_TYPES.map((dt) => (
+                                    <option key={dt} value={dt}>
+                                        {dt.charAt(0).toUpperCase() + dt.slice(1)}
+                                    </option>
                                 ))}
                             </select>
                         </div>
@@ -408,7 +472,9 @@ const ItemsLibrary: React.FC = () => {
                         <input
                             type="text"
                             value={newItem.healingDice || ''}
-                            onChange={(e) => setNewItem({ ...newItem, healingDice: e.target.value })}
+                            onChange={(e) =>
+                                setNewItem({ ...newItem, healingDice: e.target.value })
+                            }
                             placeholder="e.g., 2d4+2"
                         />
                     </div>
@@ -421,7 +487,9 @@ const ItemsLibrary: React.FC = () => {
                                 type="number"
                                 min="0"
                                 value={newItem.uses?.current ?? 0}
-                                onChange={(e) => handleUsesChange('current', Number(e.target.value))}
+                                onChange={(e) =>
+                                    handleUsesChange('current', Number(e.target.value))
+                                }
                             />
                         </div>
                         <div className="il-form-group">
@@ -439,15 +507,24 @@ const ItemsLibrary: React.FC = () => {
                         <label>Description</label>
                         <textarea
                             value={newItem.description}
-                            onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                            onChange={(e) =>
+                                setNewItem({ ...newItem, description: e.target.value })
+                            }
                             placeholder="Enter item description"
                             rows={3}
                         />
                     </div>
                 </div>
                 <div className="il-modal-actions">
-                    <button className="il-modal-btn il-cancel" onClick={() => setShowCreateModal(false)}>Cancel</button>
-                    <button className="il-modal-btn il-apply" onClick={handleCreateItem}>Create</button>
+                    <button
+                        className="il-modal-btn il-cancel"
+                        onClick={() => setShowCreateModal(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button className="il-modal-btn il-apply" onClick={handleCreateItem}>
+                        Create
+                    </button>
                 </div>
             </Modal>
         </div>

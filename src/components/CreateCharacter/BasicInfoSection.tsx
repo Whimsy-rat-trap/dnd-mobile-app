@@ -27,21 +27,21 @@ interface BasicInfoSectionProps {
 }
 
 const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
-                                                               name,
-                                                               onNameChange,
-                                                               characterClass,
-                                                               onClassChange,
-                                                               classOptions,
-                                                               subclass,
-                                                               onSubclassChange,
-                                                               subclassOptions,
-                                                               race,
-                                                               onRaceChange,
-                                                               raceOptions,
-                                                               subrace,
-                                                               onSubraceChange,
-                                                               subraceOptions,
-                                                           }) => {
+    name,
+    onNameChange,
+    characterClass,
+    onClassChange,
+    classOptions,
+    subclass,
+    onSubclassChange,
+    subclassOptions,
+    race,
+    onRaceChange,
+    raceOptions,
+    subrace,
+    onSubraceChange,
+    subraceOptions,
+}) => {
     return (
         <>
             {/* Имя */}
@@ -66,8 +66,10 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
                         onChange={(e) => onClassChange(e.target.value)}
                         required
                     >
-                        {classOptions.map(cls => (
-                            <option key={cls} value={cls}>{cls}</option>
+                        {classOptions.map((cls) => (
+                            <option key={cls} value={cls}>
+                                {cls}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -79,8 +81,10 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
                         onChange={(e) => onRaceChange(e.target.value)}
                         required
                     >
-                        {raceOptions.map(r => (
-                            <option key={r} value={r}>{r}</option>
+                        {raceOptions.map((r) => (
+                            <option key={r} value={r}>
+                                {r}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -90,13 +94,12 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             {subclassOptions && subclassOptions.length > 0 && (
                 <div className="cr-form-group">
                     <label>Subclass</label>
-                    <select
-                        value={subclass}
-                        onChange={(e) => onSubclassChange(e.target.value)}
-                    >
+                    <select value={subclass} onChange={(e) => onSubclassChange(e.target.value)}>
                         <option value="">Select subclass</option>
-                        {subclassOptions.map(sub => (
-                            <option key={sub} value={sub}>{sub}</option>
+                        {subclassOptions.map((sub) => (
+                            <option key={sub} value={sub}>
+                                {sub}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -106,13 +109,12 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             {subraceOptions && subraceOptions.length > 0 && (
                 <div className="cr-form-group">
                     <label>Subrace</label>
-                    <select
-                        value={subrace}
-                        onChange={(e) => onSubraceChange(e.target.value)}
-                    >
+                    <select value={subrace} onChange={(e) => onSubraceChange(e.target.value)}>
                         <option value="">Select subrace</option>
-                        {subraceOptions.map(sub => (
-                            <option key={sub} value={sub}>{sub}</option>
+                        {subraceOptions.map((sub) => (
+                            <option key={sub} value={sub}>
+                                {sub}
+                            </option>
                         ))}
                     </select>
                 </div>

@@ -18,18 +18,17 @@ interface InventoryItemCardProps {
 }
 
 const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
-                                                                 item,
-                                                                 onEquip,
-                                                                 onRemove,
-                                                                 attackBonus = 0,
-                                                                 damageBonus = 0,
-                                                                 onAttackRoll,
-                                                             }) => {
+    item,
+    onEquip,
+    onRemove,
+    attackBonus = 0,
+    damageBonus = 0,
+    onAttackRoll,
+}) => {
     const showStats = hasItemStats(item);
 
     const canAttack =
-        (item.type === 'weapon' || item.type === 'natural weapon') &&
-        Boolean(item.damageDice);
+        (item.type === 'weapon' || item.type === 'natural weapon') && Boolean(item.damageDice);
 
     // Собираем итоговые значения для логирования (если оба ролла сделаны — можем вызвать onAttackRoll)
     const handleRollAttack = (attackTotal: number) => {
@@ -51,10 +50,7 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
             <div className="inv-item-info">
                 <span className="inv-item-name">{item.name}</span>
                 <span className="inv-item-type">{item.type}</span>
-                <span
-                    className="inv-item-rarity"
-                    style={{ color: getRarityColor(item.rarity) }}
-                >
+                <span className="inv-item-rarity" style={{ color: getRarityColor(item.rarity) }}>
                     {item.rarity}
                 </span>
                 {item.description && (
@@ -106,10 +102,7 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
             <div className="inv-item-actions">
                 {item.equipped && <span className="inv-equipped-badge">Equipped</span>}
 
-                <button
-                    className="inv-action-btn inv-equip-btn"
-                    onClick={() => onEquip(item.id)}
-                >
+                <button className="inv-action-btn inv-equip-btn" onClick={() => onEquip(item.id)}>
                     {item.equipped ? 'Unequip' : 'Equip'}
                 </button>
 
@@ -123,20 +116,14 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
                         onRollAttack={(result) => handleRollAttack(result.total)}
                         onRollDamage={(result) => handleRollDamage(result.total)}
                         trigger={
-                            <button
-                                className="inv-action-btn inv-attack-btn"
-                                title="Roll attack"
-                            >
+                            <button className="inv-action-btn inv-attack-btn" title="Roll attack">
                                 Attack
                             </button>
                         }
                     />
                 )}
 
-                <button
-                    className="inv-action-btn inv-remove-btn"
-                    onClick={() => onRemove(item.id)}
-                >
+                <button className="inv-action-btn inv-remove-btn" onClick={() => onRemove(item.id)}>
                     Remove
                 </button>
             </div>

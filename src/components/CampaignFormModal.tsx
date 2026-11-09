@@ -32,14 +32,14 @@ const emptyForm = {
 };
 
 const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
-                                                                 isOpen,
-                                                                 onClose,
-                                                                 onSubmit,
-                                                                 initialData,
-                                                                 title,
-                                                                 availableCharacters,
-                                                                 lockedCharacterId,
-                                                             }) => {
+    isOpen,
+    onClose,
+    onSubmit,
+    initialData,
+    title,
+    availableCharacters,
+    lockedCharacterId,
+}) => {
     const [form, setForm] = useState(emptyForm);
     const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +66,7 @@ const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
     }, [isOpen, initialData, lockedCharacterId]);
 
     const handleChange = (field: keyof typeof form, value: any) => {
-        setForm(prev => ({ ...prev, [field]: value }));
+        setForm((prev) => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = () => {
@@ -110,7 +110,7 @@ const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
     // Селектор показываем только при создании (не при редактировании) и если есть данные
     const showCharacterSelector = !initialData && (!!availableCharacters || !!lockedCharacterId);
     const isCharacterLocked = !!lockedCharacterId;
-    const lockedCharacterName = availableCharacters?.find(c => c.id === lockedCharacterId)?.name;
+    const lockedCharacterName = availableCharacters?.find((c) => c.id === lockedCharacterId)?.name;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -149,8 +149,10 @@ const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
                                 onChange={(e) => handleChange('characterId', e.target.value)}
                             >
                                 <option value="">— None —</option>
-                                {availableCharacters?.map(c => (
-                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                {availableCharacters?.map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.name}
+                                    </option>
                                 ))}
                             </select>
                         )}
@@ -176,7 +178,9 @@ const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
                         <label>Status</label>
                         <select
                             value={form.status}
-                            onChange={(e) => handleChange('status', e.target.value as Campaign['status'])}
+                            onChange={(e) =>
+                                handleChange('status', e.target.value as Campaign['status'])
+                            }
                         >
                             <option value="active">Active</option>
                             <option value="paused">Paused</option>

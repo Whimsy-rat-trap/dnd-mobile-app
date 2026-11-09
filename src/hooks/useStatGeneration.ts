@@ -1,25 +1,46 @@
 import { useState } from 'react';
-import { roll4d6DropLowest, standardArray, getPointBuyCost, POINT_BUY_POINTS } from '../utils/characterCreationUtils';
+import {
+    roll4d6DropLowest,
+    standardArray,
+    getPointBuyCost,
+    POINT_BUY_POINTS,
+} from '../utils/characterCreationUtils';
 
 type Abilities = { str: number; dex: number; con: number; int: number; wis: number; cha: number };
 
-export const useStatGeneration = (initialAbilities: Abilities, onApplyAbilities: (newAbilities: Abilities) => void) => {
+export const useStatGeneration = (
+    initialAbilities: Abilities,
+    onApplyAbilities: (newAbilities: Abilities) => void
+) => {
     // Point Buy
     const [showPointBuy, setShowPointBuy] = useState(false);
     const [pointBuyValues, setPointBuyValues] = useState<Abilities>({
-        str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8
+        str: 8,
+        dex: 8,
+        con: 8,
+        int: 8,
+        wis: 8,
+        cha: 8,
     });
 
     // Roll Distribution
     const [showRollDistribution, setShowRollDistribution] = useState(false);
     const [rollValues, setRollValues] = useState<number[]>([]);
     const [statAssignments, setStatAssignments] = useState<{ [key: string]: number | null }>({
-        str: null, dex: null, con: null, int: null, wis: null, cha: null
+        str: null,
+        dex: null,
+        con: null,
+        int: null,
+        wis: null,
+        cha: null,
     });
 
     // --- Point Buy logic ---
     const getRemainingPoints = (): number => {
-        const totalCost = Object.values(pointBuyValues).reduce((sum, val) => sum + getPointBuyCost(val), 0);
+        const totalCost = Object.values(pointBuyValues).reduce(
+            (sum, val) => sum + getPointBuyCost(val),
+            0
+        );
         return POINT_BUY_POINTS - totalCost;
     };
 
@@ -45,7 +66,7 @@ export const useStatGeneration = (initialAbilities: Abilities, onApplyAbilities:
         const oldCost = getPointBuyCost(pointBuyValues[stat]);
         const diff = newCost - oldCost;
         if (diff > getRemainingPoints()) return;
-        setPointBuyValues(prev => ({ ...prev, [stat]: newVal }));
+        setPointBuyValues((prev) => ({ ...prev, [stat]: newVal }));
     };
 
     const applyPointBuy = () => {
@@ -72,24 +93,24 @@ export const useStatGeneration = (initialAbilities: Abilities, onApplyAbilities:
     };
 
     const assignRollToStat = (stat: keyof typeof statAssignments, index: number) => {
-        const usedIndices = Object.values(statAssignments).filter(v => v !== null) as number[];
+        const usedIndices = Object.values(statAssignments).filter((v) => v !== null) as number[];
         if (usedIndices.includes(index)) {
             for (const key of Object.keys(statAssignments) as (keyof typeof statAssignments)[]) {
                 if (statAssignments[key] === index) {
-                    setStatAssignments(prev => ({ ...prev, [key]: null }));
+                    setStatAssignments((prev) => ({ ...prev, [key]: null }));
                     break;
                 }
             }
         }
-        setStatAssignments(prev => ({ ...prev, [stat]: index }));
+        setStatAssignments((prev) => ({ ...prev, [stat]: index }));
     };
 
     const unassignRoll = (stat: keyof typeof statAssignments) => {
-        setStatAssignments(prev => ({ ...prev, [stat]: null }));
+        setStatAssignments((prev) => ({ ...prev, [stat]: null }));
     };
 
     const applyRollDistribution = () => {
-        const allAssigned = Object.values(statAssignments).every(v => v !== null);
+        const allAssigned = Object.values(statAssignments).every((v) => v !== null);
         if (!allAssigned) {
             alert('Please assign all rolled values to ability scores.');
             return;

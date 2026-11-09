@@ -6,7 +6,7 @@ export const CASTING_TIMES = [
     '10 minutes',
     '1 hour',
     '8 hours',
-    '24 hours'
+    '24 hours',
 ];
 
 export const COMPONENT_OPTIONS = ['V', 'S', 'M'];
@@ -25,7 +25,7 @@ export const RANGES = [
     '500 ft',
     '1 mile',
     'Unlimited',
-    'Special'
+    'Special',
 ];
 
 export const ELEMENTS = [

@@ -2,24 +2,22 @@ import React from 'react';
 import { Character } from '../../types/Character';
 import { getModifier } from '../../utils/characterUtils';
 import './PassiveScoresSection.css';
-import {getProficiencyBonus} from "../../utils/proficiency";
+import { getProficiencyBonus } from '../../utils/proficiency';
 
 interface Props {
     character: Character;
 }
 
 const getSkillProficient = (character: Character, skillName: string): boolean => {
-    const skill = character.skills.find(s => s.name === skillName);
+    const skill = character.skills.find((s) => s.name === skillName);
     return skill?.proficient ?? false;
 };
 
 const hasFeat = (character: Character, featName: string): boolean =>
-    character.feats?.some(f => f.name.toLowerCase() === featName.toLowerCase()) ?? false;
+    character.feats?.some((f) => f.name.toLowerCase() === featName.toLowerCase()) ?? false;
 
 const hasJackOfAllTrades = (character: Character): boolean =>
-    (character.classLevels || []).some(
-        cl => cl.className === 'Bard' && cl.level >= 2
-    );
+    (character.classLevels || []).some((cl) => cl.className === 'Bard' && cl.level >= 2);
 
 const PassiveScoresSection: React.FC<Props> = ({ character }) => {
     const profBonus = getProficiencyBonus(character.level);
@@ -33,19 +31,24 @@ const PassiveScoresSection: React.FC<Props> = ({ character }) => {
     const insProf = getSkillProficient(character, 'Insight');
     const invProf = getSkillProficient(character, 'Investigation');
 
-    const passivePerception =
-        10 + wisMod + (perProf ? profBonus : joatBonus) + observant;
+    const passivePerception = 10 + wisMod + (perProf ? profBonus : joatBonus) + observant;
 
-    const passiveInsight =
-        10 + wisMod + (insProf ? profBonus : joatBonus);
+    const passiveInsight = 10 + wisMod + (insProf ? profBonus : joatBonus);
 
-    const passiveInvestigation =
-        10 + intMod + (invProf ? profBonus : joatBonus) + observant;
+    const passiveInvestigation = 10 + intMod + (invProf ? profBonus : joatBonus) + observant;
 
     const scores: { label: string; value: number; badge?: string }[] = [
-        { label: 'Perception', value: passivePerception, badge: observant ? '+5 Observant' : undefined },
+        {
+            label: 'Perception',
+            value: passivePerception,
+            badge: observant ? '+5 Observant' : undefined,
+        },
         { label: 'Insight', value: passiveInsight },
-        { label: 'Investigation', value: passiveInvestigation, badge: observant ? '+5 Observant' : undefined },
+        {
+            label: 'Investigation',
+            value: passiveInvestigation,
+            badge: observant ? '+5 Observant' : undefined,
+        },
     ];
 
     return (
@@ -54,7 +57,7 @@ const PassiveScoresSection: React.FC<Props> = ({ character }) => {
                 <span className="cc-passive-scores-title">Passive Scores</span>
             </div>
             <div className="cc-passive-scores-grid">
-                {scores.map(s => (
+                {scores.map((s) => (
                     <div key={s.label} className="cc-passive-score-card">
                         <span className="cc-passive-score-value">{s.value}</span>
                         <span className="cc-passive-score-label">{s.label}</span>

@@ -16,9 +16,16 @@ interface Props {
 }
 
 const HpEditPopup: React.FC<Props> = ({
-                                          isOpen, onClose, hp, maxHp, tempHp,
-                                          onAddHp, onSubtractHp, onAddTempHp, onSubtractTempHp,
-                                      }) => {
+    isOpen,
+    onClose,
+    hp,
+    maxHp,
+    tempHp,
+    onAddHp,
+    onSubtractHp,
+    onAddTempHp,
+    onSubtractTempHp,
+}) => {
     const [hpInput, setHpInput] = useState(0);
     const [tempInput, setTempInput] = useState(0);
     const hpPercent = (hp / maxHp) * 100;
@@ -39,7 +46,12 @@ const HpEditPopup: React.FC<Props> = ({
                     <div className="cc-stat-progress">
                         <div className="cc-progress-track">
                             <div className="cc-hp-fill" style={{ width: `${hpPercent}%` }} />
-                            {tempHp > 0 && <div className="cc-temp-fill" style={{ width: `${tempPercent}%` }} />}
+                            {tempHp > 0 && (
+                                <div
+                                    className="cc-temp-fill"
+                                    style={{ width: `${tempPercent}%` }}
+                                />
+                            )}
                         </div>
                     </div>
                     <span className="cc-stat-value-dashboard cc-stat-value-hp">
@@ -51,19 +63,55 @@ const HpEditPopup: React.FC<Props> = ({
                     <div className="cc-control-group">
                         <label>HP Adjustment</label>
                         <div className="cc-input-group">
-                            <input type="number" value={hpInput} min="0"
-                                   onChange={e => setHpInput(Number(e.target.value))} />
-                            <button onClick={() => { onAddHp(hpInput); close(); }}>Add</button>
-                            <button onClick={() => { onSubtractHp(hpInput); close(); }}>Subtract</button>
+                            <input
+                                type="number"
+                                value={hpInput}
+                                min="0"
+                                onChange={(e) => setHpInput(Number(e.target.value))}
+                            />
+                            <button
+                                onClick={() => {
+                                    onAddHp(hpInput);
+                                    close();
+                                }}
+                            >
+                                Add
+                            </button>
+                            <button
+                                onClick={() => {
+                                    onSubtractHp(hpInput);
+                                    close();
+                                }}
+                            >
+                                Subtract
+                            </button>
                         </div>
                     </div>
                     <div className="cc-control-group">
                         <label>Temp HP Adjustment</label>
                         <div className="cc-input-group">
-                            <input type="number" value={tempInput} min="0"
-                                   onChange={e => setTempInput(Number(e.target.value))} />
-                            <button onClick={() => { onAddTempHp(tempInput); close(); }}>Add Temp</button>
-                            <button onClick={() => { onSubtractTempHp(tempInput); close(); }}>Subtract Temp</button>
+                            <input
+                                type="number"
+                                value={tempInput}
+                                min="0"
+                                onChange={(e) => setTempInput(Number(e.target.value))}
+                            />
+                            <button
+                                onClick={() => {
+                                    onAddTempHp(tempInput);
+                                    close();
+                                }}
+                            >
+                                Add Temp
+                            </button>
+                            <button
+                                onClick={() => {
+                                    onSubtractTempHp(tempInput);
+                                    close();
+                                }}
+                            >
+                                Subtract Temp
+                            </button>
                         </div>
                     </div>
                 </div>

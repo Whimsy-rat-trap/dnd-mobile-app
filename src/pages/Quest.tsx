@@ -51,7 +51,9 @@ const Quest: React.FC = () => {
             <div className="quest-page">
                 <div className="quest-empty-state">
                     <p>No character selected. Please go to Dashboard and select one.</p>
-                    <button className="quest-btn-primary" onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
+                    <button className="quest-btn-primary" onClick={() => navigate('/dashboard')}>
+                        Go to Dashboard
+                    </button>
                 </div>
             </div>
         );
@@ -59,10 +61,12 @@ const Quest: React.FC = () => {
 
     const handleBack = () => navigate(-1);
 
-    const filteredQuests = character.quests.filter(quest => {
-        const matchesSearch = quest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const filteredQuests = character.quests.filter((quest) => {
+        const matchesSearch =
+            quest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             quest.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (quest.rewardText && quest.rewardText.toLowerCase().includes(searchQuery.toLowerCase()));
+            (quest.rewardText &&
+                quest.rewardText.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchesStatus = statusFilter === 'all' || quest.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
@@ -80,7 +84,7 @@ const Quest: React.FC = () => {
     };
 
     const handleEdit = (questId: string) => {
-        const quest = character.quests.find(q => q.id === questId);
+        const quest = character.quests.find((q) => q.id === questId);
         if (!quest) return;
         setEditingQuestId(questId);
         setQuestName(quest.name);
@@ -104,7 +108,12 @@ const Quest: React.FC = () => {
             alert('Please select an item reward.');
             return;
         }
-        if (rewardType === 'currency' && rewardCurrency.gp === 0 && rewardCurrency.sp === 0 && rewardCurrency.cp === 0) {
+        if (
+            rewardType === 'currency' &&
+            rewardCurrency.gp === 0 &&
+            rewardCurrency.sp === 0 &&
+            rewardCurrency.cp === 0
+        ) {
             alert('Please enter a currency reward amount.');
             return;
         }
@@ -141,7 +150,7 @@ const Quest: React.FC = () => {
      * - Item: addItemToInventory. Если предмет — это деньги (поле currency
      *   или валюта из описания), контекст сам направит их в кошелёк.
      */
-    const awardQuestReward = (quest: typeof character.quests[0]) => {
+    const awardQuestReward = (quest: (typeof character.quests)[0]) => {
         if (quest.rewardType === 'currency' && quest.rewardCurrency) {
             const reward = quest.rewardCurrency;
             if (!reward.gp && !reward.sp && !reward.cp) return;
@@ -152,7 +161,7 @@ const Quest: React.FC = () => {
         }
 
         if (quest.rewardType === 'item' && quest.rewardItemId) {
-            const item = allItems.find(i => i.id === quest.rewardItemId);
+            const item = allItems.find((i) => i.id === quest.rewardItemId);
             if (!item) return;
 
             // Если предмет — деньги, обрабатываем отдельно, чтобы показать корректный alert
@@ -186,7 +195,7 @@ const Quest: React.FC = () => {
     };
 
     const handleStatusChange = (questId: string, newStatus: 'active' | 'completed' | 'failed') => {
-        const quest = character.quests.find(q => q.id === questId);
+        const quest = character.quests.find((q) => q.id === questId);
         if (!quest) return;
 
         const wasCompleted = quest.status === 'completed';
@@ -235,15 +244,19 @@ const Quest: React.FC = () => {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'active': return '#34d399';
-            case 'completed': return '#60a5fa';
-            case 'failed': return '#ef4444';
-            default: return '#9ca3af';
+            case 'active':
+                return '#34d399';
+            case 'completed':
+                return '#60a5fa';
+            case 'failed':
+                return '#ef4444';
+            default:
+                return '#9ca3af';
         }
     };
 
     const getItemName = (itemId: string) => {
-        const item = allItems.find(i => i.id === itemId);
+        const item = allItems.find((i) => i.id === itemId);
         return item ? item.name : 'Unknown Item';
     };
 
@@ -276,18 +289,30 @@ const Quest: React.FC = () => {
         <div className="quest-page">
             <header className="quest-header">
                 <button className="quest-back-btn" onClick={handleBack}>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.3169 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H4.6336L9.19219 15.1828C9.25026 15.2409 9.29632 15.3098 9.32775 15.3857C9.35918 15.4616 9.37535 15.5429 9.37535 15.625C9.37535 15.7071 9.35918 15.7884 9.32775 15.8643C9.29632 15.9402 9.25026 16.0091 9.19219 16.0672C9.13412 16.1253 9.06518 16.1713 8.98931 16.2027C8.91344 16.2342 8.83213 16.2503 8.75 16.2503C8.66788 16.2503 8.58656 16.2342 8.51069 16.2027C8.43482 16.1713 8.36588 16.1253 8.30782 16.0672L2.68282 10.4422C2.62471 10.3841 2.57861 10.3152 2.54715 10.2393C2.5157 10.1635 2.49951 10.0821 2.49951 10C2.49951 9.91787 2.5157 9.83654 2.54715 9.76066C2.57861 9.68479 2.62471 9.61586 2.68282 9.55781L8.30782 3.93281C8.42509 3.81554 8.58415 3.74965 8.75 3.74965C8.91586 3.74965 9.07492 3.81554 9.19219 3.93281C9.30947 4.05009 9.37535 4.20915 9.37535 4.375C9.37535 4.54085 9.30947 4.69991 9.19219 4.81719L4.6336 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.3169 9.55806C17.4342 9.67527 17.5 9.83424 17.5 10Z" fill="#9CA3AF" />
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.3169 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H4.6336L9.19219 15.1828C9.25026 15.2409 9.29632 15.3098 9.32775 15.3857C9.35918 15.4616 9.37535 15.5429 9.37535 15.625C9.37535 15.7071 9.35918 15.7884 9.32775 15.8643C9.29632 15.9402 9.25026 16.0091 9.19219 16.0672C9.13412 16.1253 9.06518 16.1713 8.98931 16.2027C8.91344 16.2342 8.83213 16.2503 8.75 16.2503C8.66788 16.2503 8.58656 16.2342 8.51069 16.2027C8.43482 16.1713 8.36588 16.1253 8.30782 16.0672L2.68282 10.4422C2.62471 10.3841 2.57861 10.3152 2.54715 10.2393C2.5157 10.1635 2.49951 10.0821 2.49951 10C2.49951 9.91787 2.5157 9.83654 2.54715 9.76066C2.57861 9.68479 2.62471 9.61586 2.68282 9.55781L8.30782 3.93281C8.42509 3.81554 8.58415 3.74965 8.75 3.74965C8.91586 3.74965 9.07492 3.81554 9.19219 3.93281C9.30947 4.05009 9.37535 4.20915 9.37535 4.375C9.37535 4.54085 9.30947 4.69991 9.19219 4.81719L4.6336 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.3169 9.55806C17.4342 9.67527 17.5 9.83424 17.5 10Z"
+                            fill="#9CA3AF"
+                        />
                     </svg>
                 </button>
                 <div className="quest-header-info">
                     <div className="quest-title">Quests</div>
                     <div className="quest-subtitle">{character.name}</div>
                 </div>
-                <button className="quest-btn-add" onClick={() => {
-                    resetForm();
-                    setShowAddModal(true);
-                }}>
+                <button
+                    className="quest-btn-add"
+                    onClick={() => {
+                        resetForm();
+                        setShowAddModal(true);
+                    }}
+                >
                     + Add Quest
                 </button>
             </header>
@@ -332,11 +357,14 @@ const Quest: React.FC = () => {
                     {filteredQuests.length === 0 ? (
                         <div className="quest-empty">No quests match your filters.</div>
                     ) : (
-                        filteredQuests.map(quest => (
+                        filteredQuests.map((quest) => (
                             <div key={quest.id} className="quest-item">
                                 <div className="quest-item-header">
                                     <span className="quest-item-name">{quest.name}</span>
-                                    <span className="quest-item-status" style={{ color: getStatusColor(quest.status) }}>
+                                    <span
+                                        className="quest-item-status"
+                                        style={{ color: getStatusColor(quest.status) }}
+                                    >
                                         {quest.status}
                                     </span>
                                 </div>
@@ -345,7 +373,9 @@ const Quest: React.FC = () => {
                                 <div className="quest-item-actions">
                                     <select
                                         value={quest.status}
-                                        onChange={(e) => handleStatusChange(quest.id, e.target.value as any)}
+                                        onChange={(e) =>
+                                            handleStatusChange(quest.id, e.target.value as any)
+                                        }
                                         className="quest-status-select"
                                         style={{ borderColor: getStatusColor(quest.status) }}
                                     >
@@ -384,10 +414,13 @@ const Quest: React.FC = () => {
                 />
             )}
 
-            <Modal isOpen={showAddModal} onClose={() => {
-                resetForm();
-                setShowAddModal(false);
-            }}>
+            <Modal
+                isOpen={showAddModal}
+                onClose={() => {
+                    resetForm();
+                    setShowAddModal(false);
+                }}
+            >
                 <h3>{editingQuestId ? 'Edit Quest' : 'Add New Quest'}</h3>
                 <div className="quest-add-form">
                     <div className="quest-form-group">
@@ -497,7 +530,12 @@ const Quest: React.FC = () => {
                                         type="number"
                                         min="0"
                                         value={rewardCurrency.gp}
-                                        onChange={(e) => setRewardCurrency(prev => ({ ...prev, gp: Math.max(0, Number(e.target.value)) }))}
+                                        onChange={(e) =>
+                                            setRewardCurrency((prev) => ({
+                                                ...prev,
+                                                gp: Math.max(0, Number(e.target.value)),
+                                            }))
+                                        }
                                     />
                                 </div>
                                 <div className="quest-currency-input">
@@ -506,7 +544,12 @@ const Quest: React.FC = () => {
                                         type="number"
                                         min="0"
                                         value={rewardCurrency.sp}
-                                        onChange={(e) => setRewardCurrency(prev => ({ ...prev, sp: Math.max(0, Number(e.target.value)) }))}
+                                        onChange={(e) =>
+                                            setRewardCurrency((prev) => ({
+                                                ...prev,
+                                                sp: Math.max(0, Number(e.target.value)),
+                                            }))
+                                        }
                                     />
                                 </div>
                                 <div className="quest-currency-input">
@@ -515,7 +558,12 @@ const Quest: React.FC = () => {
                                         type="number"
                                         min="0"
                                         value={rewardCurrency.cp}
-                                        onChange={(e) => setRewardCurrency(prev => ({ ...prev, cp: Math.max(0, Number(e.target.value)) }))}
+                                        onChange={(e) =>
+                                            setRewardCurrency((prev) => ({
+                                                ...prev,
+                                                cp: Math.max(0, Number(e.target.value)),
+                                            }))
+                                        }
                                     />
                                 </div>
                             </div>
@@ -531,14 +579,21 @@ const Quest: React.FC = () => {
                             />
                             Visible to players
                         </label>
-                        <span className="quest-hint">If unchecked, reward will be marked as "DM only"</span>
+                        <span className="quest-hint">
+                            If unchecked, reward will be marked as "DM only"
+                        </span>
                     </div>
                 </div>
                 <div className="quest-modal-actions">
-                    <button className="quest-modal-btn cancel" onClick={() => {
-                        resetForm();
-                        setShowAddModal(false);
-                    }}>Cancel</button>
+                    <button
+                        className="quest-modal-btn cancel"
+                        onClick={() => {
+                            resetForm();
+                            setShowAddModal(false);
+                        }}
+                    >
+                        Cancel
+                    </button>
                     <button className="quest-modal-btn apply" onClick={handleSaveQuest}>
                         {editingQuestId ? 'Update' : 'Add'}
                     </button>
@@ -555,8 +610,10 @@ const Quest: React.FC = () => {
                     />
                     <div className="quest-item-list">
                         {allItems
-                            .filter(item => item.name.toLowerCase().includes(itemSearchQuery.toLowerCase()))
-                            .map(item => (
+                            .filter((item) =>
+                                item.name.toLowerCase().includes(itemSearchQuery.toLowerCase())
+                            )
+                            .map((item) => (
                                 <div
                                     key={item.id}
                                     className="quest-item-option"

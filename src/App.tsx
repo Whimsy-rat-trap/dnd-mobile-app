@@ -28,11 +28,20 @@ const App: React.FC = () => {
                                     <Routes>
                                         <Route path="/" element={<Login />} />
                                         <Route path="/dashboard" element={<Dashboard />} />
-                                        <Route path="/characters/new" element={<CreateCharacter />} />
-                                        <Route path="/characters/:id" element={<CharacterContainer />} />
+                                        <Route
+                                            path="/characters/new"
+                                            element={<CreateCharacter />}
+                                        />
+                                        <Route
+                                            path="/characters/:id"
+                                            element={<CharacterContainer />}
+                                        />
                                         <Route path="/spellbook" element={<SpellbookContainer />} />
                                         <Route path="/campaigns" element={<CampaignContainer />} />
-                                        <Route path="/campaign/:id" element={<CampaignContainer />} />
+                                        <Route
+                                            path="/campaign/:id"
+                                            element={<CampaignContainer />}
+                                        />
                                         <Route path="/hub" element={<Hub />} />
                                         <Route path="/quests" element={<Quest />} />
                                         <Route path="/inventory" element={<Inventory />} />

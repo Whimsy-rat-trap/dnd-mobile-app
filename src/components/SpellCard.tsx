@@ -1,10 +1,7 @@
 import React from 'react';
 import { Character, Spell } from '../types/Character';
 import AttackRoller from './AttackRoller';
-import {
-    getSpellAttackBonus,
-    getSpellDamageBonus,
-} from '../utils/spellUtils';
+import { getSpellAttackBonus, getSpellDamageBonus } from '../utils/spellUtils';
 import './SpellCard.css';
 
 interface SpellCardProps {
@@ -48,40 +45,47 @@ interface SpellCardProps {
 }
 
 const SpellCard: React.FC<SpellCardProps> = ({
-                                                 spell,
-                                                 showAddButton = false,
-                                                 onAdd,
-                                                 showRemoveButton = false,
-                                                 onRemove,
-                                                 isPrepared = false,
-                                                 onTogglePrepared,
-                                                 renderPreparedToggle,
-                                                 isCustom = false,
-                                                 showEdit = false,
-                                                 onEdit,
-                                                 disableToggle = false,
-                                                 requiresConcentration = false,
-                                                 isConcentrating = false,
-                                                 onToggleConcentration,
-                                                 showConcentrationControl = false,
-                                                 character,
-                                                 spellAttackBonus = 0,
-                                                 spellDamageBonus = 0,
-                                                 onAttackRoll,
-                                                 showCastButton = false,
-                                                 onCastClick,
-                                                 showAttackButton = true,
-                                                 forceAttackOpen = false,
-                                                 onForceAttackOpenHandled,
-                                                 inspirationAvailable = false,
-                                                 onSpendInspiration,
-                                                 isExpanded = false,
-                                             }) => {
+    spell,
+    showAddButton = false,
+    onAdd,
+    showRemoveButton = false,
+    onRemove,
+    isPrepared = false,
+    onTogglePrepared,
+    renderPreparedToggle,
+    isCustom = false,
+    showEdit = false,
+    onEdit,
+    disableToggle = false,
+    requiresConcentration = false,
+    isConcentrating = false,
+    onToggleConcentration,
+    showConcentrationControl = false,
+    character,
+    spellAttackBonus = 0,
+    spellDamageBonus = 0,
+    onAttackRoll,
+    showCastButton = false,
+    onCastClick,
+    showAttackButton = true,
+    forceAttackOpen = false,
+    onForceAttackOpenHandled,
+    inspirationAvailable = false,
+    onSpendInspiration,
+    isExpanded = false,
+}) => {
     const elementColors: Record<string, string> = {
-        fire: '#ef4444', force: '#a855f7', necrotic: '#8b5cf6',
-        acid: '#22c55e', cold: '#38bdf8', lightning: '#fbbf24',
-        thunder: '#a855f7', psychic: '#f472b6', radiant: '#fcd34d',
-        poison: '#84cc16', healing: '#22c55e',
+        fire: '#ef4444',
+        force: '#a855f7',
+        necrotic: '#8b5cf6',
+        acid: '#22c55e',
+        cold: '#38bdf8',
+        lightning: '#fbbf24',
+        thunder: '#a855f7',
+        psychic: '#f472b6',
+        radiant: '#fcd34d',
+        poison: '#84cc16',
+        healing: '#22c55e',
     };
 
     const getElementColor = (element?: string): string => {
@@ -93,9 +97,7 @@ const SpellCard: React.FC<SpellCardProps> = ({
     const elementColor = getElementColor(spell.element);
 
     const canRollAttack =
-        Boolean(displayRoll) &&
-        spell.damageType !== 'healing' &&
-        spell.element !== 'healing';
+        Boolean(displayRoll) && spell.damageType !== 'healing' && spell.element !== 'healing';
 
     // Если задан character — считаем бонусы по нему, иначе — используем пропсы
     const effectiveAttackBonus = character
@@ -117,20 +119,45 @@ const SpellCard: React.FC<SpellCardProps> = ({
                     <div className="spell-card-info">
                         <div className="spell-name-wrapper">
                             <span className="spell-card-name">{spell.name}</span>
-                            {isCustom && <span className="spell-custom-badge" title="Custom spell">✨</span>}
-                            {requiresConcentration && <span className="spell-concentration-tag">C</span>}
+                            {isCustom && (
+                                <span className="spell-custom-badge" title="Custom spell">
+                                    ✨
+                                </span>
+                            )}
+                            {requiresConcentration && (
+                                <span className="spell-concentration-tag">C</span>
+                            )}
                         </div>
                         <span className="spell-card-school">{spell.school}</span>
                     </div>
                 </div>
                 <div className="spell-card-actions">
-                    {renderPreparedToggle && !disableToggle && renderPreparedToggle({ prepared: isPrepared, onToggle: onTogglePrepared || (() => {}) })}
+                    {renderPreparedToggle &&
+                        !disableToggle &&
+                        renderPreparedToggle({
+                            prepared: isPrepared,
+                            onToggle: onTogglePrepared || (() => {}),
+                        })}
                     {disableToggle && (
-                        <span className="spell-always-prepared" title={alwaysPreparedTitle}>✦</span>
+                        <span className="spell-always-prepared" title={alwaysPreparedTitle}>
+                            ✦
+                        </span>
                     )}
-                    {showEdit && onEdit && <button className="spell-edit-btn" onClick={onEdit}>Edit</button>}
-                    {showAddButton && onAdd && <button className="btn-add-spell" onClick={onAdd}>+</button>}
-                    {showRemoveButton && onRemove && <button className="btn-remove-spell" onClick={onRemove}>✕</button>}
+                    {showEdit && onEdit && (
+                        <button className="spell-edit-btn" onClick={onEdit}>
+                            Edit
+                        </button>
+                    )}
+                    {showAddButton && onAdd && (
+                        <button className="btn-add-spell" onClick={onAdd}>
+                            +
+                        </button>
+                    )}
+                    {showRemoveButton && onRemove && (
+                        <button className="btn-remove-spell" onClick={onRemove}>
+                            ✕
+                        </button>
+                    )}
                     {showConcentrationControl && (
                         <button
                             className={`btn-concentration ${isConcentrating ? 'active' : ''}`}
@@ -171,7 +198,10 @@ const SpellCard: React.FC<SpellCardProps> = ({
                     </span>
                 )}
                 {displayRoll && (
-                    <span className="spell-tag-dice" style={{ color: spell.element ? elementColor : '#fff' }}>
+                    <span
+                        className="spell-tag-dice"
+                        style={{ color: spell.element ? elementColor : '#fff' }}
+                    >
                         {displayRoll}
                     </span>
                 )}
@@ -196,19 +226,13 @@ const SpellCard: React.FC<SpellCardProps> = ({
                 {spell.isBookOfAncientSecrets && (
                     <span className="spell-tag-book-ancient">Ancient Secret</span>
                 )}
-                {isExpanded && (
-                    <span className="spell-tag-expanded">Expanded</span>
-                )}
+                {isExpanded && <span className="spell-tag-expanded">Expanded</span>}
             </div>
 
             {(canRollAttack && showAttackButton) || showCastButton ? (
                 <div className="spell-card-attack-row">
                     {showCastButton && onCastClick && (
-                        <button
-                            className="spell-cast-btn"
-                            onClick={onCastClick}
-                            type="button"
-                        >
+                        <button className="spell-cast-btn" onClick={onCastClick} type="button">
                             Cast
                         </button>
                     )}
@@ -219,7 +243,9 @@ const SpellCard: React.FC<SpellCardProps> = ({
                             damageType={spell.damageType || spell.element}
                             defaultAttackBonus={effectiveAttackBonus}
                             defaultDamageBonus={effectiveDamageBonus}
-                            onRollAttack={(result) => onAttackRoll?.(result.total, null, spell.name)}
+                            onRollAttack={(result) =>
+                                onAttackRoll?.(result.total, null, spell.name)
+                            }
                             onRollDamage={(result) => onAttackRoll?.(0, result.total, spell.name)}
                             inspirationAvailable={inspirationAvailable}
                             onSpendInspiration={onSpendInspiration}

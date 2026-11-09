@@ -27,14 +27,14 @@ interface FilterModalProps {
 }
 
 const FilterModal: React.FC<FilterModalProps> = ({
-                                                     isOpen,
-                                                     onClose,
-                                                     filters,
-                                                     onFilterChange,
-                                                     fields,
-                                                     onReset,
-                                                     title = 'Filter',
-                                                 }) => {
+    isOpen,
+    onClose,
+    filters,
+    onFilterChange,
+    fields,
+    onReset,
+    title = 'Filter',
+}) => {
     const handleChange = (key: string, value: any) => {
         onFilterChange({ ...filters, [key]: value });
     };
@@ -49,7 +49,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
     const removeTag = (key: string, tag: string) => {
         const current = filters[key] || [];
-        handleChange(key, current.filter((t: string) => t !== tag));
+        handleChange(
+            key,
+            current.filter((t: string) => t !== tag)
+        );
     };
 
     const handleReset = () => {
@@ -57,7 +60,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             onReset();
         } else {
             const resetValues: FilterValues = {};
-            fields.forEach(field => {
+            fields.forEach((field) => {
                 if (field.type === 'range') {
                     resetValues[field.key] = { min: field.min || 0, max: field.max || 100 };
                 } else if (field.type === 'boolean') {
@@ -77,7 +80,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <h3>{title}</h3>
-            {fields.map(field => (
+            {fields.map((field) => (
                 <div key={field.key} className="filter-group">
                     <label>{field.label}</label>
                     {field.type === 'select' && (
@@ -85,8 +88,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
                             value={filters[field.key] || ''}
                             onChange={(e) => handleChange(field.key, e.target.value)}
                         >
-                            {field.options?.map(opt => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            {field.options?.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </option>
                             ))}
                         </select>
                     )}
@@ -112,13 +117,23 @@ const FilterModal: React.FC<FilterModalProps> = ({
                             <input
                                 type="number"
                                 value={filters[field.key]?.min ?? field.min ?? 0}
-                                onChange={(e) => handleChange(field.key, { ...filters[field.key], min: Number(e.target.value) })}
+                                onChange={(e) =>
+                                    handleChange(field.key, {
+                                        ...filters[field.key],
+                                        min: Number(e.target.value),
+                                    })
+                                }
                             />
                             <span>to</span>
                             <input
                                 type="number"
                                 value={filters[field.key]?.max ?? field.max ?? 100}
-                                onChange={(e) => handleChange(field.key, { ...filters[field.key], max: Number(e.target.value) })}
+                                onChange={(e) =>
+                                    handleChange(field.key, {
+                                        ...filters[field.key],
+                                        max: Number(e.target.value),
+                                    })
+                                }
                             />
                         </div>
                     )}
@@ -156,7 +171,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                                 ))}
                             </div>
                             <div className="filter-tags-options">
-                                {field.options?.map(opt => (
+                                {field.options?.map((opt) => (
                                     <button
                                         key={opt.value}
                                         type="button"
@@ -172,8 +187,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
                 </div>
             ))}
             <div className="modal-actions">
-                <button className="modal-btn cancel" onClick={handleReset}>Reset</button>
-                <button className="modal-btn apply" onClick={onClose}>Apply</button>
+                <button className="modal-btn cancel" onClick={handleReset}>
+                    Reset
+                </button>
+                <button className="modal-btn apply" onClick={onClose}>
+                    Apply
+                </button>
             </div>
         </Modal>
     );

@@ -1,12 +1,8 @@
 import { Character } from '../types/Character';
-import {
-    MANEUVERS,
-    Maneuver,
-    getManeuversKnownCount,
-} from '../constants/maneuvers';
+import { MANEUVERS, Maneuver, getManeuversKnownCount } from '../constants/maneuvers';
 import { getClassLevelFor } from './classResources';
 import { getModifier } from './characterUtils';
-import {getProficiencyBonus} from "./proficiency";
+import { getProficiencyBonus } from './proficiency';
 
 /**
  * Сколько манёвров знает персонаж (Battle Master).
@@ -14,7 +10,7 @@ import {getProficiencyBonus} from "./proficiency";
 export function getKnownManeuversLimit(character: Character): number {
     const fighterLevel = getClassLevelFor(character, 'Fighter');
     const isBattleMaster = (character.classLevels || []).some(
-        cl => cl.className === 'Fighter' && cl.subclass === 'Battle Master'
+        (cl) => cl.className === 'Fighter' && cl.subclass === 'Battle Master'
     );
     if (!isBattleMaster) return 0;
     return getManeuversKnownCount(fighterLevel);
@@ -25,9 +21,7 @@ export function getKnownManeuversLimit(character: Character): number {
  */
 export function getKnownManeuvers(character: Character): Maneuver[] {
     const ids = character.knownManeuvers || [];
-    return ids
-        .map(id => MANEUVERS.find(m => m.id === id))
-        .filter((m): m is Maneuver => !!m);
+    return ids.map((id) => MANEUVERS.find((m) => m.id === id)).filter((m): m is Maneuver => !!m);
 }
 
 /**
@@ -35,7 +29,7 @@ export function getKnownManeuvers(character: Character): Maneuver[] {
  */
 export function getAvailableManeuvers(character: Character): Maneuver[] {
     const known = new Set(character.knownManeuvers || []);
-    return MANEUVERS.filter(m => !known.has(m.id));
+    return MANEUVERS.filter((m) => !known.has(m.id));
 }
 
 /**

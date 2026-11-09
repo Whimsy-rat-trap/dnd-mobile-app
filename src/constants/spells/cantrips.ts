@@ -8,7 +8,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S',
-        description: 'You hurl a bubble of acid. Choose one creature within range, or two creatures within 5 feet of each other.',
+        description:
+            'You hurl a bubble of acid. Choose one creature within range, or two creatures within 5 feet of each other.',
         element: 'acid',
         diceRoll: '1d6',
         damageType: 'acid',
@@ -22,7 +23,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage.',
+        description:
+            'You extend your hand and trace a sigil of warding in the air. Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -73,7 +75,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice.',
+        description:
+            'You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice.',
         requiresConcentration: true,
         classes: ['Cleric', 'Druid', 'Artificer'],
     },
@@ -84,7 +87,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, M',
-        description: 'You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light.',
+        description:
+            'You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light.',
         element: 'radiant',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Sorcerer', 'Wizard', 'Artificer'],
@@ -130,7 +134,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'S, M',
-        description: 'You create a sound or an image of an object within range that lasts for the duration.',
+        description:
+            'You create a sound or an image of an object within range that lasts for the duration.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -155,7 +160,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 action',
         range: '10 ft',
         components: 'V, S',
-        description: 'This spell is a minor magical trick that novice spellcasters use for practice.',
+        description:
+            'This spell is a minor magical trick that novice spellcasters use for practice.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard', 'Artificer'],
     },
@@ -180,7 +186,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 bonus action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'The wood of a club or quarterstaff you are holding is imbued with nature\'s power.',
+        description:
+            "The wood of a club or quarterstaff you are holding is imbued with nature's power.",
         requiresConcentration: false,
         classes: ['Druid'],
     },
@@ -191,7 +198,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You touch a living creature that has 0 hit points. The creature becomes stable.',
+        description:
+            'You touch a living creature that has 0 hit points. The creature becomes stable.',
         element: 'healing',
         requiresConcentration: false,
         classes: ['Cleric', 'Artificer'],
@@ -214,7 +222,8 @@ export const CANTRIPS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'S',
-        description: 'You extend your hand and point a finger at a target in range. Your magic grants you a brief insight into the target\'s defenses.',
+        description:
+            "You extend your hand and point a finger at a target in range. Your magic grants you a brief insight into the target's defenses.",
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },

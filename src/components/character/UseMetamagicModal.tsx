@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import Modal from '../Modal';
-import {
-    metamagicNeedsSpellLevel,
-    getMetamagicSpCost,
-} from '../../utils/metamagic';
+import { metamagicNeedsSpellLevel, getMetamagicSpCost } from '../../utils/metamagic';
 import { getMetamagicById } from '../../constants/metamagic';
 import './UseMetamagicModal.css';
 
@@ -14,12 +11,7 @@ interface Props {
     onConfirm: (spCost: number) => boolean;
 }
 
-const UseMetamagicModal: React.FC<Props> = ({
-                                                isOpen,
-                                                onClose,
-                                                metamagicId,
-                                                onConfirm,
-                                            }) => {
+const UseMetamagicModal: React.FC<Props> = ({ isOpen, onClose, metamagicId, onConfirm }) => {
     const [spellLevel, setSpellLevel] = useState<number>(1);
 
     const metamagic = metamagicId ? getMetamagicById(metamagicId) : null;
@@ -52,7 +44,7 @@ const UseMetamagicModal: React.FC<Props> = ({
                     <div className="umg-level-block">
                         <span className="umg-level-label">Spell level</span>
                         <div className="umg-level-grid">
-                            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(lvl => (
+                            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((lvl) => (
                                 <button
                                     key={lvl}
                                     type="button"

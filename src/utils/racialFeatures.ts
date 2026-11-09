@@ -7,8 +7,18 @@ import { RACIAL_BONUSES } from '../constants/racialBonuses';
 export interface RacialEffect {
     name: string;
     description: string;
-    type: 'darkvision' | 'speed' | 'size' | 'resistance' | 'immunity' | 'language' |
-        'skill' | 'tool' | 'feat' | 'feature' | 'other';
+    type:
+        | 'darkvision'
+        | 'speed'
+        | 'size'
+        | 'resistance'
+        | 'immunity'
+        | 'language'
+        | 'skill'
+        | 'tool'
+        | 'feat'
+        | 'feature'
+        | 'other';
     value?: string | number;
     source?: string;
 }
@@ -30,11 +40,30 @@ function getAllFeatures(race: string, subrace?: string): Feature[] {
 function isNaturalWeapon(feature: Feature): boolean {
     const lowerName = feature.name.toLowerCase();
     const lowerDesc = feature.description.toLowerCase();
-    const keywords = ['claw', 'claws', 'bite', 'talon', 'talons', 'fang', 'fangs', 'natural weapon', 'natural weapons', 'unarmed strike'];
-    const phrases = ['are natural weapons', 'is a natural weapon', 'you can use to make unarmed strikes',
-        'your fanged maw is a natural weapon', 'your claws are natural weapons', 'your talons are natural weapons'];
-    return keywords.some(kw => lowerName.includes(kw) || lowerDesc.includes(kw)) ||
-        phrases.some(phrase => lowerDesc.includes(phrase));
+    const keywords = [
+        'claw',
+        'claws',
+        'bite',
+        'talon',
+        'talons',
+        'fang',
+        'fangs',
+        'natural weapon',
+        'natural weapons',
+        'unarmed strike',
+    ];
+    const phrases = [
+        'are natural weapons',
+        'is a natural weapon',
+        'you can use to make unarmed strikes',
+        'your fanged maw is a natural weapon',
+        'your claws are natural weapons',
+        'your talons are natural weapons',
+    ];
+    return (
+        keywords.some((kw) => lowerName.includes(kw) || lowerDesc.includes(kw)) ||
+        phrases.some((phrase) => lowerDesc.includes(phrase))
+    );
 }
 
 /**
@@ -62,11 +91,11 @@ export function getNaturalWeapons(race: string, subrace?: string): Omit<Inventor
     const features = getAllFeatures(race, subrace);
     const weapons: Omit<InventoryItem, 'id'>[] = [];
 
-    features.forEach(feature => {
+    features.forEach((feature) => {
         if (isNaturalWeapon(feature)) {
             const weaponName = extractWeaponName(feature);
             // Проверяем, не добавлено ли уже такое оружие (чтобы избежать дубликатов)
-            if (!weapons.some(w => w.name === weaponName)) {
+            if (!weapons.some((w) => w.name === weaponName)) {
                 weapons.push({
                     name: weaponName,
                     type: 'natural weapon',
@@ -87,18 +116,25 @@ export function getAllRacialFeatures(race: string, subrace?: string): Feature[] 
 /**
  * Проверяет, есть ли у расы/подрасы resistance или immunity (для отображения в тегах)
  */
-export function getResistancesAndImmunities(race: string, subrace?: string): { resistance: string[]; immunity: string[] } {
+export function getResistancesAndImmunities(
+    race: string,
+    subrace?: string
+): { resistance: string[]; immunity: string[] } {
     const features = getAllFeatures(race, subrace);
     const resistances: string[] = [];
     const immunities: string[] = [];
-    features.forEach(feature => {
+    features.forEach((feature) => {
         if (feature.resistance) {
-            const resists = feature.resistance.split(',').map(r => r.trim());
-            resists.forEach(r => { if (r && !resistances.includes(r)) resistances.push(r); });
+            const resists = feature.resistance.split(',').map((r) => r.trim());
+            resists.forEach((r) => {
+                if (r && !resistances.includes(r)) resistances.push(r);
+            });
         }
         if (feature.immunity) {
-            const immunes = feature.immunity.split(',').map(i => i.trim());
-            immunes.forEach(i => { if (i && !immunities.includes(i)) immunities.push(i); });
+            const immunes = feature.immunity.split(',').map((i) => i.trim());
+            immunes.forEach((i) => {
+                if (i && !immunities.includes(i)) immunities.push(i);
+            });
         }
     });
     return { resistance: resistances, immunity: immunities };
@@ -109,14 +145,15 @@ export function getResistancesAndImmunities(race: string, subrace?: string): { r
 export function getRacialEffects(race: string, subrace?: string): RacialEffect[] {
     const effects: RacialEffect[] = [];
     const features = getAllFeatures(race, subrace);
-    const sourceLabel = (subrace && SUBRACE_DETAILS[subrace]) ? 'subrace' : 'race';
+    const sourceLabel = subrace && SUBRACE_DETAILS[subrace] ? 'subrace' : 'race';
 
     // 1. Базовые: размер, тип, скорость (из RACE_DETAILS и фич)
     const details = RACE_DETAILS[race];
     if (details) {
         let size = 'Medium';
         if (typeof details.size === 'string') size = details.size;
-        else if (details.size.options) size = details.size.default || details.size.options[0] || 'Medium';
+        else if (details.size.options)
+            size = details.size.default || details.size.options[0] || 'Medium';
         effects.push({
             name: 'Size',
             description: `Your size is ${size}.`,
@@ -135,10 +172,14 @@ export function getRacialEffects(race: string, subrace?: string): RacialEffect[]
 
     // Скорость (по умолчанию 30)
     let speed = 30;
-    features.forEach(f => {
+    features.forEach((f) => {
         const lowerName = f.name.toLowerCase();
         const lowerDesc = f.description.toLowerCase();
-        if (lowerName.includes('fleet of foot') || lowerName.includes('speed') || lowerDesc.includes('base walking speed')) {
+        if (
+            lowerName.includes('fleet of foot') ||
+            lowerName.includes('speed') ||
+            lowerDesc.includes('base walking speed')
+        ) {
             const match = f.description.match(/(\d+)\s*feet/);
             if (match) speed = parseInt(match[1], 10);
         }
@@ -199,7 +240,7 @@ export function getRacialEffects(race: string, subrace?: string): RacialEffect[]
     });
 
     // 3. Обрабатываем все фичи для выделения эффектов
-    features.forEach(feature => {
+    features.forEach((feature) => {
         const lowerName = feature.name.toLowerCase();
         const lowerDesc = feature.description.toLowerCase();
 
@@ -219,8 +260,8 @@ export function getRacialEffects(race: string, subrace?: string): RacialEffect[]
         // Resistance (если явно указано в feature.resistance)
         if (feature.resistance) {
             // Может быть строка с перечислением через запятую
-            const resists = feature.resistance.split(',').map(r => r.trim());
-            resists.forEach(r => {
+            const resists = feature.resistance.split(',').map((r) => r.trim());
+            resists.forEach((r) => {
                 effects.push({
                     name: `Resistance: ${r}`,
                     description: `You have resistance to ${r} damage.`,
@@ -233,8 +274,8 @@ export function getRacialEffects(race: string, subrace?: string): RacialEffect[]
 
         // Immunity (если явно указано в feature.immunity)
         if (feature.immunity) {
-            const immunes = feature.immunity.split(',').map(i => i.trim());
-            immunes.forEach(i => {
+            const immunes = feature.immunity.split(',').map((i) => i.trim());
+            immunes.forEach((i) => {
                 effects.push({
                     name: `Immunity: ${i}`,
                     description: `You are immune to ${i} damage.`,
@@ -247,30 +288,49 @@ export function getRacialEffects(race: string, subrace?: string): RacialEffect[]
 
         // Другие известные пассивные способности
         const knownPassives: { [key: string]: string } = {
-            'fey ancestry': 'You have advantage on saving throws against being charmed, and magic can\'t put you to sleep.',
-            'dwarven resilience': 'You have advantage on saving throws against poison, and you have resistance against poison damage.',
-            'gnome cunning': 'You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic.',
-            'lucky': 'When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.',
-            'brave': 'You have advantage on saving throws against being frightened.',
-            'halfling nimbleness': 'You can move through the space of any creature that is of a size larger than yours.',
-            'naturally stealthy': 'You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you.',
-            'menacing': 'You gain proficiency in the Intimidation skill.',
-            'relentless endurance': 'When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. You can\'t use this feature again until you finish a long rest.',
-            'savage attacks': 'When you score a critical hit with a melee weapon attack, you can roll one of the weapon\'s damage dice one additional time and add it to the extra damage of the critical hit.',
-            'stonecunning': 'Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check.',
-            'artificer\'s lore': 'Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus.',
-            'tinker': 'You have proficiency with artisan\'s tools (tinker\'s tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device.',
-            'natural illusionist': 'You know the Minor Illusion cantrip. Intelligence is your spellcasting ability for it.',
-            'speak with small beasts': 'Through sounds and gestures, you can communicate simple ideas with Small or smaller beasts.',
-            'powerful build': 'You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.',
-            'mountain born': 'You have resistance to cold damage. You\'re also acclimated to high altitude.',
-            'speech of beast and leaf': 'You have the ability to communicate in a limited manner with beasts and plants. They can understand the meaning of your words, though you have no special ability to understand them in return.',
-            'healing hands': 'As an action, you can touch a creature and cause it to regain a number of hit points equal to your level. Once you use this trait, you can\'t use it again until you finish a long rest.',
-            'radiant soul': 'Starting at 3rd level, you can use your action to unleash the divine energy within yourself, gaining a flying speed of 30 feet and dealing extra radiant damage equal to your level once per turn.',
-            'cat\'s claws': 'You have a climbing speed of 20 feet. In addition, your claws are natural weapons.',
-            'cat\'s talent': 'You have proficiency in the Perception and Stealth skills.',
-            'feline agility': 'Your reflexes and agility allow you to move with a burst of speed. When you move on your turn in combat, you can double your speed until the end of the turn. Once you use this trait, you can\'t use it again until you move 0 feet on one of your turns.',
-            'shell defense': 'You can withdraw into your shell as an action. Until you emerge, you gain a +4 bonus to AC, and you have advantage on Strength and Constitution saving throws.',
+            'fey ancestry':
+                "You have advantage on saving throws against being charmed, and magic can't put you to sleep.",
+            'dwarven resilience':
+                'You have advantage on saving throws against poison, and you have resistance against poison damage.',
+            'gnome cunning':
+                'You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic.',
+            lucky: 'When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.',
+            brave: 'You have advantage on saving throws against being frightened.',
+            'halfling nimbleness':
+                'You can move through the space of any creature that is of a size larger than yours.',
+            'naturally stealthy':
+                'You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you.',
+            menacing: 'You gain proficiency in the Intimidation skill.',
+            'relentless endurance':
+                "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. You can't use this feature again until you finish a long rest.",
+            'savage attacks':
+                "When you score a critical hit with a melee weapon attack, you can roll one of the weapon's damage dice one additional time and add it to the extra damage of the critical hit.",
+            stonecunning:
+                'Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check.',
+            "artificer's lore":
+                'Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus.',
+            tinker: "You have proficiency with artisan's tools (tinker's tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device.",
+            'natural illusionist':
+                'You know the Minor Illusion cantrip. Intelligence is your spellcasting ability for it.',
+            'speak with small beasts':
+                'Through sounds and gestures, you can communicate simple ideas with Small or smaller beasts.',
+            'powerful build':
+                'You count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift.',
+            'mountain born':
+                "You have resistance to cold damage. You're also acclimated to high altitude.",
+            'speech of beast and leaf':
+                'You have the ability to communicate in a limited manner with beasts and plants. They can understand the meaning of your words, though you have no special ability to understand them in return.',
+            'healing hands':
+                "As an action, you can touch a creature and cause it to regain a number of hit points equal to your level. Once you use this trait, you can't use it again until you finish a long rest.",
+            'radiant soul':
+                'Starting at 3rd level, you can use your action to unleash the divine energy within yourself, gaining a flying speed of 30 feet and dealing extra radiant damage equal to your level once per turn.',
+            "cat's claws":
+                'You have a climbing speed of 20 feet. In addition, your claws are natural weapons.',
+            "cat's talent": 'You have proficiency in the Perception and Stealth skills.',
+            'feline agility':
+                "Your reflexes and agility allow you to move with a burst of speed. When you move on your turn in combat, you can double your speed until the end of the turn. Once you use this trait, you can't use it again until you move 0 feet on one of your turns.",
+            'shell defense':
+                'You can withdraw into your shell as an action. Until you emerge, you gain a +4 bonus to AC, and you have advantage on Strength and Constitution saving throws.',
         };
 
         for (const [key, desc] of Object.entries(knownPassives)) {
@@ -317,7 +377,7 @@ export function getRacialEffects(race: string, subrace?: string): RacialEffect[]
 
     // 5. Удаляем дубликаты (по имени и типу)
     const uniqueMap = new Map<string, RacialEffect>();
-    effects.forEach(e => {
+    effects.forEach((e) => {
         const key = `${e.name}|${e.type}`;
         if (!uniqueMap.has(key)) {
             uniqueMap.set(key, e);
@@ -330,15 +390,30 @@ export function getRacialEffects(race: string, subrace?: string): RacialEffect[]
  * Возвращает список пассивных эффектов для отображения в UI (без очень длинных описаний)
  */
 export function getActivePassiveEffects(race: string, subrace?: string): RacialEffect[] {
-    return getRacialEffects(race, subrace).filter(e =>
-        e.type !== 'other' || e.name === 'Fey Ancestry' || e.name === 'Lucky' ||
-        e.name === 'Brave' || e.name === 'Halfling Nimbleness' || e.name === 'Naturally Stealthy' ||
-        e.name === 'Menacing' || e.name === 'Relentless Endurance' || e.name === 'Savage Attacks' ||
-        e.name === 'Stonecunning' || e.name === 'Artificer\'s Lore' || e.name === 'Tinker' ||
-        e.name === 'Natural Illusionist' || e.name === 'Speak with Small Beasts' ||
-        e.name === 'Powerful Build' || e.name === 'Mountain Born' ||
-        e.name === 'Speech of Beast and Leaf' || e.name === 'Healing Hands' ||
-        e.name === 'Radiant Soul' || e.name === 'Cat\'s Claws' || e.name === 'Cat\'s Talent' ||
-        e.name === 'Feline Agility' || e.name === 'Shell Defense'
+    return getRacialEffects(race, subrace).filter(
+        (e) =>
+            e.type !== 'other' ||
+            e.name === 'Fey Ancestry' ||
+            e.name === 'Lucky' ||
+            e.name === 'Brave' ||
+            e.name === 'Halfling Nimbleness' ||
+            e.name === 'Naturally Stealthy' ||
+            e.name === 'Menacing' ||
+            e.name === 'Relentless Endurance' ||
+            e.name === 'Savage Attacks' ||
+            e.name === 'Stonecunning' ||
+            e.name === "Artificer's Lore" ||
+            e.name === 'Tinker' ||
+            e.name === 'Natural Illusionist' ||
+            e.name === 'Speak with Small Beasts' ||
+            e.name === 'Powerful Build' ||
+            e.name === 'Mountain Born' ||
+            e.name === 'Speech of Beast and Leaf' ||
+            e.name === 'Healing Hands' ||
+            e.name === 'Radiant Soul' ||
+            e.name === "Cat's Claws" ||
+            e.name === "Cat's Talent" ||
+            e.name === 'Feline Agility' ||
+            e.name === 'Shell Defense'
     );
 }

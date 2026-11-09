@@ -50,10 +50,7 @@ export const addCurrency = (a: Currency, b: Currency): Currency => {
  *
  * Если хотите разрешить «долг», используйте `subtractCurrencyRaw` ниже.
  */
-export const subtractCurrency = (
-    a: Currency,
-    b: Currency
-): { result: Currency; ok: boolean } => {
+export const subtractCurrency = (a: Currency, b: Currency): { result: Currency; ok: boolean } => {
     const aCp = toCopper(a);
     const bCp = toCopper(b);
     if (bCp > aCp) {
@@ -116,9 +113,7 @@ export const parseCurrencyString = (value?: string): Currency | null => {
  * Извлекает валюту из описания предмета.
  * Ловит только контексты с предлогами: "with / contains / holds".
  */
-export const extractCurrencyFromDescription = (
-    description?: string
-): Currency | null => {
+export const extractCurrencyFromDescription = (description?: string): Currency | null => {
     if (!description) return null;
     const re = /(?:with|contains?|holds?)\s+(\d+)\s*(gp|sp|cp)/gi;
     let match: RegExpExecArray | null;

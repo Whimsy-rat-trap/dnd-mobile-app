@@ -10,8 +10,12 @@
     transition: all 0.2s;
 }
 
-.insp-badge.insp-sm { padding: 6px; }
-.insp-badge.insp-md { padding: 8px; }
+.insp-badge.insp-sm {
+    padding: 6px;
+}
+.insp-badge.insp-md {
+    padding: 8px;
+}
 
 .insp-badge:hover:not(:disabled) {
     border-color: var(--color-warning);

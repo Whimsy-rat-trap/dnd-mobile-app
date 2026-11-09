@@ -11,5 +11,5 @@ export const DND_CLASSES = [
     'Sorcerer',
     'Warlock',
     'Wizard',
-    'Artificer'
+    'Artificer',
 ];

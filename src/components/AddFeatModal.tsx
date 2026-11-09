@@ -17,12 +17,12 @@ interface AddFeatModalProps {
 const ASI_LEVELS = [4, 8, 12, 16, 19];
 
 const AddFeatModal: React.FC<AddFeatModalProps> = ({
-                                                       isOpen,
-                                                       onClose,
-                                                       onAdd,
-                                                       characterLevel = 1,
-                                                       existingLevelFeats = [],
-                                                   }) => {
+    isOpen,
+    onClose,
+    onAdd,
+    characterLevel = 1,
+    existingLevelFeats = [],
+}) => {
     const [mode, setMode] = useState<'catalog' | 'custom'>('catalog');
 
     // Catalog
@@ -42,8 +42,8 @@ const AddFeatModal: React.FC<AddFeatModalProps> = ({
 
     const [error, setError] = useState<string | null>(null);
 
-    const availableFeatLevels = ASI_LEVELS.filter(l => l <= characterLevel);
-    const usedLevels = new Set(existingLevelFeats.map(f => f.gainedAtLevel));
+    const availableFeatLevels = ASI_LEVELS.filter((l) => l <= characterLevel);
+    const usedLevels = new Set(existingLevelFeats.map((f) => f.gainedAtLevel));
 
     useEffect(() => {
         if (isOpen) {
@@ -57,7 +57,7 @@ const AddFeatModal: React.FC<AddFeatModalProps> = ({
             setSource('level');
             setSourceDetail('');
 
-            const firstAvailable = availableFeatLevels.find(l => !usedLevels.has(l));
+            const firstAvailable = availableFeatLevels.find((l) => !usedLevels.has(l));
             setGainedAtLevel(firstAvailable ?? characterLevel);
             setError(null);
         }
@@ -146,9 +146,10 @@ const AddFeatModal: React.FC<AddFeatModalProps> = ({
                             onChange={(e) => setSelectedFeatId(e.target.value)}
                         >
                             <option value="">— Select feat —</option>
-                            {GENERAL_FEATS.map(f => (
+                            {GENERAL_FEATS.map((f) => (
                                 <option key={f.id} value={f.id}>
-                                    {f.name}{f.prerequisite ? ` — ${f.prerequisite}` : ''}
+                                    {f.name}
+                                    {f.prerequisite ? ` — ${f.prerequisite}` : ''}
                                 </option>
                             ))}
                         </select>
@@ -232,13 +233,10 @@ const AddFeatModal: React.FC<AddFeatModalProps> = ({
                             value={gainedAtLevel}
                             onChange={(e) => setGainedAtLevel(Number(e.target.value))}
                         >
-                            {availableFeatLevels.map(l => (
-                                <option
-                                    key={l}
-                                    value={l}
-                                    disabled={usedLevels.has(l)}
-                                >
-                                    Level {l}{usedLevels.has(l) ? ' (already used)' : ''}
+                            {availableFeatLevels.map((l) => (
+                                <option key={l} value={l} disabled={usedLevels.has(l)}>
+                                    Level {l}
+                                    {usedLevels.has(l) ? ' (already used)' : ''}
                                 </option>
                             ))}
                         </select>

@@ -1,19 +1,13 @@
 import { Character } from '../types/Character';
 import { ALL_SPELLS, SpellData } from '../constants/spells';
-import {
-    CLASS_SPELL_LISTS,
-    ClassSpellListData,
-} from '../constants/classSpellLists';
+import { CLASS_SPELL_LISTS, ClassSpellListData } from '../constants/classSpellLists';
 import { SUBCLASS_ALWAYS_PREPARED_SPELLS } from '../constants/subclassSpells';
 import { SUBCLASS_EXPANDED_SPELLS } from '../constants/subclassExpandedSpells';
-import { MAGICAL_SECRETS_FEATURES } from '../constants/magicalSecrets'
+import { MAGICAL_SECRETS_FEATURES } from '../constants/magicalSecrets';
 import { isRitualSpell } from '../constants/ritualSpells';
 
 // Ключи и резолвинг класса
-export function resolveSpellListKey(
-    className: string,
-    subclass?: string
-): string {
+export function resolveSpellListKey(className: string, subclass?: string): string {
     if (subclass) {
         const composite = `${className}:${subclass}`;
         if (CLASS_SPELL_LISTS[composite]) return composite;
@@ -46,10 +40,8 @@ export function getSpellsForClass(
             ? Object.values(data.spellsByLevel).flat()
             : data.spellsByLevel[level] || [];
 
-    const byName = new Map(ALL_SPELLS.map(s => [s.name.toLowerCase(), s]));
-    return names
-        .map(n => byName.get(n.toLowerCase()))
-        .filter((s): s is SpellData => !!s);
+    const byName = new Map(ALL_SPELLS.map((s) => [s.name.toLowerCase(), s]));
+    return names.map((n) => byName.get(n.toLowerCase())).filter((s): s is SpellData => !!s);
 }
 
 // Always-prepared (Cleric Domains, Paladin Oaths)
@@ -65,7 +57,7 @@ export function getSubclassAlwaysPreparedSpells(
     const subclassData = classData[subclass];
     if (!subclassData) return [];
 
-    const byName = new Map(ALL_SPELLS.map(s => [s.name.toLowerCase(), s]));
+    const byName = new Map(ALL_SPELLS.map((s) => [s.name.toLowerCase(), s]));
     const result = new Map<string, SpellData>();
 
     for (const [lvlStr, names] of Object.entries(subclassData)) {
@@ -82,16 +74,10 @@ export function getSubclassAlwaysPreparedSpells(
     return Array.from(result.values());
 }
 
-export function getSubclassAlwaysPreparedSpellsForCharacter(
-    character: Character
-): SpellData[] {
+export function getSubclassAlwaysPreparedSpellsForCharacter(character: Character): SpellData[] {
     const result = new Map<string, SpellData>();
     for (const cl of character.classLevels || []) {
-        const spells = getSubclassAlwaysPreparedSpells(
-            cl.className,
-            cl.subclass,
-            cl.level
-        );
+        const spells = getSubclassAlwaysPreparedSpells(cl.className, cl.subclass, cl.level);
         for (const spell of spells) {
             const key = spell.name.toLowerCase();
             if (result.has(key)) continue;
@@ -122,7 +108,7 @@ export function getSubclassExpandedSpells(
     const maxSpellLevel = getMaxSpellLevelForClass(className, classLevel, subclass);
     if (maxSpellLevel === 0) return [];
 
-    const byName = new Map(ALL_SPELLS.map(s => [s.name.toLowerCase(), s]));
+    const byName = new Map(ALL_SPELLS.map((s) => [s.name.toLowerCase(), s]));
     const result = new Map<string, SpellData>();
 
     // 1. Фиксированные списки (Warlock Patrons)
@@ -159,16 +145,10 @@ export function getSubclassExpandedSpells(
     return Array.from(result.values());
 }
 
-export function getSubclassExpandedSpellsForCharacter(
-    character: Character
-): SpellData[] {
+export function getSubclassExpandedSpellsForCharacter(character: Character): SpellData[] {
     const result = new Map<string, SpellData>();
     for (const cl of character.classLevels || []) {
-        const spells = getSubclassExpandedSpells(
-            cl.className,
-            cl.subclass,
-            cl.level
-        );
+        const spells = getSubclassExpandedSpells(cl.className, cl.subclass, cl.level);
         for (const spell of spells) {
             const key = spell.name.toLowerCase();
             if (result.has(key)) continue;
@@ -185,30 +165,23 @@ export function getSubclassExpandedSpellsForCharacter(
  *
  * Полезно для UI: помечать такие заклинания тегом «Expanded».
  */
-export function isSpellExpandedOnly(
-    character: Character,
-    spellName: string
-): boolean {
+export function isSpellExpandedOnly(character: Character, spellName: string): boolean {
     const lower = spellName.toLowerCase();
 
     // 1. Если в базовом списке хотя бы одного класса — не «expanded only»
     for (const cl of character.classLevels || []) {
         const data = getClassSpellListData(cl.className, cl.subclass);
         if (!data) continue;
-        const inBase = Object.values(data.spellsByLevel).some(names =>
-            names.some(n => n.toLowerCase() === lower)
+        const inBase = Object.values(data.spellsByLevel).some((names) =>
+            names.some((n) => n.toLowerCase() === lower)
         );
         if (inBase) return false;
     }
 
     // 2. Если есть в expanded хотя бы одного подкласса — true
     for (const cl of character.classLevels || []) {
-        const expanded = getSubclassExpandedSpells(
-            cl.className,
-            cl.subclass,
-            cl.level
-        );
-        if (expanded.some(s => s.name.toLowerCase() === lower)) return true;
+        const expanded = getSubclassExpandedSpells(cl.className, cl.subclass, cl.level);
+        if (expanded.some((s) => s.name.toLowerCase() === lower)) return true;
     }
 
     return false;
@@ -281,7 +254,7 @@ export function getSpellsAvailableToCharacter(
     options: { respectSpellLevel?: boolean } = {}
 ): SpellData[] {
     const { respectSpellLevel = true } = options;
-    const byName = new Map(ALL_SPELLS.map(s => [s.name.toLowerCase(), s]));
+    const byName = new Map(ALL_SPELLS.map((s) => [s.name.toLowerCase(), s]));
     const result = new Map<string, SpellData>();
 
     const addSpell = (spell: SpellData) => {
@@ -309,19 +282,11 @@ export function getSpellsAvailableToCharacter(
         }
 
         // 2. Always-prepared подкласса (Cleric Domains, Paladin Oaths)
-        const alwaysPrepared = getSubclassAlwaysPreparedSpells(
-            cl.className,
-            cl.subclass,
-            cl.level
-        );
+        const alwaysPrepared = getSubclassAlwaysPreparedSpells(cl.className, cl.subclass, cl.level);
         for (const spell of alwaysPrepared) addSpell(spell);
 
         // 3. Expanded подкласса (Warlock Patrons, Divine Soul)
-        const expanded = getSubclassExpandedSpells(
-            cl.className,
-            cl.subclass,
-            cl.level
-        );
+        const expanded = getSubclassExpandedSpells(cl.className, cl.subclass, cl.level);
         for (const spell of expanded) addSpell(spell);
     }
 
@@ -338,8 +303,8 @@ export function getClassesForSpell(spellName: string): string[] {
     const result = new Set<string>();
 
     for (const [key, data] of Object.entries(CLASS_SPELL_LISTS)) {
-        const found = Object.values(data.spellsByLevel).some(names =>
-            names.some(n => n.toLowerCase() === lower)
+        const found = Object.values(data.spellsByLevel).some((names) =>
+            names.some((n) => n.toLowerCase() === lower)
         );
         if (found) {
             const baseClass = key.includes(':') ? key.split(':')[0] : key;
@@ -363,9 +328,7 @@ export function getMaxMagicalSecrets(
     if (!features) return 0;
 
     return features
-        .filter(f =>
-            classLevel >= f.level && (!f.subclass || f.subclass === subclass)
-        )
+        .filter((f) => classLevel >= f.level && (!f.subclass || f.subclass === subclass))
         .reduce((sum, f) => sum + f.count, 0);
 }
 
@@ -384,7 +347,7 @@ export function getMaxMagicalSecretsForCharacter(character: Character): number {
  * Сколько заклинаний персонаж уже выбрал как секреты.
  */
 export function getUsedMagicalSecretsCount(character: Character): number {
-    return character.spells.filter(s => s.isMagicalSecret).length;
+    return character.spells.filter((s) => s.isMagicalSecret).length;
 }
 
 /**
@@ -395,10 +358,7 @@ export function getMaxMagicalSecretSpellLevel(character: Character): number {
     let max = 0;
     for (const cl of character.classLevels || []) {
         if (!MAGICAL_SECRETS_FEATURES[cl.className]) continue;
-        max = Math.max(
-            max,
-            getMaxSpellLevelForClass(cl.className, cl.level, cl.subclass)
-        );
+        max = Math.max(max, getMaxSpellLevelForClass(cl.className, cl.level, cl.subclass));
     }
     return max;
 }
@@ -433,8 +393,8 @@ function isSpellOnAnyBaseList(character: Character, spellName: string): boolean 
     for (const cl of character.classLevels || []) {
         const data = getClassSpellListData(cl.className, cl.subclass);
         if (!data) continue;
-        const found = Object.values(data.spellsByLevel).some(names =>
-            names.some(n => n.toLowerCase() === lower)
+        const found = Object.values(data.spellsByLevel).some((names) =>
+            names.some((n) => n.toLowerCase() === lower)
         );
         if (found) return true;
     }
@@ -452,11 +412,9 @@ export function getMagicalSecretsCandidates(character: Character): SpellData[] {
     const maxLevel = getMaxMagicalSecretSpellLevel(character);
     if (maxLevel === 0) return [];
 
-    const existing = new Set(
-        character.spells.map(s => s.name.toLowerCase())
-    );
+    const existing = new Set(character.spells.map((s) => s.name.toLowerCase()));
 
-    return ALL_SPELLS.filter(s => {
+    return ALL_SPELLS.filter((s) => {
         const key = s.name.toLowerCase();
         if (existing.has(key)) return false;
         if (isSpellOnAnyBaseList(character, s.name)) return false;
@@ -471,7 +429,7 @@ export function getMagicalSecretsCandidates(character: Character): SpellData[] {
  */
 export function getWarlockLevel(character: Character): number {
     return (character.classLevels || [])
-        .filter(cl => cl.className === 'Warlock')
+        .filter((cl) => cl.className === 'Warlock')
         .reduce((sum, cl) => sum + cl.level, 0);
 }
 
@@ -503,7 +461,7 @@ export function hasBookOfAncientSecrets(character: Character): boolean {
 export const PACT_OF_TOME_CANTRIP_LIMIT = 3;
 
 export function getPactOfTomeCantripsUsed(character: Character): number {
-    return character.spells.filter(s => s.isPactOfTome).length;
+    return character.spells.filter((s) => s.isPactOfTome).length;
 }
 
 /**
@@ -512,9 +470,9 @@ export function getPactOfTomeCantripsUsed(character: Character): number {
  */
 export function getPactOfTomeCantripCandidates(character: Character): SpellData[] {
     if (!hasPactOfTheTome(character)) return [];
-    const existing = new Set(character.spells.map(s => s.name.toLowerCase()));
+    const existing = new Set(character.spells.map((s) => s.name.toLowerCase()));
 
-    return ALL_SPELLS.filter(s => {
+    return ALL_SPELLS.filter((s) => {
         if (s.level !== 0) return false;
         if (existing.has(s.name.toLowerCase())) return false;
         return true;
@@ -555,7 +513,7 @@ export function getMaxBookOfAncientSecretsRitualLevel(character: Character): num
 export const BOOK_OF_ANCIENT_SECRETS_INITIAL_SLOTS = 2;
 
 export function getBookOfAncientSecretsUsed(character: Character): number {
-    return character.spells.filter(s => s.isBookOfAncientSecrets).length;
+    return character.spells.filter((s) => s.isBookOfAncientSecrets).length;
 }
 
 /**
@@ -566,9 +524,9 @@ export function getBookOfAncientSecretsUsed(character: Character): number {
 export function getBookOfAncientSecretsCandidates(character: Character): SpellData[] {
     const maxLevel = getMaxBookOfAncientSecretsRitualLevel(character);
     if (maxLevel === 0) return [];
-    const existing = new Set(character.spells.map(s => s.name.toLowerCase()));
+    const existing = new Set(character.spells.map((s) => s.name.toLowerCase()));
 
-    return ALL_SPELLS.filter(s => {
+    return ALL_SPELLS.filter((s) => {
         if (!isRitualSpell(s)) return false;
         if (s.level === 0) return false;
         if (s.level > maxLevel) return false;

@@ -25,11 +25,11 @@ export const ItemProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             ...item,
             id: `custom-${Date.now()}`,
         };
-        setCustomItems(prev => [...prev, newItem]);
+        setCustomItems((prev) => [...prev, newItem]);
     };
 
     const removeCustomItem = (id: string) => {
-        setCustomItems(prev => prev.filter(item => item.id !== id));
+        setCustomItems((prev) => prev.filter((item) => item.id !== id));
     };
 
     return (

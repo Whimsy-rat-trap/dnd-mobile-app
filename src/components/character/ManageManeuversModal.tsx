@@ -29,7 +29,11 @@ const ManageManeuversModal: React.FC<Props> = ({ isOpen, onClose, character }) =
             <div className="mmm-body">
                 <h3 className="mmm-title">Maneuvers</h3>
                 <p className="mmm-subtitle">
-                    Choose your maneuvers. You know <strong>{known.length} / {limit}</strong>.
+                    Choose your maneuvers. You know{' '}
+                    <strong>
+                        {known.length} / {limit}
+                    </strong>
+                    .
                 </p>
 
                 <div className="mmm-section">
@@ -38,7 +42,7 @@ const ManageManeuversModal: React.FC<Props> = ({ isOpen, onClose, character }) =
                         <div className="mmm-empty">None yet.</div>
                     ) : (
                         <div className="mmm-list">
-                            {known.map(m => (
+                            {known.map((m) => (
                                 <div key={m.id} className="mmm-row mmm-row-known">
                                     <div className="mmm-info">
                                         <span className="mmm-name">{m.name}</span>
@@ -60,10 +64,11 @@ const ManageManeuversModal: React.FC<Props> = ({ isOpen, onClose, character }) =
 
                 <div className="mmm-section">
                     <div className="mmm-section-title">
-                        Available ({available.length}) {isFull && '— limit reached, remove one to add another'}
+                        Available ({available.length}){' '}
+                        {isFull && '— limit reached, remove one to add another'}
                     </div>
                     <div className="mmm-list mmm-list-scroll">
-                        {available.map(m => (
+                        {available.map((m) => (
                             <div key={m.id} className="mmm-row">
                                 <div className="mmm-info">
                                     <span className="mmm-name">
@@ -79,7 +84,9 @@ const ManageManeuversModal: React.FC<Props> = ({ isOpen, onClose, character }) =
                                     className="mmm-btn mmm-btn-add"
                                     disabled={isFull}
                                     onClick={() => learnManeuver(character.id, m.id)}
-                                    title={isFull ? 'Maneuver limit reached' : 'Learn this maneuver'}
+                                    title={
+                                        isFull ? 'Maneuver limit reached' : 'Learn this maneuver'
+                                    }
                                 >
                                     +
                                 </button>

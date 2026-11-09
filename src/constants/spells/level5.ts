@@ -8,7 +8,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'Objects come to life at your command. Choose up to ten nonmagical objects within range.',
+        description:
+            'Objects come to life at your command. Choose up to ten nonmagical objects within range.',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -19,7 +20,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self (60-foot cone)',
         components: 'V, S, M',
-        description: 'A blast of cold air erupts from your hands. Each creature in a 60-foot cone takes 8d8 cold damage.',
+        description:
+            'A blast of cold air erupts from your hands. Each creature in a 60-foot cone takes 8d8 cold damage.',
         element: 'cold',
         diceRoll: '8d8',
         damageType: 'cold',
@@ -33,7 +35,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 minute',
         range: 'Self',
         components: 'V',
-        description: 'You mentally contact a demigod, the spirit of a long-dead sage, or some other mysterious entity.',
+        description:
+            'You mentally contact a demigod, the spirit of a long-dead sage, or some other mysterious entity.',
         requiresConcentration: false,
         classes: ['Warlock', 'Wizard'],
     },
@@ -44,7 +47,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S',
-        description: 'You attempt to beguile a humanoid. It must succeed on a Wisdom save or be charmed by you for the duration.',
+        description:
+            'You attempt to beguile a humanoid. It must succeed on a Wisdom save or be charmed by you for the duration.',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Wizard'],
     },
@@ -55,7 +59,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 minute',
         range: 'Special',
         components: 'V, S, M',
-        description: 'This spell shapes a creature\'s dreams. Choose a creature known to you as the target.',
+        description:
+            "This spell shapes a creature's dreams. Choose a creature known to you as the target.",
         requiresConcentration: false,
         classes: ['Bard', 'Warlock', 'Wizard'],
     },
@@ -66,7 +71,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 minute',
         range: '60 ft',
         components: 'V',
-        description: 'You place a magical command on a creature, forcing it to carry out some service.',
+        description:
+            'You place a magical command on a creature, forcing it to carry out some service.',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Druid', 'Paladin', 'Wizard'],
     },
@@ -77,7 +83,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'Choose a creature. It must succeed on a Wisdom save or be paralyzed for the duration. This spell has no effect on undead.',
+        description:
+            'Choose a creature. It must succeed on a Wisdom save or be paralyzed for the duration. This spell has no effect on undead.',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -88,7 +95,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '10 minutes',
         range: 'Self',
         components: 'V, S, M',
-        description: 'Name or describe a person, place, or object. The spell brings to your mind a brief summary of significant lore.',
+        description:
+            'Name or describe a person, place, or object. The spell brings to your mind a brief summary of significant lore.',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Wizard'],
     },
@@ -99,7 +107,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S',
-        description: 'A wave of healing energy washes out from a point of your choice. Each target regains 3d8 + spellcasting modifier hit points.',
+        description:
+            'A wave of healing energy washes out from a point of your choice. Each target regains 3d8 + spellcasting modifier hit points.',
         element: 'healing',
         diceRoll: '3d8',
         damageType: 'healing',
@@ -113,7 +122,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'S',
-        description: 'You become invisible at the same time that an illusory double of you appears where you are standing.',
+        description:
+            'You become invisible at the same time that an illusory double of you appears where you are standing.',
         requiresConcentration: true,
         classes: ['Bard', 'Wizard'],
     },
@@ -124,7 +134,7 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'You attempt to reshape another creature\'s memories.',
+        description: "You attempt to reshape another creature's memories.",
         requiresConcentration: true,
         classes: ['Bard', 'Wizard'],
     },
@@ -135,7 +145,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'A passage appears at a point of your choice that you can see on a wooden, plaster, or stone surface.',
+        description:
+            'A passage appears at a point of your choice that you can see on a wooden, plaster, or stone surface.',
         requiresConcentration: false,
         classes: ['Wizard'],
     },
@@ -146,7 +157,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 hour',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You return a dead creature you touch to life, provided it has been dead no longer than 10 days.',
+        description:
+            'You return a dead creature you touch to life, provided it has been dead no longer than 10 days.',
         element: 'healing',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Paladin'],
@@ -158,7 +170,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '10 minutes',
         range: 'Self',
         components: 'V, S, M',
-        description: 'You can see and hear a particular creature you choose that is on the same plane of existence as you.',
+        description:
+            'You can see and hear a particular creature you choose that is on the same plane of existence as you.',
         requiresConcentration: true,
         classes: ['Bard', 'Cleric', 'Druid', 'Warlock', 'Wizard'],
     },
@@ -169,7 +182,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'This spell allows you to change the appearance of any number of creatures that you can see within range.',
+        description:
+            'This spell allows you to change the appearance of any number of creatures that you can see within range.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Wizard'],
     },
@@ -180,7 +194,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 minute',
         range: '10 ft',
         components: 'V, S, M',
-        description: 'You draw a 10-foot-diameter circle on the ground inscribed with sigils that link your location to a permanent teleportation circle.',
+        description:
+            'You draw a 10-foot-diameter circle on the ground inscribed with sigils that link your location to a permanent teleportation circle.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Wizard'],
     },
@@ -191,7 +206,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'An invisible wall of force springs into existence at a point you choose within range.',
+        description:
+            'An invisible wall of force springs into existence at a point you choose within range.',
         element: 'force',
         requiresConcentration: true,
         classes: ['Wizard'],
@@ -203,7 +219,8 @@ export const LEVEL_5_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'A nonmagical wall of solid stone springs into existence at a point you choose within range.',
+        description:
+            'A nonmagical wall of solid stone springs into existence at a point you choose within range.',
         requiresConcentration: true,
         classes: ['Druid', 'Sorcerer', 'Wizard', 'Artificer'],
     },

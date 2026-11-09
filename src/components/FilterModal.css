@@ -11,9 +11,9 @@
 }
 
 .filter-group select,
-.filter-group input[type="text"],
-.filter-group input[type="number"],
-.filter-group input[type="date"] {
+.filter-group input[type='text'],
+.filter-group input[type='number'],
+.filter-group input[type='date'] {
     padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid var(--border-default);
@@ -46,7 +46,7 @@
     cursor: pointer;
 }
 
-.boolean-filter input[type="checkbox"] {
+.boolean-filter input[type='checkbox'] {
     accent-color: var(--color-primary);
     width: 16px;
     height: 16px;

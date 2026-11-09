@@ -4,7 +4,7 @@ import { Character } from '../../types/Character';
 import { useCharacters } from '../../context/CharacterContext';
 import { getPreparableSpellsData } from '../../utils/spellPreparation';
 import './PrepareSpellsModal.css';
-import {groupByLevel} from "../../utils/arrayHelpers";
+import { groupByLevel } from '../../utils/arrayHelpers';
 
 interface Props {
     isOpen: boolean;
@@ -21,7 +21,7 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
     // Инициализация при открытии
     useEffect(() => {
         if (isOpen) {
-            setSelected(new Set(data.spells.filter(s => s.prepared).map(s => s.id)));
+            setSelected(new Set(data.spells.filter((s) => s.prepared).map((s) => s.id)));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
@@ -29,7 +29,7 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
     if (!isOpen) return null;
 
     const handleToggle = (id: string) => {
-        setSelected(prev => {
+        setSelected((prev) => {
             const next = new Set(prev);
             if (next.has(id)) {
                 next.delete(id);
@@ -42,7 +42,7 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
     };
 
     const handleSelectAll = () => {
-        const allIds = data.spells.slice(0, data.maxPrepared).map(s => s.id);
+        const allIds = data.spells.slice(0, data.maxPrepared).map((s) => s.id);
         setSelected(new Set(allIds));
     };
 
@@ -51,7 +51,7 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
     };
 
     const handleConfirm = () => {
-        const newSpells = character.spells.map(s => {
+        const newSpells = character.spells.map((s) => {
             // Always-prepared и racial — не трогаем
             if (s.isAlwaysPrepared || s.isRacial) return s;
             // Cantrips — не трогаем (они не считаются, но их состояние не важно)
@@ -80,7 +80,8 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
                     Choose which spells you have prepared for the day.
                     {data.maxCastableLevel > 0 && (
                         <span className="psm-subtitle-hint">
-                            {' '}· up to Lv.{data.maxCastableLevel}
+                            {' '}
+                            · up to Lv.{data.maxCastableLevel}
                         </span>
                     )}
                 </p>
@@ -96,20 +97,14 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
                     <div className="psm-section">
                         <div className="psm-section-title">
                             Always Prepared
-                            <span className="psm-section-hint">
-                                {' '}— not counted toward limit
-                            </span>
+                            <span className="psm-section-hint"> — not counted toward limit</span>
                         </div>
                         <div className="psm-always-list">
-                            {data.alwaysPrepared.map(s => (
+                            {data.alwaysPrepared.map((s) => (
                                 <span key={s.id} className="psm-always-chip">
                                     {s.name}
-                                    <span className="psm-always-level">
-                                        Lv.{s.level}
-                                    </span>
-                                    {s.isRacial && (
-                                        <span className="psm-always-tag">racial</span>
-                                    )}
+                                    <span className="psm-always-level">Lv.{s.level}</span>
+                                    {s.isRacial && <span className="psm-always-tag">racial</span>}
                                 </span>
                             ))}
                         </div>
@@ -117,9 +112,7 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
                 )}
 
                 {data.spells.length === 0 ? (
-                    <div className="psm-empty">
-                        No spells in your spellbook to prepare.
-                    </div>
+                    <div className="psm-empty">No spells in your spellbook to prepare.</div>
                 ) : (
                     <>
                         <div className="psm-toolbar">
@@ -142,13 +135,11 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
                         </div>
 
                         <div className="psm-levels">
-                            {levels.map(level => (
+                            {levels.map((level) => (
                                 <div key={level} className="psm-section">
-                                    <div className="psm-section-title">
-                                        Level {level}
-                                    </div>
+                                    <div className="psm-section-title">Level {level}</div>
                                     <div className="psm-list">
-                                        {grouped.get(level)!.map(s => {
+                                        {grouped.get(level)!.map((s) => {
                                             const isSelected = selected.has(s.id);
                                             const canAdd = isSelected || total < data.maxPrepared;
                                             return (
@@ -162,9 +153,7 @@ const PrepareSpellsModal: React.FC<Props> = ({ isOpen, onClose, character }) => 
                                                         disabled={!canAdd}
                                                         onChange={() => handleToggle(s.id)}
                                                     />
-                                                    <span className="psm-spell-name">
-                                                        {s.name}
-                                                    </span>
+                                                    <span className="psm-spell-name">{s.name}</span>
                                                     <span className="psm-spell-school">
                                                         {s.school}
                                                     </span>

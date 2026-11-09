@@ -13,15 +13,15 @@ interface ProficienciesSectionProps {
 }
 
 const ProficienciesSection: React.FC<ProficienciesSectionProps> = ({
-                                                                       background,
-                                                                       racialSkillData,
-                                                                       racialToolData,
-                                                                       selectedRacialSkills,
-                                                                       onRacialSkillSelect,
-                                                                       selectedRacialTools,
-                                                                       onRacialToolSelect,
-                                                                   }) => {
-    const bg = DND_BACKGROUNDS.find(b => b.name === background);
+    background,
+    racialSkillData,
+    racialToolData,
+    selectedRacialSkills,
+    onRacialSkillSelect,
+    selectedRacialTools,
+    onRacialToolSelect,
+}) => {
+    const bg = DND_BACKGROUNDS.find((b) => b.name === background);
 
     return (
         <>
@@ -30,8 +30,10 @@ const ProficienciesSection: React.FC<ProficienciesSectionProps> = ({
                 <label>Background Skill Proficiencies</label>
                 {bg && bg.skillProficiencies && bg.skillProficiencies.length > 0 ? (
                     <div className="cr-background-skills-display">
-                        {bg.skillProficiencies.map(skill => (
-                            <span key={skill} className="cr-bg-skill-tag">{skill}</span>
+                        {bg.skillProficiencies.map((skill) => (
+                            <span key={skill} className="cr-bg-skill-tag">
+                                {skill}
+                            </span>
                         ))}
                     </div>
                 ) : (
@@ -44,8 +46,10 @@ const ProficienciesSection: React.FC<ProficienciesSectionProps> = ({
                 <label>Background Tool Proficiencies</label>
                 {bg && bg.toolProficiencies && bg.toolProficiencies.length > 0 ? (
                     <div className="cr-background-skills-display">
-                        {bg.toolProficiencies.map(tool => (
-                            <span key={tool.name} className="cr-bg-skill-tag">{tool.name}</span>
+                        {bg.toolProficiencies.map((tool) => (
+                            <span key={tool.name} className="cr-bg-skill-tag">
+                                {tool.name}
+                            </span>
                         ))}
                     </div>
                 ) : (
@@ -58,8 +62,10 @@ const ProficienciesSection: React.FC<ProficienciesSectionProps> = ({
                 <label>Background Languages</label>
                 {bg && bg.languages && bg.languages.length > 0 ? (
                     <div className="cr-background-skills-display">
-                        {bg.languages.map(lang => (
-                            <span key={lang} className="cr-bg-skill-tag">{lang}</span>
+                        {bg.languages.map((lang) => (
+                            <span key={lang} className="cr-bg-skill-tag">
+                                {lang}
+                            </span>
                         ))}
                     </div>
                 ) : (
@@ -75,39 +81,52 @@ const ProficienciesSection: React.FC<ProficienciesSectionProps> = ({
                         {racialSkillData.fixed && racialSkillData.fixed.length > 0 && (
                             <div className="cr-racial-fixed">
                                 <span className="cr-racial-label">Fixed:</span>
-                                {racialSkillData.fixed.map(skill => (
-                                    <span key={skill} className="cr-racial-tag">{skill}</span>
+                                {racialSkillData.fixed.map((skill) => (
+                                    <span key={skill} className="cr-racial-tag">
+                                        {skill}
+                                    </span>
                                 ))}
                             </div>
                         )}
-                        {racialSkillData.choose && (() => {
-                            const choose = racialSkillData.choose;
-                            return (
-                                <div className="cr-racial-choice">
-                                    <span className="cr-racial-label">Choose {choose.count}:</span>
-                                    <div className="cr-racial-selectors">
-                                        {Array.from({ length: choose.count }, (_, i) => (
-                                            <select
-                                                key={i}
-                                                value={selectedRacialSkills[i] || ''}
-                                                onChange={(e) => onRacialSkillSelect(i, e.target.value)}
-                                                className="cr-racial-select"
-                                            >
-                                                <option value="">Select</option>
-                                                {choose.options.map(opt => {
-                                                    const isSelected = selectedRacialSkills.includes(opt) && selectedRacialSkills.indexOf(opt) !== i;
-                                                    return (
-                                                        <option key={opt} value={opt} disabled={isSelected}>
-                                                            {opt}
-                                                        </option>
-                                                    );
-                                                })}
-                                            </select>
-                                        ))}
+                        {racialSkillData.choose &&
+                            (() => {
+                                const choose = racialSkillData.choose;
+                                return (
+                                    <div className="cr-racial-choice">
+                                        <span className="cr-racial-label">
+                                            Choose {choose.count}:
+                                        </span>
+                                        <div className="cr-racial-selectors">
+                                            {Array.from({ length: choose.count }, (_, i) => (
+                                                <select
+                                                    key={i}
+                                                    value={selectedRacialSkills[i] || ''}
+                                                    onChange={(e) =>
+                                                        onRacialSkillSelect(i, e.target.value)
+                                                    }
+                                                    className="cr-racial-select"
+                                                >
+                                                    <option value="">Select</option>
+                                                    {choose.options.map((opt) => {
+                                                        const isSelected =
+                                                            selectedRacialSkills.includes(opt) &&
+                                                            selectedRacialSkills.indexOf(opt) !== i;
+                                                        return (
+                                                            <option
+                                                                key={opt}
+                                                                value={opt}
+                                                                disabled={isSelected}
+                                                            >
+                                                                {opt}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })()}
+                                );
+                            })()}
                     </div>
                 </div>
             )}
@@ -120,39 +139,52 @@ const ProficienciesSection: React.FC<ProficienciesSectionProps> = ({
                         {racialToolData.fixed && racialToolData.fixed.length > 0 && (
                             <div className="cr-racial-fixed">
                                 <span className="cr-racial-label">Fixed:</span>
-                                {racialToolData.fixed.map(tool => (
-                                    <span key={tool} className="cr-racial-tag">{tool}</span>
+                                {racialToolData.fixed.map((tool) => (
+                                    <span key={tool} className="cr-racial-tag">
+                                        {tool}
+                                    </span>
                                 ))}
                             </div>
                         )}
-                        {racialToolData.choose && (() => {
-                            const choose = racialToolData.choose;
-                            return (
-                                <div className="cr-racial-choice">
-                                    <span className="cr-racial-label">Choose {choose.count}:</span>
-                                    <div className="cr-racial-selectors">
-                                        {Array.from({ length: choose.count }, (_, i) => (
-                                            <select
-                                                key={i}
-                                                value={selectedRacialTools[i] || ''}
-                                                onChange={(e) => onRacialToolSelect(i, e.target.value)}
-                                                className="cr-racial-select"
-                                            >
-                                                <option value="">Select</option>
-                                                {choose.options.map(opt => {
-                                                    const isSelected = selectedRacialTools.includes(opt) && selectedRacialTools.indexOf(opt) !== i;
-                                                    return (
-                                                        <option key={opt} value={opt} disabled={isSelected}>
-                                                            {opt}
-                                                        </option>
-                                                    );
-                                                })}
-                                            </select>
-                                        ))}
+                        {racialToolData.choose &&
+                            (() => {
+                                const choose = racialToolData.choose;
+                                return (
+                                    <div className="cr-racial-choice">
+                                        <span className="cr-racial-label">
+                                            Choose {choose.count}:
+                                        </span>
+                                        <div className="cr-racial-selectors">
+                                            {Array.from({ length: choose.count }, (_, i) => (
+                                                <select
+                                                    key={i}
+                                                    value={selectedRacialTools[i] || ''}
+                                                    onChange={(e) =>
+                                                        onRacialToolSelect(i, e.target.value)
+                                                    }
+                                                    className="cr-racial-select"
+                                                >
+                                                    <option value="">Select</option>
+                                                    {choose.options.map((opt) => {
+                                                        const isSelected =
+                                                            selectedRacialTools.includes(opt) &&
+                                                            selectedRacialTools.indexOf(opt) !== i;
+                                                        return (
+                                                            <option
+                                                                key={opt}
+                                                                value={opt}
+                                                                disabled={isSelected}
+                                                            >
+                                                                {opt}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })()}
+                                );
+                            })()}
                     </div>
                 </div>
             )}

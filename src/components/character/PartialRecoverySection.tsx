@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
 import { Character } from '../../types/Character';
-import {
-    getAvailablePartialRecoveryFeatures,
-} from '../../utils/partialRecovery';
+import { getAvailablePartialRecoveryFeatures } from '../../utils/partialRecovery';
 import PartialRecoveryModal from './PartialRecoveryModal';
 import './PartialRecoverySection.css';
 
 interface Props {
     character: Character;
-    onUse: (
-        featureId: string,
-        payload?: Array<{ level: number; count: number }>
-    ) => boolean;
+    onUse: (featureId: string, payload?: Array<{ level: number; count: number }>) => boolean;
 }
 
 const PartialRecoverySection: React.FC<Props> = ({ character, onUse }) => {
@@ -21,11 +16,11 @@ const PartialRecoverySection: React.FC<Props> = ({ character, onUse }) => {
     if (features.length === 0) return null;
 
     const openFeature = openFeatureId
-        ? (features.find(f => f.feature.id === openFeatureId)?.feature ?? null)
+        ? (features.find((f) => f.feature.id === openFeatureId)?.feature ?? null)
         : null;
 
     const handleUseFeature = (id: string) => {
-        const entry = features.find(f => f.feature.id === id);
+        const entry = features.find((f) => f.feature.id === id);
         if (!entry) return;
 
         if (entry.feature.target.type === 'spell-slots') {
@@ -58,8 +53,8 @@ const PartialRecoverySection: React.FC<Props> = ({ character, onUse }) => {
                                 title={
                                     disabled
                                         ? 'Already used since last ' +
-                                        (feature.cooldown === 'long' ? 'long' : 'short') +
-                                        ' rest'
+                                          (feature.cooldown === 'long' ? 'long' : 'short') +
+                                          ' rest'
                                         : `Use ${feature.name}`
                                 }
                             >
@@ -75,9 +70,7 @@ const PartialRecoverySection: React.FC<Props> = ({ character, onUse }) => {
                 onClose={() => setOpenFeatureId(null)}
                 character={character}
                 feature={openFeature}
-                onSubmit={(payload) =>
-                    openFeatureId ? onUse(openFeatureId, payload) : false
-                }
+                onSubmit={(payload) => (openFeatureId ? onUse(openFeatureId, payload) : false)}
             />
         </div>
     );

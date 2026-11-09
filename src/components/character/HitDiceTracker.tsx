@@ -9,11 +9,7 @@ interface HitDiceTrackerProps {
     onRestoreDie: (sides: number) => void;
 }
 
-const HitDiceTracker: React.FC<HitDiceTrackerProps> = ({
-                                                           character,
-                                                           onSpendDie,
-                                                           onRestoreDie,
-                                                       }) => {
+const HitDiceTracker: React.FC<HitDiceTrackerProps> = ({ character, onSpendDie, onRestoreDie }) => {
     const pools = getHitDicePools(character);
     const summary = getTotalHitDice(character);
 
@@ -28,7 +24,7 @@ const HitDiceTracker: React.FC<HitDiceTrackerProps> = ({
                 </span>
             </div>
             <div className="hdt-list">
-                {pools.map(pool => (
+                {pools.map((pool) => (
                     <div key={pool.sides} className="hdt-row">
                         <span className="hdt-label">d{pool.sides}</span>
                         <div className="hdt-dots">
@@ -49,7 +45,9 @@ const HitDiceTracker: React.FC<HitDiceTrackerProps> = ({
                                                 ? `Spend d${pool.sides} (roll + CON)`
                                                 : `Restore d${pool.sides}`
                                         }
-                                        aria-label={isAvailable ? 'Spend hit die' : 'Restore hit die'}
+                                        aria-label={
+                                            isAvailable ? 'Spend hit die' : 'Restore hit die'
+                                        }
                                     />
                                 );
                             })}

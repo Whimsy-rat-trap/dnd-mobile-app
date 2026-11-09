@@ -1,12 +1,16 @@
 import { Character } from '../types/Character';
 
 export function recalculateAC(character: Character): number {
-    const equippedArmor = character.inventory.find(item => item.type === 'armor' && item.equipped);
-    const equippedShield = character.inventory.find(item => item.type === 'shield' && item.equipped);
+    const equippedArmor = character.inventory.find(
+        (item) => item.type === 'armor' && item.equipped
+    );
+    const equippedShield = character.inventory.find(
+        (item) => item.type === 'shield' && item.equipped
+    );
 
     // Все предметы, дающие бонус к AC (кольца, плащи и т.д.)
-    const acBonusItems = character.inventory.filter(item =>
-        item.equipped && item.acBonus && item.type !== 'armor' && item.type !== 'shield'
+    const acBonusItems = character.inventory.filter(
+        (item) => item.equipped && item.acBonus && item.type !== 'armor' && item.type !== 'shield'
     );
 
     const dexMod = Math.floor((character.abilities.dex - 10) / 2);

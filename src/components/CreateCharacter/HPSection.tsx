@@ -19,19 +19,19 @@ interface HPSectionProps {
 }
 
 const HPSection: React.FC<HPSectionProps> = ({
-                                                 isCreative,
-                                                 hp,
-                                                 maxHp,
-                                                 level,
-                                                 mainClass,
-                                                 hpMethod,
-                                                 onHpMethodChange,
-                                                 rolledHps,
-                                                 onRoll,
-                                                 onRerollAll,
-                                                 onHpChange,
-                                                 onMaxHpChange,
-                                             }) => {
+    isCreative,
+    hp,
+    maxHp,
+    level,
+    mainClass,
+    hpMethod,
+    onHpMethodChange,
+    rolledHps,
+    onRoll,
+    onRerollAll,
+    onHpChange,
+    onMaxHpChange,
+}) => {
     const hitDie = CLASS_HIT_DICE[mainClass] || 6;
 
     if (isCreative) {
@@ -90,11 +90,7 @@ const HPSection: React.FC<HPSectionProps> = ({
             {hpMethod === 'roll' && level > 1 && (
                 <div className="cr-hp-roll-area">
                     <div className="cr-roll-controls">
-                        <DiceRoller
-                            sides={hitDie}
-                            onRoll={onRoll}
-                            label="Roll HP"
-                        />
+                        <DiceRoller sides={hitDie} onRoll={onRoll} label="Roll HP" />
                         {rolledHps.length === level - 1 && (
                             <button type="button" className="cr-reroll-btn" onClick={onRerollAll}>
                                 Reroll All
@@ -103,21 +99,25 @@ const HPSection: React.FC<HPSectionProps> = ({
                     </div>
                     {rolledHps.length > 0 && (
                         <div className="cr-roll-results">
-                            <span>Rolls: {rolledHps.join(', ')} ({rolledHps.length}/{level - 1})</span>
+                            <span>
+                                Rolls: {rolledHps.join(', ')} ({rolledHps.length}/{level - 1})
+                            </span>
                         </div>
                     )}
                 </div>
             )}
 
             <div className="cr-hp-formula">
-                <span>Total HP: <strong>{maxHp}</strong></span>
+                <span>
+                    Total HP: <strong>{maxHp}</strong>
+                </span>
                 {level > 1 && (
                     <span className="cr-formula-details">
-                        ({hitDie} + CON) + {level > 1 && (
-                        hpMethod === 'average'
-                            ? `(${level - 1} × (${Math.floor(hitDie / 2) + 1} + CON))`
-                            : `(${rolledHps.length} × (rolls + CON))`
-                    )}
+                        ({hitDie} + CON) +{' '}
+                        {level > 1 &&
+                            (hpMethod === 'average'
+                                ? `(${level - 1} × (${Math.floor(hitDie / 2) + 1} + CON))`
+                                : `(${rolledHps.length} × (rolls + CON))`)}
                     </span>
                 )}
                 {level === 1 && (

@@ -30,7 +30,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'Up to three creatures must make Charisma saving throws. On a failure, they subtract 1d4 from attack rolls and saving throws.',
+        description:
+            'Up to three creatures must make Charisma saving throws. On a failure, they subtract 1d4 from attack rolls and saving throws.',
         requiresConcentration: true,
         classes: ['Bard', 'Cleric', 'Warlock'],
     },
@@ -41,7 +42,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'You bless up to three creatures. They add 1d4 to attack rolls and saving throws.',
+        description:
+            'You bless up to three creatures. They add 1d4 to attack rolls and saving throws.',
         requiresConcentration: true,
         classes: ['Cleric', 'Paladin'],
     },
@@ -77,7 +79,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'You hurl a sphere of energy. Choose acid, cold, fire, lightning, poison, or thunder.',
+        description:
+            'You hurl a sphere of energy. Choose acid, cold, fire, lightning, poison, or thunder.',
         element: 'force',
         diceRoll: '3d8',
         damageType: 'varies',
@@ -91,7 +94,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'A creature you touch regains hit points equal to 1d8 + your spellcasting ability modifier.',
+        description:
+            'A creature you touch regains hit points equal to 1d8 + your spellcasting ability modifier.',
         element: 'healing',
         diceRoll: '1d8',
         damageType: 'healing',
@@ -107,7 +111,16 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         components: 'V, S',
         description: 'For the duration, you sense the presence of magic within 30 feet of you.',
         requiresConcentration: true,
-        classes: ['Bard', 'Cleric', 'Druid', 'Paladin', 'Ranger', 'Sorcerer', 'Wizard', 'Artificer'],
+        classes: [
+            'Bard',
+            'Cleric',
+            'Druid',
+            'Paladin',
+            'Ranger',
+            'Sorcerer',
+            'Wizard',
+            'Artificer',
+        ],
     },
     {
         name: 'Disguise Self',
@@ -116,7 +129,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'You make yourself—including your clothing, armor, weapons, and other belongings—look different.',
+        description:
+            'You make yourself—including your clothing, armor, weapons, and other belongings—look different.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -127,7 +141,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 bonus action',
         range: 'Self',
         components: 'V, S',
-        description: 'You can take the Dash action as a bonus action on each of your turns until the spell ends.',
+        description:
+            'You can take the Dash action as a bonus action on each of your turns until the spell ends.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Warlock', 'Wizard', 'Artificer'],
     },
@@ -138,7 +153,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V',
-        description: 'Each object in a 20-foot cube is outlined in light. Creatures in the area are also outlined if they fail a Dexterity saving throw.',
+        description:
+            'Each object in a 20-foot cube is outlined in light. Creatures in the area are also outlined if they fail a Dexterity saving throw.',
         element: 'radiant',
         requiresConcentration: true,
         classes: ['Bard', 'Druid'],
@@ -164,7 +180,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 reaction',
         range: '60 ft',
         components: 'V, M',
-        description: 'Choose up to five falling creatures within range. Their rate of descent slows to 60 feet per round.',
+        description:
+            'Choose up to five falling creatures within range. Their rate of descent slows to 60 feet per round.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -175,7 +192,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 hour',
         range: '10 ft',
         components: 'V, S, M',
-        description: 'You gain the service of a familiar, a spirit that takes an animal form you choose.',
+        description:
+            'You gain the service of a familiar, a spirit that takes an animal form you choose.',
         requiresConcentration: false,
         classes: ['Wizard'],
     },
@@ -186,7 +204,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You create a 20-foot-radius sphere of fog. The sphere spreads around corners, and its area is heavily obscured.',
+        description:
+            'You create a 20-foot-radius sphere of fog. The sphere spreads around corners, and its area is heavily obscured.',
         requiresConcentration: true,
         classes: ['Druid', 'Ranger', 'Sorcerer', 'Wizard'],
     },
@@ -197,7 +216,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'Slick grease covers the ground in a 10-foot square and turns it into difficult terrain.',
+        description:
+            'Slick grease covers the ground in a 10-foot square and turns it into difficult terrain.',
         requiresConcentration: false,
         classes: ['Wizard', 'Artificer'],
     },
@@ -208,7 +228,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'A flash of light streaks toward a creature. On a hit, the target takes 4d6 radiant damage, and the next attack roll against it has advantage.',
+        description:
+            'A flash of light streaks toward a creature. On a hit, the target takes 4d6 radiant damage, and the next attack roll against it has advantage.',
         element: 'radiant',
         diceRoll: '4d6',
         damageType: 'radiant',
@@ -222,7 +243,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 bonus action',
         range: '60 ft',
         components: 'V',
-        description: 'A creature of your choice regains hit points equal to 1d4 + your spellcasting ability modifier.',
+        description:
+            'A creature of your choice regains hit points equal to 1d4 + your spellcasting ability modifier.',
         element: 'healing',
         diceRoll: '1d4',
         damageType: 'healing',
@@ -236,7 +258,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 reaction',
         range: '60 ft',
         components: 'V, S',
-        description: 'The creature that damaged you is momentarily surrounded by hellish flames. It takes 2d10 fire damage on a failed save.',
+        description:
+            'The creature that damaged you is momentarily surrounded by hellish flames. It takes 2d10 fire damage on a failed save.',
         element: 'fire',
         diceRoll: '2d10',
         damageType: 'fire',
@@ -250,7 +273,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 minute',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You choose one object that you must touch throughout the casting. If it is a magic item, you learn its properties.',
+        description:
+            'You choose one object that you must touch throughout the casting. If it is a magic item, you learn its properties.',
         requiresConcentration: false,
         classes: ['Bard', 'Wizard', 'Artificer'],
     },
@@ -261,7 +285,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 minute',
         range: 'Touch',
         components: 'S, M',
-        description: 'You write on parchment and imbue it with a potent illusion that lasts for the duration.',
+        description:
+            'You write on parchment and imbue it with a potent illusion that lasts for the duration.',
         requiresConcentration: false,
         classes: ['Bard', 'Warlock', 'Wizard'],
     },
@@ -286,7 +311,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a creature. The creature\'s jump distance is tripled until the spell ends.',
+        description:
+            "You touch a creature. The creature's jump distance is tripled until the spell ends.",
         requiresConcentration: false,
         classes: ['Druid', 'Ranger', 'Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -297,7 +323,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a creature. The target\'s speed increases by 10 feet until the spell ends.',
+        description:
+            "You touch a creature. The target's speed increases by 10 feet until the spell ends.",
         requiresConcentration: false,
         classes: ['Bard', 'Druid', 'Ranger', 'Wizard', 'Artificer'],
     },
@@ -308,7 +335,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature who isn\'t wearing armor, and a protective magical force surrounds it. Base AC becomes 13 + Dex modifier.',
+        description:
+            "You touch a willing creature who isn't wearing armor, and a protective magical force surrounds it. Base AC becomes 13 + Dex modifier.",
         requiresConcentration: false,
         classes: ['Sorcerer', 'Wizard'],
     },
@@ -319,7 +347,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You create three glowing darts of magical force. Each dart deals 1d4+1 force damage.',
+        description:
+            'You create three glowing darts of magical force. Each dart deals 1d4+1 force damage.',
         element: 'force',
         diceRoll: '3d4+3',
         damageType: 'force',
@@ -333,7 +362,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'One willing creature you touch is protected against aberrations, celestials, elementals, fey, fiends, and undead.',
+        description:
+            'One willing creature you touch is protected against aberrations, celestials, elementals, fey, fiends, and undead.',
         requiresConcentration: true,
         classes: ['Cleric', 'Paladin', 'Warlock', 'Wizard'],
     },
@@ -344,7 +374,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 reaction',
         range: 'Self',
         components: 'V, S',
-        description: 'An invisible barrier of magical force appears and protects you. You have a +5 bonus to AC.',
+        description:
+            'An invisible barrier of magical force appears and protects you. You have a +5 bonus to AC.',
         element: 'force',
         requiresConcentration: false,
         classes: ['Sorcerer', 'Wizard'],
@@ -356,7 +387,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You create the image of an object, a creature, or some other visible phenomenon.',
+        description:
+            'You create the image of an object, a creature, or some other visible phenomenon.',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Wizard'],
     },
@@ -367,7 +399,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'Creatures within a 20-foot-radius sphere are affected in ascending order of their current hit points.',
+        description:
+            'Creatures within a 20-foot-radius sphere are affected in ascending order of their current hit points.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Wizard'],
     },
@@ -378,7 +411,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'You gain the ability to comprehend and verbally communicate with beasts for the duration.',
+        description:
+            'You gain the ability to comprehend and verbally communicate with beasts for the duration.',
         requiresConcentration: false,
         classes: ['Bard', 'Druid', 'Ranger'],
     },
@@ -389,7 +423,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self (15-foot cube)',
         components: 'V, S',
-        description: 'A wave of thunderous force sweeps out from you. Each creature takes 2d8 thunder damage on a failed save and is pushed 10 feet.',
+        description:
+            'A wave of thunderous force sweeps out from you. Each creature takes 2d8 thunder damage on a failed save and is pushed 10 feet.',
         element: 'thunder',
         diceRoll: '2d8',
         damageType: 'thunder',
@@ -403,7 +438,8 @@ export const LEVEL_1_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'This spell creates an invisible, mindless, shapeless force that performs simple tasks at your command.',
+        description:
+            'This spell creates an invisible, mindless, shapeless force that performs simple tasks at your command.',
         requiresConcentration: false,
         classes: ['Bard', 'Warlock', 'Wizard'],
     },

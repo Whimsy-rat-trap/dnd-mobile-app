@@ -11,7 +11,5 @@ export function groupByLevel<T extends { level: number }>(items: T[]): Map<numbe
         if (!map.has(item.level)) map.set(item.level, []);
         map.get(item.level)!.push(item);
     }
-    return new Map(
-        Array.from(map.entries()).sort((a, b) => a[0] - b[0])
-    );
+    return new Map(Array.from(map.entries()).sort((a, b) => a[0] - b[0]));
 }

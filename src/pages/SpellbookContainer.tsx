@@ -50,20 +50,22 @@ const SpellbookContainer: React.FC = () => {
             <div className="sb-page">
                 <div className="sb-empty-state">
                     <p>No character selected. Please go to Dashboard and select a character.</p>
-                    <button className="sb-btn-primary" onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
+                    <button className="sb-btn-primary" onClick={() => navigate('/dashboard')}>
+                        Go to Dashboard
+                    </button>
                 </div>
             </div>
         );
     }
 
     const getSpellsByLevel = (level: number) => {
-        return character.spells.filter(spell => spell.level === level);
+        return character.spells.filter((spell) => spell.level === level);
     };
 
     const applyFilter = (spells: typeof character.spells) => {
         if (filterType === 'all') return spells;
-        if (filterType === 'prepared') return spells.filter(s => s.prepared);
-        if (filterType === 'notPrepared') return spells.filter(s => !s.prepared);
+        if (filterType === 'prepared') return spells.filter((s) => s.prepared);
+        if (filterType === 'notPrepared') return spells.filter((s) => !s.prepared);
         return spells;
     };
 
@@ -71,35 +73,40 @@ const SpellbookContainer: React.FC = () => {
         let result = spells;
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
-            result = result.filter(s =>
-                s.name.toLowerCase().includes(query) ||
-                s.school.toLowerCase().includes(query) ||
-                s.description.toLowerCase().includes(query)
+            result = result.filter(
+                (s) =>
+                    s.name.toLowerCase().includes(query) ||
+                    s.school.toLowerCase().includes(query) ||
+                    s.description.toLowerCase().includes(query)
             );
         }
         if (schoolFilter) {
-            result = result.filter(s => s.school === schoolFilter);
+            result = result.filter((s) => s.school === schoolFilter);
         }
         if (elementFilter) {
-            result = result.filter(s => (s.element || getElementFromSpell(s) || '') === elementFilter);
+            result = result.filter(
+                (s) => (s.element || getElementFromSpell(s) || '') === elementFilter
+            );
         }
         if (componentsFilter.length > 0) {
-            result = result.filter(s => componentsFilter.every(comp => s.components.includes(comp)));
+            result = result.filter((s) =>
+                componentsFilter.every((comp) => s.components.includes(comp))
+            );
         }
         if (spellTypeFilter !== 'all') {
             if (spellTypeFilter === 'standard') {
-                result = result.filter(s => !s.isCustom && !s.isRacial);
+                result = result.filter((s) => !s.isCustom && !s.isRacial);
             } else if (spellTypeFilter === 'custom') {
-                result = result.filter(s => s.isCustom);
+                result = result.filter((s) => s.isCustom);
             } else if (spellTypeFilter === 'racial') {
-                result = result.filter(s => s.isRacial);
+                result = result.filter((s) => s.isRacial);
             }
         }
         if (concentrationFilter !== 'all') {
             if (concentrationFilter === 'concentration') {
-                result = result.filter(s => s.requiresConcentration === true);
+                result = result.filter((s) => s.requiresConcentration === true);
             } else if (concentrationFilter === 'noConcentration') {
-                result = result.filter(s => !s.requiresConcentration);
+                result = result.filter((s) => !s.requiresConcentration);
             }
         }
         return result;
@@ -113,11 +120,11 @@ const SpellbookContainer: React.FC = () => {
     };
 
     const getLevelCount = (level: number) => {
-        return character.spells.filter(s => s.level === level).length;
+        return character.spells.filter((s) => s.level === level).length;
     };
 
     const togglePrepared = (spellId: string) => {
-        const spell = character.spells.find(s => s.id === spellId);
+        const spell = character.spells.find((s) => s.id === spellId);
         if (!spell) return;
 
         if (spell.isRacial || spell.isAlwaysPrepared) {
@@ -127,7 +134,7 @@ const SpellbookContainer: React.FC = () => {
         if (!spell.prepared) {
             const maxPrepared = getMaxPrepared(character);
             const countPrepared = character.spells.filter(
-                s => !s.isRacial && !s.isAlwaysPrepared && s.prepared
+                (s) => !s.isRacial && !s.isAlwaysPrepared && s.prepared
             ).length;
             if (countPrepared >= maxPrepared) {
                 if (warningTimeout) clearTimeout(warningTimeout);
@@ -141,7 +148,7 @@ const SpellbookContainer: React.FC = () => {
     };
 
     const handleToggleConcentration = (spellId: string) => {
-        const spell = character.spells.find(s => s.id === spellId);
+        const spell = character.spells.find((s) => s.id === spellId);
         if (!spell || !spell.requiresConcentration) return;
 
         if (character.activeConcentrationSpellId === spellId) {
@@ -150,7 +157,11 @@ const SpellbookContainer: React.FC = () => {
         }
 
         if (character.activeConcentrationSpellId) {
-            if (!window.confirm('You are already concentrating on another spell. End it and concentrate on this one?')) {
+            if (
+                !window.confirm(
+                    'You are already concentrating on another spell. End it and concentrate on this one?'
+                )
+            ) {
                 return;
             }
             endConcentration(character.id);
@@ -158,10 +169,7 @@ const SpellbookContainer: React.FC = () => {
         startConcentration(character.id, spellId);
     };
 
-    const handleCastSpell = (
-        level: number,
-        options: { usePact: boolean; asRitual: boolean }
-    ) => {
+    const handleCastSpell = (level: number, options: { usePact: boolean; asRitual: boolean }) => {
         if (!castingSpell) return;
 
         // Кантрипы и ритуалы не тратят слот
@@ -201,13 +209,13 @@ const SpellbookContainer: React.FC = () => {
     const totalSlots = spellSlotsArray.reduce((a: number, b: number) => a + b, 0);
     const maxPrepared = getMaxPrepared(character);
     const preparedCount = character.spells.filter(
-        s => s.prepared && !s.isRacial && !s.isAlwaysPrepared
+        (s) => s.prepared && !s.isRacial && !s.isAlwaysPrepared
     ).length;
     const knownCount = character.spells.length;
-    const racialCount = character.spells.filter(s => s.isRacial).length;
+    const racialCount = character.spells.filter((s) => s.isRacial).length;
 
     const activeSpell = character.activeConcentrationSpellId
-        ? character.spells.find(s => s.id === character.activeConcentrationSpellId)
+        ? character.spells.find((s) => s.id === character.activeConcentrationSpellId)
         : null;
 
     const filterFields: FilterField[] = [
@@ -215,7 +223,7 @@ const SpellbookContainer: React.FC = () => {
             key: 'school',
             label: 'School',
             type: 'select',
-            options: [{ value: '', label: 'All' }, ...SCHOOLS.map(s => ({ value: s, label: s }))],
+            options: [{ value: '', label: 'All' }, ...SCHOOLS.map((s) => ({ value: s, label: s }))],
         },
         {
             key: 'element',
@@ -223,14 +231,25 @@ const SpellbookContainer: React.FC = () => {
             type: 'select',
             options: [
                 { value: '', label: 'All' },
-                ...['fire', 'cold', 'lightning', 'acid', 'poison', 'force', 'necrotic', 'radiant', 'psychic', 'healing'].map(e => ({ value: e, label: e.charAt(0).toUpperCase() + e.slice(1) })),
+                ...[
+                    'fire',
+                    'cold',
+                    'lightning',
+                    'acid',
+                    'poison',
+                    'force',
+                    'necrotic',
+                    'radiant',
+                    'psychic',
+                    'healing',
+                ].map((e) => ({ value: e, label: e.charAt(0).toUpperCase() + e.slice(1) })),
             ],
         },
         {
             key: 'components',
             label: 'Components',
             type: 'tags',
-            options: COMPONENT_OPTIONS.map(c => ({ value: c, label: c })),
+            options: COMPONENT_OPTIONS.map((c) => ({ value: c, label: c })),
         },
     ];
 
@@ -244,8 +263,17 @@ const SpellbookContainer: React.FC = () => {
         <div className="sb-page">
             <header className="sb-header">
                 <button className="sb-back-btn" onClick={handleBack} aria-label="Go back">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.3169 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H4.6336L9.19219 15.1828C9.25026 15.2409 9.29632 15.3098 9.32775 15.3857C9.35918 15.4616 9.37535 15.5429 9.37535 15.625C9.37535 15.7071 9.35918 15.7884 9.32775 15.8643C9.29632 15.9402 9.25026 16.0091 9.19219 16.0672C9.13412 16.1253 9.06518 16.1713 8.98931 16.2027C8.91344 16.2342 8.83213 16.2503 8.75 16.2503C8.66788 16.2503 8.58656 16.2342 8.51069 16.2027C8.43482 16.1713 8.36588 16.1253 8.30782 16.0672L2.68282 10.4422C2.62471 10.3841 2.57861 10.3152 2.54715 10.2393C2.5157 10.1635 2.49951 10.0821 2.49951 10C2.49951 9.91787 2.5157 9.83654 2.54715 9.76066C2.57861 9.68479 2.62471 9.61586 2.68282 9.55781L8.30782 3.93281C8.42509 3.81554 8.58415 3.74965 8.75 3.74965C8.91586 3.74965 9.07492 3.81554 9.19219 3.93281C9.30947 4.05009 9.37535 4.20915 9.37535 4.375C9.37535 4.54085 9.30947 4.69991 9.19219 4.81719L4.6336 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.3169 9.55806C17.4342 9.67527 17.5 9.83424 17.5 10Z" fill="#9CA3AF" />
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.3169 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H4.6336L9.19219 15.1828C9.25026 15.2409 9.29632 15.3098 9.32775 15.3857C9.35918 15.4616 9.37535 15.5429 9.37535 15.625C9.37535 15.7071 9.35918 15.7884 9.32775 15.8643C9.29632 15.9402 9.25026 16.0091 9.19219 16.0672C9.13412 16.1253 9.06518 16.1713 8.98931 16.2027C8.91344 16.2342 8.83213 16.2503 8.75 16.2503C8.66788 16.2503 8.58656 16.2342 8.51069 16.2027C8.43482 16.1713 8.36588 16.1253 8.30782 16.0672L2.68282 10.4422C2.62471 10.3841 2.57861 10.3152 2.54715 10.2393C2.5157 10.1635 2.49951 10.0821 2.49951 10C2.49951 9.91787 2.5157 9.83654 2.54715 9.76066C2.57861 9.68479 2.62471 9.61586 2.68282 9.55781L8.30782 3.93281C8.42509 3.81554 8.58415 3.74965 8.75 3.74965C8.91586 3.74965 9.07492 3.81554 9.19219 3.93281C9.30947 4.05009 9.37535 4.20915 9.37535 4.375C9.37535 4.54085 9.30947 4.69991 9.19219 4.81719L4.6336 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.3169 9.55806C17.4342 9.67527 17.5 9.83424 17.5 10Z"
+                            fill="#9CA3AF"
+                        />
                     </svg>
                 </button>
                 <div className="sb-header-info">
@@ -264,7 +292,9 @@ const SpellbookContainer: React.FC = () => {
                 </div>
                 <div className={`sb-stat-item ${isPreparedWarning ? 'sb-warning' : ''}`}>
                     <span className="sb-stat-label">Prepared</span>
-                    <span className="sb-stat-value">{preparedCount} / {maxPrepared}</span>
+                    <span className="sb-stat-value">
+                        {preparedCount} / {maxPrepared}
+                    </span>
                 </div>
                 <div className="sb-stat-item">
                     <span className="sb-stat-label">Racial</span>
@@ -296,7 +326,7 @@ const SpellbookContainer: React.FC = () => {
                     value={activeLevel}
                     onChange={(e) => setActiveLevel(Number(e.target.value))}
                 >
-                    {Array.from({ length: 10 }, (_, i) => i).map(level => (
+                    {Array.from({ length: 10 }, (_, i) => i).map((level) => (
                         <option key={level} value={level}>
                             {level === 0 ? 'Cantrips' : `Level ${level}`} ({getLevelCount(level)})
                         </option>
@@ -403,7 +433,7 @@ const SpellbookContainer: React.FC = () => {
                                     <SkillCheck proficient={prepared} onToggle={onToggle} />
                                 )}
                                 isCustom={spell.isCustom || false}
-                                disableToggle={(spell.isRacial || spell.isAlwaysPrepared) || false}
+                                disableToggle={spell.isRacial || spell.isAlwaysPrepared || false}
                                 requiresConcentration={spell.requiresConcentration || false}
                                 isConcentrating={character.activeConcentrationSpellId === spell.id}
                                 onToggleConcentration={() => handleToggleConcentration(spell.id)}
@@ -422,7 +452,11 @@ const SpellbookContainer: React.FC = () => {
                 <FilterModal
                     isOpen={showFilterModal}
                     onClose={() => setShowFilterModal(false)}
-                    filters={{ school: schoolFilter, element: elementFilter, components: componentsFilter }}
+                    filters={{
+                        school: schoolFilter,
+                        element: elementFilter,
+                        components: componentsFilter,
+                    }}
                     onFilterChange={handleFilterChange}
                     fields={filterFields}
                     onReset={() => {

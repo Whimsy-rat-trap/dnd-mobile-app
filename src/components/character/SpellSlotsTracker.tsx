@@ -16,17 +16,17 @@ interface SpellSlotsTrackerProps {
 }
 
 const SpellSlotsTracker: React.FC<SpellSlotsTrackerProps> = ({
-                                                                 character,
-                                                                 onUseSlot,
-                                                                 onRestoreSlot,
-                                                                 onUsePact,
-                                                                 onRestorePact,
-                                                             }) => {
+    character,
+    onUseSlot,
+    onRestoreSlot,
+    onUsePact,
+    onRestorePact,
+}) => {
     const totals = getNonPactSpellSlots(character);
     const used = getUsedSpellSlots(character);
     const pactInfo = getPactMagicInfo(character);
 
-    const hasRegular = totals.some(n => n > 0);
+    const hasRegular = totals.some((n) => n > 0);
     const hasAny = hasRegular || !!pactInfo;
 
     if (!hasAny) return null;

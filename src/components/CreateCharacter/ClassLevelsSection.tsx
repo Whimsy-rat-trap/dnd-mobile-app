@@ -5,17 +5,21 @@ interface ClassLevelsSectionProps {
     classLevels: { className: string; level: number }[];
     onAddExtraClass: () => void;
     onRemoveExtraClass: (index: number) => void;
-    onUpdateExtraClass: (index: number, field: 'className' | 'level', value: string | number) => void;
+    onUpdateExtraClass: (
+        index: number,
+        field: 'className' | 'level',
+        value: string | number
+    ) => void;
     totalLevel: number;
 }
 
 const ClassLevelsSection: React.FC<ClassLevelsSectionProps> = ({
-                                                                   classLevels,
-                                                                   onAddExtraClass,
-                                                                   onRemoveExtraClass,
-                                                                   onUpdateExtraClass,
-                                                                   totalLevel,
-                                                               }) => {
+    classLevels,
+    onAddExtraClass,
+    onRemoveExtraClass,
+    onUpdateExtraClass,
+    totalLevel,
+}) => {
     return (
         <div className="cr-multiclass-section">
             <label>Class Levels</label>
@@ -26,8 +30,10 @@ const ClassLevelsSection: React.FC<ClassLevelsSectionProps> = ({
                         onChange={(e) => onUpdateExtraClass(index, 'className', e.target.value)}
                         disabled={index === 0}
                     >
-                        {DND_CLASSES.map(cls => (
-                            <option key={cls} value={cls}>{cls}</option>
+                        {DND_CLASSES.map((cls) => (
+                            <option key={cls} value={cls}>
+                                {cls}
+                            </option>
                         ))}
                     </select>
                     <input
@@ -38,7 +44,11 @@ const ClassLevelsSection: React.FC<ClassLevelsSectionProps> = ({
                         onChange={(e) => onUpdateExtraClass(index, 'level', Number(e.target.value))}
                     />
                     {index > 0 && (
-                        <button type="button" className="cr-remove-class-btn" onClick={() => onRemoveExtraClass(index)}>
+                        <button
+                            type="button"
+                            className="cr-remove-class-btn"
+                            onClick={() => onRemoveExtraClass(index)}
+                        >
                             ✕
                         </button>
                     )}

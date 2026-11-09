@@ -11,11 +11,11 @@ interface CurrencyEditModalProps {
 }
 
 const CurrencyEditModal: React.FC<CurrencyEditModalProps> = ({
-                                                                 isOpen,
-                                                                 onClose,
-                                                                 current,
-                                                                 onSave,
-                                                             }) => {
+    isOpen,
+    onClose,
+    current,
+    onSave,
+}) => {
     const [gp, setGp] = useState(0);
     const [sp, setSp] = useState(0);
     const [cp, setCp] = useState(0);
@@ -66,7 +66,10 @@ const CurrencyEditModal: React.FC<CurrencyEditModalProps> = ({
                 </div>
 
                 <div className="cem-current">
-                    Current: <strong>{current.gp} gp • {current.sp} sp • {current.cp} cp</strong>
+                    Current:{' '}
+                    <strong>
+                        {current.gp} gp • {current.sp} sp • {current.cp} cp
+                    </strong>
                 </div>
 
                 <div className="cem-inputs">
@@ -101,22 +104,30 @@ const CurrencyEditModal: React.FC<CurrencyEditModalProps> = ({
 
                 {mode === 'set' && (
                     <div className="cem-preview">
-                        New: <strong>{gp} gp • {sp} sp • {cp} cp</strong>
+                        New:{' '}
+                        <strong>
+                            {gp} gp • {sp} sp • {cp} cp
+                        </strong>
                     </div>
                 )}
                 {mode === 'add' && (
                     <div className="cem-preview">
-                        After: <strong>
-                        {Math.max(0, (current.gp || 0) + gp)} gp •{' '}
-                        {Math.max(0, (current.sp || 0) + sp)} sp •{' '}
-                        {Math.max(0, (current.cp || 0) + cp)} cp
-                    </strong>
+                        After:{' '}
+                        <strong>
+                            {Math.max(0, (current.gp || 0) + gp)} gp •{' '}
+                            {Math.max(0, (current.sp || 0) + sp)} sp •{' '}
+                            {Math.max(0, (current.cp || 0) + cp)} cp
+                        </strong>
                     </div>
                 )}
 
                 <div className="modal-actions">
-                    <button className="modal-btn cancel" onClick={onClose}>Cancel</button>
-                    <button className="modal-btn apply" onClick={handleSave}>Save</button>
+                    <button className="modal-btn cancel" onClick={onClose}>
+                        Cancel
+                    </button>
+                    <button className="modal-btn apply" onClick={handleSave}>
+                        Save
+                    </button>
                 </div>
             </div>
         </Modal>

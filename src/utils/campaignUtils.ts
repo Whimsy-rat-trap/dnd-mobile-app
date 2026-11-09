@@ -29,10 +29,14 @@ export const formatLastPlayed = (lastPlayed?: string): string => {
  */
 export const getStatusLabel = (status: Campaign['status']): string => {
     switch (status) {
-        case 'active': return 'ACTIVE';
-        case 'paused': return 'PAUSED';
-        case 'ended': return 'ENDED';
-        default: return 'UNKNOWN';
+        case 'active':
+            return 'ACTIVE';
+        case 'paused':
+            return 'PAUSED';
+        case 'ended':
+            return 'ENDED';
+        default:
+            return 'UNKNOWN';
     }
 };
 
@@ -41,10 +45,14 @@ export const getStatusLabel = (status: Campaign['status']): string => {
  */
 export const cycleStatus = (current: Campaign['status']): Campaign['status'] => {
     switch (current) {
-        case 'active': return 'paused';
-        case 'paused': return 'ended';
-        case 'ended': return 'active';
-        default: return 'active';
+        case 'active':
+            return 'paused';
+        case 'paused':
+            return 'ended';
+        case 'ended':
+            return 'active';
+        default:
+            return 'active';
     }
 };
 
@@ -76,28 +84,31 @@ export const filterCampaigns = (
 ): Campaign[] => {
     const query = searchQuery.toLowerCase().trim();
 
-    return campaigns.filter(camp => {
-        const matchesSearch = !query ||
+    return campaigns.filter((camp) => {
+        const matchesSearch =
+            !query ||
             camp.name.toLowerCase().includes(query) ||
             (camp.description || '').toLowerCase().includes(query) ||
             (camp.dm || '').toLowerCase().includes(query);
 
-        const matchesDm = !filters.dm ||
-            (camp.dm || '').toLowerCase().includes(filters.dm.toLowerCase());
+        const matchesDm =
+            !filters.dm || (camp.dm || '').toLowerCase().includes(filters.dm.toLowerCase());
 
         const playersCount = camp.players ?? 0;
         const matchesPlayers =
-            playersCount >= filters.players.min &&
-            playersCount <= filters.players.max;
+            playersCount >= filters.players.min && playersCount <= filters.players.max;
 
         const sessionsCount = camp.sessions ?? 0;
         const matchesSessions =
-            sessionsCount >= filters.sessions.min &&
-            sessionsCount <= filters.sessions.max;
+            sessionsCount >= filters.sessions.min && sessionsCount <= filters.sessions.max;
 
         const lastPlayedTs = camp.lastPlayed ? new Date(camp.lastPlayed).getTime() : null;
-        const afterTs = filters.lastPlayedAfter ? new Date(filters.lastPlayedAfter).getTime() : null;
-        const beforeTs = filters.lastPlayedBefore ? new Date(filters.lastPlayedBefore).getTime() : null;
+        const afterTs = filters.lastPlayedAfter
+            ? new Date(filters.lastPlayedAfter).getTime()
+            : null;
+        const beforeTs = filters.lastPlayedBefore
+            ? new Date(filters.lastPlayedBefore).getTime()
+            : null;
 
         const matchesLastPlayed =
             (afterTs === null || (lastPlayedTs !== null && lastPlayedTs >= afterTs)) &&
@@ -105,8 +116,14 @@ export const filterCampaigns = (
 
         const matchesStatus = !filters.status || camp.status === filters.status;
 
-        return matchesSearch && matchesDm && matchesPlayers && matchesSessions &&
-            matchesLastPlayed && matchesStatus;
+        return (
+            matchesSearch &&
+            matchesDm &&
+            matchesPlayers &&
+            matchesSessions &&
+            matchesLastPlayed &&
+            matchesStatus
+        );
     });
 };
 

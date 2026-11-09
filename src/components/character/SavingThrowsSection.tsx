@@ -13,8 +13,13 @@ interface Props {
 }
 
 const SavingThrowsSection: React.FC<Props> = ({
-                                                  abilities, proficiencies, proficiencyBonus, rollMode, onToggleRollMode, onClick,
-                                              }) => {
+    abilities,
+    proficiencies,
+    proficiencyBonus,
+    rollMode,
+    onToggleRollMode,
+    onClick,
+}) => {
     const attrs = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'] as const;
 
     return (
@@ -29,18 +34,24 @@ const SavingThrowsSection: React.FC<Props> = ({
                 </button>
             </div>
             <div className="cc-saving-throws-grid">
-                {attrs.map(name => {
+                {attrs.map((name) => {
                     const isProf = proficiencies.includes(name);
                     const bonus = getSavingThrowBonus(
                         name.toLowerCase() as keyof Character['abilities'],
-                        abilities, proficiencies, proficiencyBonus
+                        abilities,
+                        proficiencies,
+                        proficiencyBonus
                     );
                     return (
-                        <div key={name}
-                             className={`cc-saving-throw-card ${isProf ? 'cc-proficient' : ''} ${rollMode ? 'cc-rollable' : ''}`}
-                             onClick={() => onClick(name)}>
+                        <div
+                            key={name}
+                            className={`cc-saving-throw-card ${isProf ? 'cc-proficient' : ''} ${rollMode ? 'cc-rollable' : ''}`}
+                            onClick={() => onClick(name)}
+                        >
                             <span className="cc-saving-throw-name">{name}</span>
-                            <span className="cc-saving-throw-bonus">{bonus >= 0 ? `+${bonus}` : bonus}</span>
+                            <span className="cc-saving-throw-bonus">
+                                {bonus >= 0 ? `+${bonus}` : bonus}
+                            </span>
                         </div>
                     );
                 })}

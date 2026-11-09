@@ -68,23 +68,23 @@ interface AttackRollerProps {
 }
 
 const AttackRoller: React.FC<AttackRollerProps> = ({
-                                                       sourceName,
-                                                       defaultAttackBonus = 0,
-                                                       damageDice,
-                                                       defaultDamageBonus = 0,
-                                                       damageType,
-                                                       hideDamage = false,
-                                                       onRollAttack,
-                                                       onRollDamage,
-                                                       trigger,
-                                                       className,
-                                                       inspirationAvailable = false,
-                                                       onSpendInspiration,
-                                                       forceOpen = false,
-                                                       onForceOpenHandled,
-                                                       character,
-                                                       onSpendSuperiorityDie,
-                                                   }) => {
+    sourceName,
+    defaultAttackBonus = 0,
+    damageDice,
+    defaultDamageBonus = 0,
+    damageType,
+    hideDamage = false,
+    onRollAttack,
+    onRollDamage,
+    trigger,
+    className,
+    inspirationAvailable = false,
+    onSpendInspiration,
+    forceOpen = false,
+    onForceOpenHandled,
+    character,
+    onSpendSuperiorityDie,
+}) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const [rollMode, setRollMode] = useState<RollMode>('normal');
@@ -112,9 +112,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
     const damageSides = getPrimaryDiceSides(damageDice);
 
     // Superiority dice / maneuvers
-    const superiorityInfo = character
-        ? getClassResourceState(character, 'superiority-dice')
-        : null;
+    const superiorityInfo = character ? getClassResourceState(character, 'superiority-dice') : null;
     const dieSize = superiorityInfo?.dieSize ?? 0;
     const availableDice = superiorityInfo?.availableUses ?? 0;
 
@@ -123,15 +121,14 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         if (!superiorityInfo) return [];
         const known = getKnownManeuvers(character);
         // В AttackRoller показываем только те, что дают бонус к атаке или урону.
-        return known.filter(m => m.addsTo === 'attack' || m.addsTo === 'damage');
+        return known.filter((m) => m.addsTo === 'attack' || m.addsTo === 'damage');
     }, [character, onSpendSuperiorityDie, superiorityInfo]);
 
     const selectedManeuver = selectedManeuverId
-        ? availableManeuvers.find(m => m.id === selectedManeuverId) ?? null
+        ? (availableManeuvers.find((m) => m.id === selectedManeuverId) ?? null)
         : null;
 
-    const canShowManeuvers =
-        availableManeuvers.length > 0 && !appliedManeuver;
+    const canShowManeuvers = availableManeuvers.length > 0 && !appliedManeuver;
 
     const canApplySelectedManeuver = (() => {
         if (!selectedManeuver) return false;
@@ -198,7 +195,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
 
     // Предрасчёт effective mode и штрафов
     const hasDisadvantageSource = appliedDebuffs.some(
-        a => getDebuffById(a.debuffId)?.type === 'disadvantage'
+        (a) => getDebuffById(a.debuffId)?.type === 'disadvantage'
     );
     const effectiveMode = resolveRollMode(rollMode, false, hasDisadvantageSource);
 
@@ -217,8 +214,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         setAppliedManeuver(null);
 
         setTimeout(() => {
-            const baseBonus =
-                attackBonusMode === 'custom' ? customAttackBonus : defaultAttackBonus;
+            const baseBonus = attackBonusMode === 'custom' ? customAttackBonus : defaultAttackBonus;
 
             const d20 = rollD20(effectiveMode, baseBonus);
 
@@ -306,7 +302,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         if (!buffToAdd) return;
         const buff = getBuffById(buffToAdd);
         if (!buff) return;
-        setAppliedBuffs(prev => [
+        setAppliedBuffs((prev) => [
             ...prev,
             {
                 key: `${buff.id}-${Date.now()}-${Math.random()}`,
@@ -318,10 +314,10 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
     };
 
     const handleRemoveBuff = (key: string) =>
-        setAppliedBuffs(prev => prev.filter(b => b.key !== key));
+        setAppliedBuffs((prev) => prev.filter((b) => b.key !== key));
 
     const handleBuffRankChange = (key: string, rank: number) =>
-        setAppliedBuffs(prev => prev.map(b => (b.key === key ? { ...b, rank } : b)));
+        setAppliedBuffs((prev) => prev.map((b) => (b.key === key ? { ...b, rank } : b)));
 
     const handleClearBuffs = () => setAppliedBuffs([]);
 
@@ -330,7 +326,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
         if (!debuffToAdd) return;
         const debuff = getDebuffById(debuffToAdd);
         if (!debuff) return;
-        setAppliedDebuffs(prev => [
+        setAppliedDebuffs((prev) => [
             ...prev,
             {
                 key: `${debuff.id}-${Date.now()}-${Math.random()}`,
@@ -345,14 +341,14 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
     };
 
     const handleRemoveDebuff = (key: string) => {
-        setAppliedDebuffs(prev => prev.filter(d => d.key !== key));
+        setAppliedDebuffs((prev) => prev.filter((d) => d.key !== key));
         setAttackResult(null);
         setCritPending(false);
         setAppliedManeuver(null);
     };
 
     const handleDebuffRankChange = (key: string, rank: number) => {
-        setAppliedDebuffs(prev => prev.map(d => (d.key === key ? { ...d, rank } : d)));
+        setAppliedDebuffs((prev) => prev.map((d) => (d.key === key ? { ...d, rank } : d)));
     };
 
     const handleClearDebuffs = () => {
@@ -398,8 +394,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                 : 0;
 
         const bonus =
-            (damageBonusMode === 'custom' ? customDamageBonus : defaultDamageBonus) +
-            maneuverBonus;
+            (damageBonusMode === 'custom' ? customDamageBonus : defaultDamageBonus) + maneuverBonus;
         if (bonus !== 0) parts.push(`${bonus > 0 ? '+' : ''}${bonus}`);
 
         return parts.join('+').replace(/\+\+/g, '+').replace(/\+-/g, '-');
@@ -432,16 +427,18 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                             <div className="attack-section">
                                 <span className="attack-label">Roll Mode</span>
                                 <div className="attack-btn-group">
-                                    {(['normal', 'advantage', 'disadvantage'] as RollMode[]).map(mode => (
-                                        <button
-                                            key={mode}
-                                            type="button"
-                                            className={`attack-mode-btn ${rollMode === mode ? 'active' : ''}`}
-                                            onClick={() => setRollMode(mode)}
-                                        >
-                                            {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                                        </button>
-                                    ))}
+                                    {(['normal', 'advantage', 'disadvantage'] as RollMode[]).map(
+                                        (mode) => (
+                                            <button
+                                                key={mode}
+                                                type="button"
+                                                className={`attack-mode-btn ${rollMode === mode ? 'active' : ''}`}
+                                                onClick={() => setRollMode(mode)}
+                                            >
+                                                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                            </button>
+                                        )
+                                    )}
                                 </div>
                                 {effectiveModeDiffers && (
                                     <div className="attack-effective-mode">
@@ -459,7 +456,8 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                         className={`attack-mode-btn ${attackBonusMode === 'default' ? 'active' : ''}`}
                                         onClick={() => setAttackBonusMode('default')}
                                     >
-                                        Modifier ({defaultAttackBonus >= 0 ? '+' : ''}{defaultAttackBonus})
+                                        Modifier ({defaultAttackBonus >= 0 ? '+' : ''}
+                                        {defaultAttackBonus})
                                     </button>
                                     <button
                                         type="button"
@@ -474,7 +472,9 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                         type="number"
                                         className="attack-bonus-input"
                                         value={customAttackBonus}
-                                        onChange={(e) => setCustomAttackBonus(Number(e.target.value))}
+                                        onChange={(e) =>
+                                            setCustomAttackBonus(Number(e.target.value))
+                                        }
                                         placeholder="Enter bonus"
                                     />
                                 )}
@@ -491,7 +491,7 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                         onChange={(e) => setDebuffToAdd(e.target.value)}
                                     >
                                         <option value="">— Select debuff —</option>
-                                        {ATTACK_DEBUFFS.map(d => (
+                                        {ATTACK_DEBUFFS.map((d) => (
                                             <option key={d.id} value={d.id}>
                                                 {d.name} ({d.type})
                                             </option>
@@ -509,36 +509,54 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
 
                                 {appliedDebuffs.length > 0 && (
                                     <div className="attack-buff-list">
-                                        {appliedDebuffs.map(applied => {
+                                        {appliedDebuffs.map((applied) => {
                                             const d = getDebuffById(applied.debuffId);
                                             if (!d) return null;
                                             const label =
-                                                d.type === 'flat' ? `${d.value}` :
-                                                    d.type === 'dice' ? (d.getFormula?.(applied.rank) ?? '') :
-                                                        'disadvantage';
+                                                d.type === 'flat'
+                                                    ? `${d.value}`
+                                                    : d.type === 'dice'
+                                                      ? (d.getFormula?.(applied.rank) ?? '')
+                                                      : 'disadvantage';
                                             return (
-                                                <div key={applied.key} className="attack-buff-item attack-debuff-item">
+                                                <div
+                                                    key={applied.key}
+                                                    className="attack-buff-item attack-debuff-item"
+                                                >
                                                     <div className="attack-buff-info">
-                                                        <span className="attack-buff-name">{d.name}</span>
+                                                        <span className="attack-buff-name">
+                                                            {d.name}
+                                                        </span>
                                                         {d.rankLabel && (
                                                             <div className="attack-buff-rank">
-                                                                <span className="attack-buff-rank-label">{d.rankLabel}:</span>
+                                                                <span className="attack-buff-rank-label">
+                                                                    {d.rankLabel}:
+                                                                </span>
                                                                 <input
                                                                     type="number"
                                                                     className="attack-buff-rank-input"
                                                                     min={d.minRank ?? 1}
                                                                     max={d.maxRank ?? 20}
                                                                     value={applied.rank ?? 1}
-                                                                    onChange={(e) => handleDebuffRankChange(applied.key, Number(e.target.value))}
+                                                                    onChange={(e) =>
+                                                                        handleDebuffRankChange(
+                                                                            applied.key,
+                                                                            Number(e.target.value)
+                                                                        )
+                                                                    }
                                                                 />
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <span className="attack-debuff-formula">{label}</span>
+                                                    <span className="attack-debuff-formula">
+                                                        {label}
+                                                    </span>
                                                     <button
                                                         type="button"
                                                         className="attack-buff-remove"
-                                                        onClick={() => handleRemoveDebuff(applied.key)}
+                                                        onClick={() =>
+                                                            handleRemoveDebuff(applied.key)
+                                                        }
                                                         title="Remove debuff"
                                                     >
                                                         ✕
@@ -568,18 +586,24 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                     <span className="dice-btn-values">
                                         {attackResult
                                             ? attackResult.rolls.map((r, i) => (
-                                                <span
-                                                    key={i}
-                                                    className={
-                                                        'dice-btn-value' +
-                                                        (isMultiD20 && r === attackResult.chosen ? ' chosen' : '') +
-                                                        (!isMultiD20 && attackResult.isCrit ? ' crit' : '') +
-                                                        (!isMultiD20 && attackResult.isCritFail ? ' crit-fail' : '')
-                                                    }
-                                                >
-                                                    {r}
-                                                </span>
-                                            ))
+                                                  <span
+                                                      key={i}
+                                                      className={
+                                                          'dice-btn-value' +
+                                                          (isMultiD20 && r === attackResult.chosen
+                                                              ? ' chosen'
+                                                              : '') +
+                                                          (!isMultiD20 && attackResult.isCrit
+                                                              ? ' crit'
+                                                              : '') +
+                                                          (!isMultiD20 && attackResult.isCritFail
+                                                              ? ' crit-fail'
+                                                              : '')
+                                                      }
+                                                  >
+                                                      {r}
+                                                  </span>
+                                              ))
                                             : '20'}
                                     </span>
                                 </button>
@@ -603,7 +627,9 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                 key={i}
                                                 className={
                                                     'attack-die' +
-                                                    (isMultiD20 && r === attackResult.chosen ? ' chosen' : '')
+                                                    (isMultiD20 && r === attackResult.chosen
+                                                        ? ' chosen'
+                                                        : '')
                                                 }
                                             >
                                                 {r}
@@ -611,7 +637,8 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                         ))}
                                         {attackResult.bonus !== 0 && (
                                             <span className="attack-bonus">
-                                                {attackResult.bonus > 0 ? '+' : ''}{attackResult.bonus}
+                                                {attackResult.bonus > 0 ? '+' : ''}
+                                                {attackResult.bonus}
                                             </span>
                                         )}
                                         {attackResult.flatPenalty !== 0 && (
@@ -620,7 +647,11 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                             </span>
                                         )}
                                         {attackResult.dicePenalties.map((dp, i) => (
-                                            <span key={i} className="attack-penalty" title={dp.name}>
+                                            <span
+                                                key={i}
+                                                className="attack-penalty"
+                                                title={dp.name}
+                                            >
                                                 −{dp.total}
                                             </span>
                                         ))}
@@ -640,7 +671,9 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                             {attackResult.dicePenalties.map((dp, i) => (
                                                 <span key={i}>
                                                     {dp.name}: {dp.rolls.join('+')} = {dp.total}
-                                                    {i < attackResult.dicePenalties.length - 1 ? ' • ' : ''}
+                                                    {i < attackResult.dicePenalties.length - 1
+                                                        ? ' • '
+                                                        : ''}
                                                 </span>
                                             ))}
                                         </div>
@@ -648,11 +681,13 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                     <div className="attack-result-hint">
                                         {attackResult.isCrit && 'Critical hit!'}
                                         {attackResult.isCritFail && 'Critical miss!'}
-                                        {!attackResult.isCrit && !attackResult.isCritFail && (
-                                            attackResult.effectiveMode === 'advantage' ? 'Advantage' :
-                                                attackResult.effectiveMode === 'disadvantage' ? 'Disadvantage' :
-                                                    'Normal'
-                                        )}
+                                        {!attackResult.isCrit &&
+                                            !attackResult.isCritFail &&
+                                            (attackResult.effectiveMode === 'advantage'
+                                                ? 'Advantage'
+                                                : attackResult.effectiveMode === 'disadvantage'
+                                                  ? 'Disadvantage'
+                                                  : 'Normal')}
                                     </div>
                                     {inspirationAvailable && onSpendInspiration && (
                                         <button
@@ -673,20 +708,27 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                 <select
                                                     className="attack-buff-select"
                                                     value={selectedManeuverId}
-                                                    onChange={(e) => setSelectedManeuverId(e.target.value)}
+                                                    onChange={(e) =>
+                                                        setSelectedManeuverId(e.target.value)
+                                                    }
                                                 >
                                                     <option value="">— Select maneuver —</option>
-                                                    {availableManeuvers.map(m => {
+                                                    {availableManeuvers.map((m) => {
                                                         // Precision — доступен всегда, on-hit — только после попадания
-                                                        const isAvailableNow = m.addsTo === 'attack'
-                                                            || !attackResult.isCritFail;
+                                                        const isAvailableNow =
+                                                            m.addsTo === 'attack' ||
+                                                            !attackResult.isCritFail;
                                                         return (
                                                             <option
                                                                 key={m.id}
                                                                 value={m.id}
                                                                 disabled={!isAvailableNow}
                                                             >
-                                                                {m.name} ({m.addsTo === 'attack' ? '+attack' : '+damage'})
+                                                                {m.name} (
+                                                                {m.addsTo === 'attack'
+                                                                    ? '+attack'
+                                                                    : '+damage'}
+                                                                )
                                                             </option>
                                                         );
                                                     })}
@@ -700,10 +742,12 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                         !selectedManeuver
                                                             ? 'Select a maneuver'
                                                             : availableDice === 0
-                                                                ? 'No superiority dice left'
-                                                                : selectedManeuver.addsTo === 'damage' && attackResult.isCritFail
-                                                                    ? 'Cannot apply on-hit maneuver on a miss'
-                                                                    : `Spend 1 die (d${dieSize})`
+                                                              ? 'No superiority dice left'
+                                                              : selectedManeuver.addsTo ===
+                                                                      'damage' &&
+                                                                  attackResult.isCritFail
+                                                                ? 'Cannot apply on-hit maneuver on a miss'
+                                                                : `Spend 1 die (d${dieSize})`
                                                     }
                                                 >
                                                     Apply (d{dieSize})
@@ -714,7 +758,9 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                     {selectedManeuver.description}
                                                     {selectedManeuver.save && character && (
                                                         <div className="attack-maneuver-save-hint">
-                                                            DC {getManeuverSaveDC(character)} {selectedManeuver.save.ability.toUpperCase()} — {selectedManeuver.save.effect}
+                                                            DC {getManeuverSaveDC(character)}{' '}
+                                                            {selectedManeuver.save.ability.toUpperCase()}{' '}
+                                                            — {selectedManeuver.save.effect}
                                                         </div>
                                                     )}
                                                 </div>
@@ -729,12 +775,15 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                     {appliedManeuver.maneuver.name}
                                                 </span>
                                                 <span className="attack-maneuver-applied-die">
-                                                    d{dieSize} → <strong>{appliedManeuver.dieRoll}</strong>
+                                                    d{dieSize} →{' '}
+                                                    <strong>{appliedManeuver.dieRoll}</strong>
                                                 </span>
                                             </div>
                                             {appliedManeuver.maneuver.save && character && (
                                                 <div className="attack-maneuver-applied-save">
-                                                    DC {getManeuverSaveDC(character)} {appliedManeuver.maneuver.save.ability.toUpperCase()} — {appliedManeuver.maneuver.save.effect}
+                                                    DC {getManeuverSaveDC(character)}{' '}
+                                                    {appliedManeuver.maneuver.save.ability.toUpperCase()}{' '}
+                                                    — {appliedManeuver.maneuver.save.effect}
                                                 </div>
                                             )}
                                             {appliedManeuver.maneuver.addsTo === 'attack' && (
@@ -744,7 +793,8 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                             )}
                                             {appliedManeuver.maneuver.addsTo === 'damage' && (
                                                 <div className="attack-maneuver-applied-hint">
-                                                    +{appliedManeuver.dieRoll} will be added to damage
+                                                    +{appliedManeuver.dieRoll} will be added to
+                                                    damage
                                                 </div>
                                             )}
                                         </div>
@@ -755,17 +805,26 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
 
                         {/* === DAMAGE ROLL === */}
                         {!hideDamage && damageDice && (
-                            <div className={`attack-block ${critPending ? 'attack-block-crit' : ''}`}>
+                            <div
+                                className={`attack-block ${critPending ? 'attack-block-crit' : ''}`}
+                            >
                                 <div className="attack-block-header">
                                     Damage Roll {damageType ? `(${damageType})` : ''}
-                                    {critPending && <span className="attack-crit-badge">CRIT!</span>}
+                                    {critPending && (
+                                        <span className="attack-crit-badge">CRIT!</span>
+                                    )}
                                 </div>
 
                                 {/* Формула */}
                                 <div className="attack-section">
                                     <span className="attack-label">
                                         Final Formula
-                                        {critPending && <span className="attack-crit-hint"> (dice doubled)</span>}
+                                        {critPending && (
+                                            <span className="attack-crit-hint">
+                                                {' '}
+                                                (dice doubled)
+                                            </span>
+                                        )}
                                     </span>
                                     <span className="attack-formula">
                                         {previewFormula || damageDice}
@@ -781,7 +840,8 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                             className={`attack-mode-btn ${damageBonusMode === 'default' ? 'active' : ''}`}
                                             onClick={() => setDamageBonusMode('default')}
                                         >
-                                            Bonus ({defaultDamageBonus >= 0 ? '+' : ''}{defaultDamageBonus})
+                                            Bonus ({defaultDamageBonus >= 0 ? '+' : ''}
+                                            {defaultDamageBonus})
                                         </button>
                                         <button
                                             type="button"
@@ -796,7 +856,9 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                             type="number"
                                             className="attack-bonus-input"
                                             value={customDamageBonus}
-                                            onChange={(e) => setCustomDamageBonus(Number(e.target.value))}
+                                            onChange={(e) =>
+                                                setCustomDamageBonus(Number(e.target.value))
+                                            }
                                             placeholder="Enter bonus"
                                         />
                                     )}
@@ -813,8 +875,10 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                             onChange={(e) => setBuffToAdd(e.target.value)}
                                         >
                                             <option value="">— Select buff —</option>
-                                            {DAMAGE_BUFFS.map(b => (
-                                                <option key={b.id} value={b.id}>{b.name}</option>
+                                            {DAMAGE_BUFFS.map((b) => (
+                                                <option key={b.id} value={b.id}>
+                                                    {b.name}
+                                                </option>
                                             ))}
                                         </select>
                                         <button
@@ -829,23 +893,37 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
 
                                     {appliedBuffs.length > 0 && (
                                         <div className="attack-buff-list">
-                                            {appliedBuffs.map(applied => {
+                                            {appliedBuffs.map((applied) => {
                                                 const buff = getBuffById(applied.buffId);
                                                 if (!buff) return null;
                                                 return (
-                                                    <div key={applied.key} className="attack-buff-item">
+                                                    <div
+                                                        key={applied.key}
+                                                        className="attack-buff-item"
+                                                    >
                                                         <div className="attack-buff-info">
-                                                            <span className="attack-buff-name">{buff.name}</span>
+                                                            <span className="attack-buff-name">
+                                                                {buff.name}
+                                                            </span>
                                                             {buff.rankLabel && (
                                                                 <div className="attack-buff-rank">
-                                                                    <span className="attack-buff-rank-label">{buff.rankLabel}:</span>
+                                                                    <span className="attack-buff-rank-label">
+                                                                        {buff.rankLabel}:
+                                                                    </span>
                                                                     <input
                                                                         type="number"
                                                                         className="attack-buff-rank-input"
                                                                         min={buff.minRank ?? 1}
                                                                         max={buff.maxRank ?? 20}
                                                                         value={applied.rank ?? 1}
-                                                                        onChange={(e) => handleBuffRankChange(applied.key, Number(e.target.value))}
+                                                                        onChange={(e) =>
+                                                                            handleBuffRankChange(
+                                                                                applied.key,
+                                                                                Number(
+                                                                                    e.target.value
+                                                                                )
+                                                                            )
+                                                                        }
                                                                     />
                                                                 </div>
                                                             )}
@@ -856,7 +934,9 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                         <button
                                                             type="button"
                                                             className="attack-buff-remove"
-                                                            onClick={() => handleRemoveBuff(applied.key)}
+                                                            onClick={() =>
+                                                                handleRemoveBuff(applied.key)
+                                                            }
                                                             title="Remove buff"
                                                         >
                                                             ✕
@@ -887,8 +967,10 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                         <span className="dice-btn-values">
                                             {damageResult
                                                 ? damageResult.rolls.map((r, i) => (
-                                                    <span key={i} className="dice-btn-value">{r}</span>
-                                                ))
+                                                      <span key={i} className="dice-btn-value">
+                                                          {r}
+                                                      </span>
+                                                  ))
                                                 : `D${damageSides}`}
                                         </span>
                                     </button>
@@ -908,15 +990,20 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                     <div className="attack-result-block">
                                         <div className="attack-result-rolls">
                                             {damageResult.rolls.map((r, i) => (
-                                                <span key={i} className="attack-die">{r}</span>
+                                                <span key={i} className="attack-die">
+                                                    {r}
+                                                </span>
                                             ))}
                                             {damageResult.modifier !== 0 && (
                                                 <span className="attack-bonus">
-                                                    {damageResult.modifier > 0 ? '+' : ''}{damageResult.modifier}
+                                                    {damageResult.modifier > 0 ? '+' : ''}
+                                                    {damageResult.modifier}
                                                 </span>
                                             )}
                                             <span className="attack-equals">=</span>
-                                            <span className={`attack-total damage ${critPending ? 'crit' : ''}`}>
+                                            <span
+                                                className={`attack-total damage ${critPending ? 'crit' : ''}`}
+                                            >
                                                 {damageResult.total}
                                             </span>
                                         </div>
@@ -925,11 +1012,13 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                                 Critical damage!
                                             </div>
                                         )}
-                                        {appliedManeuver && appliedManeuver.maneuver.addsTo === 'damage' && (
-                                            <div className="attack-result-hint attack-maneuver-damage-hint">
-                                                {appliedManeuver.maneuver.name}: +{appliedManeuver.dieRoll} from superiority die
-                                            </div>
-                                        )}
+                                        {appliedManeuver &&
+                                            appliedManeuver.maneuver.addsTo === 'damage' && (
+                                                <div className="attack-result-hint attack-maneuver-damage-hint">
+                                                    {appliedManeuver.maneuver.name}: +
+                                                    {appliedManeuver.dieRoll} from superiority die
+                                                </div>
+                                            )}
                                     </div>
                                 )}
                             </div>

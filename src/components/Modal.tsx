@@ -10,12 +10,12 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({
-                                         isOpen,
-                                         onClose,
-                                         children,
-                                         className = '',
-                                         closeOnOverlayClick = true,
-                                     }) => {
+    isOpen,
+    onClose,
+    children,
+    className = '',
+    closeOnOverlayClick = true,
+}) => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';

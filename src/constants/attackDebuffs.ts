@@ -93,4 +93,4 @@ export const ATTACK_DEBUFFS: AttackDebuff[] = [
 ];
 
 export const getDebuffById = (id: string): AttackDebuff | undefined =>
-    ATTACK_DEBUFFS.find(d => d.id === id);
+    ATTACK_DEBUFFS.find((d) => d.id === id);

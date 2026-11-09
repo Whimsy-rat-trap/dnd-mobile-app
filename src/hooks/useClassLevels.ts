@@ -3,7 +3,7 @@ import { DND_CLASSES } from '../constants/classes';
 
 export const useClassLevels = (initialClass: string, initialLevel: number) => {
     const [classLevels, setClassLevels] = useState<{ className: string; level: number }[]>([
-        { className: initialClass, level: initialLevel }
+        { className: initialClass, level: initialLevel },
     ]);
 
     const addExtraClass = () => {
@@ -15,7 +15,11 @@ export const useClassLevels = (initialClass: string, initialLevel: number) => {
         setClassLevels(classLevels.filter((_, i) => i !== index));
     };
 
-    const updateExtraClass = (index: number, field: 'className' | 'level', value: string | number) => {
+    const updateExtraClass = (
+        index: number,
+        field: 'className' | 'level',
+        value: string | number
+    ) => {
         const newList = [...classLevels];
         if (field === 'className') {
             newList[index].className = value as string;
@@ -29,7 +33,7 @@ export const useClassLevels = (initialClass: string, initialLevel: number) => {
 
     // Синхронизация с внешними изменениями
     const syncMainClass = (className: string) => {
-        setClassLevels(prev => {
+        setClassLevels((prev) => {
             const newList = [...prev];
             if (newList.length > 0) newList[0].className = className;
             else newList.push({ className, level: 1 });
@@ -38,7 +42,7 @@ export const useClassLevels = (initialClass: string, initialLevel: number) => {
     };
 
     const syncMainLevel = (level: number) => {
-        setClassLevels(prev => {
+        setClassLevels((prev) => {
             const newList = [...prev];
             if (newList.length > 0) newList[0].level = level;
             else newList.push({ className: DND_CLASSES[0], level });

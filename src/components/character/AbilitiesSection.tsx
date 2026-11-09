@@ -21,12 +21,14 @@ const AbilitiesSection: React.FC<Props> = ({ abilities }) => {
         <div className="cc-section-abilities">
             <div className="cc-abilities-title">Abilities</div>
             <div className="cc-abilities-grid">
-                {data.map(a => (
+                {data.map((a) => (
                     <div className="cc-ability-card" key={a.name}>
                         <span className="cc-ability-name">{a.name}</span>
                         <span className="cc-ability-score">{a.score}</span>
                         <span className="cc-ability-modifier">
-                            {getModifier(a.score) >= 0 ? `+${getModifier(a.score)}` : getModifier(a.score)}
+                            {getModifier(a.score) >= 0
+                                ? `+${getModifier(a.score)}`
+                                : getModifier(a.score)}
                         </span>
                     </div>
                 ))}

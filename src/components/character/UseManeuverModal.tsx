@@ -16,25 +16,32 @@ interface Props {
 
 const getAddsToLabel = (addsTo: Maneuver['addsTo']): string => {
     switch (addsTo) {
-        case 'attack': return 'attack roll';
-        case 'damage': return 'damage roll';
-        case 'ac': return 'AC';
-        case 'check': return 'ability check';
-        case 'temp-hp': return 'temporary HP';
-        case 'damage-reduction': return 'damage reduction';
-        case 'none': return 'effect';
+        case 'attack':
+            return 'attack roll';
+        case 'damage':
+            return 'damage roll';
+        case 'ac':
+            return 'AC';
+        case 'check':
+            return 'ability check';
+        case 'temp-hp':
+            return 'temporary HP';
+        case 'damage-reduction':
+            return 'damage reduction';
+        case 'none':
+            return 'effect';
     }
 };
 
 const UseManeuverModal: React.FC<Props> = ({
-                                               isOpen,
-                                               onClose,
-                                               character,
-                                               maneuverId,
-                                               dieSize,
-                                               saveDC,
-                                               onUse,
-                                           }) => {
+    isOpen,
+    onClose,
+    character,
+    maneuverId,
+    dieSize,
+    saveDC,
+    onUse,
+}) => {
     const [rolled, setRolled] = useState<number | null>(null);
     const [used, setUsed] = useState(false);
 
@@ -78,11 +85,7 @@ const UseManeuverModal: React.FC<Props> = ({
                             Add to {getAddsToLabel(maneuver.addsTo)}
                         </span>
                         {rolled === null ? (
-                            <button
-                                type="button"
-                                className="umm-roll-btn"
-                                onClick={handleRoll}
-                            >
+                            <button type="button" className="umm-roll-btn" onClick={handleRoll}>
                                 Roll d{dieSize}
                             </button>
                         ) : (
@@ -90,12 +93,16 @@ const UseManeuverModal: React.FC<Props> = ({
                                 d{dieSize} → <strong>{rolled}</strong>
                                 {maneuver.addsTo === 'temp-hp' && chaMod !== 0 && (
                                     <span className="umm-bonus">
-                                        {' '}+ CHA {chaMod >= 0 ? '+' : ''}{chaMod} = {Math.max(1, rolled + chaMod)}
+                                        {' '}
+                                        + CHA {chaMod >= 0 ? '+' : ''}
+                                        {chaMod} = {Math.max(1, rolled + chaMod)}
                                     </span>
                                 )}
                                 {maneuver.addsTo === 'damage-reduction' && dexMod !== 0 && (
                                     <span className="umm-bonus">
-                                        {' '}+ DEX {dexMod >= 0 ? '+' : ''}{dexMod} = {Math.max(0, rolled + dexMod)}
+                                        {' '}
+                                        + DEX {dexMod >= 0 ? '+' : ''}
+                                        {dexMod} = {Math.max(0, rolled + dexMod)}
                                     </span>
                                 )}
                             </span>
@@ -116,11 +123,7 @@ const UseManeuverModal: React.FC<Props> = ({
                     <button className="umm-btn umm-btn-cancel" onClick={handleClose}>
                         Cancel
                     </button>
-                    <button
-                        className="umm-btn umm-btn-use"
-                        onClick={handleUse}
-                        disabled={used}
-                    >
+                    <button className="umm-btn umm-btn-use" onClick={handleUse} disabled={used}>
                         Use Maneuver (spend 1 die)
                     </button>
                 </div>

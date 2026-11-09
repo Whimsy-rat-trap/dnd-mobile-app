@@ -17,7 +17,7 @@ import {
 } from '../utils/leveling';
 import { getSpellCandidates } from '../utils/spellLearning';
 import './LevelUpModal.css';
-import {ordinal} from "../utils/format";
+import { ordinal } from '../utils/format';
 
 interface Props {
     isOpen: boolean;
@@ -29,7 +29,12 @@ interface Props {
 type Abilities = 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
 const ABILITY_KEYS: Abilities[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 const ABILITY_LABELS: Record<Abilities, string> = {
-    str: 'STR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'WIS', cha: 'CHA',
+    str: 'STR',
+    dex: 'DEX',
+    con: 'CON',
+    int: 'INT',
+    wis: 'WIS',
+    cha: 'CHA',
 };
 
 // Preview block
@@ -42,12 +47,12 @@ interface PreviewBlockProps {
 }
 
 const PreviewBlock: React.FC<PreviewBlockProps> = ({
-                                                       preview,
-                                                       hpGain,
-                                                       chosenSubclass,
-                                                       hasASI,
-                                                       asiType,
-                                                   }) => {
+    preview,
+    hpGain,
+    chosenSubclass,
+    hasASI,
+    asiType,
+}) => {
     if (!preview) return null;
 
     const rows: React.ReactNode[] = [];
@@ -60,7 +65,8 @@ const PreviewBlock: React.FC<PreviewBlockProps> = ({
                 {preview.levelFrom} → {preview.levelTo}
                 {preview.classLevelFrom !== preview.classLevelTo && (
                     <span className="lum-preview-sub">
-                        {' '}({preview.className} {preview.classLevelFrom} → {preview.classLevelTo})
+                        {' '}
+                        ({preview.className} {preview.classLevelFrom} → {preview.classLevelTo})
                     </span>
                 )}
             </span>
@@ -72,9 +78,7 @@ const PreviewBlock: React.FC<PreviewBlockProps> = ({
         rows.push(
             <div key="hp" className="lum-preview-row">
                 <span className="lum-preview-label">HP</span>
-                <span className="lum-preview-value lum-preview-positive">
-                    +{hpGain}
-                </span>
+                <span className="lum-preview-value lum-preview-positive">+{hpGain}</span>
             </div>
         );
     }
@@ -110,8 +114,7 @@ const PreviewBlock: React.FC<PreviewBlockProps> = ({
                 <span className="lum-preview-label">Spell Attack</span>
                 <span className="lum-preview-value lum-preview-positive">
                     {preview.spellAttackBonus.from >= 0 ? '+' : ''}
-                    {preview.spellAttackBonus.from} →{' '}
-                    {preview.spellAttackBonus.to >= 0 ? '+' : ''}
+                    {preview.spellAttackBonus.from} → {preview.spellAttackBonus.to >= 0 ? '+' : ''}
                     {preview.spellAttackBonus.to}
                 </span>
             </div>
@@ -182,10 +185,14 @@ const PreviewBlock: React.FC<PreviewBlockProps> = ({
     if (preview.spellLearning) {
         const parts: string[] = [];
         if (preview.spellLearning.spellsToLearn > 0) {
-            parts.push(`${preview.spellLearning.spellsToLearn} spell${preview.spellLearning.spellsToLearn > 1 ? 's' : ''}`);
+            parts.push(
+                `${preview.spellLearning.spellsToLearn} spell${preview.spellLearning.spellsToLearn > 1 ? 's' : ''}`
+            );
         }
         if (preview.spellLearning.cantripsToLearn > 0) {
-            parts.push(`${preview.spellLearning.cantripsToLearn} cantrip${preview.spellLearning.cantripsToLearn > 1 ? 's' : ''}`);
+            parts.push(
+                `${preview.spellLearning.cantripsToLearn} cantrip${preview.spellLearning.cantripsToLearn > 1 ? 's' : ''}`
+            );
         }
         rows.push(
             <div key="learn" className="lum-preview-row">
@@ -219,9 +226,7 @@ const PreviewBlock: React.FC<PreviewBlockProps> = ({
         rows.push(
             <div key={`res-${res.id}`} className="lum-preview-row lum-preview-row-multi">
                 <span className="lum-preview-label">{res.name}</span>
-                <span className="lum-preview-value lum-preview-positive">
-                    {parts.join(' · ')}
-                </span>
+                <span className="lum-preview-value lum-preview-positive">{parts.join(' · ')}</span>
             </div>
         );
     }
@@ -278,22 +283,17 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
     const newClassLevel = currentClass ? currentClass.currentLevel + 1 : 1;
 
     const conMod = Math.floor((character.abilities.con - 10) / 2);
-    const hitDie = currentClass ? (CLASS_HIT_DICE[currentClass.className] || 8) : 8;
+    const hitDie = currentClass ? CLASS_HIT_DICE[currentClass.className] || 8 : 8;
 
     const needsSubclass = currentClass
         ? needsSubclassChoice(character, classIndex, newClassLevel)
         : false;
 
-    const getsASI = currentClass
-        ? shouldGetASI(currentClass.className, newClassLevel)
-        : false;
+    const getsASI = currentClass ? shouldGetASI(currentClass.className, newClassLevel) : false;
 
-    const asiAlreadySet =
-        Object.values(asiBonuses).reduce((s, v) => s + (v || 0), 0);
+    const asiAlreadySet = Object.values(asiBonuses).reduce((s, v) => s + (v || 0), 0);
 
-    const subclassOptions = currentClass
-        ? (SUBCLASSES[currentClass.className] || [])
-        : [];
+    const subclassOptions = currentClass ? SUBCLASSES[currentClass.className] || [] : [];
 
     const asiValid = useMemo(() => {
         if (!getsASI) return true;
@@ -302,7 +302,7 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
         if (sum !== 2) return false;
         for (const [k, v] of Object.entries(asiBonuses)) {
             if ((v || 0) > 2) return false;
-            if ((character.abilities[k as Abilities] + (v || 0)) > 20) return false;
+            if (character.abilities[k as Abilities] + (v || 0) > 20) return false;
         }
         return true;
     }, [getsASI, asiType, asiBonuses, selectedFeat, asiAlreadySet, character.abilities]);
@@ -338,16 +338,16 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
     }, [character, currentClass, spellLearning]);
 
     const toggleSpell = (name: string) => {
-        setSelectedSpells(prev => {
-            if (prev.includes(name)) return prev.filter(n => n !== name);
+        setSelectedSpells((prev) => {
+            if (prev.includes(name)) return prev.filter((n) => n !== name);
             if (spellLearning && prev.length >= spellLearning.spellsToLearn) return prev;
             return [...prev, name];
         });
     };
 
     const toggleCantrip = (name: string) => {
-        setSelectedCantrips(prev => {
-            if (prev.includes(name)) return prev.filter(n => n !== name);
+        setSelectedCantrips((prev) => {
+            if (prev.includes(name)) return prev.filter((n) => n !== name);
             if (spellLearning && prev.length >= spellLearning.cantripsToLearn) return prev;
             return [...prev, name];
         });
@@ -374,7 +374,7 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
     };
 
     const adjustAsi = (ability: Abilities, delta: number) => {
-        setAsiBonuses(prev => {
+        setAsiBonuses((prev) => {
             const cur = prev[ability] || 0;
             const next = Math.max(0, Math.min(2, cur + delta));
             const newBonuses = { ...prev, [ability]: next };
@@ -391,7 +391,7 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
             classIndex,
             hp: {
                 method: hpMethod,
-                roll: hpMethod === 'roll' ? hpRoll ?? undefined : undefined,
+                roll: hpMethod === 'roll' ? (hpRoll ?? undefined) : undefined,
             },
             subclass: needsSubclass ? subclass : undefined,
         };
@@ -428,19 +428,10 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
 
     const hpGainForPreview =
         hpMethod === 'average'
-            ? computeHpGain(
-                currentClass?.className || 'Fighter',
-                conMod,
-                'average'
-            ).gain
+            ? computeHpGain(currentClass?.className || 'Fighter', conMod, 'average').gain
             : hpRoll !== null
-                ? computeHpGain(
-                    currentClass?.className || 'Fighter',
-                    conMod,
-                    'roll',
-                    hpRoll
-                ).gain
-                : null;
+              ? computeHpGain(currentClass?.className || 'Fighter', conMod, 'roll', hpRoll).gain
+              : null;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="lum-modal">
@@ -450,7 +441,8 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                     Level {character.level} → {character.level + 1}
                     {character.levelingMode !== 'milestone' && (
                         <span className="lum-xp">
-                            {' '}· XP {character.exp.toLocaleString()} / {xpToNext.toLocaleString()}
+                            {' '}
+                            · XP {character.exp.toLocaleString()} / {xpToNext.toLocaleString()}
                         </span>
                     )}
                 </p>
@@ -484,7 +476,8 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                 {needsSubclass && currentClass && subclassOptions.length > 0 && (
                     <div className="lum-section lum-section-highlight">
                         <span className="lum-label">
-                            Choose {currentClass.className} subclass (required at level {newClassLevel})
+                            Choose {currentClass.className} subclass (required at level{' '}
+                            {newClassLevel})
                         </span>
                         <select
                             className="lum-select"
@@ -492,8 +485,10 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                             onChange={(e) => setSubclass(e.target.value)}
                         >
                             <option value="">— Select —</option>
-                            {subclassOptions.map(s => (
-                                <option key={s} value={s}>{s}</option>
+                            {subclassOptions.map((s) => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -506,11 +501,21 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                         <button
                             type="button"
                             className={`lum-hp-btn ${hpMethod === 'average' ? 'active' : ''}`}
-                            onClick={() => { setHpMethod('average'); setHpRoll(null); }}
+                            onClick={() => {
+                                setHpMethod('average');
+                                setHpRoll(null);
+                            }}
                         >
                             Average
                             <span className="lum-hp-preview">
-                                +{computeHpGain(currentClass?.className || 'Fighter', conMod, 'average').gain}
+                                +
+                                {
+                                    computeHpGain(
+                                        currentClass?.className || 'Fighter',
+                                        conMod,
+                                        'average'
+                                    ).gain
+                                }
                             </span>
                         </button>
                         <button
@@ -521,7 +526,15 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                             Roll d{hitDie}
                             {hpRoll !== null && (
                                 <span className="lum-hp-preview">
-                                    +{computeHpGain(currentClass?.className || 'Fighter', conMod, 'roll', hpRoll).gain}
+                                    +
+                                    {
+                                        computeHpGain(
+                                            currentClass?.className || 'Fighter',
+                                            conMod,
+                                            'roll',
+                                            hpRoll
+                                        ).gain
+                                    }
                                 </span>
                             )}
                         </button>
@@ -529,11 +542,7 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                     {hpMethod === 'roll' && (
                         <div className="lum-roll-row">
                             {hpRoll === null ? (
-                                <button
-                                    type="button"
-                                    className="lum-roll-btn"
-                                    onClick={handleRoll}
-                                >
+                                <button type="button" className="lum-roll-btn" onClick={handleRoll}>
                                     Roll d{hitDie}
                                 </button>
                             ) : (
@@ -541,7 +550,9 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                                     d{hitDie} → <strong>{hpRoll}</strong>
                                     {conMod !== 0 && (
                                         <span className="lum-con">
-                                            {' '}{conMod > 0 ? '+' : ''}{conMod} CON
+                                            {' '}
+                                            {conMod > 0 ? '+' : ''}
+                                            {conMod} CON
                                             {' = '}
                                             {Math.max(1, hpRoll + conMod)} HP
                                         </span>
@@ -556,10 +567,12 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                 {getsASI && (
                     <div className="lum-section lum-section-highlight">
                         <span className="lum-label">
-                            Ability Score Improvement (level {newClassLevel} of {currentClass?.className})
+                            Ability Score Improvement (level {newClassLevel} of{' '}
+                            {currentClass?.className})
                             {asiLevels.length > 0 && (
                                 <span className="lum-asi-levels">
-                                    {' '}· ASI at {asiLevels.join(', ')}
+                                    {' '}
+                                    · ASI at {asiLevels.join(', ')}
                                 </span>
                             )}
                         </span>
@@ -585,12 +598,13 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
 
                         {asiType === 'asi' ? (
                             <div className="lum-asi-grid">
-                                {ABILITY_KEYS.map(ab => (
+                                {ABILITY_KEYS.map((ab) => (
                                     <div key={ab} className="lum-asi-row">
                                         <span className="lum-asi-name">
                                             {ABILITY_LABELS[ab]}
                                             <span className="lum-asi-score">
-                                                {' '}({character.abilities[ab]})
+                                                {' '}
+                                                ({character.abilities[ab]})
                                             </span>
                                         </span>
                                         <div className="lum-asi-controls">
@@ -612,7 +626,9 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                                                 disabled={
                                                     (asiBonuses[ab] || 0) >= 2 ||
                                                     asiAlreadySet >= 2 ||
-                                                    character.abilities[ab] + (asiBonuses[ab] || 0) >= 20
+                                                    character.abilities[ab] +
+                                                        (asiBonuses[ab] || 0) >=
+                                                        20
                                                 }
                                             >
                                                 +
@@ -628,7 +644,7 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                                 onChange={(e) => setSelectedFeat(e.target.value)}
                             >
                                 <option value="">— Select feat —</option>
-                                {GENERAL_FEATS.map(f => (
+                                {GENERAL_FEATS.map((f) => (
                                     <option key={f.id} value={f.id}>
                                         {f.name}
                                         {f.prerequisite ? ` (${f.prerequisite})` : ''}
@@ -651,7 +667,8 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                         <span className="lum-label">
                             Learn new spells
                             <span className="lum-asi-levels">
-                                {' '}· {currentClass?.className} at level {newClassLevel}
+                                {' '}
+                                · {currentClass?.className} at level {newClassLevel}
                             </span>
                         </span>
 
@@ -659,11 +676,13 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                             <div className="lum-spells-block">
                                 <span className="lum-spells-title">
                                     Spells (≤ Lv.{spellLearning.maxSpellLevel}) ·{' '}
-                                    <span className={
-                                        spellsValid
-                                            ? 'lum-spells-count-ok'
-                                            : 'lum-spells-count-pending'
-                                    }>
+                                    <span
+                                        className={
+                                            spellsValid
+                                                ? 'lum-spells-count-ok'
+                                                : 'lum-spells-count-pending'
+                                        }
+                                    >
                                         {selectedSpells.length}/{spellLearning.spellsToLearn}
                                     </span>
                                 </span>
@@ -673,7 +692,7 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                                             No eligible spells available.
                                         </div>
                                     ) : (
-                                        spellCandidates.map(spell => {
+                                        spellCandidates.map((spell) => {
                                             const isSelected = selectedSpells.includes(spell.name);
                                             const canPick =
                                                 isSelected ||
@@ -689,8 +708,12 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                                                         disabled={!canPick}
                                                         onChange={() => toggleSpell(spell.name)}
                                                     />
-                                                    <span className="lum-spell-name">{spell.name}</span>
-                                                    <span className="lum-spell-level">Lv.{spell.level}</span>
+                                                    <span className="lum-spell-name">
+                                                        {spell.name}
+                                                    </span>
+                                                    <span className="lum-spell-level">
+                                                        Lv.{spell.level}
+                                                    </span>
                                                 </label>
                                             );
                                         })
@@ -703,11 +726,13 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                             <div className="lum-spells-block">
                                 <span className="lum-spells-title">
                                     Cantrips ·{' '}
-                                    <span className={
-                                        cantripsValid
-                                            ? 'lum-spells-count-ok'
-                                            : 'lum-spells-count-pending'
-                                    }>
+                                    <span
+                                        className={
+                                            cantripsValid
+                                                ? 'lum-spells-count-ok'
+                                                : 'lum-spells-count-pending'
+                                        }
+                                    >
                                         {selectedCantrips.length}/{spellLearning.cantripsToLearn}
                                     </span>
                                 </span>
@@ -717,11 +742,14 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                                             No eligible cantrips available.
                                         </div>
                                     ) : (
-                                        cantripCandidates.map(spell => {
-                                            const isSelected = selectedCantrips.includes(spell.name);
+                                        cantripCandidates.map((spell) => {
+                                            const isSelected = selectedCantrips.includes(
+                                                spell.name
+                                            );
                                             const canPick =
                                                 isSelected ||
-                                                selectedCantrips.length < spellLearning.cantripsToLearn;
+                                                selectedCantrips.length <
+                                                    spellLearning.cantripsToLearn;
                                             return (
                                                 <label
                                                     key={spell.name}
@@ -733,7 +761,9 @@ const LevelUpModal: React.FC<Props> = ({ isOpen, onClose, character, onApply }) 
                                                         disabled={!canPick}
                                                         onChange={() => toggleCantrip(spell.name)}
                                                     />
-                                                    <span className="lum-spell-name">{spell.name}</span>
+                                                    <span className="lum-spell-name">
+                                                        {spell.name}
+                                                    </span>
                                                     <span className="lum-spell-level">Cantrip</span>
                                                 </label>
                                             );

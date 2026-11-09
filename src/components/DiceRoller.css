@@ -12,28 +12,39 @@
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-family);
     box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.3);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     position: relative;
     user-select: none;
     background: radial-gradient(ellipse at 30% 30%, var(--color-info-dark), #1e3a8a);
     border-radius: 10px;
 }
 
-.dice-btn:hover:not(:disabled) { transform: scale(1.05); }
-.dice-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.dice-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+.dice-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
 
 .dice-btn.spinning {
     animation: dice-spin 0.8s ease-in-out;
 }
 @keyframes dice-spin {
-    0% { transform: rotate(0deg) scale(1); }
-    100% { transform: rotate(360deg) scale(1.1); }
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1.1);
+    }
 }
 
 /* Общие стили для форм костей */
@@ -62,7 +73,11 @@
 /* d8 */
 .dice-8 {
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    background: radial-gradient(ellipse at 30% 30%, var(--color-success), var(--color-success-dark));
+    background: radial-gradient(
+        ellipse at 30% 30%,
+        var(--color-success),
+        var(--color-success-dark)
+    );
     width: 54px;
     height: 54px;
     border-radius: 0;
@@ -119,7 +134,9 @@
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition:
+        background 0.2s,
+        transform 0.1s;
     white-space: nowrap;
 }
 

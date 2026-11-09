@@ -16,5 +16,5 @@ export const LANGUAGES = [
     'Sylvan',
     'Undercommon',
     'Druidic',
-    'Thieves\' Cant',
+    "Thieves' Cant",
 ];

@@ -12,7 +12,9 @@ export interface DiceRollResult {
  * Парсит формулу урона вида "2d6+3", "1d8", "4d4-1", "1d10".
  * Возвращает null, если формула некорректна.
  */
-export function parseDiceFormula(formula: string): { count: number; sides: number; modifier: number } | null {
+export function parseDiceFormula(
+    formula: string
+): { count: number; sides: number; modifier: number } | null {
     const cleaned = formula.replace(/\s+/g, '').toLowerCase();
     const match = cleaned.match(/^(\d+)d(\d+)([+-]\d+)?$/);
     if (!match) return null;
@@ -33,8 +35,9 @@ export function rollDice(formula: string): DiceRollResult | null {
     const parsed = parseDiceFormula(formula);
     if (!parsed) return null;
 
-    const rolls = Array.from({ length: parsed.count }, () =>
-        Math.floor(Math.random() * parsed.sides) + 1
+    const rolls = Array.from(
+        { length: parsed.count },
+        () => Math.floor(Math.random() * parsed.sides) + 1
     );
     const total = rolls.reduce((a, b) => a + b, 0) + parsed.modifier;
 
@@ -95,9 +98,10 @@ export function rollD20(mode: RollMode, bonus: number): D20RollResult {
  */
 export function formatDiceResult(result: DiceRollResult): string {
     const rollsStr = result.rolls.join(' + ');
-    const modStr = result.modifier !== 0
-        ? ` ${result.modifier > 0 ? '+' : '-'} ${Math.abs(result.modifier)}`
-        : '';
+    const modStr =
+        result.modifier !== 0
+            ? ` ${result.modifier > 0 ? '+' : '-'} ${Math.abs(result.modifier)}`
+            : '';
     return `${rollsStr}${modStr} = ${result.total}`;
 }
 
@@ -171,7 +175,7 @@ export function rollMultiDice(
 
     const total = allRolls.reduce((a, b) => a + b, 0) + modifier;
 
-    const formulaParts: string[] = dice.map(g => {
+    const formulaParts: string[] = dice.map((g) => {
         const count = critDouble ? g.count * 2 : g.count;
         return `${count}d${g.sides}`;
     });

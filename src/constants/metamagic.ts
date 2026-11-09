@@ -10,9 +10,7 @@
  * к одному заклинанию дважды.
  */
 
-export type MetamagicCost =
-    | { type: 'fixed'; amount: number }
-    | { type: 'spell-level' };
+export type MetamagicCost = { type: 'fixed'; amount: number } | { type: 'spell-level' };
 
 export interface Metamagic {
     id: string;
@@ -101,12 +99,12 @@ export const METAMAGIC: Metamagic[] = [
         source: 'PHB',
         cost: { type: 'spell-level' },
         description:
-            'When you cast a spell that targets only one creature and doesn\'t have a range of self, you can spend a number of sorcery points equal to the spell\'s level to target a second creature in range with the same spell. For a cantrip, spend 1 sorcery point to twin it.',
+            "When you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell. For a cantrip, spend 1 sorcery point to twin it.",
     },
 ];
 
 export function getMetamagicById(id: string): Metamagic | undefined {
-    return METAMAGIC.find(m => m.id === id);
+    return METAMAGIC.find((m) => m.id === id);
 }
 
 /**

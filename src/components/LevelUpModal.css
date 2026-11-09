@@ -477,7 +477,7 @@
     cursor: not-allowed;
 }
 
-.lum-spell-row input[type="checkbox"] {
+.lum-spell-row input[type='checkbox'] {
     accent-color: var(--color-primary);
     width: 14px;
     height: 14px;

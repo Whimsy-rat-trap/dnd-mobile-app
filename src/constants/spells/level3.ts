@@ -19,7 +19,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You touch a creature, and it must succeed on a Wisdom save or become cursed for the duration.',
+        description:
+            'You touch a creature, and it must succeed on a Wisdom save or become cursed for the duration.',
         requiresConcentration: true,
         classes: ['Bard', 'Cleric', 'Wizard'],
     },
@@ -30,7 +31,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'Roll a d20 at the end of each of your turns. On 11 or higher, you vanish to the Ethereal Plane.',
+        description:
+            'Roll a d20 at the end of each of your turns. On 11 or higher, you vanish to the Ethereal Plane.',
         requiresConcentration: false,
         classes: ['Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -41,7 +43,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '10 minutes',
         range: '1 mile',
         components: 'V, S, M',
-        description: 'You create an invisible sensor within range. You can see and hear through it.',
+        description:
+            'You create an invisible sensor within range. You can see and hear through it.',
         requiresConcentration: true,
         classes: ['Bard', 'Cleric', 'Sorcerer', 'Wizard'],
     },
@@ -52,7 +55,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 reaction',
         range: '60 ft',
         components: 'S',
-        description: 'You attempt to interrupt a creature in the process of casting a spell. If it is 3rd level or lower, its spell fails.',
+        description:
+            'You attempt to interrupt a creature in the process of casting a spell. If it is 3rd level or lower, its spell fails.',
         requiresConcentration: false,
         classes: ['Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -63,7 +67,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S',
-        description: 'You create 45 pounds of food and 30 gallons of water, enough to sustain up to fifteen humanoids for 24 hours.',
+        description:
+            'You create 45 pounds of food and 30 gallons of water, enough to sustain up to fifteen humanoids for 24 hours.',
         requiresConcentration: false,
         classes: ['Cleric', 'Paladin', 'Artificer'],
     },
@@ -74,9 +79,19 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'Choose one creature, object, or magical effect. Any spell of 3rd level or lower on the target ends.',
+        description:
+            'Choose one creature, object, or magical effect. Any spell of 3rd level or lower on the target ends.',
         requiresConcentration: false,
-        classes: ['Bard', 'Cleric', 'Druid', 'Paladin', 'Sorcerer', 'Warlock', 'Wizard', 'Artificer'],
+        classes: [
+            'Bard',
+            'Cleric',
+            'Druid',
+            'Paladin',
+            'Sorcerer',
+            'Warlock',
+            'Wizard',
+            'Artificer',
+        ],
     },
     {
         name: 'Fear',
@@ -85,7 +100,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self (30-foot cone)',
         components: 'V, S, M',
-        description: 'Each creature in a 30-foot cone must succeed on a Wisdom save or drop what it\'s holding and become frightened.',
+        description:
+            "Each creature in a 30-foot cone must succeed on a Wisdom save or drop what it's holding and become frightened.",
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -96,7 +112,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '150 ft',
         components: 'V, S, M',
-        description: 'A bright streak flashes to a point you choose and blossoms into an explosion of flame. Each creature in a 20-foot-radius sphere takes 8d6 fire damage.',
+        description:
+            'A bright streak flashes to a point you choose and blossoms into an explosion of flame. Each creature in a 20-foot-radius sphere takes 8d6 fire damage.',
         element: 'fire',
         diceRoll: '8d6',
         damageType: 'fire',
@@ -110,7 +127,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature. The target gains a flying speed of 60 feet for the duration.',
+        description:
+            'You touch a willing creature. The target gains a flying speed of 60 feet for the duration.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Warlock', 'Wizard', 'Artificer'],
     },
@@ -132,7 +150,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'The target\'s speed is doubled, it gains +2 to AC, advantage on Dex saves, and an additional action on each turn.',
+        description:
+            "The target's speed is doubled, it gains +2 to AC, advantage on Dex saves, and an additional action on each turn.",
         requiresConcentration: true,
         classes: ['Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -143,7 +162,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'S, M',
-        description: 'You create a twisting pattern of colors. Each creature in a 30-foot cube that sees it must make a Wisdom save or be charmed.',
+        description:
+            'You create a twisting pattern of colors. Each creature in a 30-foot cube that sees it must make a Wisdom save or be charmed.',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -154,7 +174,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 minute',
         range: 'Self (10-foot-radius hemisphere)',
         components: 'V, S, M',
-        description: 'A 10-foot-radius immobile dome of force springs into existence around and above you.',
+        description:
+            'A 10-foot-radius immobile dome of force springs into existence around and above you.',
         requiresConcentration: false,
         classes: ['Bard', 'Wizard'],
     },
@@ -165,7 +186,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self (100-foot line)',
         components: 'V, S, M',
-        description: 'A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you. Each creature in the line takes 8d6 lightning damage.',
+        description:
+            'A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you. Each creature in the line takes 8d6 lightning damage.',
         element: 'lightning',
         diceRoll: '8d6',
         damageType: 'lightning',
@@ -190,7 +212,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'You create the image of an object, a creature, or some other visible phenomenon no larger than a 20-foot cube.',
+        description:
+            'You create the image of an object, a creature, or some other visible phenomenon no larger than a 20-foot cube.',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -201,7 +224,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature and prevent it from being detected by divination magic.',
+        description:
+            'You touch a willing creature and prevent it from being detected by divination magic.',
         requiresConcentration: false,
         classes: ['Bard', 'Ranger', 'Wizard'],
     },
@@ -223,7 +247,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a creature that has died within the last minute. That creature returns to life with 1 hit point.',
+        description:
+            'You touch a creature that has died within the last minute. That creature returns to life with 1 hit point.',
         element: 'healing',
         requiresConcentration: false,
         classes: ['Cleric', 'Paladin', 'Artificer'],
@@ -235,7 +260,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Unlimited',
         components: 'V, S, M',
-        description: 'You send a short message of twenty-five words or less to a creature with which you are familiar.',
+        description:
+            'You send a short message of twenty-five words or less to a creature with which you are familiar.',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Wizard'],
     },
@@ -246,7 +272,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'You alter time around up to six creatures in a 40-foot cube. Each target must succeed on a Wisdom save or be affected.',
+        description:
+            'You alter time around up to six creatures in a 40-foot cube. Each target must succeed on a Wisdom save or be affected.',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Wizard'],
     },
@@ -257,7 +284,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '10 ft',
         components: 'V, S, M',
-        description: 'You grant the semblance of life and intelligence to a corpse, allowing it to answer questions.',
+        description:
+            'You grant the semblance of life and intelligence to a corpse, allowing it to answer questions.',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric'],
     },
@@ -268,7 +296,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self (15-foot radius)',
         components: 'V, S, M',
-        description: 'Spirits flit around you to a distance of 15 feet. When a creature enters the area, it takes 3d8 radiant or necrotic damage.',
+        description:
+            'Spirits flit around you to a distance of 15 feet. When a creature enters the area, it takes 3d8 radiant or necrotic damage.',
         element: 'radiant',
         diceRoll: '3d8',
         damageType: 'radiant',
@@ -282,7 +311,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'You create a 20-foot-radius sphere of yellow, nauseating gas. The cloud spreads around corners.',
+        description:
+            'You create a 20-foot-radius sphere of yellow, nauseating gas. The cloud spreads around corners.',
         element: 'poison',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Wizard'],
@@ -294,7 +324,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, M',
-        description: 'This spell grants the creature you touch the ability to understand any spoken language it hears.',
+        description:
+            'This spell grants the creature you touch the ability to understand any spoken language it hears.',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -305,7 +336,8 @@ export const LEVEL_3_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'This spell grants up to ten willing creatures the ability to breathe underwater.',
+        description:
+            'This spell grants up to ten willing creatures the ability to breathe underwater.',
         requiresConcentration: false,
         classes: ['Druid', 'Ranger', 'Sorcerer', 'Wizard', 'Artificer'],
     },

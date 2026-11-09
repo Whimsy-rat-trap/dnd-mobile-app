@@ -76,7 +76,10 @@
     background: transparent;
     cursor: pointer;
     padding: 0;
-    transition: transform 0.15s, background 0.15s, border-color 0.15s;
+    transition:
+        transform 0.15s,
+        background 0.15s,
+        border-color 0.15s;
 }
 
 .crs-dot.available {

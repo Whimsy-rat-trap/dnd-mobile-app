@@ -30,7 +30,11 @@ const ManageMetamagicModal: React.FC<Props> = ({ isOpen, onClose, character }) =
             <div className="mmg-body">
                 <h3 className="mmg-title">Metamagic</h3>
                 <p className="mmg-subtitle">
-                    Choose your Metamagic. You know <strong>{known.length} / {limit}</strong>.
+                    Choose your Metamagic. You know{' '}
+                    <strong>
+                        {known.length} / {limit}
+                    </strong>
+                    .
                 </p>
 
                 <div className="mmg-section">
@@ -39,11 +43,12 @@ const ManageMetamagicModal: React.FC<Props> = ({ isOpen, onClose, character }) =
                         <div className="mmg-empty">None yet.</div>
                     ) : (
                         <div className="mmg-list">
-                            {known.map(m => {
+                            {known.map((m) => {
                                 const cost = getMetamagicSpCost(m);
-                                const costLabel = m.cost.type === 'spell-level'
-                                    ? '= spell level SP'
-                                    : `${cost} SP`;
+                                const costLabel =
+                                    m.cost.type === 'spell-level'
+                                        ? '= spell level SP'
+                                        : `${cost} SP`;
                                 return (
                                     <div key={m.id} className="mmg-row mmg-row-known">
                                         <div className="mmg-info">
@@ -74,11 +79,10 @@ const ManageMetamagicModal: React.FC<Props> = ({ isOpen, onClose, character }) =
                         {isFull && ' — limit reached, remove one to add another'}
                     </div>
                     <div className="mmg-list mmg-list-scroll">
-                        {available.map(m => {
+                        {available.map((m) => {
                             const cost = getMetamagicSpCost(m);
-                            const costLabel = m.cost.type === 'spell-level'
-                                ? '= spell level SP'
-                                : `${cost} SP`;
+                            const costLabel =
+                                m.cost.type === 'spell-level' ? '= spell level SP' : `${cost} SP`;
                             return (
                                 <div key={m.id} className="mmg-row">
                                     <div className="mmg-info">
@@ -96,7 +100,9 @@ const ManageMetamagicModal: React.FC<Props> = ({ isOpen, onClose, character }) =
                                         className="mmg-btn mmg-btn-add"
                                         disabled={isFull}
                                         onClick={() => learnMetamagic(character.id, m.id)}
-                                        title={isFull ? 'Metamagic limit reached' : 'Learn this option'}
+                                        title={
+                                            isFull ? 'Metamagic limit reached' : 'Learn this option'
+                                        }
                                     >
                                         +
                                     </button>

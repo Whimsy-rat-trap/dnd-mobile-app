@@ -6,11 +6,7 @@ import FilterModal, { FilterField } from '../components/FilterModal';
 import InventoryItemCard from '../components/InventoryItemCard';
 import CurrencyEditModal from '../components/CurrencyEditModal';
 import { Character, InventoryItem } from '../types/Character';
-import {
-    getTypes,
-    getRarities,
-    filterInventoryItems,
-} from '../utils/inventoryUtils';
+import { getTypes, getRarities, filterInventoryItems } from '../utils/inventoryUtils';
 import './Inventory.css';
 
 /**
@@ -32,22 +28,18 @@ const getModifier = (score: number): number => Math.floor((score - 10) / 2);
 /**
  * Оружие с finesse — можно использовать DEX вместо STR.
  */
-const FINESSE_WEAPONS = [
-    'dagger', 'rapier', 'shortsword', 'scimitar', 'whip',
-];
+const FINESSE_WEAPONS = ['dagger', 'rapier', 'shortsword', 'scimitar', 'whip'];
 
 /**
  * Двуручное/дальнобойное — использует DEX.
  */
-const RANGED_WEAPONS = [
-    'shortbow', 'longbow', 'crossbow', 'sling', 'dart', 'blowgun',
-];
+const RANGED_WEAPONS = ['shortbow', 'longbow', 'crossbow', 'sling', 'dart', 'blowgun'];
 
 const isFinesse = (name: string): boolean =>
-    FINESSE_WEAPONS.some(w => name.toLowerCase().includes(w));
+    FINESSE_WEAPONS.some((w) => name.toLowerCase().includes(w));
 
 const isRanged = (name: string): boolean =>
-    RANGED_WEAPONS.some(w => name.toLowerCase().includes(w));
+    RANGED_WEAPONS.some((w) => name.toLowerCase().includes(w));
 
 /**
  * Вычисляет бонус к попаданию для оружия с учётом характеристик персонажа.
@@ -64,8 +56,8 @@ const computeAttackBonus = (item: InventoryItem, character: Character): number =
     const abilityMod = isFinesse(item.name)
         ? Math.max(strMod, dexMod)
         : isRanged(item.name)
-            ? dexMod
-            : strMod;
+          ? dexMod
+          : strMod;
 
     return profBonus + abilityMod;
 };
@@ -104,10 +96,7 @@ const Inventory: React.FC = () => {
         rarity: '',
     });
 
-    const types = useMemo(
-        () => (character ? getTypes(character.inventory) : []),
-        [character]
-    );
+    const types = useMemo(() => (character ? getTypes(character.inventory) : []), [character]);
     const rarities = useMemo(
         () => (character ? getRarities(character.inventory) : []),
         [character]
@@ -121,7 +110,7 @@ const Inventory: React.FC = () => {
                 type: 'select',
                 options: [
                     { value: '', label: 'All' },
-                    ...types.map(t => ({
+                    ...types.map((t) => ({
                         value: t,
                         label: t.charAt(0).toUpperCase() + t.slice(1),
                     })),
@@ -133,7 +122,7 @@ const Inventory: React.FC = () => {
                 type: 'select',
                 options: [
                     { value: '', label: 'All' },
-                    ...rarities.map(r => ({
+                    ...rarities.map((r) => ({
                         value: r,
                         label: r.charAt(0).toUpperCase() + r.slice(1),
                     })),
@@ -144,10 +133,7 @@ const Inventory: React.FC = () => {
     );
 
     const filteredItems = useMemo(
-        () =>
-            character
-                ? filterInventoryItems(character.inventory, searchQuery, filters)
-                : [],
+        () => (character ? filterInventoryItems(character.inventory, searchQuery, filters) : []),
         [character, searchQuery, filters]
     );
 
@@ -173,7 +159,7 @@ const Inventory: React.FC = () => {
     };
 
     const handleEquip = (itemId: string) => {
-        const item = character.inventory.find(i => i.id === itemId);
+        const item = character.inventory.find((i) => i.id === itemId);
         if (item) {
             updateItemInInventory(character.id, itemId, { equipped: !item.equipped });
         }
@@ -202,10 +188,7 @@ const Inventory: React.FC = () => {
                         <Link to={`/characters/${character.id}`} className="inv-back-btn">
                             ← Back to Character
                         </Link>
-                        <Link
-                            to={`/items?characterId=${character.id}`}
-                            className="inv-browse-btn"
-                        >
+                        <Link to={`/items?characterId=${character.id}`} className="inv-browse-btn">
                             Browse Items
                         </Link>
                     </div>
@@ -238,7 +221,7 @@ const Inventory: React.FC = () => {
                             No items in inventory. Browse items to add some!
                         </div>
                     ) : (
-                        filteredItems.map(item => (
+                        filteredItems.map((item) => (
                             <InventoryItemCard
                                 key={item.id}
                                 item={item}
@@ -253,10 +236,7 @@ const Inventory: React.FC = () => {
                 </div>
 
                 <div className="inv-add-container">
-                    <Link
-                        to={`/items?characterId=${character.id}`}
-                        className="inv-add-btn"
-                    >
+                    <Link to={`/items?characterId=${character.id}`} className="inv-add-btn">
                         <svg
                             width="24"
                             height="24"

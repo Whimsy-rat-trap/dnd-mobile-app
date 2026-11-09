@@ -2,10 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Modal from '../Modal';
 import { Character } from '../../types/Character';
 import { useCharacters } from '../../context/CharacterContext';
-import {
-    getForgettableSpells,
-    getLearnableSpellsForSwap,
-} from '../../utils/spellSwap';
+import { getForgettableSpells, getLearnableSpellsForSwap } from '../../utils/spellSwap';
 import { groupByLevel } from '../../utils/arrayHelpers';
 import './SwapSpellModal.css';
 
@@ -28,13 +25,10 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
         }
     }, [isOpen]);
 
-    const forgettable = useMemo(
-        () => getForgettableSpells(character),
-        [character]
-    );
+    const forgettable = useMemo(() => getForgettableSpells(character), [character]);
 
     const forgotten = useMemo(
-        () => (forgetId ? forgettable.find(s => s.id === forgetId) ?? null : null),
+        () => (forgetId ? (forgettable.find((s) => s.id === forgetId) ?? null) : null),
         [forgetId, forgettable]
     );
 
@@ -52,11 +46,11 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
     const handleConfirm = () => {
         if (!forgotten || !learnName) return;
 
-        const newSpell = learnable.find(s => s.name === learnName);
+        const newSpell = learnable.find((s) => s.name === learnName);
         if (!newSpell) return;
 
         const updatedSpells = character.spells
-            .filter(s => s.id !== forgotten.id)
+            .filter((s) => s.id !== forgotten.id)
             .concat({
                 ...newSpell,
                 id: `swap-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -79,8 +73,8 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
             <div className="ssm-body">
                 <h3 className="ssm-title">Swap Spell</h3>
                 <p className="ssm-subtitle">
-                    Replace one spell you know with another spell.
-                    The new spell's level cannot exceed the replaced spell's level.
+                    Replace one spell you know with another spell. The new spell's level cannot
+                    exceed the replaced spell's level.
                 </p>
 
                 <div className="ssm-columns">
@@ -89,21 +83,17 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
                         <div className="ssm-column-header">
                             <span className="ssm-column-title">Forget</span>
                             {forgotten && (
-                                <span className="ssm-column-selected">
-                                    ✓ {forgotten.name}
-                                </span>
+                                <span className="ssm-column-selected">✓ {forgotten.name}</span>
                             )}
                         </div>
                         <div className="ssm-column-body">
                             {forgetGroups.length === 0 ? (
-                                <div className="ssm-empty">
-                                    No swappable spells.
-                                </div>
+                                <div className="ssm-empty">No swappable spells.</div>
                             ) : (
                                 forgetGroups.map(([level, spells]) => (
                                     <div key={level} className="ssm-group">
                                         <div className="ssm-group-title">Lv.{level}</div>
-                                        {spells.map(s => {
+                                        {spells.map((s) => {
                                             const isSelected = forgetId === s.id;
                                             return (
                                                 <button
@@ -116,7 +106,9 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
                                                     }}
                                                 >
                                                     <span className="ssm-row-name">{s.name}</span>
-                                                    <span className="ssm-row-school">{s.school}</span>
+                                                    <span className="ssm-row-school">
+                                                        {s.school}
+                                                    </span>
                                                 </button>
                                             );
                                         })}
@@ -131,16 +123,12 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
                         <div className="ssm-column-header">
                             <span className="ssm-column-title">Learn</span>
                             {learnName && (
-                                <span className="ssm-column-selected">
-                                    ✓ {learnName}
-                                </span>
+                                <span className="ssm-column-selected">✓ {learnName}</span>
                             )}
                         </div>
                         <div className="ssm-column-body">
                             {!forgotten ? (
-                                <div className="ssm-empty">
-                                    Select a spell to forget first.
-                                </div>
+                                <div className="ssm-empty">Select a spell to forget first.</div>
                             ) : learnGroups.length === 0 ? (
                                 <div className="ssm-empty">
                                     No eligible spells (Lv.{maxLevel} or lower).
@@ -149,7 +137,7 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
                                 learnGroups.map(([level, spells]) => (
                                     <div key={level} className="ssm-group">
                                         <div className="ssm-group-title">Lv.{level}</div>
-                                        {spells.map(s => {
+                                        {spells.map((s) => {
                                             const isSelected = learnName === s.name;
                                             return (
                                                 <button
@@ -159,7 +147,9 @@ const SwapSpellModal: React.FC<Props> = ({ isOpen, onClose, character }) => {
                                                     onClick={() => setLearnName(s.name)}
                                                 >
                                                     <span className="ssm-row-name">{s.name}</span>
-                                                    <span className="ssm-row-school">{s.school}</span>
+                                                    <span className="ssm-row-school">
+                                                        {s.school}
+                                                    </span>
                                                 </button>
                                             );
                                         })}

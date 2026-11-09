@@ -8,7 +8,7 @@ const PREPARED_CASTER_CLASSES = ['Wizard', 'Cleric', 'Druid', 'Paladin', 'Artifi
  * Есть ли у персонажа класс, который готовит заклинания (не known caster).
  */
 export function hasPreparedCaster(character: Character): boolean {
-    return (character.classLevels || []).some(cl =>
+    return (character.classLevels || []).some((cl) =>
         PREPARED_CASTER_CLASSES.includes(cl.className)
     );
 }
@@ -81,7 +81,7 @@ export function getPreparableSpellsData(character: Character): PreparableSpellsD
     });
 
     const maxPrepared = getMaxPrepared(character);
-    const currentPrepared = preparable.filter(s => s.prepared).length;
+    const currentPrepared = preparable.filter((s) => s.prepared).length;
 
     return {
         spells: preparable,

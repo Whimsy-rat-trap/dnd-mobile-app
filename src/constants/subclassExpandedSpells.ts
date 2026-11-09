@@ -32,10 +32,7 @@ export interface SubclassExpandedList {
     fromClass?: string;
 }
 
-export const SUBCLASS_EXPANDED_SPELLS: Record<
-    string,
-    Record<string, SubclassExpandedList>
-> = {
+export const SUBCLASS_EXPANDED_SPELLS: Record<string, Record<string, SubclassExpandedList>> = {
     // WARLOCK PATRONS
     Warlock: {
         Archfey: {

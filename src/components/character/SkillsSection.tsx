@@ -16,8 +16,15 @@ interface Props {
 }
 
 const SkillsSection: React.FC<Props> = ({
-                                            skills, abilities, proficiencyBonus, rollMode, useVariant, onToggle, onAttributeChange, onRoll,
-                                        }) => (
+    skills,
+    abilities,
+    proficiencyBonus,
+    rollMode,
+    useVariant,
+    onToggle,
+    onAttributeChange,
+    onRoll,
+}) => (
     <div className="cc-section-skills">
         <div className="cc-skills-header">
             <span className="cc-skills-title">Skills & Proficiencies</span>
@@ -33,20 +40,33 @@ const SkillsSection: React.FC<Props> = ({
                         onClick={rollMode ? () => onRoll(skill) : undefined}
                     >
                         <div className="cc-skill-left">
-                            {!rollMode && <SkillCheck proficient={skill.proficient} onToggle={() => onToggle(index)} />}
-                            <span className="cc-skill-name">{skill.name} ({skill.attribute})</span>
+                            {!rollMode && (
+                                <SkillCheck
+                                    proficient={skill.proficient}
+                                    onToggle={() => onToggle(index)}
+                                />
+                            )}
+                            <span className="cc-skill-name">
+                                {skill.name} ({skill.attribute})
+                            </span>
                         </div>
                         <div className="cc-skill-right">
                             {useVariant && (
-                                <select value={skill.attribute}
-                                        onChange={e => onAttributeChange(index, e.target.value)}
-                                        className="cc-attr-select">
-                                    {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(a =>
-                                        <option key={a} value={a}>{a}</option>
-                                    )}
+                                <select
+                                    value={skill.attribute}
+                                    onChange={(e) => onAttributeChange(index, e.target.value)}
+                                    className="cc-attr-select"
+                                >
+                                    {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map((a) => (
+                                        <option key={a} value={a}>
+                                            {a}
+                                        </option>
+                                    ))}
                                 </select>
                             )}
-                            <span className="cc-skill-bonus">{bonus >= 0 ? `+${bonus}` : bonus}</span>
+                            <span className="cc-skill-bonus">
+                                {bonus >= 0 ? `+${bonus}` : bonus}
+                            </span>
                         </div>
                     </div>
                 );

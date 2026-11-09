@@ -29,14 +29,13 @@ export type ResourceMaxUses =
     | { type: 'level'; multiplier: number }
     | { type: 'table'; table: Array<{ minLevel: number; uses: number }> }
     | {
-    type: 'ability';
-    ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
-    min: number;
-};
+          type: 'ability';
+          ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
+          min: number;
+      };
 
 export type ResourceDieSizeSpec =
-    | number
-    | { type: 'table'; table: Array<{ minLevel: number; dieSize: number }> };
+    number | { type: 'table'; table: Array<{ minLevel: number; dieSize: number }> };
 
 export interface ClassResourceDefinition {
     id: string;
@@ -228,7 +227,7 @@ export const CLASS_RESOURCES: ClassResourceDefinition[] = [
 export function getClassResourceDefinition(
     resourceId: string
 ): ClassResourceDefinition | undefined {
-    return CLASS_RESOURCES.find(r => r.id === resourceId);
+    return CLASS_RESOURCES.find((r) => r.id === resourceId);
 }
 
 // Sorcery Points <-> Spell Slots

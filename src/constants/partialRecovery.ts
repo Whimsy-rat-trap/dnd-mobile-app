@@ -11,19 +11,19 @@
 
 export type PartialRecoveryTarget =
     | {
-    type: 'spell-slots';
-    /** Бюджет = ceil(classLevel / divisor). По умолчанию 2. */
-    divisor?: number;
-    /** Максимальный уровень восстанавливаемого слота. */
-    maxSlotLevel: number;
-}
+          type: 'spell-slots';
+          /** Бюджет = ceil(classLevel / divisor). По умолчанию 2. */
+          divisor?: number;
+          /** Максимальный уровень восстанавливаемого слота. */
+          maxSlotLevel: number;
+      }
     | {
-    type: 'resource';
-    /** id из CLASS_RESOURCES ('sorcery-points', 'ki', ...). */
-    resourceId: string;
-    /** Сколько восстанавливать: число или 'class-level'. */
-    amount: number | 'class-level';
-};
+          type: 'resource';
+          /** id из CLASS_RESOURCES ('sorcery-points', 'ki', ...). */
+          resourceId: string;
+          /** Сколько восстанавливать: число или 'class-level'. */
+          amount: number | 'class-level';
+      };
 
 export interface PartialRecoveryFeature {
     id: string;

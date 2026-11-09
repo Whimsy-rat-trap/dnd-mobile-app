@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { Spell } from '../types/Character';
-import {
-    getNonPactSpellSlots,
-    getUsedSpellSlots,
-    getPactMagicInfo,
-} from '../utils/spellcasting';
+import { getNonPactSpellSlots, getUsedSpellSlots, getPactMagicInfo } from '../utils/spellcasting';
 import { Character } from '../types/Character';
 import './CastSpellModal.css';
 
@@ -20,13 +16,13 @@ interface CastSpellModalProps {
 }
 
 const CastSpellModal: React.FC<CastSpellModalProps> = ({
-                                                           isOpen,
-                                                           onClose,
-                                                           spell,
-                                                           character,
-                                                           onCast,
-                                                           onCastCompleted,
-                                                       }) => {
+    isOpen,
+    onClose,
+    spell,
+    character,
+    onCast,
+    onCastCompleted,
+}) => {
     const [selectedLevel, setSelectedLevel] = useState<number>(1);
     const [asRitual, setAsRitual] = useState<boolean>(false);
 
@@ -113,9 +109,7 @@ const CastSpellModal: React.FC<CastSpellModalProps> = ({
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="csm-body">
-                <h3 className="csm-title">
-                    Cast: {spell.name}
-                </h3>
+                <h3 className="csm-title">Cast: {spell.name}</h3>
 
                 <div className="csm-meta">
                     <span className="csm-tag">
@@ -142,7 +136,9 @@ const CastSpellModal: React.FC<CastSpellModalProps> = ({
                             checked={asRitual}
                             onChange={(e) => setAsRitual(e.target.checked)}
                         />
-                        <span>Cast as ritual (doesn't consume a spell slot, takes +10 minutes)</span>
+                        <span>
+                            Cast as ritual (doesn't consume a spell slot, takes +10 minutes)
+                        </span>
                     </label>
                 )}
 
@@ -153,7 +149,7 @@ const CastSpellModal: React.FC<CastSpellModalProps> = ({
                             <div className="csm-section">
                                 <div className="csm-label">Cast at level</div>
                                 <div className="csm-levels">
-                                    {availableLevels.map(lvl => {
+                                    {availableLevels.map((lvl) => {
                                         const idx = lvl - 1;
                                         const total = totals[idx] || 0;
                                         const usedCount = used[idx] || 0;
@@ -167,7 +163,9 @@ const CastSpellModal: React.FC<CastSpellModalProps> = ({
                                                 onClick={() => setSelectedLevel(lvl)}
                                             >
                                                 <span className="csm-level-num">
-                                                    {lvl === spell.level ? `Lv.${lvl}` : `Lv.${lvl} (upcast)`}
+                                                    {lvl === spell.level
+                                                        ? `Lv.${lvl}`
+                                                        : `Lv.${lvl} (upcast)`}
                                                 </span>
                                                 <span className="csm-level-slots">
                                                     {avail}/{total}
@@ -183,8 +181,8 @@ const CastSpellModal: React.FC<CastSpellModalProps> = ({
                             <div className="csm-section">
                                 <div className="csm-label">Pact Magic</div>
                                 <div className="csm-hint csm-hint-pact">
-                                    Cast using a Pact slot (level {pactLevel}).
-                                    Available: {pactInfo!.available}/{pactInfo!.total}.
+                                    Cast using a Pact slot (level {pactLevel}). Available:{' '}
+                                    {pactInfo!.available}/{pactInfo!.total}.
                                 </div>
                             </div>
                         )}

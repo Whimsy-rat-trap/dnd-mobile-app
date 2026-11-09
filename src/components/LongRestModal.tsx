@@ -1,15 +1,8 @@
 import React, { useMemo } from 'react';
 import Modal from './Modal';
 import { useCharacters } from '../context/CharacterContext';
-import {
-    getNonPactSpellSlots,
-    getUsedSpellSlots,
-    getPactMagicInfo,
-} from '../utils/spellcasting';
-import {
-    getHitDicePools,
-    restoreHitDiceOnLongRest,
-} from '../utils/hitDice';
+import { getNonPactSpellSlots, getUsedSpellSlots, getPactMagicInfo } from '../utils/spellcasting';
+import { getHitDicePools, restoreHitDiceOnLongRest } from '../utils/hitDice';
 import './LongRestModal.css';
 
 interface LongRestModalProps {
@@ -21,11 +14,11 @@ interface LongRestModalProps {
 }
 
 const LongRestModal: React.FC<LongRestModalProps> = ({
-                                                         isOpen,
-                                                         onClose,
-                                                         characterId,
-                                                         onComplete,
-                                                     }) => {
+    isOpen,
+    onClose,
+    characterId,
+    onComplete,
+}) => {
     const { getCharacter, longRest } = useCharacters();
     const character = getCharacter(characterId);
 
@@ -50,7 +43,7 @@ const LongRestModal: React.FC<LongRestModalProps> = ({
         const afterUsedMap = restoreHitDiceOnLongRest(character);
         const pools = getHitDicePools(character);
         const hitDiceRestores: { sides: number; count: number }[] = [];
-        pools.forEach(pool => {
+        pools.forEach((pool) => {
             const before = beforeUsedMap[pool.sides] || 0;
             const after = afterUsedMap[pool.sides] || 0;
             const restored = before - after;
@@ -118,8 +111,7 @@ const LongRestModal: React.FC<LongRestModalProps> = ({
                                 <span className="lrm-row-label">Temp HP</span>
                                 <span className="lrm-row-value lrm-neutral">
                                     {summary.tempHpCleared}
-                                    <span className="lrm-arrow">→</span>
-                                    0
+                                    <span className="lrm-arrow">→</span>0
                                 </span>
                             </div>
                         )}
@@ -128,7 +120,7 @@ const LongRestModal: React.FC<LongRestModalProps> = ({
                             <div className="lrm-row">
                                 <span className="lrm-row-label">Spell Slots</span>
                                 <span className="lrm-row-value">
-                                    {summary.spellSlotRestores.map(r => (
+                                    {summary.spellSlotRestores.map((r) => (
                                         <span key={r.level} className="lrm-chip lrm-chip-slot">
                                             Lv.{r.level} +{r.count}
                                         </span>
@@ -152,7 +144,7 @@ const LongRestModal: React.FC<LongRestModalProps> = ({
                             <div className="lrm-row">
                                 <span className="lrm-row-label">Hit Dice</span>
                                 <span className="lrm-row-value">
-                                    {summary.hitDiceRestores.map(r => (
+                                    {summary.hitDiceRestores.map((r) => (
                                         <span key={r.sides} className="lrm-chip lrm-chip-hd">
                                             d{r.sides} +{r.count}
                                         </span>

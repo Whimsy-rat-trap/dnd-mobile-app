@@ -16,15 +16,15 @@ interface ToolsSectionProps {
 }
 
 const ToolsSection: React.FC<ToolsSectionProps> = ({
-                                                       tools,
-                                                       abilities,
-                                                       proficiencyBonus,
-                                                       rollMode,
-                                                       useVariant,
-                                                       onToggle,
-                                                       onAttributeChange,
-                                                       onRoll,
-                                                   }) => {
+    tools,
+    abilities,
+    proficiencyBonus,
+    rollMode,
+    useVariant,
+    onToggle,
+    onAttributeChange,
+    onRoll,
+}) => {
     if (!tools || tools.length === 0) {
         return (
             <div className="cc-section-tools">
@@ -64,8 +64,10 @@ const ToolsSection: React.FC<ToolsSectionProps> = ({
                                         onChange={(e) => onAttributeChange(index, e.target.value)}
                                         className="cc-attr-select"
                                     >
-                                        {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(attr => (
-                                            <option key={attr} value={attr}>{attr}</option>
+                                        {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map((attr) => (
+                                            <option key={attr} value={attr}>
+                                                {attr}
+                                            </option>
                                         ))}
                                     </select>
                                 )}

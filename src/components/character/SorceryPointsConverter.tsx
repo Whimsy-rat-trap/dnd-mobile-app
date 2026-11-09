@@ -6,8 +6,8 @@ import {
 } from '../../constants/classResources';
 import { getNonPactSpellSlots, getUsedSpellSlots } from '../../utils/spellcasting';
 import './SorceryPointsConverter.css';
-import {getClassResourceState} from "../../utils/classResources";
-import {ordinal} from "../../utils/format";
+import { getClassResourceState } from '../../utils/classResources';
+import { ordinal } from '../../utils/format';
 
 interface Props {
     character: Character;
@@ -15,11 +15,7 @@ interface Props {
     onConvertToSP: (level: number) => boolean;
 }
 
-const SorceryPointsConverter: React.FC<Props> = ({
-                                                     character,
-                                                     onCreateSlot,
-                                                     onConvertToSP,
-                                                 }) => {
+const SorceryPointsConverter: React.FC<Props> = ({ character, onCreateSlot, onConvertToSP }) => {
     const spState = getClassResourceState(character, 'sorcery-points');
     if (!spState) return null;
 
@@ -43,7 +39,7 @@ const SorceryPointsConverter: React.FC<Props> = ({
             <div className="spc-section">
                 <div className="spc-section-title">Create Spell Slot (SP → Slot)</div>
                 <div className="spc-grid">
-                    {levels.map(level => {
+                    {levels.map((level) => {
                         const cost = SORCERY_POINT_SLOT_COSTS[level];
                         const idx = level - 1;
                         const total = totals[idx] || 0;
@@ -55,7 +51,8 @@ const SorceryPointsConverter: React.FC<Props> = ({
 
                         let reason = '';
                         if (total === 0) reason = `No ${ordinal(level)}-level slots at this level`;
-                        else if (!canRefresh) reason = `No expended ${ordinal(level)}-level slot to refresh`;
+                        else if (!canRefresh)
+                            reason = `No expended ${ordinal(level)}-level slot to refresh`;
                         else if (!canAfford) reason = `Need ${cost} SP`;
                         else reason = `Create a ${ordinal(level)}-level slot for ${cost} SP`;
 
@@ -83,7 +80,7 @@ const SorceryPointsConverter: React.FC<Props> = ({
             <div className="spc-section">
                 <div className="spc-section-title">Convert Slot to SP (Slot → SP)</div>
                 <div className="spc-grid">
-                    {levels.map(level => {
+                    {levels.map((level) => {
                         const idx = level - 1;
                         const total = totals[idx] || 0;
                         const usedCount = used[idx] || 0;
@@ -95,7 +92,8 @@ const SorceryPointsConverter: React.FC<Props> = ({
 
                         let reason = '';
                         if (total === 0) reason = `No ${ordinal(level)}-level slots`;
-                        else if (availableSlots === 0) reason = `No available ${ordinal(level)}-level slot`;
+                        else if (availableSlots === 0)
+                            reason = `No available ${ordinal(level)}-level slot`;
                         else if (wouldExceed) reason = `Would exceed max Sorcery Points`;
                         else reason = `Convert a ${ordinal(level)}-level slot to ${gained} SP`;
 
@@ -120,7 +118,8 @@ const SorceryPointsConverter: React.FC<Props> = ({
             </div>
 
             <div className="spc-footer">
-                Slot → SP: level = SP. SP → Slot: 1st = 2, 2nd = 3, 3rd = 5, 4th = 6, 5th = 7. Max spell level for creation: {MAX_CONVERTIBLE_SPELL_LEVEL}.
+                Slot → SP: level = SP. SP → Slot: 1st = 2, 2nd = 3, 3rd = 5, 4th = 6, 5th = 7. Max
+                spell level for creation: {MAX_CONVERTIBLE_SPELL_LEVEL}.
             </div>
         </div>
     );

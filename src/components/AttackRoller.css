@@ -329,8 +329,13 @@
 }
 
 @keyframes crit-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
 }
 
 /* Подсказка "dice doubled" рядом с формулой */
@@ -602,7 +607,9 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition:
+        background 0.2s,
+        transform 0.1s;
     width: 100%;
 }
 

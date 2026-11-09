@@ -4,11 +4,7 @@ import { getNaturalWeapons } from '../utils/racialFeatures';
 import { recalculateAC } from '../utils/armorUtils';
 import { getRacialSpells } from '../constants/racialSpells';
 import { getFeatsForCharacter } from '../constants/feats';
-import {
-    getNonPactSpellSlots,
-    getUsedSpellSlots,
-    getPactMagicInfo,
-} from '../utils/spellcasting';
+import { getNonPactSpellSlots, getUsedSpellSlots, getPactMagicInfo } from '../utils/spellcasting';
 import {
     Currency,
     EMPTY_CURRENCY,
@@ -17,11 +13,7 @@ import {
     normalizeCurrency,
     resolveItemCurrency,
 } from '../utils/currencyUtils';
-import {
-    rollHitDie,
-    restoreHitDiceOnLongRest,
-    HitDieRollResult,
-} from '../utils/hitDice';
+import { rollHitDie, restoreHitDiceOnLongRest, HitDieRollResult } from '../utils/hitDice';
 import { getSubclassAlwaysPreparedSpells } from '../utils/classSpellUtils';
 import {
     getClassResourceDefinition,
@@ -35,26 +27,16 @@ import {
     getClassResourceState,
     isResourceApplicable,
 } from '../utils/classResources';
-import {
-    PARTIAL_RECOVERY_FEATURES,
-    AUTO_REST_RECOVERY,
-} from '../constants/partialRecovery';
-import {
-    canUsePartialRecovery,
-    getPartialRecoveryBudget,
-} from '../utils/partialRecovery';
+import { PARTIAL_RECOVERY_FEATURES, AUTO_REST_RECOVERY } from '../constants/partialRecovery';
+import { canUsePartialRecovery, getPartialRecoveryBudget } from '../utils/partialRecovery';
 import { getKnownManeuversLimit } from '../utils/maneuvers';
 import { getMetamagicById } from '../constants/metamagic';
 import { getKnownMetamagicLimit } from '../utils/metamagic';
 import { getManeuverById } from '../constants/maneuvers';
 import { ALL_SPELLS } from '../constants/spells';
-import {
-    getXpToNextLevel,
-    computeHpGain,
-    LevelUpPayload,
-} from '../utils/leveling';
+import { getXpToNextLevel, computeHpGain, LevelUpPayload } from '../utils/leveling';
 import { GENERAL_FEATS } from '../constants/generalFeats';
-import {newId} from "../utils/id";
+import { newId } from '../utils/id';
 import { migrate } from './migrations';
 import { DEFAULT_SKILLS } from '../constants/skills';
 import { CURRENT_SCHEMA_VERSION } from '../constants/schema';
@@ -69,9 +51,16 @@ interface CharacterContextType {
     applyLevelUp: (characterId: string, payload: LevelUpPayload) => boolean;
     getCharacter: (id: string) => Character | undefined;
     setCurrentCharacterId: (id: string | null) => void;
-    addItemToInventory: (characterId: string, item: Omit<InventoryItem, 'id'> & { id?: string }) => void;
+    addItemToInventory: (
+        characterId: string,
+        item: Omit<InventoryItem, 'id'> & { id?: string }
+    ) => void;
     removeItemFromInventory: (characterId: string, itemId: string) => void;
-    updateItemInInventory: (characterId: string, itemId: string, updates: Partial<InventoryItem>) => void;
+    updateItemInInventory: (
+        characterId: string,
+        itemId: string,
+        updates: Partial<InventoryItem>
+    ) => void;
     addSpellToCharacter: (characterId: string, spell: Omit<Spell, 'id'>) => void;
     removeSpellFromCharacter: (characterId: string, spellId: string) => void;
     updateSpell: (characterId: string, spellId: string, updates: Partial<Spell>) => void;
@@ -132,9 +121,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         try {
             const parsed = JSON.parse(stored);
             if (!Array.isArray(parsed)) return [];
-            return parsed
-                .filter((c: any) => c != null)
-                .map((c: any) => migrate(c));
+            return parsed.filter((c: any) => c != null).map((c: any) => migrate(c));
         } catch (e) {
             console.error('Failed to parse characters from localStorage', e);
             return [];
@@ -142,7 +129,11 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     });
 
     const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
-    const [concentrationCheck, setConcentrationCheck] = useState<{ spellId: string; dc: number; conMod: number } | null>(null);
+    const [concentrationCheck, setConcentrationCheck] = useState<{
+        spellId: string;
+        dc: number;
+        conMod: number;
+    } | null>(null);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
@@ -155,9 +146,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (initialSubclassSyncDone.current) return;
         initialSubclassSyncDone.current = true;
 
-        setCharacters(prev => {
+        setCharacters((prev) => {
             let changed = false;
-            const next = prev.map(c => {
+            const next = prev.map((c) => {
                 const synced = addSubclassSpellsToCharacter(c);
                 if (JSON.stringify(synced.spells) !== JSON.stringify(c.spells)) {
                     changed = true;
@@ -174,8 +165,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const naturalWeapons = getNaturalWeapons(character.race, character.subrace);
         if (naturalWeapons.length === 0) return character;
 
-        const filteredInventory = character.inventory.filter(item => item.type !== 'natural weapon');
-        const newNaturalWeapons = naturalWeapons.map(w => ({
+        const filteredInventory = character.inventory.filter(
+            (item) => item.type !== 'natural weapon'
+        );
+        const newNaturalWeapons = naturalWeapons.map((w) => ({
             ...w,
             id: `natural-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         }));
@@ -189,7 +182,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const racialSpellData = getRacialSpells(character.race, character.subrace);
         if (racialSpellData.length === 0) return character;
 
-        const nonRacialSpells = character.spells.filter(s => !s.isRacial);
+        const nonRacialSpells = character.spells.filter((s) => !s.isRacial);
         const newRacialSpells = racialSpellData.map((data, index) => ({
             ...data,
             id: `racial-${Date.now()}-${index}`,
@@ -214,11 +207,15 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             character.background
         );
         const customFeats = character.feats.filter(
-            f => f.source === 'custom' || f.source === 'level' || f.source === 'quest' || f.source === 'other'
+            (f) =>
+                f.source === 'custom' ||
+                f.source === 'level' ||
+                f.source === 'quest' ||
+                f.source === 'other'
         );
         const allFeats = [...autoFeats, ...customFeats];
-        const uniqueFeats = allFeats.filter((feat, index, self) =>
-            index === self.findIndex(f => f.id === feat.id)
+        const uniqueFeats = allFeats.filter(
+            (feat, index, self) => index === self.findIndex((f) => f.id === feat.id)
         );
         return { ...character, feats: uniqueFeats };
     };
@@ -247,7 +244,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         // 2. Партиционируем существующие заклинания
         const kept: typeof character.spells = [];
-        const promote: Map<string, typeof character.spells[number]> = new Map();
+        const promote: Map<string, (typeof character.spells)[number]> = new Map();
 
         for (const s of character.spells) {
             const lower = s.name.toLowerCase();
@@ -312,17 +309,29 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             id: newId(),
             schemaVersion: CURRENT_SCHEMA_VERSION,
             class: character.class || character.classLevels?.[0]?.className || 'Fighter',
-            classes: character.classes || character.classLevels?.map(cl => cl.className) || ['Fighter'],
-            level: character.level || character.classLevels?.reduce((sum, cl) => sum + cl.level, 0) || 1,
-            classLevels: character.classLevels || [{ className: character.class || 'Fighter', level: character.level || 1, subclass: '' }],
-            skills: (character.skills && character.skills.length > 0)
-                ? character.skills
-                : DEFAULT_SKILLS.map(s => ({ ...s })),
-            toolProficiencies: character.toolProficiencies?.map((tool: any) => ({
-                name: tool.name || tool,
-                attribute: tool.attribute || 'DEX',
-                proficient: tool.proficient !== undefined ? tool.proficient : true,
-            })) || [],
+            classes: character.classes ||
+                character.classLevels?.map((cl) => cl.className) || ['Fighter'],
+            level:
+                character.level ||
+                character.classLevels?.reduce((sum, cl) => sum + cl.level, 0) ||
+                1,
+            classLevels: character.classLevels || [
+                {
+                    className: character.class || 'Fighter',
+                    level: character.level || 1,
+                    subclass: '',
+                },
+            ],
+            skills:
+                character.skills && character.skills.length > 0
+                    ? character.skills
+                    : DEFAULT_SKILLS.map((s) => ({ ...s })),
+            toolProficiencies:
+                character.toolProficiencies?.map((tool: any) => ({
+                    name: tool.name || tool,
+                    attribute: tool.attribute || 'DEX',
+                    proficient: tool.proficient !== undefined ? tool.proficient : true,
+                })) || [],
             diceLogs: character.diceLogs || {},
             deathSuccesses: character.deathSuccesses ?? 0,
             deathFailures: character.deathFailures ?? 0,
@@ -341,7 +350,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             hitDiceUsed: {},
         };
 
-        newCharacter.inventory = newCharacter.inventory.map(item => ({
+        newCharacter.inventory = newCharacter.inventory.map((item) => ({
             ...item,
             id: item.id || newId('item'),
         }));
@@ -352,13 +361,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         newCharacter = addSubclassSpellsToCharacter(newCharacter); // [NEW]
         newCharacter = recalculateCharacterStats(newCharacter);
 
-        setCharacters(prev => [...prev, newCharacter]);
+        setCharacters((prev) => [...prev, newCharacter]);
         setCurrentCharacterId(newCharacter.id);
     };
 
     const updateCharacter = (id: string, data: Partial<Character>) => {
-        setCharacters(prev =>
-            prev.map(char => {
+        setCharacters((prev) =>
+            prev.map((char) => {
                 if (char.id !== id) return char;
                 let updated = { ...char, ...data };
 
@@ -373,7 +382,12 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                     updated.subclass = data.classLevels[0]?.subclass || '';
                 }
 
-                if (data.race !== undefined || data.subrace !== undefined || data.class !== undefined || data.background !== undefined) {
+                if (
+                    data.race !== undefined ||
+                    data.subrace !== undefined ||
+                    data.class !== undefined ||
+                    data.background !== undefined
+                ) {
                     updated = addNaturalWeaponsToCharacter(updated);
                     updated = addRacialSpellsToCharacter(updated);
                     updated = updateFeatsForCharacter(updated);
@@ -394,7 +408,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     const deleteCharacter = (id: string) => {
-        setCharacters(prev => prev.filter(char => char.id !== id));
+        setCharacters((prev) => prev.filter((char) => char.id !== id));
         if (currentCharacterId === id) setCurrentCharacterId(null);
     };
 
@@ -424,10 +438,10 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const newClassLevels = char.classLevels.map((c, i) =>
             i === payload.classIndex
                 ? {
-                    ...c,
-                    level: newClassLevel,
-                    subclass: payload.subclass || c.subclass,
-                }
+                      ...c,
+                      level: newClassLevel,
+                      subclass: payload.subclass || c.subclass,
+                  }
                 : c
         );
         const newTotalLevel = newClassLevels.reduce((s, c) => s + c.level, 0);
@@ -472,7 +486,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 ];
             } else if (payload.asi.type === 'feat' && payload.asi.featId) {
                 const featId = payload.asi.featId;
-                const catalogFeat = GENERAL_FEATS.find(f => f.id === featId);
+                const catalogFeat = GENERAL_FEATS.find((f) => f.id === featId);
                 if (catalogFeat) {
                     newFeats = [
                         ...char.feats,
@@ -512,9 +526,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             ...(payload.spellsToLearn || []),
         ];
         for (const name of allNewSpellNames) {
-            const spellData = ALL_SPELLS.find(
-                s => s.name.toLowerCase() === name.toLowerCase()
-            );
+            const spellData = ALL_SPELLS.find((s) => s.name.toLowerCase() === name.toLowerCase());
             if (!spellData) continue;
             newLearnedSpells.push({
                 ...spellData,
@@ -523,9 +535,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 isCustom: false,
             });
         }
-        const newSpells = newLearnedSpells.length > 0
-            ? [...char.spells, ...newLearnedSpells]
-            : char.spells;
+        const newSpells =
+            newLearnedSpells.length > 0 ? [...char.spells, ...newLearnedSpells] : char.spells;
 
         updateCharacter(characterId, {
             classLevels: newClassLevels,
@@ -543,7 +554,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         return true;
     };
 
-    const getCharacter = (id: string) => characters.find(char => char.id === id);
+    const getCharacter = (id: string) => characters.find((char) => char.id === id);
 
     const addItemToInventory = (
         characterId: string,
@@ -573,7 +584,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
-            inventory: char.inventory.filter(item => item.id !== itemId),
+            inventory: char.inventory.filter((item) => item.id !== itemId),
         });
     };
 
@@ -586,7 +597,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
-            inventory: char.inventory.map(item =>
+            inventory: char.inventory.map((item) =>
                 item.id === itemId ? { ...item, ...updates } : item
             ),
         });
@@ -602,14 +613,16 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeSpellFromCharacter = (characterId: string, spellId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { spells: char.spells.filter(spell => spell.id !== spellId) });
+        updateCharacter(characterId, {
+            spells: char.spells.filter((spell) => spell.id !== spellId),
+        });
     };
 
     const updateSpell = (characterId: string, spellId: string, updates: Partial<Spell>) => {
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
-            spells: char.spells.map(spell =>
+            spells: char.spells.map((spell) =>
                 spell.id === spellId ? { ...spell, ...updates } : spell
             ),
         });
@@ -625,16 +638,14 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeQuestFromCharacter = (characterId: string, questId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { quests: char.quests.filter(q => q.id !== questId) });
+        updateCharacter(characterId, { quests: char.quests.filter((q) => q.id !== questId) });
     };
 
     const updateQuest = (characterId: string, questId: string, updates: Partial<Quest>) => {
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
-            quests: char.quests.map(q =>
-                q.id === questId ? { ...q, ...updates } : q
-            ),
+            quests: char.quests.map((q) => (q.id === questId ? { ...q, ...updates } : q)),
         });
     };
 
@@ -648,16 +659,20 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeCampaignFromCharacter = (characterId: string, campaignId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { campaigns: char.campaigns.filter(c => c.id !== campaignId) });
+        updateCharacter(characterId, {
+            campaigns: char.campaigns.filter((c) => c.id !== campaignId),
+        });
     };
 
-    const updateCampaign = (characterId: string, campaignId: string, updates: Partial<Campaign>) => {
+    const updateCampaign = (
+        characterId: string,
+        campaignId: string,
+        updates: Partial<Campaign>
+    ) => {
         const char = getCharacter(characterId);
         if (!char) return;
         updateCharacter(characterId, {
-            campaigns: char.campaigns.map(c =>
-                c.id === campaignId ? { ...c, ...updates } : c
-            ),
+            campaigns: char.campaigns.map((c) => (c.id === campaignId ? { ...c, ...updates } : c)),
         });
     };
 
@@ -718,7 +733,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     const removeFeat = (characterId: string, featId: string) => {
         const char = getCharacter(characterId);
         if (!char) return;
-        updateCharacter(characterId, { feats: char.feats.filter(f => f.id !== featId) });
+        updateCharacter(characterId, { feats: char.feats.filter((f) => f.id !== featId) });
     };
 
     const updateCurrency = (characterId: string, currency: Currency) => {
@@ -886,7 +901,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!known.includes(maneuverId)) return;
 
         updateCharacter(characterId, {
-            knownManeuvers: known.filter(id => id !== maneuverId),
+            knownManeuvers: known.filter((id) => id !== maneuverId),
         });
     };
 
@@ -918,7 +933,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!known.includes(metamagicId)) return;
 
         updateCharacter(characterId, {
-            knownMetamagic: known.filter(id => id !== metamagicId),
+            knownMetamagic: known.filter((id) => id !== metamagicId),
         });
     };
 
@@ -926,11 +941,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
      * Восстановление классового ресурса (например, вручную, или DM решил дать
      * вне rest).
      */
-    const restoreClassResource = (
-        characterId: string,
-        resourceId: string,
-        amount: number = 1
-    ) => {
+    const restoreClassResource = (characterId: string, resourceId: string, amount: number = 1) => {
         const char = getCharacter(characterId);
         if (!char || amount <= 0) return;
 
@@ -951,10 +962,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     // Sorcery Points ↔ Spell Slots
-    const createSpellSlotFromSorceryPoints = (
-        characterId: string,
-        level: number
-    ): boolean => {
+    const createSpellSlotFromSorceryPoints = (characterId: string, level: number): boolean => {
         const char = getCharacter(characterId);
         if (!char) return false;
         if (level < 1 || level > MAX_CONVERTIBLE_SPELL_LEVEL) return false;
@@ -986,10 +994,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         return true;
     };
 
-    const convertSpellSlotToSorceryPoints = (
-        characterId: string,
-        level: number
-    ): boolean => {
+    const convertSpellSlotToSorceryPoints = (characterId: string, level: number): boolean => {
         const char = getCharacter(characterId);
         if (!char) return false;
         if (level < 1 || level > MAX_CONVERTIBLE_SPELL_LEVEL) return false;
@@ -1004,9 +1009,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const usedCount = used[idx] || 0;
 
         if (total === 0) return false;
-        if (usedCount >= total) return false;         // нет свободных слотов
+        if (usedCount >= total) return false; // нет свободных слотов
 
-        const gained = level;                          // slot → SP: level = SP
+        const gained = level; // slot → SP: level = SP
         if (spState.availableUses + gained > spState.maxUses) return false;
 
         const newUsedSlots = [...used];
@@ -1032,7 +1037,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         const char = getCharacter(characterId);
         if (!char) return false;
 
-        const feature = PARTIAL_RECOVERY_FEATURES.find(f => f.id === featureId);
+        const feature = PARTIAL_RECOVERY_FEATURES.find((f) => f.id === featureId);
         if (!feature) return false;
 
         const { can } = canUsePartialRecovery(char, feature);
@@ -1153,7 +1158,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             if (classLevel < auto.minClassLevel) continue;
             if (auto.subclass) {
                 const has = (char.classLevels || []).some(
-                    cl => cl.className === auto.className && cl.subclass === auto.subclass
+                    (cl) => cl.className === auto.className && cl.subclass === auto.subclass
                 );
                 if (!has) continue;
             }
@@ -1166,8 +1171,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
 
         // 3. Кулдауны partial-recovery с cooldown === 'short' — очищаем
-        const newPartialUsed = (char.partialRecoveryUsed || []).filter(id => {
-            const feature = PARTIAL_RECOVERY_FEATURES.find(f => f.id === id);
+        const newPartialUsed = (char.partialRecoveryUsed || []).filter((id) => {
+            const feature = PARTIAL_RECOVERY_FEATURES.find((f) => f.id === id);
             return feature?.cooldown !== 'short';
         });
 
@@ -1231,11 +1236,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         applyPartialRecoveryFeature,
     };
 
-    return (
-        <CharacterContext.Provider value={value}>
-            {children}
-        </CharacterContext.Provider>
-    );
+    return <CharacterContext.Provider value={value}>{children}</CharacterContext.Provider>;
 };
 
 export const useCharacters = () => {

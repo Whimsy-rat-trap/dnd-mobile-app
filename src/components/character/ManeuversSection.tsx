@@ -5,9 +5,7 @@ import {
     getKnownManeuversLimit,
     getManeuverSaveDC,
 } from '../../utils/maneuvers';
-import {
-    getClassResourceState,
-} from '../../utils/classResources';
+import { getClassResourceState } from '../../utils/classResources';
 import ManageManeuversModal from './ManageManeuversModal';
 import UseManeuverModal from './UseManeuverModal';
 import './ManeuversSection.css';
@@ -52,12 +50,12 @@ const ManeuversSection: React.FC<Props> = ({ character, onSpendSuperiorityDie })
                 </div>
             ) : (
                 <div className="mns-list">
-                    {known.map(m => (
+                    {known.map((m) => (
                         <div key={m.id} className="mns-maneuver">
                             <div className="mns-maneuver-header">
                                 <span className="mns-maneuver-name">{m.name}</span>
                                 <span className="mns-maneuver-source">
-                                    {m.source === 'TCE' ? 'Tasha\'s' : 'PHB'}
+                                    {m.source === 'TCE' ? "Tasha's" : 'PHB'}
                                 </span>
                             </div>
                             <span className="mns-maneuver-desc">{m.description}</span>

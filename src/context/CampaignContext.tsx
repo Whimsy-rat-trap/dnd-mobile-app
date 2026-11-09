@@ -61,7 +61,7 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
             const existing = new Set<string>(Array.isArray(c.characterIds) ? c.characterIds : []);
             const fromLegacy = legacyMap[c.id];
             if (fromLegacy) {
-                fromLegacy.forEach(id => existing.add(id));
+                fromLegacy.forEach((id) => existing.add(id));
             }
             return {
                 ...c,
@@ -77,15 +77,15 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (campaigns.length === 0) return;
 
         // Находим кампании без участников
-        const hasLegacy = campaigns.some(c => (c.characterIds || []).length === 0);
+        const hasLegacy = campaigns.some((c) => (c.characterIds || []).length === 0);
         if (!hasLegacy) {
             localStorage.setItem(LEGACY_ATTACHED_KEY, 'done');
             return;
         }
 
         // Привязываем все legacy-кампании к текущему персонажу
-        setCampaigns(prev =>
-            prev.map(c => {
+        setCampaigns((prev) =>
+            prev.map((c) => {
                 const ids = c.characterIds || [];
                 if (ids.length === 0) {
                     return { ...c, characterIds: [currentCharacterId] };
@@ -113,24 +113,24 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
             players: campaign.players ?? 4,
             sessions: campaign.sessions ?? 0,
         };
-        setCampaigns(prev => [...prev, newCampaign]);
+        setCampaigns((prev) => [...prev, newCampaign]);
         return newId;
     };
 
     const updateCampaign = (id: string, data: Partial<Campaign>) => {
-        setCampaigns(prev => prev.map(c => (c.id === id ? { ...c, ...data } : c)));
+        setCampaigns((prev) => prev.map((c) => (c.id === id ? { ...c, ...data } : c)));
     };
 
     const deleteCampaign = (id: string) => {
-        setCampaigns(prev => prev.filter(c => c.id !== id));
+        setCampaigns((prev) => prev.filter((c) => c.id !== id));
     };
 
-    const getCampaign = (id: string) => campaigns.find(c => c.id === id);
+    const getCampaign = (id: string) => campaigns.find((c) => c.id === id);
 
     // Управление участниками
     const addCharacterToCampaign = (campaignId: string, characterId: string) => {
-        setCampaigns(prev =>
-            prev.map(c => {
+        setCampaigns((prev) =>
+            prev.map((c) => {
                 if (c.id !== campaignId) return c;
                 const ids = c.characterIds || [];
                 if (ids.includes(characterId)) return c;
@@ -140,10 +140,13 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     const removeCharacterFromCampaign = (campaignId: string, characterId: string) => {
-        setCampaigns(prev =>
-            prev.map(c =>
+        setCampaigns((prev) =>
+            prev.map((c) =>
                 c.id === campaignId
-                    ? { ...c, characterIds: (c.characterIds || []).filter(id => id !== characterId) }
+                    ? {
+                          ...c,
+                          characterIds: (c.characterIds || []).filter((id) => id !== characterId),
+                      }
                     : c
             )
         );
@@ -158,7 +161,7 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
      *    чтобы пользователь мог вручную распределить участников.
      */
     const getCampaignsForCharacter = (characterId: string): Campaign[] =>
-        campaigns.filter(c => {
+        campaigns.filter((c) => {
             const ids = c.characterIds || [];
             if (ids.includes(characterId)) return true;
             if (ids.length === 0) return true;
@@ -177,11 +180,7 @@ export const CampaignProvider: React.FC<{ children: ReactNode }> = ({ children }
         getCampaignsForCharacter,
     };
 
-    return (
-        <CampaignContext.Provider value={value}>
-            {children}
-        </CampaignContext.Provider>
-    );
+    return <CampaignContext.Provider value={value}>{children}</CampaignContext.Provider>;
 };
 
 export const useCampaigns = () => {

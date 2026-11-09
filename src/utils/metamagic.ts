@@ -1,9 +1,5 @@
 import { Character } from '../types/Character';
-import {
-    METAMAGIC,
-    Metamagic,
-    getMetamagicKnownCount,
-} from '../constants/metamagic';
+import { METAMAGIC, Metamagic, getMetamagicKnownCount } from '../constants/metamagic';
 import { getClassLevelFor } from './classResources';
 
 /**
@@ -16,14 +12,12 @@ export function getKnownMetamagicLimit(character: Character): number {
 
 export function getKnownMetamagic(character: Character): Metamagic[] {
     const ids = character.knownMetamagic || [];
-    return ids
-        .map(id => METAMAGIC.find(m => m.id === id))
-        .filter((m): m is Metamagic => !!m);
+    return ids.map((id) => METAMAGIC.find((m) => m.id === id)).filter((m): m is Metamagic => !!m);
 }
 
 export function getAvailableMetamagic(character: Character): Metamagic[] {
     const known = new Set(character.knownMetamagic || []);
-    return METAMAGIC.filter(m => !known.has(m.id));
+    return METAMAGIC.filter((m) => !known.has(m.id));
 }
 
 export function canLearnMoreMetamagic(character: Character): {
@@ -40,10 +34,7 @@ export function canLearnMoreMetamagic(character: Character): {
  * Стоимость конкретного Metamagic в SP.
  * Для 'spell-level' нужен уровень заклинания (для кантрипа = 1).
  */
-export function getMetamagicSpCost(
-    metamagic: Metamagic,
-    spellLevel?: number
-): number {
+export function getMetamagicSpCost(metamagic: Metamagic, spellLevel?: number): number {
     if (metamagic.cost.type === 'fixed') return metamagic.cost.amount;
     if (spellLevel === undefined) return 0;
     // Twinned Spell: для кантрипа 1 SP, для заклинания — уровень

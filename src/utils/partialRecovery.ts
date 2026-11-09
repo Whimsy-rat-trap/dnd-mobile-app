@@ -37,7 +37,7 @@ export function canUsePartialRecovery(
 
     if (feature.subclass) {
         const hasSubclass = (character.classLevels || []).some(
-            cl => cl.className === feature.className && cl.subclass === feature.subclass
+            (cl) => cl.className === feature.className && cl.subclass === feature.subclass
         );
         if (!hasSubclass) {
             return { can: false, reason: `${feature.className} (${feature.subclass}) required` };
@@ -48,9 +48,10 @@ export function canUsePartialRecovery(
     if (used.includes(feature.id)) {
         return {
             can: false,
-            reason: feature.cooldown === 'long'
-                ? 'Already used since last long rest'
-                : 'Already used since last short rest',
+            reason:
+                feature.cooldown === 'long'
+                    ? 'Already used since last long rest'
+                    : 'Already used since last short rest',
         };
     }
 
@@ -64,20 +65,18 @@ export function canUsePartialRecovery(
 export function getAvailablePartialRecoveryFeatures(
     character: Character
 ): Array<{ feature: PartialRecoveryFeature; cooldown: boolean }> {
-    return PARTIAL_RECOVERY_FEATURES
-        .filter(f => {
-            const classLevel = getClassLevelFor(character, f.className);
-            if (classLevel < f.minClassLevel) return false;
-            if (f.subclass) {
-                const has = (character.classLevels || []).some(
-                    cl => cl.className === f.className && cl.subclass === f.subclass
-                );
-                if (!has) return false;
-            }
-            return true;
-        })
-        .map(feature => {
-            const used = character.partialRecoveryUsed || [];
-            return { feature, cooldown: used.includes(feature.id) };
-        });
+    return PARTIAL_RECOVERY_FEATURES.filter((f) => {
+        const classLevel = getClassLevelFor(character, f.className);
+        if (classLevel < f.minClassLevel) return false;
+        if (f.subclass) {
+            const has = (character.classLevels || []).some(
+                (cl) => cl.className === f.className && cl.subclass === f.subclass
+            );
+            if (!has) return false;
+        }
+        return true;
+    }).map((feature) => {
+        const used = character.partialRecoveryUsed || [];
+        return { feature, cooldown: used.includes(feature.id) };
+    });
 }

@@ -10,12 +10,12 @@ interface BackgroundSectionProps {
 }
 
 const BackgroundSection: React.FC<BackgroundSectionProps> = ({
-                                                                 background,
-                                                                 onBackgroundChange,
-                                                                 size,
-                                                                 onSizeChange,
-                                                                 sizeOptions,
-                                                             }) => {
+    background,
+    onBackgroundChange,
+    size,
+    onSizeChange,
+    sizeOptions,
+}) => {
     return (
         <>
             <div className="cr-form-row">
@@ -27,8 +27,10 @@ const BackgroundSection: React.FC<BackgroundSectionProps> = ({
                         onChange={(e) => onBackgroundChange(e.target.value)}
                         required
                     >
-                        {DND_BACKGROUNDS.map(bg => (
-                            <option key={bg.name} value={bg.name}>{bg.name}</option>
+                        {DND_BACKGROUNDS.map((bg) => (
+                            <option key={bg.name} value={bg.name}>
+                                {bg.name}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -38,12 +40,11 @@ const BackgroundSection: React.FC<BackgroundSectionProps> = ({
             {sizeOptions && sizeOptions.length > 0 && (
                 <div className="cr-form-group">
                     <label>Size</label>
-                    <select
-                        value={size}
-                        onChange={(e) => onSizeChange(e.target.value)}
-                    >
-                        {sizeOptions.map(opt => (
-                            <option key={opt} value={opt}>{opt}</option>
+                    <select value={size} onChange={(e) => onSizeChange(e.target.value)}>
+                        {sizeOptions.map((opt) => (
+                            <option key={opt} value={opt}>
+                                {opt}
+                            </option>
                         ))}
                     </select>
                 </div>

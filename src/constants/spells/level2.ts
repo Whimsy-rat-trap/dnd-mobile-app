@@ -8,7 +8,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'Choose up to three creatures. Each target\'s hit point maximum and current hit points increase by 5 for the duration.',
+        description:
+            "Choose up to three creatures. Each target's hit point maximum and current hit points increase by 5 for the duration.",
         element: 'healing',
         requiresConcentration: false,
         classes: ['Cleric', 'Paladin', 'Artificer'],
@@ -20,7 +21,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S',
-        description: 'You assume a different form. Choose Aquatic Adaptation, Change Appearance, or Natural Weapons.',
+        description:
+            'You assume a different form. Choose Aquatic Adaptation, Change Appearance, or Natural Weapons.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -31,7 +33,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a closed door, window, gate, chest, or other entryway, and it becomes locked for the duration.',
+        description:
+            'You touch a closed door, window, gate, chest, or other entryway, and it becomes locked for the duration.',
         requiresConcentration: false,
         classes: ['Wizard', 'Artificer'],
     },
@@ -42,7 +45,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'The target\'s skin has a rough, bark-like appearance, and the target\'s AC can\'t be less than 16.',
+        description:
+            "The target's skin has a rough, bark-like appearance, and the target's AC can't be less than 16.",
         requiresConcentration: true,
         classes: ['Druid', 'Ranger'],
     },
@@ -53,7 +57,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V',
-        description: 'Choose one creature. On a failed Constitution save, it is blinded or deafened (your choice) for the duration.',
+        description:
+            'Choose one creature. On a failed Constitution save, it is blinded or deafened (your choice) for the duration.',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Sorcerer', 'Wizard'],
     },
@@ -64,7 +69,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V',
-        description: 'Your body becomes blurred. Any creature has disadvantage on attack rolls against you.',
+        description:
+            'Your body becomes blurred. Any creature has disadvantage on attack rolls against you.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Wizard'],
     },
@@ -86,7 +92,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You fill the air with spinning daggers in a cube 5 feet on each side. A creature takes 4d4 slashing damage.',
+        description:
+            'You fill the air with spinning daggers in a cube 5 feet on each side. A creature takes 4d4 slashing damage.',
         element: 'slashing',
         diceRoll: '4d4',
         damageType: 'slashing',
@@ -100,7 +107,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, M',
-        description: 'Magical darkness spreads from a point you choose to fill a 15-foot-radius sphere.',
+        description:
+            'Magical darkness spreads from a point you choose to fill a 15-foot-radius sphere.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -111,7 +119,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a willing creature to grant it darkvision out to a range of 60 feet.',
+        description:
+            'You touch a willing creature to grant it darkvision out to a range of 60 feet.',
         requiresConcentration: false,
         classes: ['Druid', 'Ranger', 'Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -122,7 +131,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a creature and bestow upon it a magical enhancement (Bull\'s Strength, Cat\'s Grace, etc.).',
+        description:
+            "You touch a creature and bestow upon it a magical enhancement (Bull's Strength, Cat's Grace, etc.).",
         requiresConcentration: true,
         classes: ['Bard', 'Cleric', 'Druid', 'Sorcerer', 'Artificer'],
     },
@@ -133,7 +143,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, S, M',
-        description: 'You cause a creature or an object to grow larger or smaller for the duration.',
+        description:
+            'You cause a creature or an object to grow larger or smaller for the duration.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -144,7 +155,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'A 5-foot-diameter sphere of fire appears. Any creature that ends its turn within 5 feet must make a Dexterity save or take 2d6 fire damage.',
+        description:
+            'A 5-foot-diameter sphere of fire appears. Any creature that ends its turn within 5 feet must make a Dexterity save or take 2d6 fire damage.',
         element: 'fire',
         diceRoll: '2d6',
         damageType: 'fire',
@@ -158,7 +170,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'You touch a corpse. For the duration, the target is protected from decay and can\'t become undead.',
+        description:
+            "You touch a corpse. For the duration, the target is protected from decay and can't become undead.",
         requiresConcentration: false,
         classes: ['Cleric', 'Paladin', 'Wizard'],
     },
@@ -180,7 +193,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'Choose a humanoid. It must succeed on a Wisdom save or be paralyzed for the duration.',
+        description:
+            'Choose a humanoid. It must succeed on a Wisdom save or be paralyzed for the duration.',
         requiresConcentration: true,
         classes: ['Bard', 'Cleric', 'Druid', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -202,7 +216,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V',
-        description: 'Choose an object. A loud knock is heard, and the object is unlocked or opened.',
+        description:
+            'Choose an object. A loud knock is heard, and the object is unlocked or opened.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Wizard'],
     },
@@ -213,7 +228,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'One creature or object rises vertically, up to 20 feet, and remains suspended for the duration.',
+        description:
+            'One creature or object rises vertically, up to 20 feet, and remains suspended for the duration.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -235,7 +251,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 bonus action',
         range: 'Self',
         components: 'V',
-        description: 'Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see.',
+        description:
+            'Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space you can see.',
         requiresConcentration: false,
         classes: ['Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -246,7 +263,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S, M',
-        description: 'A veil of shadows and silence radiates from you. Each creature you choose within 30 feet has a +10 bonus to Stealth checks.',
+        description:
+            'A veil of shadows and silence radiates from you. Each creature you choose within 30 feet has a +10 bonus to Stealth checks.',
         requiresConcentration: true,
         classes: ['Druid', 'Ranger'],
     },
@@ -271,7 +289,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S, M',
-        description: 'For the duration, you see invisible creatures and objects as if they were visible.',
+        description:
+            'For the duration, you see invisible creatures and objects as if they were visible.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Wizard', 'Artificer'],
     },
@@ -282,7 +301,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'A sudden loud ringing noise erupts. Each creature in a 10-foot-radius sphere takes 3d8 thunder damage on a failed save.',
+        description:
+            'A sudden loud ringing noise erupts. Each creature in a 10-foot-radius sphere takes 3d8 thunder damage on a failed save.',
         element: 'thunder',
         diceRoll: '3d8',
         damageType: 'thunder',
@@ -296,7 +316,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'One willing creature gains the ability to move up, down, and across vertical surfaces and ceilings.',
+        description:
+            'One willing creature gains the ability to move up, down, and across vertical surfaces and ceilings.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Warlock', 'Wizard', 'Artificer'],
     },
@@ -307,7 +328,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 bonus action',
         range: '60 ft',
         components: 'V, S',
-        description: 'You create a floating, spectral weapon. On a hit, it deals 1d8 + spellcasting modifier force damage.',
+        description:
+            'You create a floating, spectral weapon. On a hit, it deals 1d8 + spellcasting modifier force damage.',
         element: 'force',
         diceRoll: '1d8',
         damageType: 'force',
@@ -321,7 +343,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '30 ft',
         components: 'V, M',
-        description: 'You suggest a course of activity and magically influence a creature you can see within range.',
+        description:
+            'You suggest a course of activity and magically influence a creature you can see within range.',
         requiresConcentration: true,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -332,7 +355,8 @@ export const LEVEL_2_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You conjure a mass of thick, sticky webbing. The webs are difficult terrain and lightly obscure their area.',
+        description:
+            'You conjure a mass of thick, sticky webbing. The webs are difficult terrain and lightly obscure their area.',
         requiresConcentration: true,
         classes: ['Sorcerer', 'Wizard', 'Artificer'],
     },

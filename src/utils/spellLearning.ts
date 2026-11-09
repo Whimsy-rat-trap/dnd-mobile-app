@@ -51,8 +51,8 @@ export function getSpellCandidates(
     const data = getClassSpellListData(className);
     if (!data) return [];
 
-    const existing = new Set(character.spells.map(s => s.name.toLowerCase()));
-    const byName = new Map(ALL_SPELLS.map(s => [s.name.toLowerCase(), s]));
+    const existing = new Set(character.spells.map((s) => s.name.toLowerCase()));
+    const byName = new Map(ALL_SPELLS.map((s) => [s.name.toLowerCase(), s]));
 
     const result: SpellData[] = [];
 

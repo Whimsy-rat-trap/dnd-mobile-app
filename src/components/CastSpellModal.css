@@ -130,7 +130,7 @@
     border-radius: 6px;
 }
 
-.csm-ritual-toggle input[type="checkbox"] {
+.csm-ritual-toggle input[type='checkbox'] {
     accent-color: var(--color-primary);
     width: 16px;
     height: 16px;

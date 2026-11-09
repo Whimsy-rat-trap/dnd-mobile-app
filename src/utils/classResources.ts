@@ -10,7 +10,7 @@ import {
 
 export function getClassLevelFor(character: Character, className: string): number {
     return (character.classLevels || [])
-        .filter(cl => cl.className === className)
+        .filter((cl) => cl.className === className)
         .reduce((sum, cl) => sum + cl.level, 0);
 }
 
@@ -19,16 +19,13 @@ export function getClassLevelFor(character: Character, className: string): numbe
  *   - уровня класса >= minClassLevel,
  *   - (если задан) подкласс совпадает хотя бы у одной записи этого класса.
  */
-export function isResourceApplicable(
-    character: Character,
-    def: ClassResourceDefinition
-): boolean {
+export function isResourceApplicable(character: Character, def: ClassResourceDefinition): boolean {
     const classLevel = getClassLevelFor(character, def.className);
     if (classLevel < def.minClassLevel) return false;
 
     if (def.subclass) {
         const hasSubclass = (character.classLevels || []).some(
-            cl => cl.className === def.className && cl.subclass === def.subclass
+            (cl) => cl.className === def.className && cl.subclass === def.subclass
         );
         if (!hasSubclass) return false;
     }
@@ -58,10 +55,7 @@ export function computeMaxUses(
     return max;
 }
 
-export function resolveRecharge(
-    spec: ResourceRechargeSpec,
-    classLevel: number
-): ResourceRecharge {
+export function resolveRecharge(spec: ResourceRechargeSpec, classLevel: number): ResourceRecharge {
     if (spec === 'short' || spec === 'long') return spec;
     let result: ResourceRecharge = 'long';
     for (const row of spec.table) {
@@ -98,7 +92,7 @@ export function getClassResourceState(
     character: Character,
     resourceId: string
 ): ClassResourceState | null {
-    const def = CLASS_RESOURCES.find(r => r.id === resourceId);
+    const def = CLASS_RESOURCES.find((r) => r.id === resourceId);
     if (!def) return null;
     if (!isResourceApplicable(character, def)) return null;
 

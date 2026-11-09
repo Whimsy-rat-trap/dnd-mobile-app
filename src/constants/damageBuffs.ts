@@ -132,4 +132,4 @@ export const DAMAGE_BUFFS: DamageBuff[] = [
 
 /** Быстрый доступ по id. */
 export const getBuffById = (id: string): DamageBuff | undefined =>
-    DAMAGE_BUFFS.find(b => b.id === id);
+    DAMAGE_BUFFS.find((b) => b.id === id);

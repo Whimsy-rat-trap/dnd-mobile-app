@@ -52,7 +52,7 @@ const MetamagicSection: React.FC<Props> = ({ character, onSpendSorceryPoints }) 
                 </div>
             ) : (
                 <div className="mgs-list">
-                    {known.map(m => {
+                    {known.map((m) => {
                         const cost = getMetamagicSpCost(m);
                         const costLabel = metamagicNeedsSpellLevel(m)
                             ? '= spell level SP'

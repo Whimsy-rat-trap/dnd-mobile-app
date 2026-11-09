@@ -10,12 +10,7 @@ import { LibraryItem, ALL_ITEMS } from '../constants/items';
 import { getFeatsForCharacter } from '../constants/feats';
 import { Character, InventoryItem, ClassLevel } from '../types/Character';
 import { getRacialEffects } from './racialFeatures';
-import {
-    Currency,
-    EMPTY_CURRENCY,
-    addCurrency,
-    resolveItemCurrency,
-} from './currencyUtils';
+import { Currency, EMPTY_CURRENCY, addCurrency, resolveItemCurrency } from './currencyUtils';
 
 export const POINT_BUY_POINTS = 27;
 export const DEFAULT_SKILLS = [
@@ -40,7 +35,7 @@ export const DEFAULT_SKILLS = [
 ];
 
 export const getBackgroundAbilityBonuses = (bgName: string): { [key: string]: number } => {
-    const bg = DND_BACKGROUNDS.find(b => b.name === bgName);
+    const bg = DND_BACKGROUNDS.find((b) => b.name === bgName);
     return bg?.abilityBonuses || {};
 };
 
@@ -51,7 +46,14 @@ export const roll4d6DropLowest = (): number => {
     return rolls.reduce((sum, r) => sum + r, 0);
 };
 
-export const standardArray = (): { str: number; dex: number; con: number; int: number; wis: number; cha: number } => {
+export const standardArray = (): {
+    str: number;
+    dex: number;
+    con: number;
+    int: number;
+    wis: number;
+    cha: number;
+} => {
     const array = [15, 14, 13, 12, 10, 8];
     return {
         str: array[0],
@@ -66,7 +68,14 @@ export const standardArray = (): { str: number; dex: number; con: number; int: n
 export const getPointBuyCost = (value: number): number => {
     if (value < 8 || value > 15) return 0;
     const costMap: Record<number, number> = {
-        8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9
+        8: 0,
+        9: 1,
+        10: 2,
+        11: 3,
+        12: 4,
+        13: 5,
+        14: 7,
+        15: 9,
     };
     return costMap[value] || 0;
 };
@@ -130,7 +139,7 @@ export interface StartingEquipmentResult {
  * Возвращает объект с недостающими полями (damage/AC/uses/currency).
  */
 function enrichItem(item: Omit<LibraryItem, 'id'>): Omit<LibraryItem, 'id'> {
-    const libraryItem = ALL_ITEMS.find(li => li.name === item.name);
+    const libraryItem = ALL_ITEMS.find((li) => li.name === item.name);
     if (!libraryItem) return item;
 
     return {
@@ -165,20 +174,20 @@ export function buildStartingItems(
     if (classEquipData) {
         classItems.push(...classEquipData.mandatory);
         if (classEquipData.choices) {
-            classEquipData.choices.forEach(choice => {
+            classEquipData.choices.forEach((choice) => {
                 const firstOption = choice.options[0];
                 if (firstOption) classItems.push(...firstOption.items);
             });
         }
     }
 
-    const bg = DND_BACKGROUNDS.find(b => b.name === background);
+    const bg = DND_BACKGROUNDS.find((b) => b.name === background);
     const bgItems = bg?.startingEquipment || [];
 
     const items: Omit<InventoryItem, 'id'>[] = [];
     let currency: Currency = { ...EMPTY_CURRENCY };
 
-    [...classItems, ...bgItems].forEach(rawItem => {
+    [...classItems, ...bgItems].forEach((rawItem) => {
         const item = enrichItem(rawItem);
 
         // Определяем: предмет — это деньги?
@@ -234,7 +243,7 @@ export function buildCharacter(
 
     const skillData = RACIAL_SKILLS[formData.race];
     const toolData = RACIAL_TOOLS[formData.race];
-    const bg = DND_BACKGROUNDS.find(b => b.name === formData.background);
+    const bg = DND_BACKGROUNDS.find((b) => b.name === formData.background);
     const raceDetails = RACE_DETAILS[formData.race];
 
     // Применяем бонусы с учётом подрасы
@@ -248,28 +257,35 @@ export function buildCharacter(
 
     // Навыки (proficiency)
     const proficientSkillNames = new Set<string>();
-    bg?.skillProficiencies.forEach(s => proficientSkillNames.add(s));
+    bg?.skillProficiencies.forEach((s) => proficientSkillNames.add(s));
     if (skillData) {
-        if (skillData.fixed) skillData.fixed.forEach(s => proficientSkillNames.add(s));
-        else if (skillData.choose) selectedRacialSkills.forEach(s => { if (s) proficientSkillNames.add(s); });
+        if (skillData.fixed) skillData.fixed.forEach((s) => proficientSkillNames.add(s));
+        else if (skillData.choose)
+            selectedRacialSkills.forEach((s) => {
+                if (s) proficientSkillNames.add(s);
+            });
     }
-    const skills = DEFAULT_SKILLS.map(skill => ({
+    const skills = DEFAULT_SKILLS.map((skill) => ({
         ...skill,
         proficient: proficientSkillNames.has(skill.name),
     }));
 
     // Инструменты
-    let toolProficiencies = bg?.toolProficiencies?.map(tool => ({
-        name: tool.name,
-        attribute: tool.attribute || 'DEX',
-        proficient: true,
-    })) || [];
+    let toolProficiencies =
+        bg?.toolProficiencies?.map((tool) => ({
+            name: tool.name,
+            attribute: tool.attribute || 'DEX',
+            proficient: true,
+        })) || [];
     if (toolData) {
         const racialToolNames: string[] = [];
         if (toolData.fixed) racialToolNames.push(...toolData.fixed);
-        else if (toolData.choose) selectedRacialTools.forEach(t => { if (t) racialToolNames.push(t); });
-        racialToolNames.forEach(toolName => {
-            if (!toolProficiencies.some(t => t.name === toolName)) {
+        else if (toolData.choose)
+            selectedRacialTools.forEach((t) => {
+                if (t) racialToolNames.push(t);
+            });
+        racialToolNames.forEach((toolName) => {
+            if (!toolProficiencies.some((t) => t.name === toolName)) {
                 toolProficiencies.push({ name: toolName, attribute: 'DEX', proficient: true });
             }
         });
@@ -279,10 +295,10 @@ export function buildCharacter(
     const bgLanguages = bg?.languages || [];
     const racialEffects = getRacialEffects(formData.race, subrace);
     const racialLanguages = racialEffects
-        .filter(e => e.type === 'language')
-        .flatMap(e => {
+        .filter((e) => e.type === 'language')
+        .flatMap((e) => {
             if (typeof e.value === 'string') {
-                return e.value.split(', ').map(l => l.trim());
+                return e.value.split(', ').map((l) => l.trim());
             }
             return [];
         });
@@ -293,14 +309,10 @@ export function buildCharacter(
     const mainSubclass = mainClassLevel?.subclass || formData.subclass || '';
 
     const creatureType = raceDetails?.creatureType || 'Humanoid';
-    const size = formData.size || (typeof raceDetails?.size === 'string' ? raceDetails.size : 'Medium');
+    const size =
+        formData.size || (typeof raceDetails?.size === 'string' ? raceDetails.size : 'Medium');
 
-    const feats = getFeatsForCharacter(
-        mainClass,
-        formData.race,
-        subrace,
-        formData.background
-    );
+    const feats = getFeatsForCharacter(mainClass, formData.race, subrace, formData.background);
 
     // Стартовое снаряжение: предметы + валюта
     const startingEquipment = buildStartingItems(formData.class, formData.background);
@@ -308,9 +320,9 @@ export function buildCharacter(
     return {
         ...formData,
         class: mainClass,
-        classes: classLevels.map(cl => cl.className),
+        classes: classLevels.map((cl) => cl.className),
         level: formData.level,
-        classLevels: classLevels.map(cl => ({
+        classLevels: classLevels.map((cl) => ({
             className: cl.className,
             level: cl.level,
             subclass: cl.subclass || '',

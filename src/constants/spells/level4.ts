@@ -8,7 +8,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You attempt to send one creature to another plane of existence. The target must succeed on a Charisma save or be banished.',
+        description:
+            'You attempt to send one creature to another plane of existence. The target must succeed on a Charisma save or be banished.',
         requiresConcentration: true,
         classes: ['Cleric', 'Paladin', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -19,7 +20,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'Squirming, ebony tentacles fill a 20-foot square. A creature in the area takes 3d6 bludgeoning damage and is restrained.',
+        description:
+            'Squirming, ebony tentacles fill a 20-foot square. A creature in the area takes 3d6 bludgeoning damage and is restrained.',
         element: 'bludgeoning',
         diceRoll: '3d6',
         damageType: 'bludgeoning',
@@ -44,7 +46,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '90 ft',
         components: 'V, S, M',
-        description: 'Each creature in a 10-foot-radius sphere must succeed on a Wisdom save or be affected by confusion.',
+        description:
+            'Each creature in a 10-foot-radius sphere must succeed on a Wisdom save or be affected by confusion.',
         requiresConcentration: true,
         classes: ['Bard', 'Druid', 'Sorcerer', 'Wizard'],
     },
@@ -55,7 +58,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You summon fey creatures that appear in unoccupied spaces that you can see within range.',
+        description:
+            'You summon fey creatures that appear in unoccupied spaces that you can see within range.',
         requiresConcentration: true,
         classes: ['Druid', 'Ranger'],
     },
@@ -66,7 +70,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S',
-        description: 'You touch a creature and grant it protection from death. The first time it would drop to 0 HP, it drops to 1 HP instead.',
+        description:
+            'You touch a creature and grant it protection from death. The first time it would drop to 0 HP, it drops to 1 HP instead.',
         element: 'healing',
         requiresConcentration: false,
         classes: ['Cleric', 'Paladin'],
@@ -78,7 +83,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '500 ft',
         components: 'V',
-        description: 'You teleport yourself from your current location to any other spot within range.',
+        description:
+            'You teleport yourself from your current location to any other spot within range.',
         requiresConcentration: false,
         classes: ['Bard', 'Sorcerer', 'Warlock', 'Wizard'],
     },
@@ -89,7 +95,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Self',
         components: 'V, S, M',
-        description: 'Your magic and an offering put you in contact with a god or a god\'s servants. You ask a single question.',
+        description:
+            "Your magic and an offering put you in contact with a god or a god's servants. You ask a single question.",
         requiresConcentration: false,
         classes: ['Cleric', 'Druid', 'Wizard'],
     },
@@ -100,7 +107,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: 'Touch',
         components: 'V, S, M',
-        description: 'The target\'s movement is unaffected by difficult terrain, and spells can\'t reduce its speed or paralyze it.',
+        description:
+            "The target's movement is unaffected by difficult terrain, and spells can't reduce its speed or paralyze it.",
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Druid', 'Ranger', 'Artificer'],
     },
@@ -122,7 +130,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '300 ft',
         components: 'V, S, M',
-        description: 'A hail of rock-hard ice pounds to the ground in a 20-foot-radius, 40-foot-high cylinder. Deals 2d8 bludgeoning + 4d6 cold damage.',
+        description:
+            'A hail of rock-hard ice pounds to the ground in a 20-foot-radius, 40-foot-high cylinder. Deals 2d8 bludgeoning + 4d6 cold damage.',
         element: 'cold',
         diceRoll: '2d8 + 4d6',
         damageRoll: '4d6',
@@ -137,7 +146,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S',
-        description: 'You tap into the nightmares of a creature you can see and create an illusory manifestation of its deepest fears.',
+        description:
+            'You tap into the nightmares of a creature you can see and create an illusory manifestation of its deepest fears.',
         element: 'psychic',
         diceRoll: '4d10',
         damageType: 'psychic',
@@ -151,7 +161,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 hour',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'You attempt to bind a celestial, an elemental, a fey, or a fiend to your service.',
+        description:
+            'You attempt to bind a celestial, an elemental, a fey, or a fiend to your service.',
         requiresConcentration: false,
         classes: ['Bard', 'Cleric', 'Druid', 'Wizard'],
     },
@@ -162,7 +173,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '60 ft',
         components: 'V, S, M',
-        description: 'This spell transforms a creature that you can see within range into a new form.',
+        description:
+            'This spell transforms a creature that you can see within range into a new form.',
         requiresConcentration: true,
         classes: ['Bard', 'Druid', 'Sorcerer', 'Wizard'],
     },
@@ -184,7 +196,8 @@ export const LEVEL_4_SPELLS: SpellData[] = [
         castingTime: '1 action',
         range: '120 ft',
         components: 'V, S, M',
-        description: 'You create a wall of fire on a solid surface. One side of the wall deals 5d8 fire damage to creatures within 10 feet.',
+        description:
+            'You create a wall of fire on a solid surface. One side of the wall deals 5d8 fire damage to creatures within 10 feet.',
         element: 'fire',
         diceRoll: '5d8',
         damageType: 'fire',

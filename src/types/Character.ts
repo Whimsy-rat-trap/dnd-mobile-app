@@ -113,7 +113,16 @@ export interface Character {
 export interface InventoryItem {
     id: string;
     name: string;
-    type: 'weapon' | 'armor' | 'potion' | 'scroll' | 'ring' | 'wand' | 'shield' | 'natural weapon' | 'other';
+    type:
+        | 'weapon'
+        | 'armor'
+        | 'potion'
+        | 'scroll'
+        | 'ring'
+        | 'wand'
+        | 'shield'
+        | 'natural weapon'
+        | 'other';
     rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
     description: string;
     equipped: boolean;
@@ -173,13 +182,13 @@ export interface Quest {
     status: 'active' | 'completed' | 'failed';
     rewardType?: 'text' | 'item' | 'currency';
     rewardText?: string;
-    rewardItemId?: string;  // ID предмета из LibraryItem или custom
+    rewardItemId?: string; // ID предмета из LibraryItem или custom
     rewardCurrency?: {
         gp: number;
         sp: number;
         cp: number;
     };
-    rewardVisibleToPlayers?: boolean;   // true – видна всем, false – только DM
+    rewardVisibleToPlayers?: boolean; // true – видна всем, false – только DM
 }
 
 export interface Campaign {

@@ -27,8 +27,8 @@ function getClassesForSpellFromLists(name: string): string[] {
     const classes: string[] = [];
 
     for (const [className, data] of Object.entries(CLASS_SPELL_LISTS)) {
-        const found = Object.values(data.spellsByLevel).some(names =>
-            names.some(n => n.toLowerCase() === lower)
+        const found = Object.values(data.spellsByLevel).some((names) =>
+            names.some((n) => n.toLowerCase() === lower)
         );
         if (found) classes.push(className);
     }
@@ -37,7 +37,7 @@ function getClassesForSpellFromLists(name: string): string[] {
 }
 
 function syncSpellClasses(spells: SpellData[]): SpellData[] {
-    return spells.map(s => {
+    return spells.map((s) => {
         const fromLists = getClassesForSpellFromLists(s.name);
 
         if (MERGE_MODE) {
@@ -78,13 +78,20 @@ export type { SpellData };
 export function getSpellsByLevel(level?: number): SpellData[] {
     if (level === undefined) return ALL_SPELLS;
     switch (level) {
-        case 0: return ALL_SPELLS.filter(s => s.level === 0);
-        case 1: return ALL_SPELLS.filter(s => s.level === 1);
-        case 2: return ALL_SPELLS.filter(s => s.level === 2);
-        case 3: return ALL_SPELLS.filter(s => s.level === 3);
-        case 4: return ALL_SPELLS.filter(s => s.level === 4);
-        case 5: return ALL_SPELLS.filter(s => s.level === 5);
-        default: return [];
+        case 0:
+            return ALL_SPELLS.filter((s) => s.level === 0);
+        case 1:
+            return ALL_SPELLS.filter((s) => s.level === 1);
+        case 2:
+            return ALL_SPELLS.filter((s) => s.level === 2);
+        case 3:
+            return ALL_SPELLS.filter((s) => s.level === 3);
+        case 4:
+            return ALL_SPELLS.filter((s) => s.level === 4);
+        case 5:
+            return ALL_SPELLS.filter((s) => s.level === 5);
+        default:
+            return [];
     }
 }
 
@@ -94,12 +101,12 @@ export function getSpellsByLevel(level?: number): SpellData[] {
  */
 export function getSpellByName(name: string): SpellData | undefined {
     const lower = name.toLowerCase();
-    return ALL_SPELLS.find(s => s.name.toLowerCase() === lower);
+    return ALL_SPELLS.find((s) => s.name.toLowerCase() === lower);
 }
 
 /**
  * Возвращает заклинания, доступные указанному классу.
  */
 export function getSpellsByClass(className: string): SpellData[] {
-    return ALL_SPELLS.filter(s => s.classes?.includes(className));
+    return ALL_SPELLS.filter((s) => s.classes?.includes(className));
 }

@@ -1,15 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Character } from '../../types/Character';
-import {
-    getSpellSlots,
-    getMaxPrepared,
-    isSpellcastingClass,
-} from '../../utils/spellcasting';
-import {
-    getSpellSaveDC,
-    getSpellAttackBonus,
-} from '../../utils/spellUtils';
+import { getSpellSlots, getMaxPrepared, isSpellcastingClass } from '../../utils/spellcasting';
+import { getSpellSaveDC, getSpellAttackBonus } from '../../utils/spellUtils';
 import {
     getMaxMagicalSecretsForCharacter,
     getUsedMagicalSecretsCount,
@@ -30,10 +23,10 @@ const SpellcastingSection: React.FC<SpellcastingSectionProps> = ({ character }) 
     const totalSlots = spellSlots.reduce((a, b) => a + b, 0);
     const maxPrepared = getMaxPrepared(character);
     const preparedCount = character.spells.filter(
-        s => s.prepared && !s.isRacial && !s.isAlwaysPrepared
+        (s) => s.prepared && !s.isRacial && !s.isAlwaysPrepared
     ).length;
     const knownCount = character.spells.length;
-    const racialCount = character.spells.filter(s => s.isRacial).length;
+    const racialCount = character.spells.filter((s) => s.isRacial).length;
 
     const showPrepared = isCaster && maxPrepared > 0;
 

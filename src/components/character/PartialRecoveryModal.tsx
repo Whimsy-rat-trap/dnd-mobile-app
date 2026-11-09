@@ -15,12 +15,12 @@ interface Props {
 }
 
 const PartialRecoveryModal: React.FC<Props> = ({
-                                                   isOpen,
-                                                   onClose,
-                                                   character,
-                                                   feature,
-                                                   onSubmit,
-                                               }) => {
+    isOpen,
+    onClose,
+    character,
+    feature,
+    onSubmit,
+}) => {
     const [picks, setPicks] = useState<Record<number, number>>({});
 
     if (!isOpen || !feature || feature.target.type !== 'spell-slots') return null;
@@ -46,12 +46,12 @@ const PartialRecoveryModal: React.FC<Props> = ({
     const handleInc = (level: number) => {
         if (getAvailable(level) <= 0) return;
         if (totalBudgetUsed + level > budget) return;
-        setPicks(prev => ({ ...prev, [level]: (prev[level] || 0) + 1 }));
+        setPicks((prev) => ({ ...prev, [level]: (prev[level] || 0) + 1 }));
     };
 
     const handleDec = (level: number) => {
         if (getPicked(level) <= 0) return;
-        setPicks(prev => ({
+        setPicks((prev) => ({
             ...prev,
             [level]: Math.max(0, (prev[level] || 0) - 1),
         }));
@@ -86,7 +86,7 @@ const PartialRecoveryModal: React.FC<Props> = ({
                 </div>
 
                 <div className="prm-list">
-                    {Array.from({ length: maxLevel }, (_, i) => i + 1).map(level => {
+                    {Array.from({ length: maxLevel }, (_, i) => i + 1).map((level) => {
                         const idx = level - 1;
                         const total = totals[idx] || 0;
                         const usedCount = used[idx] || 0;
@@ -117,11 +117,13 @@ const PartialRecoveryModal: React.FC<Props> = ({
                                         className="prm-btn"
                                         onClick={() => handleInc(level)}
                                         disabled={!canInc}
-                                        title={!canInc
-                                            ? available <= 0
-                                                ? 'No expended slots of this level'
-                                                : `Would exceed budget (${level} levels)`
-                                            : `Recover 1 slot (${level} levels)`}
+                                        title={
+                                            !canInc
+                                                ? available <= 0
+                                                    ? 'No expended slots of this level'
+                                                    : `Would exceed budget (${level} levels)`
+                                                : `Recover 1 slot (${level} levels)`
+                                        }
                                     >
                                         +
                                     </button>

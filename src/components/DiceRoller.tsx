@@ -16,16 +16,16 @@ interface DiceRollerProps {
 }
 
 const DiceRoller: React.FC<DiceRollerProps> = ({
-                                                   sides,
-                                                   onRoll,
-                                                   label,
-                                                   disabled,
-                                                   initialResult,
-                                                   autoRoll,
-                                                   displayOnly,
-                                                   rerollAvailable,
-                                                   onRerollRequest,
-                                               }) => {
+    sides,
+    onRoll,
+    label,
+    disabled,
+    initialResult,
+    autoRoll,
+    displayOnly,
+    rerollAvailable,
+    onRerollRequest,
+}) => {
     const [result, setResult] = useState<number | null>(initialResult ?? null);
     const [spinning, setSpinning] = useState(false);
 
@@ -46,9 +46,8 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
         setSpinning(true);
         setResult(null);
         setTimeout(() => {
-            const res = initialResult !== undefined
-                ? initialResult
-                : Math.floor(Math.random() * sides) + 1;
+            const res =
+                initialResult !== undefined ? initialResult : Math.floor(Math.random() * sides) + 1;
             setResult(res);
             setSpinning(false);
             if (onRoll) onRoll(res);
@@ -70,9 +69,14 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
         }, 800);
     };
 
-    const displayText = result !== null ? result : (sides === 20 ? '20' : `D${sides}`);
+    const displayText = result !== null ? result : sides === 20 ? '20' : `D${sides}`;
     const showReroll = Boolean(
-        rerollAvailable && onRerollRequest && sides === 20 && result !== null && !spinning && !disabled
+        rerollAvailable &&
+        onRerollRequest &&
+        sides === 20 &&
+        result !== null &&
+        !spinning &&
+        !disabled
     );
 
     return (

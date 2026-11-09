@@ -21,8 +21,7 @@ const MIGRATIONS: Record<number, (c: AnyCharacter) => AnyCharacter> = {
  */
 export function migrate(raw: AnyCharacter): Character {
     let current: AnyCharacter = { ...raw };
-    const fromVersion =
-        typeof current.schemaVersion === 'number' ? current.schemaVersion : 0;
+    const fromVersion = typeof current.schemaVersion === 'number' ? current.schemaVersion : 0;
 
     for (let v = fromVersion + 1; v <= CURRENT_SCHEMA_VERSION; v++) {
         const step = MIGRATIONS[v];
@@ -70,9 +69,7 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
                 },
             ];
         } else {
-            resolvedClassLevels = [
-                { className: 'Fighter', level: 1, subclass: '' },
-            ];
+            resolvedClassLevels = [{ className: 'Fighter', level: 1, subclass: '' }];
         }
     } else {
         resolvedClassLevels = [...updated.classLevels];
@@ -81,10 +78,7 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
     updated.classLevels = resolvedClassLevels;
 
     if (resolvedClassLevels.length > 0) {
-        updated.level = resolvedClassLevels.reduce(
-            (sum: number, cl: any) => sum + cl.level,
-            0
-        );
+        updated.level = resolvedClassLevels.reduce((sum: number, cl: any) => sum + cl.level, 0);
     }
 
     // subclass → classLevels[0].subclass
@@ -102,7 +96,7 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
 
     // skills / logs
     if (!updated.skills || updated.skills.length === 0) {
-        updated.skills = DEFAULT_SKILLS.map(s => ({ ...s }));
+        updated.skills = DEFAULT_SKILLS.map((s) => ({ ...s }));
     }
     if (!updated.diceLogs) updated.diceLogs = {};
 
@@ -153,10 +147,7 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
     }
 
     // spell slots
-    if (
-        !Array.isArray(updated.usedSpellSlots) ||
-        updated.usedSpellSlots.length !== 9
-    ) {
+    if (!Array.isArray(updated.usedSpellSlots) || updated.usedSpellSlots.length !== 9) {
         updated.usedSpellSlots = Array(9).fill(0);
     }
     if (typeof updated.usedPactSlots !== 'number') {
@@ -169,10 +160,7 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
     }
 
     // class resources
-    if (
-        !updated.classResourcesUsed ||
-        typeof updated.classResourcesUsed !== 'object'
-    ) {
+    if (!updated.classResourcesUsed || typeof updated.classResourcesUsed !== 'object') {
         updated.classResourcesUsed = {};
     }
     // legacy bardicInspirationUsed / kiUsed → classResourcesUsed
@@ -185,11 +173,7 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
     ) {
         updated.classResourcesUsed['bardic-inspiration'] = legacyBardic;
     }
-    if (
-        typeof legacyKi === 'number' &&
-        legacyKi > 0 &&
-        !updated.classResourcesUsed['ki']
-    ) {
+    if (typeof legacyKi === 'number' && legacyKi > 0 && !updated.classResourcesUsed['ki']) {
         updated.classResourcesUsed['ki'] = legacyKi;
     }
     delete updated.bardicInspirationUsed;
@@ -217,9 +201,7 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
         updated.inventory = updated.inventory.map((item: any) => {
             const withId = {
                 ...item,
-                id:
-                    item.id ||
-                    `item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                id: item.id || `item-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             };
             const libraryItem = ALL_ITEMS.find((li: any) => li.name === item.name);
             if (!libraryItem) return withId;
@@ -231,13 +213,10 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
                 uses: withId.uses ?? libraryItem.uses,
                 baseAC: withId.baseAC ?? libraryItem.baseAC,
                 acBonus: withId.acBonus ?? libraryItem.acBonus,
-                dexModifierAllowed:
-                    withId.dexModifierAllowed ?? libraryItem.dexModifierAllowed,
+                dexModifierAllowed: withId.dexModifierAllowed ?? libraryItem.dexModifierAllowed,
                 maxDexBonus: withId.maxDexBonus ?? libraryItem.maxDexBonus,
-                strengthRequirement:
-                    withId.strengthRequirement ?? libraryItem.strengthRequirement,
-                stealthDisadvantage:
-                    withId.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
+                strengthRequirement: withId.strengthRequirement ?? libraryItem.strengthRequirement,
+                stealthDisadvantage: withId.stealthDisadvantage ?? libraryItem.stealthDisadvantage,
             };
         });
     } else {

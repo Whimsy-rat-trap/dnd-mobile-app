@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import { CLASS_HIT_DICE } from '../constants/classHitDice';
 
-export const useCharacterHP = (isCreative: boolean, mainClass: string, conMod: number, level: number) => {
+export const useCharacterHP = (
+    isCreative: boolean,
+    mainClass: string,
+    conMod: number,
+    level: number
+) => {
     const [hpMethod, setHpMethod] = useState<'average' | 'roll'>('average');
     const [rolledHps, setRolledHps] = useState<number[]>([]);
     const [maxHp, setMaxHp] = useState(10);
@@ -13,8 +18,9 @@ export const useCharacterHP = (isCreative: boolean, mainClass: string, conMod: n
         if (additionalLevels === 0) return;
 
         if (rolledHps.length === additionalLevels) {
-            const newRolls = Array.from({ length: additionalLevels }, () =>
-                Math.floor(Math.random() * hitDie) + 1
+            const newRolls = Array.from(
+                { length: additionalLevels },
+                () => Math.floor(Math.random() * hitDie) + 1
             );
             setRolledHps(newRolls);
         } else {
@@ -27,8 +33,9 @@ export const useCharacterHP = (isCreative: boolean, mainClass: string, conMod: n
         const hitDie = CLASS_HIT_DICE[mainClass] || 6;
         const additionalLevels = level - 1;
         if (additionalLevels === 0) return;
-        const newRolls = Array.from({ length: additionalLevels }, () =>
-            Math.floor(Math.random() * hitDie) + 1
+        const newRolls = Array.from(
+            { length: additionalLevels },
+            () => Math.floor(Math.random() * hitDie) + 1
         );
         setRolledHps(newRolls);
     };

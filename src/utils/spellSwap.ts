@@ -9,9 +9,7 @@ import { getClassSpellListData, getMaxSpellLevelForClass } from './classSpellUti
 const KNOWN_CASTER_CLASSES = ['Bard', 'Sorcerer', 'Warlock', 'Ranger'];
 
 export function canSwapSpellOnLongRest(character: Character): boolean {
-    return (character.classLevels || []).some(cl =>
-        KNOWN_CASTER_CLASSES.includes(cl.className)
-    );
+    return (character.classLevels || []).some((cl) => KNOWN_CASTER_CLASSES.includes(cl.className));
 }
 
 /**
@@ -39,12 +37,9 @@ export function getForgettableSpells(character: Character): Spell[] {
  *   - не кантрип;
  *   - не уже в книге.
  */
-export function getLearnableSpellsForSwap(
-    character: Character,
-    maxLevel: number
-): SpellData[] {
-    const existing = new Set(character.spells.map(s => s.name.toLowerCase()));
-    const byName = new Map(ALL_SPELLS.map(s => [s.name.toLowerCase(), s]));
+export function getLearnableSpellsForSwap(character: Character, maxLevel: number): SpellData[] {
+    const existing = new Set(character.spells.map((s) => s.name.toLowerCase()));
+    const byName = new Map(ALL_SPELLS.map((s) => [s.name.toLowerCase(), s]));
     const result = new Map<string, SpellData>();
 
     for (const cl of character.classLevels || []) {

@@ -11,22 +11,10 @@
  */
 
 export type ManeuverActionType =
-    | 'attack'
-    | 'on-hit'
-    | 'on-miss'
-    | 'bonus'
-    | 'reaction'
-    | 'when-moving'
-    | 'free';
+    'attack' | 'on-hit' | 'on-miss' | 'bonus' | 'reaction' | 'when-moving' | 'free';
 
 export type ManeuverAddsTo =
-    | 'attack'
-    | 'damage'
-    | 'ac'
-    | 'check'
-    | 'temp-hp'
-    | 'damage-reduction'
-    | 'none';
+    'attack' | 'damage' | 'ac' | 'check' | 'temp-hp' | 'damage-reduction' | 'none';
 
 export interface ManeuverSave {
     ability: 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
@@ -73,7 +61,7 @@ export const MANEUVERS: Maneuver[] = [
         actionType: 'on-hit',
         addsTo: 'damage',
         description:
-            'When you hit a creature with a weapon attack, you can add a superiority die to the damage roll. The next attack roll against the target by an attacker other than you has advantage if it\'s made before the start of your next turn.',
+            "When you hit a creature with a weapon attack, you can add a superiority die to the damage roll. The next attack roll against the target by an attacker other than you has advantage if it's made before the start of your next turn.",
     },
     {
         id: 'evasive-footwork',
@@ -99,7 +87,10 @@ export const MANEUVERS: Maneuver[] = [
         source: 'PHB',
         actionType: 'on-hit',
         addsTo: 'damage',
-        save: { ability: 'wis', effect: 'disadvantage on attacks against creatures other than you' },
+        save: {
+            ability: 'wis',
+            effect: 'disadvantage on attacks against creatures other than you',
+        },
         description:
             'When you hit a creature with a weapon attack, you can add a superiority die to the damage roll. The target must make a Wisdom save or have disadvantage on attack rolls against creatures other than you until the end of your next turn.',
     },
@@ -215,7 +206,7 @@ export const MANEUVERS: Maneuver[] = [
         actionType: 'bonus',
         addsTo: 'ac',
         description:
-            'As a bonus action, choose a friendly creature within 5 feet. You swap places, and both of you gain +1d8 to AC until the start of your next turn (or until you\'re incapacitated).',
+            "As a bonus action, choose a friendly creature within 5 feet. You swap places, and both of you gain +1d8 to AC until the start of your next turn (or until you're incapacitated).",
     },
     {
         id: 'brace',
@@ -267,7 +258,7 @@ export const MANEUVERS: Maneuver[] = [
 ];
 
 export function getManeuverById(id: string): Maneuver | undefined {
-    return MANEUVERS.find(m => m.id === id);
+    return MANEUVERS.find((m) => m.id === id);
 }
 
 /**
