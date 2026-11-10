@@ -31,7 +31,7 @@ const LongRestModal: React.FC<LongRestModalProps> = ({
         const totals = getNonPactSpellSlots(character);
         const used = getUsedSpellSlots(character);
         const spellSlotRestores: { level: number; count: number }[] = [];
-        totals.forEach((total, idx) => {
+        totals.forEach((_, idx) => {
             const u = used[idx] || 0;
             if (u > 0) spellSlotRestores.push({ level: idx + 1, count: u });
         });

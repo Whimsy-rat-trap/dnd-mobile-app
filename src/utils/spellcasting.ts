@@ -124,16 +124,6 @@ const WARLOCK_SLOTS: Record<number, number[]> = {
     20: [0, 0, 0, 0, 4, 0, 0, 0, 0],
 };
 
-/** Слоты третьего кастера (Eldritch Knight / Arcane Trickster). */
-const THIRD_CASTER_SLOTS: Record<number, number[]> = {
-    1: [2, 0, 0, 0, 0, 0, 0, 0, 0],
-    2: [3, 0, 0, 0, 0, 0, 0, 0, 0],
-    3: [3, 0, 0, 0, 0, 0, 0, 0, 0],
-    4: [4, 2, 0, 0, 0, 0, 0, 0, 0],
-    5: [4, 2, 0, 0, 0, 0, 0, 0, 0],
-    6: [4, 3, 0, 0, 0, 0, 0, 0, 0],
-};
-
 function getFullCasterSlots(level: number): number[] {
     if (level < 1 || level > 20) return Array(9).fill(0);
     return FULL_CASTER_SLOTS[level] || Array(9).fill(0);
@@ -142,11 +132,6 @@ function getFullCasterSlots(level: number): number[] {
 function getWarlockSlots(level: number): number[] {
     if (level < 1 || level > 20) return Array(9).fill(0);
     return WARLOCK_SLOTS[level] || Array(9).fill(0);
-}
-
-function getThirdCasterSlots(casterLevel: number): number[] {
-    if (casterLevel < 1 || casterLevel > 6) return Array(9).fill(0);
-    return THIRD_CASTER_SLOTS[casterLevel] || Array(9).fill(0);
 }
 
 // Основные функции

@@ -375,11 +375,6 @@ const SpellsLibrary: React.FC = () => {
         if (spell) removeSpellFromCharacter(character.id, spell.id);
     };
 
-    const isSpellInBook = (spellName: string) => {
-        if (!character) return false;
-        return character.spells.some((s) => s.name === spellName);
-    };
-
     const handleBack = () => navigate(-1);
 
     const handleSaveSpell = () => {

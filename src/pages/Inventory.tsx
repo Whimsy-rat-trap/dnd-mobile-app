@@ -8,22 +8,8 @@ import CurrencyEditModal from '../components/CurrencyEditModal';
 import { Character, InventoryItem } from '../types/Character';
 import { getTypes, getRarities, filterInventoryItems } from '../utils/inventoryUtils';
 import './Inventory.css';
-
-/**
- * Бонус мастерства по уровню персонажа.
- */
-const getProficiencyBonus = (level: number): number => {
-    if (level <= 4) return 2;
-    if (level <= 8) return 3;
-    if (level <= 12) return 4;
-    if (level <= 16) return 5;
-    return 6;
-};
-
-/**
- * Модификатор характеристики.
- */
-const getModifier = (score: number): number => Math.floor((score - 10) / 2);
+import { getProficiencyBonus } from '../utils/proficiency';
+import { getModifier } from '../utils/characterUtils';
 
 /**
  * Оружие с finesse — можно использовать DEX вместо STR.
@@ -168,7 +154,7 @@ const Inventory: React.FC = () => {
     const handleAttackRoll = (
         attackRoll: number,
         damageRoll: number | null,
-        sourceName: string
+        _sourceName: string
     ) => {
         addDiceLog(character.id, 20, attackRoll);
         if (damageRoll !== null) {

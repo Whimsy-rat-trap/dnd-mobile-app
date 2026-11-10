@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Modal from '../Modal';
 import './HpEditPopup.css';
-import './HpEditPopup.css';
 
 interface Props {
     isOpen: boolean;
