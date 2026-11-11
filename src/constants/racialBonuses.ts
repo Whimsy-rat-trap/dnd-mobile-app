@@ -3,7 +3,7 @@ import { Character } from '../types/Character';
 type AbilityKey = keyof Character['abilities'];
 
 type RacialBonus = {
-    fixed?: Record<string, number>; // фиксированные бонусы: { str: 2, dex: 1 }
+    fixed?: Partial<Record<AbilityKey, number>>; // фиксированные бонусы: { str: 2, dex: 1 }
     choose?: {
         // выбираемые бонусы
         count: number; // количество бонусов
