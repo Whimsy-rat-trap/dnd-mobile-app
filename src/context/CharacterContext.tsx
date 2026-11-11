@@ -114,6 +114,29 @@ interface CharacterContextType {
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
 const STORAGE_KEY = 'dnd_characters';
 
+/**
+ * Shallow comparison of spell arrays — used to skip re-renders after
+ * the one-time subclass-spell sync on app load.
+ *
+ * Compares exactly the fields `addSubclassSpellsToCharacter` can touch:
+ * id, isAlwaysPrepared, isMagicalSecret, prepared, source.
+ * Everything else (name, level, description, isRacial, isCustom, …)
+ * is never modified by that function.
+ */
+const spellsAreEqual = (a: Spell[], b: Spell[]): boolean => {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+        const x = a[i];
+        const y = b[i];
+        if (x.id !== y.id) return false;
+        if (x.isAlwaysPrepared !== y.isAlwaysPrepared) return false;
+        if (x.isMagicalSecret !== y.isMagicalSecret) return false;
+        if (x.prepared !== y.prepared) return false;
+        if (x.source !== y.source) return false;
+    }
+    return true;
+};
+
 export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [characters, setCharacters] = useState<Character[]>(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
@@ -139,7 +162,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
     }, [characters]);
 
-    // [NEW] One-time миграция: синхронизирует always-prepared subclass заклинания
+    // One-time миграция: синхронизирует always-prepared subclass заклинания
     // (домены Cleric, клятвы Paladin) у уже существующих персонажей из localStorage.
     const initialSubclassSyncDone = useRef(false);
     useEffect(() => {
@@ -150,7 +173,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             let changed = false;
             const next = prev.map((c) => {
                 const synced = addSubclassSpellsToCharacter(c);
-                if (JSON.stringify(synced.spells) !== JSON.stringify(c.spells)) {
+                if (!spellsAreEqual(synced.spells, c.spells)) {
                     changed = true;
                     return synced;
                 }
