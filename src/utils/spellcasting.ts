@@ -1,4 +1,5 @@
 import { Character, ClassLevel } from '../types/Character';
+import { getModifier } from './characterUtils';
 
 // Классы по типу кастера
 
@@ -194,16 +195,16 @@ export function getMaxPrepared(character: Character): number {
         const { className, level, subclass } = cl;
 
         if (className === 'Wizard') {
-            const mod = Math.floor((character.abilities.int - 10) / 2);
+            const mod = getModifier(character.abilities.int);
             total += Math.max(level + mod, 1);
         } else if (['Cleric', 'Druid'].includes(className)) {
-            const mod = Math.floor((character.abilities.wis - 10) / 2);
+            const mod = getModifier(character.abilities.wis);
             total += Math.max(level + mod, 1);
         } else if (className === 'Paladin') {
-            const mod = Math.floor((character.abilities.cha - 10) / 2);
+            const mod = getModifier(character.abilities.cha);
             total += Math.max(Math.floor(level / 2) + mod, 1);
         } else if (className === ARTIFICER_CLASS) {
-            const mod = Math.floor((character.abilities.int - 10) / 2);
+            const mod = getModifier(character.abilities.int);
             total += Math.max(Math.ceil(level / 2) + mod, 1);
         } else if (subclass && THIRD_CASTER_SUBCLASSES[className]?.includes(subclass)) {
             // EK / AT — known casters, вклад 0
