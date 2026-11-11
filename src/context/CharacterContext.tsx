@@ -448,6 +448,13 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (!cl) return false;
         if (char.level >= 20) return false;
 
+        // Guard: XP must cover the current level's threshold
+        // (skipped in milestone mode, or when explicitly consuming no XP)
+        if (char.levelingMode !== 'milestone' && payload.consumeXp !== false) {
+            const xpToNext = getXpToNextLevel(char.level);
+            if (char.exp < xpToNext) return false;
+        }
+
         const newClassLevel = cl.level + 1;
         const conMod = Math.floor((char.abilities.con - 10) / 2);
         const { gain: hpGain, usedRoll } = computeHpGain(
@@ -539,7 +546,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         let newExp = char.exp;
         if (char.levelingMode !== 'milestone' && payload.consumeXp !== false) {
             const xpToNext = getXpToNextLevel(char.level);
-            newExp = Math.max(0, char.exp - xpToNext);
+            newExp = char.exp - xpToNext;
         }
 
         // Learned spells / cantrips (known casters)
