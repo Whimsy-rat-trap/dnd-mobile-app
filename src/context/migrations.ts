@@ -10,6 +10,7 @@ type AnyCharacter = Partial<Character> & Record<string, any>;
 
 const MIGRATIONS: Record<number, (c: AnyCharacter) => AnyCharacter> = {
     1: migrate_v0_to_v1,
+    2: migrate_v1_to_v2,
 };
 
 /**
@@ -224,4 +225,13 @@ function migrate_v0_to_v1(c: AnyCharacter): AnyCharacter {
     }
 
     return updated;
+}
+
+// v1 → v2 — add conditions and exhaustion
+function migrate_v1_to_v2(c: AnyCharacter): AnyCharacter {
+    return {
+        ...c,
+        conditions: Array.isArray(c.conditions) ? c.conditions : [],
+        exhaustionLevel: typeof c.exhaustionLevel === 'number' ? c.exhaustionLevel : 0,
+    };
 }

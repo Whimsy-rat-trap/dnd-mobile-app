@@ -10,4 +10,4 @@
  *
  *  НЕ МЕНЯТЬ НОМЕР ВРУЧНУЮ, если правка не структурная (только UI/логика).
  */
-export const CURRENT_SCHEMA_VERSION = 1;
+export const CURRENT_SCHEMA_VERSION = 2;

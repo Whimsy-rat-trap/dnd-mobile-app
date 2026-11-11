@@ -32,6 +32,7 @@ import SorceryPointsConverter from '../components/character/SorceryPointsConvert
 import PartialRecoverySection from '../components/character/PartialRecoverySection';
 import ManeuversSection from '../components/character/ManeuversSection';
 import PrepareSpellsModal from '../components/character/PrepareSpellsModal';
+import ConditionsTracker from '../components/character/ConditionsTracker';
 import { canPrepareSpells } from '../utils/spellPreparation';
 import SwapSpellModal from '../components/character/SwapSpellModal';
 import { canSwapSpellOnLongRest } from '../utils/spellSwap';
@@ -299,6 +300,8 @@ const CharacterContainer: React.FC = () => {
                         </div>
                     </div>
                 </div>
+
+                <ConditionsTracker character={character} />
 
                 <AbilitiesSection abilities={character.abilities} />
 

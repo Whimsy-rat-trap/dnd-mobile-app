@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
-import { Character, InventoryItem, Spell, Quest, Campaign, Feat } from '../types/Character';
+import {
+    Character,
+    InventoryItem,
+    Spell,
+    Quest,
+    Campaign,
+    Feat,
+    ConditionId,
+} from '../types/Character';
 import { getNaturalWeapons } from '../utils/racialFeatures';
 import { recalculateAC } from '../utils/armorUtils';
 import { getRacialSpells } from '../constants/racialSpells';
@@ -90,6 +98,14 @@ interface CharacterContextType {
     shortRest: (characterId: string) => void;
     grantInspiration: (characterId: string) => void;
     spendInspiration: (characterId: string) => boolean;
+    addCondition: (
+        characterId: string,
+        conditionId: ConditionId,
+        source?: string,
+        notes?: string
+    ) => void;
+    removeCondition: (characterId: string, conditionId: ConditionId) => void;
+    setExhaustionLevel: (characterId: string, level: number) => void;
     spendClassResource: (characterId: string, resourceId: string, amount?: number) => boolean;
     restoreClassResource: (characterId: string, resourceId: string, amount?: number) => void;
     learnManeuver: (characterId: string, maneuverId: string) => boolean;
@@ -741,9 +757,47 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         setConcentrationCheck(null);
     };
 
-    // [NEW] Inspiration
+    // Inspiration
     const grantInspiration = (characterId: string) => {
         updateCharacter(characterId, { inspiration: true });
+    };
+
+    const addCondition = (
+        characterId: string,
+        conditionId: ConditionId,
+        source?: string,
+        notes?: string
+    ) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        const existing = (char.conditions || []).find((c) => c.conditionId === conditionId);
+        if (existing) {
+            const updated = (char.conditions || []).map((c) =>
+                c.conditionId === conditionId
+                    ? { ...c, source: source ?? c.source, notes: notes ?? c.notes }
+                    : c
+            );
+            updateCharacter(characterId, { conditions: updated });
+            return;
+        }
+
+        updateCharacter(characterId, {
+            conditions: [...(char.conditions || []), { conditionId, source, notes }],
+        });
+    };
+
+    const removeCondition = (characterId: string, conditionId: ConditionId) => {
+        const char = getCharacter(characterId);
+        if (!char) return;
+        updateCharacter(characterId, {
+            conditions: (char.conditions || []).filter((c) => c.conditionId !== conditionId),
+        });
+    };
+
+    const setExhaustionLevel = (characterId: string, level: number) => {
+        const clamped = Math.max(0, Math.min(6, Math.round(level)));
+        updateCharacter(characterId, { exhaustionLevel: clamped });
     };
 
     const spendInspiration = (characterId: string): boolean => {
@@ -1263,6 +1317,9 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         shortRest,
         grantInspiration,
         spendInspiration,
+        addCondition,
+        removeCondition,
+        setExhaustionLevel,
         applyPartialRecoveryFeature,
     };
 

@@ -5,6 +5,30 @@ export interface ClassLevel {
     subclass?: string;
 }
 
+export type ConditionId =
+    | 'blinded'
+    | 'charmed'
+    | 'deafened'
+    | 'frightened'
+    | 'grappled'
+    | 'incapacitated'
+    | 'invisible'
+    | 'paralyzed'
+    | 'petrified'
+    | 'poisoned'
+    | 'prone'
+    | 'restrained'
+    | 'stunned'
+    | 'unconscious';
+
+export interface ActiveCondition {
+    conditionId: ConditionId;
+    /** Free-form label: 'Menacing Attack', 'Hold Person', etc. */
+    source?: string;
+    /** Free-form notes: 'DC 15 WIS save at end of turn'. */
+    notes?: string;
+}
+
 export interface Character {
     id: string;
     /** Версия схемы на момент сохранения. Управляется context/migrations.ts. */
@@ -87,6 +111,10 @@ export interface Character {
     deathSuccesses: number;
     deathFailures: number;
     isStable: boolean;
+    /** Active conditions (5e standard status effects). */
+    conditions?: ActiveCondition[];
+    /** Exhaustion level 0–6. 0 means no exhaustion. */
+    exhaustionLevel?: number;
     activeConcentrationSpellId?: string | null;
     /** Сколько слотов потрачено на каждом уровне (индекс 0 = 1-й уровень, 8 = 9-й). */
     usedSpellSlots?: number[];

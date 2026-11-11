@@ -12,6 +12,7 @@ import {
     DiceRollResult,
     RollMode,
 } from '../utils/diceUtils';
+import { getConditionEffects } from '../utils/conditions';
 import { DAMAGE_BUFFS, getBuffById } from '../constants/damageBuffs';
 import { ATTACK_DEBUFFS, getDebuffById } from '../constants/attackDebuffs';
 import { getKnownManeuvers, getManeuverSaveDC } from '../utils/maneuvers';
@@ -197,7 +198,16 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
     const hasDisadvantageSource = appliedDebuffs.some(
         (a) => getDebuffById(a.debuffId)?.type === 'disadvantage'
     );
-    const effectiveMode = resolveRollMode(rollMode, false, hasDisadvantageSource);
+
+    // Character conditions (Frightened, Poisoned, Blinded, Prone, Restrained, Exhaustion 3+)
+    const conditionEffects = character ? getConditionEffects(character) : null;
+    const hasConditionDisadvantage = (conditionEffects?.attackDisadvantageSources.length ?? 0) > 0;
+
+    const effectiveMode = resolveRollMode(
+        rollMode,
+        false,
+        hasDisadvantageSource || hasConditionDisadvantage
+    );
 
     const flatPenalty = appliedDebuffs.reduce((sum, a) => {
         const d = getDebuffById(a.debuffId);
@@ -443,7 +453,17 @@ const AttackRoller: React.FC<AttackRollerProps> = ({
                                 {effectiveModeDiffers && (
                                     <div className="attack-effective-mode">
                                         Effective: <strong>{effectiveMode}</strong>
-                                        {hasDisadvantageSource && ' (disadvantage source active)'}
+                                        {hasDisadvantageSource && ' (debuff active)'}
+                                        {hasConditionDisadvantage && conditionEffects && (
+                                            <>
+                                                {' '}
+                                                (condition:{' '}
+                                                {conditionEffects.attackDisadvantageSources.join(
+                                                    ', '
+                                                )}
+                                                )
+                                            </>
+                                        )}
                                     </div>
                                 )}
                             </div>
