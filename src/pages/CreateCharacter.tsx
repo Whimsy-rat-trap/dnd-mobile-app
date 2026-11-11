@@ -25,6 +25,7 @@ import FeaturesSection from '../components/CreateCharacter/FeaturesSection';
 // Хуки и утилиты
 import { useStatGeneration } from '../hooks/useStatGeneration';
 import { buildCharacter } from '../utils/characterCreationUtils';
+import { getModifier } from '../utils/characterUtils';
 
 import './CreateCharacter.css';
 
@@ -224,7 +225,7 @@ const CreateCharacter: React.FC = () => {
         if (isCreative) return;
 
         const mainClass = classLevels[0]?.className || formData.class;
-        const conMod = Math.floor((formData.abilities.con - 10) / 2);
+        const conMod = getModifier(formData.abilities.con);
         const hitDie = CLASS_HIT_DICE[mainClass] || 6;
         const level = formData.level;
 
@@ -245,7 +246,7 @@ const CreateCharacter: React.FC = () => {
 
     useEffect(() => {
         if (!isCreative) {
-            const dexMod = Math.floor((formData.abilities.dex - 10) / 2);
+            const dexMod = getModifier(formData.abilities.dex);
             setFormData((prev) => ({ ...prev, ac: 10 + dexMod }));
         }
     }, [formData.abilities.dex, isCreative]);
@@ -332,7 +333,7 @@ const CreateCharacter: React.FC = () => {
 
         const finalData = { ...formData };
         if (!isCreative) {
-            finalData.ac = 10 + Math.floor((formData.abilities.dex - 10) / 2);
+            finalData.ac = 10 + getModifier(formData.abilities.dex);
             finalData.speed = 30;
         }
 
@@ -435,7 +436,7 @@ const CreateCharacter: React.FC = () => {
                     maxHp={formData.maxHp}
                     level={formData.level}
                     mainClass={classLevels[0]?.className || formData.class}
-                    conMod={Math.floor((formData.abilities.con - 10) / 2)}
+                    conMod={getModifier(formData.abilities.con)}
                     hpMethod={hpMethod}
                     onHpMethodChange={setHpMethod}
                     rolledHps={rolledHps}
