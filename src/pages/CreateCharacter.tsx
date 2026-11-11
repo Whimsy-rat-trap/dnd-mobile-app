@@ -10,7 +10,6 @@ import { RACE_FEATURES } from '../constants/raceFeatures';
 import { SUBRACES } from '../constants/subraces';
 import { SUBRACE_DETAILS } from '../constants/subraceDetails';
 import { RACIAL_SKILLS, RACIAL_TOOLS } from '../constants/raceProficiencies';
-import { CLASS_HIT_DICE } from '../constants/classHitDice';
 import { RACIAL_BONUSES } from '../constants/racialBonuses';
 
 // Вынесенные компоненты
@@ -26,6 +25,7 @@ import FeaturesSection from '../components/CreateCharacter/FeaturesSection';
 import { useStatGeneration } from '../hooks/useStatGeneration';
 import { buildCharacter } from '../utils/characterCreationUtils';
 import { getModifier } from '../utils/characterUtils';
+import { useCreateCharacterHp } from '../hooks/useCreateCharacterHp';
 
 import './CreateCharacter.css';
 
@@ -76,15 +76,19 @@ const CreateCharacter: React.FC = () => {
     const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
     const [selectedSubraceFeature, setSelectedSubraceFeature] = useState<string | null>(null);
 
-    // HP
-    const [hpMethod, setHpMethod] = useState<'average' | 'roll'>('average');
-    const [rolledHps, setRolledHps] = useState<number[]>([]);
-
     // Генерация статов
     const handleApplyAbilities = (newAbilities: typeof formData.abilities) => {
         setFormData((prev) => ({ ...prev, abilities: newAbilities }));
     };
     const statGen = useStatGeneration(formData.abilities, handleApplyAbilities);
+
+    // HP
+    const hp = useCreateCharacterHp(
+        isCreative,
+        classLevels[0]?.className || formData.class,
+        formData.abilities.con,
+        formData.level
+    );
 
     // useMemo для производных данных
     const raceBonuses = useMemo(() => RACIAL_BONUSES[formData.race] || null, [formData.race]);
@@ -215,34 +219,16 @@ const CreateCharacter: React.FC = () => {
         setFormData((prev) => ({ ...prev, subclass: '' }));
     }, [formData.class]);
 
-    // При переключении метода на Average сбрасываем броски
-    useEffect(() => {
-        if (hpMethod === 'average') setRolledHps([]);
-    }, [hpMethod]);
-
-    // Пересчёт HP
+    // Sync computed max HP into formData (non-creative mode only —
+    // creative mode lets the user set HP manually)
     useEffect(() => {
         if (isCreative) return;
-
-        const mainClass = classLevels[0]?.className || formData.class;
-        const conMod = getModifier(formData.abilities.con);
-        const hitDie = CLASS_HIT_DICE[mainClass] || 6;
-        const level = formData.level;
-
-        let totalHp = hitDie + conMod;
-
-        if (level > 1) {
-            const additionalLevels = level - 1;
-            if (hpMethod === 'average') {
-                const average = Math.floor(hitDie / 2) + 1;
-                totalHp += additionalLevels * (average + conMod);
-            } else if (rolledHps.length > 0) {
-                const sumRolls = rolledHps.reduce((sum, r) => sum + r + conMod, 0);
-                totalHp += sumRolls;
-            }
-        }
-        setFormData((prev) => ({ ...prev, maxHp: totalHp, hp: totalHp }));
-    }, [classLevels, formData.abilities.con, hpMethod, rolledHps, isCreative]);
+        setFormData((prev) =>
+            prev.maxHp === hp.maxHp && prev.hp === hp.maxHp
+                ? prev
+                : { ...prev, maxHp: hp.maxHp, hp: hp.maxHp }
+        );
+    }, [hp.maxHp, isCreative]);
 
     useEffect(() => {
         if (!isCreative) {
@@ -250,36 +236,6 @@ const CreateCharacter: React.FC = () => {
             setFormData((prev) => ({ ...prev, ac: 10 + dexMod }));
         }
     }, [formData.abilities.dex, isCreative]);
-
-    // Обработчики для HP
-    const handleRoll = (result: number) => {
-        if (isCreative) return;
-        const mainClass = classLevels[0]?.className || formData.class;
-        const hitDie = CLASS_HIT_DICE[mainClass] || 6;
-        const additionalLevels = formData.level - 1;
-        if (additionalLevels === 0) return;
-
-        if (rolledHps.length === additionalLevels) {
-            const newRolls = Array.from(
-                { length: additionalLevels },
-                () => Math.floor(Math.random() * hitDie) + 1
-            );
-            setRolledHps(newRolls);
-        } else {
-            setRolledHps([...rolledHps, result]);
-        }
-    };
-
-    const handleRerollAll = () => {
-        if (isCreative) return;
-        const mainClass = classLevels[0]?.className || formData.class;
-        const hitDie = CLASS_HIT_DICE[mainClass] || 6;
-        const additionalLevels = formData.level - 1;
-        if (additionalLevels === 0) return;
-        setRolledHps(
-            Array.from({ length: additionalLevels }, () => Math.floor(Math.random() * hitDie) + 1)
-        );
-    };
 
     // Обобщённые обработчики для расовых навыков/инструментов
     const handleRacialSelect = <T extends string[]>(
@@ -309,14 +265,12 @@ const CreateCharacter: React.FC = () => {
         e.preventDefault();
 
         // Валидация HP
-        if (!isCreative && hpMethod === 'roll' && formData.level > 1) {
+        if (!isCreative && !hp.isComplete) {
             const neededRolls = formData.level - 1;
-            if (rolledHps.length < neededRolls) {
-                alert(
-                    `Please roll HP for all levels (${neededRolls} rolls needed). Currently: ${rolledHps.length}`
-                );
-                return;
-            }
+            alert(
+                `Please roll HP for all levels (${neededRolls} rolls needed). Currently: ${hp.rolledHps.length}`
+            );
+            return;
         }
 
         // Валидация расовых навыков/инструментов
@@ -436,12 +390,12 @@ const CreateCharacter: React.FC = () => {
                     maxHp={formData.maxHp}
                     level={formData.level}
                     mainClass={classLevels[0]?.className || formData.class}
-                    conMod={getModifier(formData.abilities.con)}
-                    hpMethod={hpMethod}
-                    onHpMethodChange={setHpMethod}
-                    rolledHps={rolledHps}
-                    onRoll={handleRoll}
-                    onRerollAll={handleRerollAll}
+                    conMod={Math.floor((formData.abilities.con - 10) / 2)}
+                    hpMethod={hp.hpMethod}
+                    onHpMethodChange={hp.setHpMethod}
+                    rolledHps={hp.rolledHps}
+                    onRoll={hp.roll}
+                    onRerollAll={hp.rollAll}
                     onHpChange={(v) => setFormData((p) => ({ ...p, hp: v }))}
                     onMaxHpChange={(v) => setFormData((p) => ({ ...p, maxHp: v }))}
                 />
