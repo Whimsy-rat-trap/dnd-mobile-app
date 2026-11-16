@@ -797,7 +797,22 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     const setExhaustionLevel = (characterId: string, level: number) => {
         const clamped = Math.max(0, Math.min(6, Math.round(level)));
-        updateCharacter(characterId, { exhaustionLevel: clamped });
+        const char = getCharacter(characterId);
+        if (!char) return;
+
+        const updates: Partial<Character> = { exhaustionLevel: clamped };
+
+        // Exhaustion level 6 is lethal
+        if (clamped >= 6 && char.status !== 'dead') {
+            updates.status = 'dead';
+            updates.hp = 0;
+            updates.isStable = false;
+            if (!char.died) {
+                updates.died = new Date().toISOString().split('T')[0];
+            }
+        }
+
+        updateCharacter(characterId, updates);
     };
 
     const spendInspiration = (characterId: string): boolean => {
@@ -1216,6 +1231,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             isStable: false,
             classResourcesUsed: newResourcesUsed,
             partialRecoveryUsed: [],
+            // Long rest reduces exhaustion by 1
+            exhaustionLevel: Math.max(0, (char.exhaustionLevel || 0) - 1),
         });
     };
 

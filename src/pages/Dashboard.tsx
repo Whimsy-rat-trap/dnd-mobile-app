@@ -26,6 +26,7 @@ import { useCampaigns } from '../context/CampaignContext';
 import { getXpToNextLevel, canLevelUpNow } from '../utils/leveling';
 import SwapSpellModal from '../components/character/SwapSpellModal';
 import { canSwapSpellOnLongRest } from '../utils/spellSwap';
+import { getConditionEffects } from '../utils/conditions';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -344,15 +345,20 @@ const Dashboard: React.FC = () => {
     };
 
     const hp = character.hp;
-    const maxHp = character.maxHp;
+    const rawMaxHp = character.maxHp;
     const tempHp = character.tempHp || 0;
     const exp = character.exp;
     const level = character.level;
 
+    const conditionEffects = getConditionEffects(character);
+    // Exhaustion 4+ halves hit point maximum.
+    const maxHp = Math.max(1, Math.floor(rawMaxHp * conditionEffects.hpMaxMultiplier));
+    const displayHp = Math.min(hp, maxHp);
+
     const maxExp = getXpToNextLevel(level);
     const isMaxLevel = !isFinite(maxExp);
 
-    const hpPercent = (hp / maxHp) * 100;
+    const hpPercent = (displayHp / maxHp) * 100;
     const tempPercent = (tempHp / maxHp) * 100;
     const expPercent = isMaxLevel ? 100 : Math.min((exp / maxExp) * 100, 100);
     const overlevelPercent = isMaxLevel || exp <= maxExp ? 0 : ((exp - maxExp) / maxExp) * 100;
@@ -545,7 +551,7 @@ const Dashboard: React.FC = () => {
             <div className="db-content-wrapper">
                 <CharacterStats
                     character={character}
-                    hp={hp}
+                    hp={displayHp}
                     maxHp={maxHp}
                     tempHp={tempHp}
                     hpPercent={hpPercent}

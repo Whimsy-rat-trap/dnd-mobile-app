@@ -21,8 +21,12 @@ const ConditionsTracker: React.FC<Props> = ({ character }) => {
     const hasWarnings =
         effects.attackDisadvantageSources.length > 0 ||
         effects.checkDisadvantageSources.length > 0 ||
+        effects.savingThrowDisadvantageSources.length > 0 ||
         effects.incapacitated ||
-        effects.speedZero;
+        effects.speedZero ||
+        effects.speedMultiplier !== 1 ||
+        effects.hpMaxMultiplier < 1 ||
+        effects.automaticDeath;
 
     return (
         <div className="cond-container">
@@ -92,6 +96,26 @@ const ConditionsTracker: React.FC<Props> = ({ character }) => {
                         </div>
                     )}
                     {effects.speedZero && <div className="cond-summary-line">⚠ Speed is 0</div>}
+                    {effects.savingThrowDisadvantageSources.length > 0 && (
+                        <div className="cond-summary-line">
+                            ⚠ Disadvantage on saving throws —{' '}
+                            {effects.savingThrowDisadvantageSources.join(', ')}
+                        </div>
+                    )}
+
+                    {!effects.speedZero && effects.speedMultiplier < 1 && (
+                        <div className="cond-summary-line">⚠ Speed halved</div>
+                    )}
+
+                    {effects.hpMaxMultiplier < 1 && (
+                        <div className="cond-summary-line">⚠ Hit point maximum halved</div>
+                    )}
+
+                    {effects.automaticDeath && (
+                        <div className="cond-summary-line cond-summary-line-death">
+                            ☠ Exhaustion level 6 — character dies
+                        </div>
+                    )}
                 </div>
             )}
 

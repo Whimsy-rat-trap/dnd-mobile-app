@@ -7,8 +7,22 @@ export interface ConditionEffectsSummary {
     attackDisadvantageSources: string[];
     /** Condition names causing disadvantage on ability checks. */
     checkDisadvantageSources: string[];
+    /** Condition names causing disadvantage on saving throws. */
+    savingThrowDisadvantageSources: string[];
     incapacitated: boolean;
     speedZero: boolean;
+    /**
+     * Speed multiplier from conditions/exhaustion.
+     * 1 = no change, 0.5 = halved, 0 = zero.
+     */
+    speedMultiplier: number;
+    /**
+     * Hit point maximum multiplier from conditions/exhaustion.
+     * 1 = no change, 0.5 = halved.
+     */
+    hpMaxMultiplier: number;
+    /** Exhaustion level 6 — character dies. */
+    automaticDeath: boolean;
     grantsAdvantageOnAttack: boolean;
     prone: boolean;
     autoFailStrSave: boolean;
@@ -27,8 +41,12 @@ export function getConditionEffects(character: Character): ConditionEffectsSumma
 
     const attackDisadvantageSources: string[] = [];
     const checkDisadvantageSources: string[] = [];
+    const savingThrowDisadvantageSources: string[] = [];
     let incapacitated = false;
     let speedZero = false;
+    let speedMultiplier = 1;
+    let hpMaxMultiplier = 1;
+    let automaticDeath = false;
     let grantsAdvantageOnAttack = false;
     let prone = false;
     let autoFailStrSave = false;
@@ -40,23 +58,48 @@ export function getConditionEffects(character: Character): ConditionEffectsSumma
         if (def.attackDisadvantage) attackDisadvantageSources.push(def.name);
         if (def.checkDisadvantage) checkDisadvantageSources.push(def.name);
         if (def.incapacitated) incapacitated = true;
-        if (def.speedZero) speedZero = true;
+        if (def.speedZero) {
+            speedZero = true;
+            speedMultiplier = 0;
+        }
         if (def.grantsAdvantageOnAttack) grantsAdvantageOnAttack = true;
         if (def.prone) prone = true;
         if (def.autoFailStrSave) autoFailStrSave = true;
         if (def.autoFailDexSave) autoFailDexSave = true;
     }
 
-    if (exhaustionLevel >= 1) checkDisadvantageSources.push(`Exhaustion ${exhaustionLevel}`);
-    if (exhaustionLevel >= 3) attackDisadvantageSources.push(`Exhaustion ${exhaustionLevel}`);
-    if (exhaustionLevel >= 5) speedZero = true;
+    // Exhaustion cumulative effects
+    if (exhaustionLevel >= 1) {
+        checkDisadvantageSources.push(`Exhaustion ${exhaustionLevel}`);
+    }
+    if (exhaustionLevel >= 2) {
+        speedMultiplier = Math.min(speedMultiplier, 0.5);
+    }
+    if (exhaustionLevel >= 3) {
+        attackDisadvantageSources.push(`Exhaustion ${exhaustionLevel}`);
+        savingThrowDisadvantageSources.push(`Exhaustion ${exhaustionLevel}`);
+    }
+    if (exhaustionLevel >= 4) {
+        hpMaxMultiplier = Math.min(hpMaxMultiplier, 0.5);
+    }
+    if (exhaustionLevel >= 5) {
+        speedZero = true;
+        speedMultiplier = 0;
+    }
+    if (exhaustionLevel >= 6) {
+        automaticDeath = true;
+    }
 
     return {
         active,
         attackDisadvantageSources,
         checkDisadvantageSources,
+        savingThrowDisadvantageSources,
         incapacitated,
         speedZero,
+        speedMultiplier,
+        hpMaxMultiplier,
+        automaticDeath,
         grantsAdvantageOnAttack,
         prone,
         autoFailStrSave,
