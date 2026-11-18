@@ -167,13 +167,16 @@ const ItemsLibrary: React.FC = () => {
             return;
         }
 
-        // Преобразуем LibraryItem в InventoryItem, КОПИРУЯ все новые поля
+        // InventoryItem
         const inventoryItem: Omit<InventoryItem, 'id'> = {
             name: item.name,
             type: item.type,
             rarity: item.rarity,
             description: item.description,
             equipped: false,
+            // Carry attunement requirement from the library item.
+            attunement: item.attunement ?? false,
+            attuned: false,
             damageDice: item.damageDice,
             damageType: item.damageType,
             healingDice: item.healingDice,

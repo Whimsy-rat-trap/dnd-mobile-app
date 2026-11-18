@@ -12,6 +12,11 @@ interface InventoryItemCardProps {
     item: InventoryItem;
     onEquip: (itemId: string) => void;
     onRemove: (itemId: string) => void;
+    onToggleAttunement: (itemId: string) => void;
+    /** Current count of attuned items on the character (for slot limit). */
+    attunementCount?: number;
+    /** Maximum number of attunement slots. */
+    maxAttunement?: number;
     attackBonus?: number;
     damageBonus?: number;
     onAttackRoll?: (attackTotal: number, damageTotal: number | null, sourceName: string) => void;
@@ -21,6 +26,9 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
     item,
     onEquip,
     onRemove,
+    onToggleAttunement,
+    attunementCount,
+    maxAttunement,
     attackBonus = 0,
     damageBonus = 0,
     onAttackRoll,
@@ -29,6 +37,12 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
 
     const canAttack =
         (item.type === 'weapon' || item.type === 'natural weapon') && Boolean(item.damageDice);
+
+    const attunementFull =
+        !item.attuned &&
+        attunementCount !== undefined &&
+        maxAttunement !== undefined &&
+        attunementCount >= maxAttunement;
 
     // Собираем итоговые значения для логирования (если оба ролла сделаны — можем вызвать onAttackRoll)
     const handleRollAttack = (attackTotal: number) => {
@@ -95,16 +109,39 @@ const InventoryItemCard: React.FC<InventoryItemCardProps> = ({
                                 Uses: {item.uses.current}/{item.uses.max}
                             </span>
                         )}
+                        {item.attunement && !item.attuned && (
+                            <span className="inv-item-stat inv-item-attunement-required">
+                                Requires Attunement
+                            </span>
+                        )}
                     </div>
                 )}
             </div>
 
             <div className="inv-item-actions">
                 {item.equipped && <span className="inv-equipped-badge">Equipped</span>}
+                {item.attuned && <span className="inv-attuned-badge">Attuned</span>}
 
                 <button className="inv-action-btn inv-equip-btn" onClick={() => onEquip(item.id)}>
                     {item.equipped ? 'Unequip' : 'Equip'}
                 </button>
+
+                {item.attunement && (
+                    <button
+                        className={`inv-action-btn inv-attune-btn ${item.attuned ? 'inv-attuned' : ''}`}
+                        onClick={() => onToggleAttunement(item.id)}
+                        disabled={attunementFull}
+                        title={
+                            item.attuned
+                                ? 'Break attunement'
+                                : attunementFull
+                                  ? `All ${maxAttunement} attunement slots in use`
+                                  : 'Attune to this item'
+                        }
+                    >
+                        {item.attuned ? 'Unattune' : 'Attune'}
+                    </button>
+                )}
 
                 {canAttack && (
                     <AttackRoller

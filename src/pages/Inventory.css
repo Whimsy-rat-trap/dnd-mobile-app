@@ -391,3 +391,72 @@
 .inv-attack-btn:hover {
     background: var(--color-danger-dark);
 }
+
+/* Attunement UI */
+
+.inv-attunement-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #1f2937;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.inv-attunement-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inv-attunement-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #a78bfa;
+}
+
+.inv-attunement-value.inv-attunement-full {
+    color: #f59e0b;
+}
+
+.inv-attuned-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(167, 139, 250, 0.15);
+    border: 1px solid #a78bfa;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #a78bfa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inv-attune-btn {
+    border-color: #4c3d6b;
+    color: #c4b5fd;
+    transition:
+        border-color 0.2s,
+        color 0.2s,
+        background 0.2s;
+}
+
+.inv-attune-btn.inv-attuned {
+    background: rgba(167, 139, 250, 0.12);
+    border-color: #a78bfa;
+    color: #a78bfa;
+}
+
+.inv-attune-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.inv-item-attunement-required {
+    font-size: 11px;
+    color: #a78bfa;
+    font-style: italic;
+}

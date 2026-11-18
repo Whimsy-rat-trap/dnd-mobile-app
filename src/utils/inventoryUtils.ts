@@ -68,7 +68,8 @@ export const hasItemStats = (item: InventoryItem): boolean =>
         item.baseAC !== undefined ||
         item.acBonus !== undefined ||
         item.strengthRequirement !== undefined ||
-        item.stealthDisadvantage
+        item.stealthDisadvantage ||
+        item.attunement
     );
 
 /**

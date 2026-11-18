@@ -154,6 +154,10 @@ export interface InventoryItem {
     rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
     description: string;
     equipped: boolean;
+    /** Whether the item requires attunement to unlock its magical properties. */
+    attunement?: boolean;
+    /** Whether the character is currently attuned to this item. */
+    attuned?: boolean;
     damageDice?: string;
     damageType?: string;
     healingDice?: string;

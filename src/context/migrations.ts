@@ -11,6 +11,7 @@ type AnyCharacter = Partial<Character> & Record<string, any>;
 const MIGRATIONS: Record<number, (c: AnyCharacter) => AnyCharacter> = {
     1: migrate_v0_to_v1,
     2: migrate_v1_to_v2,
+    3: migrate_v2_to_v3,
 };
 
 /**
@@ -234,4 +235,21 @@ function migrate_v1_to_v2(c: AnyCharacter): AnyCharacter {
         conditions: Array.isArray(c.conditions) ? c.conditions : [],
         exhaustionLevel: typeof c.exhaustionLevel === 'number' ? c.exhaustionLevel : 0,
     };
+}
+
+// v2 → v3 — add attunement support to inventory items
+function migrate_v2_to_v3(c: AnyCharacter): AnyCharacter {
+    const inventory = Array.isArray(c.inventory)
+        ? c.inventory.map((item: any) => {
+              // Try to recover the attunement flag from the item library by name.
+              const libraryItem = ALL_ITEMS.find((li: any) => li.name === item.name);
+              return {
+                  ...item,
+                  attunement: item.attunement ?? libraryItem?.attunement ?? false,
+                  attuned: item.attuned ?? false,
+              };
+          })
+        : [];
+
+    return { ...c, inventory };
 }

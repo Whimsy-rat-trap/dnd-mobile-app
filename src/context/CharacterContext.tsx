@@ -114,6 +114,7 @@ interface CharacterContextType {
     forgetMetamagic: (characterId: string, metamagicId: string) => void;
     createSpellSlotFromSorceryPoints: (characterId: string, level: number) => boolean;
     convertSpellSlotToSorceryPoints: (characterId: string, level: number) => boolean;
+    toggleAttunement: (characterId: string, itemId: string) => boolean;
     /**
      * Использовать partial-recovery фичу.
      * Для spell-slots: payload = [{ level, count }, ...].
@@ -129,6 +130,13 @@ interface CharacterContextType {
 
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
 const STORAGE_KEY = 'dnd_characters';
+
+/** Maximum number of items a character can be attuned to at once. */
+export const MAX_ATTUNEMENT_SLOTS = 3;
+
+/** Count of currently attuned items on a character. */
+export const getAttunementCount = (character: Character): number =>
+    character.inventory.filter((i) => i.attuned).length;
 
 /**
  * Shallow comparison of spell arrays — used to skip re-renders after
@@ -647,6 +655,28 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 item.id === itemId ? { ...item, ...updates } : item
             ),
         });
+    };
+
+    const toggleAttunement = (characterId: string, itemId: string): boolean => {
+        const char = getCharacter(characterId);
+        if (!char) return false;
+
+        const item = char.inventory.find((i) => i.id === itemId);
+        if (!item) return false;
+        if (!item.attunement) return false;
+
+        // Un-attuning is always allowed.
+        if (item.attuned) {
+            updateItemInInventory(characterId, itemId, { attuned: false });
+            return true;
+        }
+
+        // Enforce the 3-slot limit when attuning to a new item.
+        const attunedCount = getAttunementCount(char);
+        if (attunedCount >= MAX_ATTUNEMENT_SLOTS) return false;
+
+        updateItemInInventory(characterId, itemId, { attuned: true });
+        return true;
     };
 
     const addSpellToCharacter = (characterId: string, spell: Omit<Spell, 'id'>) => {
@@ -1338,6 +1368,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         removeCondition,
         setExhaustionLevel,
         applyPartialRecoveryFeature,
+        toggleAttunement,
     };
 
     return <CharacterContext.Provider value={value}>{children}</CharacterContext.Provider>;

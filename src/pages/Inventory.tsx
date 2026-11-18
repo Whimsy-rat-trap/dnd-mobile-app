@@ -1,6 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useCharacters } from '../context/CharacterContext';
+import {
+    useCharacters,
+    MAX_ATTUNEMENT_SLOTS,
+    getAttunementCount,
+} from '../context/CharacterContext';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import InventoryItemCard from '../components/InventoryItemCard';
@@ -70,6 +74,7 @@ const Inventory: React.FC = () => {
         updateItemInInventory,
         updateCharacter,
         addDiceLog,
+        toggleAttunement,
     } = useCharacters();
 
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
@@ -151,6 +156,20 @@ const Inventory: React.FC = () => {
         }
     };
 
+    const handleToggleAttunement = (itemId: string) => {
+        const ok = toggleAttunement(character.id, itemId);
+        if (!ok) {
+            const item = character.inventory.find((i) => i.id === itemId);
+            const attunedCount = getAttunementCount(character);
+            if (item && item.attunement && !item.attuned && attunedCount >= MAX_ATTUNEMENT_SLOTS) {
+                alert(
+                    `Cannot attune: you already have ${MAX_ATTUNEMENT_SLOTS} attuned items. ` +
+                        `Break attunement with another item first.`
+                );
+            }
+        }
+    };
+
     const handleAttackRoll = (
         attackRoll: number,
         damageRoll: number | null,
@@ -194,6 +213,19 @@ const Inventory: React.FC = () => {
                     <span className="inv-currency-cp">{character.currency?.cp ?? 0} cp</span>
                 </div>
 
+                <div className="inv-attunement-counter">
+                    <span className="inv-attunement-label">Attuned:</span>
+                    <span
+                        className={`inv-attunement-value ${
+                            getAttunementCount(character) >= MAX_ATTUNEMENT_SLOTS
+                                ? 'inv-attunement-full'
+                                : ''
+                        }`}
+                    >
+                        {getAttunementCount(character)} / {MAX_ATTUNEMENT_SLOTS}
+                    </span>
+                </div>
+
                 <SearchBar
                     value={searchQuery}
                     onChange={setSearchQuery}
@@ -213,6 +245,9 @@ const Inventory: React.FC = () => {
                                 item={item}
                                 onEquip={handleEquip}
                                 onRemove={handleRemove}
+                                onToggleAttunement={handleToggleAttunement}
+                                attunementCount={getAttunementCount(character)}
+                                maxAttunement={MAX_ATTUNEMENT_SLOTS}
                                 attackBonus={computeAttackBonus(item, character)}
                                 damageBonus={computeDamageBonus(item, character)}
                                 onAttackRoll={handleAttackRoll}
