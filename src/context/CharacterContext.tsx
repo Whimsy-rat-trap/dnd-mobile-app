@@ -53,6 +53,10 @@ interface CharacterContextType {
     characters: Character[];
     currentCharacterId: string | null;
     concentrationCheck: { spellId: string; dc: number; conMod: number } | null;
+    /** Character removed within the undo window, or null if none. */
+    lastDeletedCharacter: Character | null;
+    /** Restore the last-deleted character if the undo window is still open. */
+    undoDeleteCharacter: () => boolean;
     addCharacter: (character: Omit<Character, 'id'>) => void;
     updateCharacter: (id: string, data: Partial<Character>) => void;
     deleteCharacter: (id: string) => void;
@@ -131,6 +135,15 @@ interface CharacterContextType {
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
 const STORAGE_KEY = 'dnd_characters';
 
+/** How long a deleted character can be restored. */
+const UNDO_TIMEOUT_MS = 6000;
+
+interface DeletedSnapshot {
+    character: Character;
+    /** Index the character occupied before deletion; used to restore order. */
+    index: number;
+}
+
 /** Maximum number of items a character can be attuned to at once. */
 export const MAX_ATTUNEMENT_SLOTS = 3;
 
@@ -181,6 +194,20 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         dc: number;
         conMod: number;
     } | null>(null);
+
+    const [lastDeletedCharacter, setLastDeletedCharacter] = useState<Character | null>(null);
+    const deletedSnapshotRef = useRef<DeletedSnapshot | null>(null);
+    const undoTimerRef = useRef<number | null>(null);
+
+    // Clear any pending undo timer when the provider unmounts.
+    useEffect(() => {
+        return () => {
+            if (undoTimerRef.current !== null) {
+                window.clearTimeout(undoTimerRef.current);
+                undoTimerRef.current = null;
+            }
+        };
+    }, []);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
@@ -455,8 +482,48 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     const deleteCharacter = (id: string) => {
-        setCharacters((prev) => prev.filter((char) => char.id !== id));
+        const index = characters.findIndex((c) => c.id === id);
+        if (index === -1) return;
+
+        // A new deletion supersedes the previous undo window — commit that one.
+        if (undoTimerRef.current !== null) {
+            window.clearTimeout(undoTimerRef.current);
+            undoTimerRef.current = null;
+        }
+
+        const character = characters[index];
+        deletedSnapshotRef.current = { character, index };
+        setLastDeletedCharacter(character);
+
+        undoTimerRef.current = window.setTimeout(() => {
+            deletedSnapshotRef.current = null;
+            setLastDeletedCharacter(null);
+            undoTimerRef.current = null;
+        }, UNDO_TIMEOUT_MS);
+
+        setCharacters((prev) => prev.filter((c) => c.id !== id));
         if (currentCharacterId === id) setCurrentCharacterId(null);
+    };
+
+    const undoDeleteCharacter = (): boolean => {
+        const snapshot = deletedSnapshotRef.current;
+        if (!snapshot) return false;
+
+        if (undoTimerRef.current !== null) {
+            window.clearTimeout(undoTimerRef.current);
+            undoTimerRef.current = null;
+        }
+
+        setCharacters((prev) => {
+            const next = [...prev];
+            const insertAt = Math.min(snapshot.index, next.length);
+            next.splice(insertAt, 0, snapshot.character);
+            return next;
+        });
+
+        deletedSnapshotRef.current = null;
+        setLastDeletedCharacter(null);
+        return true;
     };
 
     /**
@@ -1369,6 +1436,8 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         setExhaustionLevel,
         applyPartialRecoveryFeature,
         toggleAttunement,
+        undoDeleteCharacter,
+        lastDeletedCharacter,
     };
 
     return <CharacterContext.Provider value={value}>{children}</CharacterContext.Provider>;

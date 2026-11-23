@@ -27,6 +27,7 @@ import { getXpToNextLevel, canLevelUpNow } from '../utils/leveling';
 import SwapSpellModal from '../components/character/SwapSpellModal';
 import { canSwapSpellOnLongRest } from '../utils/spellSwap';
 import { getConditionEffects } from '../utils/conditions';
+import UndoToast from '../components/UndoToast';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -51,12 +52,21 @@ const Dashboard: React.FC = () => {
         grantInspiration,
         spendInspiration,
         applyLevelUp,
+        undoDeleteCharacter,
+        lastDeletedCharacter,
     } = useCharacters();
 
     const safeCharacters = React.useMemo(
         () => (characters || []).filter((c) => c != null),
         [characters]
     );
+
+    const undoToastNode = lastDeletedCharacter ? (
+        <UndoToast
+            message={`Character "${lastDeletedCharacter.name}" deleted.`}
+            onAction={undoDeleteCharacter}
+        />
+    ) : null;
 
     const character = currentCharacterId ? getCharacter(currentCharacterId) : undefined;
 
@@ -226,11 +236,9 @@ const Dashboard: React.FC = () => {
         );
     });
 
-    const handleDeleteCharacter = (id: string, name: string, e: React.MouseEvent) => {
+    const handleDeleteCharacter = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (window.confirm(`Delete "${name}"? This action cannot be undone.`)) {
-            deleteCharacter(id);
-        }
+        deleteCharacter(id);
     };
 
     const { getCampaignsForCharacter } = useCampaigns();
@@ -275,7 +283,7 @@ const Dashboard: React.FC = () => {
                                     character={char}
                                     onClick={() => setCurrentCharacterId(char.id)}
                                     needsDeathSave={needsDeathSave}
-                                    onDelete={(e) => handleDeleteCharacter(char.id, char.name, e)}
+                                    onDelete={(e) => handleDeleteCharacter(char.id, e)}
                                 />
                             );
                         })}
@@ -336,6 +344,15 @@ const Dashboard: React.FC = () => {
                         onClose={() => setShowCreatePopup(false)}
                     />
                 )}
+
+                {lastDeletedCharacter && (
+                    <UndoToast
+                        message={`Character "${lastDeletedCharacter.name}" deleted.`}
+                        onAction={undoDeleteCharacter}
+                    />
+                )}
+
+                {undoToastNode}
             </div>
         );
     }
@@ -566,8 +583,8 @@ const Dashboard: React.FC = () => {
                     onProfileClick={() => openPopup('profile')}
                     onGrantInspiration={() => grantInspiration(character.id)}
                     onSpendInspiration={() => spendInspiration(character.id)}
-                    canLevelUp={isLevelUpAvailable} // [LVL]
-                    onLevelUpClick={() => setLevelUpOpen(true)} // [LVL]
+                    canLevelUp={isLevelUpAvailable}
+                    onLevelUpClick={() => setLevelUpOpen(true)}
                 />
 
                 <PassiveScoresSection character={character} />
@@ -939,6 +956,13 @@ const Dashboard: React.FC = () => {
                 character={character}
                 onApply={(payload) => applyLevelUp(character.id, payload)}
             />
+
+            {lastDeletedCharacter && (
+                <UndoToast
+                    message={`Character "${lastDeletedCharacter.name}" deleted.`}
+                    onAction={undoDeleteCharacter}
+                />
+            )}
         </div>
     );
 };
