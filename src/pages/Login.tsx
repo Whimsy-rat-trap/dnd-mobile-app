@@ -39,9 +39,9 @@ const Login: React.FC = () => {
                         />
                     </div>
                     <div className="lg-form-actions">
-                        <a href="#" className="lg-forgot-link">
+                        <button type="button" className="lg-forgot-link">
                             Forgot password?
-                        </a>
+                        </button>
                     </div>
                     <button type="submit" className="lg-signin-btn">
                         Enter the realm
@@ -89,9 +89,9 @@ const Login: React.FC = () => {
 
                 <div className="lg-signup-section">
                     <span>New to Arcane Realms? </span>
-                    <a href="#" className="lg-signup-link">
+                    <button type="button" className="lg-signup-link">
                         Create an Account
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>

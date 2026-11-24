@@ -39,12 +39,13 @@ export function useCreateCharacterHp(
         }
     }, [hitDie]);
 
-    // Trim excess rolls when level decreases
+    // Trim excess rolls when level decreases (functional update avoids
+    // depending on rolledHps, which would re-run on every roll).
     useEffect(() => {
-        if (rolledHps.length > additionalLevels) {
-            setRolledHps(rolledHps.slice(0, additionalLevels));
-        }
-    }, [additionalLevels, rolledHps.length]);
+        setRolledHps((prev) =>
+            prev.length > additionalLevels ? prev.slice(0, additionalLevels) : prev
+        );
+    }, [additionalLevels]);
 
     const maxHp = computeMaxHp(mainClass, level, conScore, hpMethod, rolledHps);
     const isComplete = isRolledHpComplete(level, hpMethod, rolledHps);

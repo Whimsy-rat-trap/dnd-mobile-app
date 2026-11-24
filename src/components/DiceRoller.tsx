@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './DiceRoller.css';
 
 interface DiceRollerProps {
@@ -29,19 +29,8 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
     const [result, setResult] = useState<number | null>(initialResult ?? null);
     const [spinning, setSpinning] = useState(false);
 
-    useEffect(() => {
-        if (autoRoll && !spinning && result === null) {
-            const timer = setTimeout(() => roll(), 100);
-            return () => clearTimeout(timer);
-        }
-    }, [autoRoll]);
-
-    // Синхронизация, если родитель меняет initialResult (например, после reroll)
-    useEffect(() => {
-        if (initialResult !== undefined) setResult(initialResult);
-    }, [initialResult]);
-
-    const roll = () => {
+    // Memoised so the auto-roll effect can depend on it without looping.
+    const roll = useCallback(() => {
         if (spinning || disabled) return;
         setSpinning(true);
         setResult(null);
@@ -52,7 +41,19 @@ const DiceRoller: React.FC<DiceRollerProps> = ({
             setSpinning(false);
             if (onRoll) onRoll(res);
         }, 800);
-    };
+    }, [spinning, disabled, initialResult, sides, onRoll]);
+
+    useEffect(() => {
+        if (autoRoll && !spinning && result === null) {
+            const timer = setTimeout(() => roll(), 100);
+            return () => clearTimeout(timer);
+        }
+    }, [autoRoll, spinning, result, roll]);
+
+    // Синхронизация, если родитель меняет initialResult (например, после reroll)
+    useEffect(() => {
+        if (initialResult !== undefined) setResult(initialResult);
+    }, [initialResult]);
 
     const handleReroll = () => {
         if (!onRerollRequest || spinning || disabled) return;
