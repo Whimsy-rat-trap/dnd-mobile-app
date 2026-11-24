@@ -1,10 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    useCharacters,
-    MAX_ATTUNEMENT_SLOTS,
-    getAttunementCount,
-} from '../context/CharacterContext';
+import { useCharacters, getAttunementCount } from '../context/CharacterContext';
+import { MAX_ATTUNEMENT_SLOTS } from '../constants/gameRules';
 import SearchBar from '../components/SearchBar';
 import FilterModal, { FilterField } from '../components/FilterModal';
 import InventoryItemCard from '../components/InventoryItemCard';

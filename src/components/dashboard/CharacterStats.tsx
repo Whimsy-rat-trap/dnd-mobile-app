@@ -2,6 +2,7 @@ import React from 'react';
 import { Character } from '../../types/Character';
 import { getProficiencyBonus } from '../../utils/proficiency';
 import { getXpToNextLevel } from '../../utils/leveling';
+import { MAX_CHARACTER_LEVEL } from '../../constants/gameRules';
 import InspirationBadge from '../InspirationBadge';
 
 interface CharacterStatsProps {
@@ -53,14 +54,14 @@ const CharacterStats: React.FC<CharacterStatsProps> = ({
 
     // Level Up
     const isMilestone = character.levelingMode === 'milestone';
-    const isMaxLevel = level >= 20;
+    const isMaxLevel = level >= MAX_CHARACTER_LEVEL;
     const xpToNext = getXpToNextLevel(level);
 
     // В milestone — всегда активна, в XP — только когда exp >= xpToNext
     const isActive = !isMaxLevel && (isMilestone || canLevelUp);
 
     const levelUpTitle = (() => {
-        if (isMaxLevel) return 'Max level (20)';
+        if (isMaxLevel) return `Max level (${MAX_CHARACTER_LEVEL})`;
         if (isActive) {
             return isMilestone
                 ? 'Level up (Milestone — DM decides)'

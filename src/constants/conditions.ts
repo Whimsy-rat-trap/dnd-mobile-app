@@ -1,4 +1,5 @@
 import { ConditionId } from '../types/Character';
+import { MAX_EXHAUSTION_LEVEL } from './gameRules';
 
 export interface ConditionDefinition {
     id: ConditionId;
@@ -215,5 +216,5 @@ export const EXHAUSTION_LEVELS: Array<{ level: number; effect: string }> = [
 
 export function getExhaustionEffects(level: number): string[] {
     if (level <= 0) return [];
-    return EXHAUSTION_LEVELS.slice(0, Math.min(level, 6)).map((l) => l.effect);
+    return EXHAUSTION_LEVELS.slice(0, Math.min(level, MAX_EXHAUSTION_LEVEL)).map((l) => l.effect);
 }

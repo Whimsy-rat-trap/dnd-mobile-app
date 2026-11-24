@@ -48,6 +48,14 @@ import { newId } from '../utils/id';
 import { migrate } from './migrations';
 import { DEFAULT_SKILLS } from '../constants/skills';
 import { CURRENT_SCHEMA_VERSION } from '../constants/schema';
+import {
+    MAX_CHARACTER_LEVEL,
+    MAX_EXHAUSTION_LEVEL,
+    MAX_ABILITY_SCORE,
+    SPELL_SLOT_LEVELS_COUNT,
+    UNDO_TIMEOUT_MS,
+    MAX_ATTUNEMENT_SLOTS,
+} from '../constants/gameRules';
 
 interface CharacterContextType {
     characters: Character[];
@@ -135,17 +143,11 @@ interface CharacterContextType {
 const CharacterContext = createContext<CharacterContextType | undefined>(undefined);
 const STORAGE_KEY = 'dnd_characters';
 
-/** How long a deleted character can be restored. */
-const UNDO_TIMEOUT_MS = 6000;
-
 interface DeletedSnapshot {
     character: Character;
     /** Index the character occupied before deletion; used to restore order. */
     index: number;
 }
-
-/** Maximum number of items a character can be attuned to at once. */
-export const MAX_ATTUNEMENT_SLOTS = 3;
 
 /** Count of currently attuned items on a character. */
 export const getAttunementCount = (character: Character): number =>
@@ -419,7 +421,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
             inspiration: false,
             feats: character.feats || [],
             currency: normalizeCurrency(character.currency || EMPTY_CURRENCY),
-            usedSpellSlots: Array(9).fill(0),
+            usedSpellSlots: Array(SPELL_SLOT_LEVELS_COUNT).fill(0),
             usedPactSlots: 0,
             hitDiceUsed: {},
         };
@@ -537,7 +539,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         const cl = char.classLevels?.[payload.classIndex];
         if (!cl) return false;
-        if (char.level >= 20) return false;
+        if (char.level >= MAX_CHARACTER_LEVEL) return false;
 
         // Guard: XP must cover the current level's threshold
         // (skipped in milestone mode, or when explicitly consuming no XP)
@@ -593,7 +595,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
                 for (const [key, val] of Object.entries(payload.asi.bonuses)) {
                     const k = key as keyof typeof newAbilities;
                     if (typeof val === 'number' && val > 0) {
-                        newAbilities[k] = Math.min(20, newAbilities[k] + val);
+                        newAbilities[k] = Math.min(MAX_ABILITY_SCORE, newAbilities[k] + val);
                     }
                 }
                 newAsiHistory = [
@@ -893,7 +895,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     const setExhaustionLevel = (characterId: string, level: number) => {
-        const clamped = Math.max(0, Math.min(6, Math.round(level)));
+        const clamped = Math.max(0, Math.min(MAX_EXHAUSTION_LEVEL, Math.round(level)));
         const char = getCharacter(characterId);
         if (!char) return;
 
@@ -1318,7 +1320,7 @@ export const CharacterProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
 
         updateCharacter(characterId, {
-            usedSpellSlots: Array(9).fill(0),
+            usedSpellSlots: Array(SPELL_SLOT_LEVELS_COUNT).fill(0),
             usedPactSlots: 0,
             hitDiceUsed: restoreHitDiceOnLongRest(char),
             hp: char.maxHp,

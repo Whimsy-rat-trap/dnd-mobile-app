@@ -28,6 +28,7 @@ import SwapSpellModal from '../components/character/SwapSpellModal';
 import { canSwapSpellOnLongRest } from '../utils/spellSwap';
 import { getConditionEffects } from '../utils/conditions';
 import UndoToast from '../components/UndoToast';
+import { MAX_CHARACTER_LEVEL } from '../constants/gameRules';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
@@ -89,7 +90,7 @@ const Dashboard: React.FC = () => {
         subclass: '',
         race: '',
         subrace: '',
-        level: { min: 1, max: 20 },
+        level: { min: 1, max: MAX_CHARACTER_LEVEL },
         alive: 'all' as 'all' | 'alive' | 'dead',
         createdAfter: '',
         createdBefore: '',
@@ -323,7 +324,7 @@ const Dashboard: React.FC = () => {
                             subclass: '',
                             race: '',
                             subrace: '',
-                            level: { min: 1, max: 20 },
+                            level: { min: 1, max: MAX_CHARACTER_LEVEL },
                             alive: 'all',
                             createdAfter: '',
                             createdBefore: '',
