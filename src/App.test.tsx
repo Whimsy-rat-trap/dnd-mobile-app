@@ -1,8 +1,13 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { getModifier } from './utils/characterUtils';
 
-test('renders learn react link', () => {
-    render(<App />);
-    const linkElement = screen.getByText(/learn react/i);
-    expect(linkElement).toBeInTheDocument();
+describe('getModifier', () => {
+    it('returns 0 for score 10', () => {
+        expect(getModifier(10)).toBe(0);
+    });
+    it('returns +2 for score 14', () => {
+        expect(getModifier(14)).toBe(2);
+    });
+    it('returns -1 for score 8', () => {
+        expect(getModifier(8)).toBe(-1);
+    });
 });
