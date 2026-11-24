@@ -17,6 +17,11 @@
             "prettier --write"
         ]
     },
+    "jest": {
+        "transformIgnorePatterns": [
+            "[/\\\\]node_modules[/\\\\](?!(react-router-dom|react-router|@remix-run)/).+\\.(js|jsx|mjs|cjs|ts|tsx)$"
+        ]
+    },
     "dependencies": {
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "^6.9.1",
