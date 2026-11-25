@@ -1,11 +1,7 @@
 import React from 'react';
 import { InventoryItem } from '../types/Character';
-import {
-    getRarityColor,
-    isNaturalWeapon,
-    hasItemStats,
-    formatACDescription,
-} from '../utils/inventoryUtils';
+import { isNaturalWeapon, hasItemStats, formatACDescription } from '../utils/inventoryUtils';
+import { getRarityColor } from '../constants/rarity';
 import AttackRoller from './AttackRoller';
 
 interface InventoryItemCardProps {

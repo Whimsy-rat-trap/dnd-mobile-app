@@ -1,4 +1,5 @@
 import { InventoryItem } from '../types/Character';
+import { FINESSE_WEAPONS, RANGED_WEAPONS } from '../constants/weapons';
 
 /**
  * Возвращает уникальные типы предметов из инвентаря.
@@ -12,25 +13,11 @@ export const getTypes = (inventory: InventoryItem[]): string[] =>
 export const getRarities = (inventory: InventoryItem[]): string[] =>
     Array.from(new Set(inventory.map((i) => i.rarity)));
 
-/**
- * Возвращает цвет для указанной редкости.
- */
-export const getRarityColor = (rarity: string): string => {
-    switch (rarity) {
-        case 'common':
-            return '#9ca3af';
-        case 'uncommon':
-            return '#34d399';
-        case 'rare':
-            return '#60a5fa';
-        case 'very rare':
-            return '#a78bfa';
-        case 'legendary':
-            return '#fbbf24';
-        default:
-            return '#fff';
-    }
-};
+export const isFinesse = (name: string): boolean =>
+    FINESSE_WEAPONS.some((w) => name.toLowerCase().includes(w));
+
+export const isRanged = (name: string): boolean =>
+    RANGED_WEAPONS.some((w) => name.toLowerCase().includes(w));
 
 /**
  * Проверяет, является ли предмет natural weapon.

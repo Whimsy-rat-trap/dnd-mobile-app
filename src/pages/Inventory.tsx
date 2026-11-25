@@ -7,26 +7,16 @@ import FilterModal, { FilterField } from '../components/FilterModal';
 import InventoryItemCard from '../components/InventoryItemCard';
 import CurrencyEditModal from '../components/CurrencyEditModal';
 import { Character, InventoryItem } from '../types/Character';
-import { getTypes, getRarities, filterInventoryItems } from '../utils/inventoryUtils';
+import {
+    getTypes,
+    getRarities,
+    filterInventoryItems,
+    isFinesse,
+    isRanged,
+} from '../utils/inventoryUtils';
 import './Inventory.css';
 import { getProficiencyBonus } from '../utils/proficiency';
 import { getModifier } from '../utils/characterUtils';
-
-/**
- * Оружие с finesse — можно использовать DEX вместо STR.
- */
-const FINESSE_WEAPONS = ['dagger', 'rapier', 'shortsword', 'scimitar', 'whip'];
-
-/**
- * Двуручное/дальнобойное — использует DEX.
- */
-const RANGED_WEAPONS = ['shortbow', 'longbow', 'crossbow', 'sling', 'dart', 'blowgun'];
-
-const isFinesse = (name: string): boolean =>
-    FINESSE_WEAPONS.some((w) => name.toLowerCase().includes(w));
-
-const isRanged = (name: string): boolean =>
-    RANGED_WEAPONS.some((w) => name.toLowerCase().includes(w));
 
 /**
  * Вычисляет бонус к попаданию для оружия с учётом характеристик персонажа.

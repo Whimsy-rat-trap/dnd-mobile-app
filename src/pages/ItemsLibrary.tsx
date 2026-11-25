@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ALL_ITEMS, LibraryItem } from '../constants/items';
+import { DAMAGE_TYPES } from '../constants/damage';
+import { RARITIES, getRarityColor } from '../constants/rarity';
+import { ITEM_TYPES } from '../constants/itemTypes';
 import { useItems } from '../context/ItemContext';
 import { useCharacters } from '../context/CharacterContext';
 import SearchBar from '../components/SearchBar';
@@ -8,37 +11,6 @@ import FilterModal, { FilterField } from '../components/FilterModal';
 import Modal from '../components/Modal';
 import './ItemsLibrary.css';
 import { InventoryItem } from '../types/Character';
-
-// Уникальные типы и редкости
-const TYPES = [
-    'weapon',
-    'armor',
-    'potion',
-    'scroll',
-    'ring',
-    'wand',
-    'shield',
-    'natural weapon',
-    'other',
-];
-const RARITIES = Array.from(new Set(ALL_ITEMS.map((i) => i.rarity)));
-
-// Опции для типов урона
-const DAMAGE_TYPES = [
-    'slashing',
-    'piercing',
-    'bludgeoning',
-    'fire',
-    'cold',
-    'lightning',
-    'thunder',
-    'acid',
-    'poison',
-    'necrotic',
-    'radiant',
-    'force',
-    'psychic',
-];
 
 const ItemsLibrary: React.FC = () => {
     const navigate = useNavigate();
@@ -98,7 +70,10 @@ const ItemsLibrary: React.FC = () => {
             type: 'select',
             options: [
                 { value: '', label: 'All' },
-                ...TYPES.map((t) => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })),
+                ...ITEM_TYPES.map((t) => ({
+                    value: t,
+                    label: t.charAt(0).toUpperCase() + t.slice(1),
+                })),
             ],
         },
         {
@@ -190,23 +165,6 @@ const ItemsLibrary: React.FC = () => {
         };
         addItemToInventory(targetCharacterId, inventoryItem);
         alert(`Added "${item.name}" to inventory!`);
-    };
-
-    const getRarityColor = (rarity: LibraryItem['rarity']) => {
-        switch (rarity) {
-            case 'common':
-                return '#9ca3af';
-            case 'uncommon':
-                return '#34d399';
-            case 'rare':
-                return '#60a5fa';
-            case 'very rare':
-                return '#a78bfa';
-            case 'legendary':
-                return '#fbbf24';
-            default:
-                return '#fff';
-        }
     };
 
     const handleCreateItem = () => {
@@ -403,7 +361,7 @@ const ItemsLibrary: React.FC = () => {
                                 setNewItem({ ...newItem, type: e.target.value as any })
                             }
                         >
-                            {TYPES.map((t) => (
+                            {ITEM_TYPES.map((t) => (
                                 <option key={t} value={t}>
                                     {t.charAt(0).toUpperCase() + t.slice(1)}
                                 </option>
